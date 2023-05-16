@@ -1,1 +1,0 @@
-// view, widget 등을 사용해 stateless 화면 하나를 정의합니다.
