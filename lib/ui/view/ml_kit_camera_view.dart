@@ -5,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
-import 'package:pocket_pose/ui/screen/popo_screen.dart';
+import 'package:pocket_pose/main.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView(
