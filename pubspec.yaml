@@ -1,12 +1,12 @@
 name: pocket_pose
 description: A new Flutter project.
 
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.5 <3.0.0'
+  sdk: ">=2.19.5 <3.0.0"
 
 dependencies:
   animated_bottom_navigation_bar: ^1.2.0
@@ -16,6 +16,9 @@ dependencies:
 
   flutter_svg: ^2.0.5
   cupertino_icons: ^1.0.2
+  google_mlkit_commons: ^0.3.0
+  google_mlkit_pose_detection: ^0.6.0
+  camera: ^0.10.4
 
 dev_dependencies:
   flutter_test:
@@ -29,8 +32,6 @@ flutter:
   assets:
     - assets/
     - assets/icons/
-
-
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
