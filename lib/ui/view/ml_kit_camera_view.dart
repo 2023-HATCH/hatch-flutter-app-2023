@@ -5,9 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
-
-// 카메라 목록 변수
-List<CameraDescription> cameras = [];
+import 'package:pocket_pose/ui/screen/popo_screen.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView(
