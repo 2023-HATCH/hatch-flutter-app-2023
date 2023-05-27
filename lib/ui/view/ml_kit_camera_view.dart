@@ -8,12 +8,15 @@ import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:pocket_pose/main.dart';
 
 class CameraView extends StatefulWidget {
-  const CameraView(
+  CameraView(
       {Key? key,
+      required this.setIsStarted,
       required this.customPaint,
       required this.onImage,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
+  // start, end  버튼 트리거
+  Function setIsStarted;
   // 스켈레톤을 그려주는 객체
   final CustomPaint? customPaint;
   // 이미지 받을 때마다 실행하는 함수
@@ -34,6 +37,9 @@ class _CameraViewState extends State<CameraView> {
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
   // 카메라 렌즈 변경 변수
   bool _changingCameraLens = false;
+  // 버튼 텍스트 색깔
+  Color startColor = Colors.black;
+  Color endColor = Colors.black;
 
   @override
   void initState() {
@@ -153,6 +159,38 @@ class _CameraViewState extends State<CameraView> {
                   ? null
                   : (maxZoomLevel - 1).toInt(),
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextButton(
+                onPressed: () {
+                  debugPrint("start");
+                  setState(() {
+                    startColor = Colors.blue;
+                    endColor = Colors.black;
+                  });
+                  widget.setIsStarted(true);
+                },
+                child: Text("Start", style: TextStyle(color: startColor)),
+              ),
+              TextButton(
+                onPressed: () {
+                  debugPrint("end");
+                  widget.setIsStarted(false);
+                  setState(() {
+                    startColor = Colors.black;
+                    endColor = Colors.blue;
+                  });
+                  //debugPrint("mmm result: $inputMap");
+                },
+                child: Text("End", style: TextStyle(color: endColor)),
+              ),
+              // if (_byteImage != null)
+              //   Image.memory(_byteImage!,
+              //       width: 100, height: 100, fit: BoxFit.fill),
+            ],
           ),
           // if (_byteImage != null)
           //   Image.memory(_byteImage!, width: 100, height: 100),

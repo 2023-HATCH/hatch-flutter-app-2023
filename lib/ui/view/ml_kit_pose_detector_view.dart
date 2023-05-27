@@ -21,6 +21,10 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
   CustomPaint? _customPaint;
   // input Map
   Map<String, double> inputMap = {};
+  // start, end btn trigger
+  bool isStarted = false;
+  // input Lists
+  List<List<double>> inputLists = [];
 
   @override
   void dispose() async {
@@ -33,11 +37,15 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
     return CameraView(
+      setIsStarted: setIsStarted,
       // 스켈레톤 그려주는 객체 전달
       customPaint: _customPaint,
       // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
       onImage: (inputImage) {
-        processImage(inputImage);
+        // start 버튼 눌렀을 때만 스켈레톤 추출
+        if (isStarted) {
+          processImage(inputImage);
+        }
       },
     );
   }
@@ -49,6 +57,10 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
     _isBusy = true;
     // poseDetector에서 추출된 포즈 가져오기
     List<Pose> poses = await _poseDetector.processImage(inputImage);
+
+    for (final pose in poses) {
+      inputLists.add(_poseMapToInputList(pose.landmarks));
+    }
 
     // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
     if (inputImage.inputImageData?.size != null &&
@@ -64,5 +76,42 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
     if (mounted) {
       setState(() {});
     }
+  }
+
+  void setIsStarted(bool bool) {
+    setState(() {
+      isStarted = bool;
+    });
+  }
+
+  List<double> _poseMapToInputList(Map<PoseLandmarkType, PoseLandmark> entry) {
+    return [
+      entry[PoseLandmarkType.nose]!.x,
+      entry[PoseLandmarkType.nose]!.y,
+      entry[PoseLandmarkType.rightShoulder]!.x,
+      entry[PoseLandmarkType.rightShoulder]!.y,
+      entry[PoseLandmarkType.rightElbow]!.x,
+      entry[PoseLandmarkType.rightElbow]!.y,
+      entry[PoseLandmarkType.rightWrist]!.x,
+      entry[PoseLandmarkType.rightWrist]!.y,
+      entry[PoseLandmarkType.leftShoulder]!.x,
+      entry[PoseLandmarkType.leftShoulder]!.y,
+      entry[PoseLandmarkType.leftElbow]!.x,
+      entry[PoseLandmarkType.leftElbow]!.y,
+      entry[PoseLandmarkType.leftWrist]!.x,
+      entry[PoseLandmarkType.leftWrist]!.y,
+      entry[PoseLandmarkType.rightHip]!.x,
+      entry[PoseLandmarkType.rightHip]!.y,
+      entry[PoseLandmarkType.rightKnee]!.x,
+      entry[PoseLandmarkType.rightKnee]!.y,
+      entry[PoseLandmarkType.rightAnkle]!.x,
+      entry[PoseLandmarkType.rightAnkle]!.y,
+      entry[PoseLandmarkType.leftHip]!.x,
+      entry[PoseLandmarkType.leftHip]!.y,
+      entry[PoseLandmarkType.leftKnee]!.x,
+      entry[PoseLandmarkType.leftKnee]!.y,
+      entry[PoseLandmarkType.leftAnkle]!.x,
+      entry[PoseLandmarkType.leftAnkle]!.y
+    ];
   }
 }
