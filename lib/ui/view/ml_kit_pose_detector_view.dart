@@ -93,7 +93,8 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
                   backgroundColor: Colors.black,
                   textColor: Colors.white,
                   fontSize: 16.0,
-                ));
+                ))
+            .then((value) => _inputLists.clear());
       }
     });
   }
