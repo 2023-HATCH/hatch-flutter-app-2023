@@ -18,6 +18,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_mlkit_commons: ^0.3.0
   google_mlkit_pose_detection: ^0.6.0
+  fluttertoast: ^8.2.2
   camera: ^0.10.4
   http: ^0.13.5
   dio: ^5.0.3
