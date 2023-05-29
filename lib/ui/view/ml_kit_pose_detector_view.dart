@@ -1,7 +1,9 @@
 // 카메라에서 스켈레톤 추출하는 화면
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/ml_kit/pose_painter.dart';
+import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
 class PoseDetectorView extends StatefulWidget {
@@ -19,12 +21,11 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
   bool _isBusy = false;
   // 스켈레톤 모양을 그려주는 변수
   CustomPaint? _customPaint;
-  // input Map
-  Map<String, double> inputMap = {};
   // start, end btn trigger
-  bool isStarted = false;
+  bool _isStarted = false;
   // input Lists
-  List<List<double>> inputLists = [];
+  final List<List<double>> _inputLists = [];
+  final _provider = PoPoSkeletonProviderImpl();
 
   @override
   void dispose() async {
@@ -43,7 +44,7 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
       // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
       onImage: (inputImage) {
         // start 버튼 눌렀을 때만 스켈레톤 추출
-        if (isStarted) {
+        if (_isStarted) {
           processImage(inputImage);
         }
       },
@@ -59,7 +60,7 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
     List<Pose> poses = await _poseDetector.processImage(inputImage);
 
     for (final pose in poses) {
-      inputLists.add(_poseMapToInputList(pose.landmarks));
+      _inputLists.add(_poseMapToInputList(pose.landmarks));
     }
 
     // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
@@ -78,9 +79,23 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
     }
   }
 
-  void setIsStarted(bool bool) {
+  void setIsStarted(bool bool) async {
     setState(() {
-      isStarted = bool;
+      _isStarted = bool;
+
+      if (!_isStarted) {
+        _provider
+            .postSkeletonList(_inputLists)
+            .then((value) => Fluttertoast.showToast(
+                  msg: value.toString(),
+                  toastLength: Toast.LENGTH_SHORT,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                ))
+            .then((value) => _inputLists.clear());
+      }
     });
   }
 
