@@ -19,6 +19,8 @@ dependencies:
   google_mlkit_commons: ^0.3.0
   google_mlkit_pose_detection: ^0.6.0
   camera: ^0.10.4
+  http: ^0.13.5
+  dio: ^5.0.3
 
 dev_dependencies:
   flutter_test:
