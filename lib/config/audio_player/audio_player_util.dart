@@ -1,43 +1,40 @@
 import 'package:audio_session/audio_session.dart';
-import 'package:just_audio/just_audio.dart' as ja;
+import 'package:audioplayers/audioplayers.dart';
 
 class AudioPlayerUtil {
   late AudioSession audioSession;
-  ja.AudioPlayer player = ja.AudioPlayer(
-      handleInterruptions: false,
-      androidApplyAudioAttributes: false,
-      handleAudioSessionActivation: false);
+  AudioPlayer player = AudioPlayer();
 
   static final AudioPlayerUtil _instance = AudioPlayerUtil._internal();
 
   factory AudioPlayerUtil() => _instance;
 
+  var _musicUrl = "https://youtube.com/shorts/eTL30G_dbCE?feature=share";
+
   AudioPlayerUtil._internal() {
     _audioSessionConfigure();
+    player.onPlayerCompletion.listen((event) {
+      print("mmm:노래 끝");
+    });
   }
 
-  getPlaybackRn(String url) async {
+  setMusicUrl(String url) async {
     await player.setUrl(url);
-    _handleInterruptions();
+    _musicUrl = url;
   }
 
   play() async {
     // 내부 음악 실행
-    await player.play();
+    await player.play(_musicUrl);
     // 외부 음악 종료
-    await audioSession.setActive(true);
+    await audioSession.setActive(false);
   }
 
   stop() async {
     // 내부 음악 종료
     await player.stop();
     // 외부 음악 실행
-    await audioSession.setActive(false);
-  }
-
-  _handleInterruptions() async {
-    player.playing ? await player.stop() : await player.play();
-    await audioSession.setActive(player.playing);
+    await audioSession.setActive(true);
   }
 
   // 외부 음악 들릴 때 반응 설정

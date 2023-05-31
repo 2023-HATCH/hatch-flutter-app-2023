@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
 
 class CameraView extends StatefulWidget {
@@ -40,6 +41,9 @@ class _CameraViewState extends State<CameraView> {
   // 버튼 텍스트 색깔
   Color startColor = Colors.black;
   Color endColor = Colors.black;
+  // 음악 텍스트 색깔
+  Color musicStartColor = Colors.black;
+  Color musicEndColor = Colors.black;
 
   @override
   void initState() {
@@ -69,6 +73,10 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
+
+    // 음악 초기화
+    AudioPlayerUtil()
+        .setMusicUrl('https://ccrma.stanford.edu/~jos/mp3/harpsi-cs.mp3');
   }
 
   @override
@@ -156,34 +164,64 @@ class _CameraViewState extends State<CameraView> {
                   : (maxZoomLevel - 1).toInt(),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
             children: [
-              TextButton(
-                onPressed: () {
-                  debugPrint("start");
-                  setState(() {
-                    startColor = Colors.blue;
-                    endColor = Colors.black;
-                  });
-                  widget.setIsStarted(true);
-                },
-                child: Text("Start", style: TextStyle(color: startColor)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        startColor = Colors.blue;
+                        endColor = Colors.black;
+                      });
+                      widget.setIsStarted(true);
+                    },
+                    child: Text("Start", style: TextStyle(color: startColor)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      widget.setIsStarted(false);
+                      setState(() {
+                        startColor = Colors.black;
+                        endColor = Colors.blue;
+                      });
+                    },
+                    child: Text("End", style: TextStyle(color: endColor)),
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: () {
-                  debugPrint("end");
-                  widget.setIsStarted(false);
-                  setState(() {
-                    startColor = Colors.black;
-                    endColor = Colors.blue;
-                  });
-                },
-                child: Text("End", style: TextStyle(color: endColor)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        musicStartColor = Colors.red;
+                        musicEndColor = Colors.black;
+                      });
+                      AudioPlayerUtil().play();
+                    },
+                    child: Text("MusicStart",
+                        style: TextStyle(color: musicStartColor)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        musicStartColor = Colors.black;
+                        musicEndColor = Colors.red;
+                      });
+                      AudioPlayerUtil().stop();
+                    },
+                    child: Text("MusicEnd",
+                        style: TextStyle(color: musicEndColor)),
+                  ),
+                ],
               ),
             ],
-          ),
+          )
         ],
       ),
     );

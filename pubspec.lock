@@ -33,6 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.15"
+  audioplayers:
+    dependency: "direct main"
+    description:
+      name: audioplayers
+      sha256: a565e7e3e8a21a823b8cd7fed0bde1eb3796a96b373374be557adecfb511fa6b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.1"
   boolean_selector:
     dependency: transitive
     description:
