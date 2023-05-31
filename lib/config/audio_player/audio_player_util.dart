@@ -9,7 +9,7 @@ class AudioPlayerUtil {
 
   factory AudioPlayerUtil() => _instance;
 
-  var _musicUrl = "https://youtube.com/shorts/eTL30G_dbCE?feature=share";
+  var _musicUrl = "https://ccrma.stanford.edu/~jos/mp3/harpsi-cs.mp3";
 
   AudioPlayerUtil._internal() {
     _audioSessionConfigure();
