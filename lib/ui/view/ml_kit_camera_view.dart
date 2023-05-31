@@ -113,10 +113,6 @@ class _CameraViewState extends State<CameraView> {
 
     final size = MediaQuery.of(context).size;
     // 화면 및 카메라 비율에 따른 스케일 계산
-    // 원문: calculate scale depending on screen and camera ratios
-    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
-    // because camera preview size is received as landscape
-    // but we're calculating for portrait orientation
     var scale = size.aspectRatio * _controller!.value.aspectRatio;
 
     // to prevent scaling down, invert the value
@@ -183,19 +179,11 @@ class _CameraViewState extends State<CameraView> {
                     startColor = Colors.black;
                     endColor = Colors.blue;
                   });
-                  //debugPrint("mmm result: $inputMap");
                 },
                 child: Text("End", style: TextStyle(color: endColor)),
               ),
-              // if (_byteImage != null)
-              //   Image.memory(_byteImage!,
-              //       width: 100, height: 100, fit: BoxFit.fill),
             ],
           ),
-          // if (_byteImage != null)
-          //   Image.memory(_byteImage!, width: 100, height: 100),
-          // if (_byteImage != null)
-          //   Image(image: MemoryImage(_byteImage!), width: 100, height: 100),
         ],
       ),
     );
