@@ -9,23 +9,29 @@ class AudioPlayerUtil {
 
   factory AudioPlayerUtil() => _instance;
 
-  var _musicUrl = "https://ccrma.stanford.edu/~jos/mp3/harpsi-cs.mp3";
-
   AudioPlayerUtil._internal() {
     _audioSessionConfigure();
+  }
+
+  // 노래 종료 후 실행할 함수 설정
+  setPlayerCompletion(
+      Function setIsSkeletonDetectStart, Function setIsMusicStart) {
     player.onPlayerCompletion.listen((event) {
-      print("mmm:노래 끝");
+      // 스켈레톤 추출 종료
+      setIsSkeletonDetectStart(false);
+      // 시작 버튼 검정색 텍스트로
+      setIsMusicStart(false);
     });
   }
 
-  setMusicUrl(String url) async {
-    await player.setUrl(url);
-    _musicUrl = url;
-  }
-
-  play() async {
+  play(String musicUrl, Function setIsSkeletonDetectStart,
+      Function setIsMusicStart) async {
     // 내부 음악 실행
-    await player.play(_musicUrl);
+    await player.play(musicUrl);
+    // 스켈레톤 추출 시작
+    setIsSkeletonDetectStart(true);
+    // 시작 버튼 빨간 텍스트로
+    setIsMusicStart(true);
     // 외부 음악 종료
     await audioSession.setActive(false);
   }

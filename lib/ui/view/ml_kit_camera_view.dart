@@ -11,13 +11,13 @@ import 'package:pocket_pose/main.dart';
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
-      required this.setIsStarted,
+      required this.setIsSkeletonDetectStart,
       required this.customPaint,
       required this.onImage,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
-  // start, end  버튼 트리거
-  Function setIsStarted;
+  // skeleton 트리거
+  Function setIsSkeletonDetectStart;
   // 스켈레톤을 그려주는 객체
   final CustomPaint? customPaint;
   // 이미지 받을 때마다 실행하는 함수
@@ -38,12 +38,8 @@ class _CameraViewState extends State<CameraView> {
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
   // 카메라 렌즈 변경 변수
   bool _changingCameraLens = false;
-  // 버튼 텍스트 색깔
-  Color startColor = Colors.black;
-  Color endColor = Colors.black;
-  // 음악 텍스트 색깔
-  Color musicStartColor = Colors.black;
-  Color musicEndColor = Colors.black;
+  // 음악 버튼 텍스트
+  bool isMusicStart = false;
 
   @override
   void initState() {
@@ -73,20 +69,21 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
-
-    // 음악 초기화
-    AudioPlayerUtil()
-        .setMusicUrl('https://ccrma.stanford.edu/~jos/mp3/harpsi-cs.mp3');
   }
 
   @override
   void dispose() {
     _stopLiveFeed();
+    AudioPlayerUtil().stop();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // AudioPlayer 초기화
+    AudioPlayerUtil()
+        .setPlayerCompletion(widget.setIsSkeletonDetectStart, setIsMusicStart);
+
     return Scaffold(
       // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
       body: _liveFeedBody(),
@@ -172,51 +169,18 @@ class _CameraViewState extends State<CameraView> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      setState(() {
-                        startColor = Colors.blue;
-                        endColor = Colors.black;
-                      });
-                      widget.setIsStarted(true);
+                      if (!isMusicStart) {
+                        AudioPlayerUtil().play(
+                            "https://ccrma.stanford.edu/~jos/mp3/harpsi-cs.mp3",
+                            widget.setIsSkeletonDetectStart,
+                            setIsMusicStart);
+                      }
                     },
-                    child: Text("Start", style: TextStyle(color: startColor)),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      widget.setIsStarted(false);
-                      setState(() {
-                        startColor = Colors.black;
-                        endColor = Colors.blue;
-                      });
-                    },
-                    child: Text("End", style: TextStyle(color: endColor)),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        musicStartColor = Colors.red;
-                        musicEndColor = Colors.black;
-                      });
-                      AudioPlayerUtil().play();
-                    },
-                    child: Text("MusicStart",
-                        style: TextStyle(color: musicStartColor)),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        musicStartColor = Colors.black;
-                        musicEndColor = Colors.red;
-                      });
-                      AudioPlayerUtil().stop();
-                    },
-                    child: Text("MusicEnd",
-                        style: TextStyle(color: musicEndColor)),
+                    child: Text(
+                      isMusicStart ? "~🎵~" : "▶️",
+                      style: TextStyle(
+                          color: isMusicStart ? Colors.red : Colors.black),
+                    ),
                   ),
                 ],
               ),
@@ -225,6 +189,12 @@ class _CameraViewState extends State<CameraView> {
         ],
       ),
     );
+  }
+
+  setIsMusicStart(bool value) {
+    setState(() {
+      isMusicStart = value;
+    });
   }
 
   // 실시간으로 카메라에서 이미지 받기(비동기적)
