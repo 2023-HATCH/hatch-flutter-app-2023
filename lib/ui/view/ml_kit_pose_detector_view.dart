@@ -38,7 +38,7 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
     return CameraView(
-      setIsStarted: setIsStarted,
+      setIsSkeletonDetectStart: setIsStarted,
       // 스켈레톤 그려주는 객체 전달
       customPaint: _customPaint,
       // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행

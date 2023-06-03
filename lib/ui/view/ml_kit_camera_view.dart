@@ -5,18 +5,19 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
 
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
-      required this.setIsStarted,
+      required this.setIsSkeletonDetectStart,
       required this.customPaint,
       required this.onImage,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
-  // start, end  버튼 트리거
-  Function setIsStarted;
+  // skeleton 트리거
+  Function setIsSkeletonDetectStart;
   // 스켈레톤을 그려주는 객체
   final CustomPaint? customPaint;
   // 이미지 받을 때마다 실행하는 함수
@@ -37,9 +38,8 @@ class _CameraViewState extends State<CameraView> {
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
   // 카메라 렌즈 변경 변수
   bool _changingCameraLens = false;
-  // 버튼 텍스트 색깔
-  Color startColor = Colors.black;
-  Color endColor = Colors.black;
+  // 음악 버튼 텍스트
+  bool isMusicStart = false;
 
   @override
   void initState() {
@@ -74,11 +74,16 @@ class _CameraViewState extends State<CameraView> {
   @override
   void dispose() {
     _stopLiveFeed();
+    AudioPlayerUtil().stop();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // AudioPlayer 초기화
+    AudioPlayerUtil()
+        .setPlayerCompletion(widget.setIsSkeletonDetectStart, setIsMusicStart);
+
     return Scaffold(
       // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
       body: _liveFeedBody(),
@@ -113,10 +118,6 @@ class _CameraViewState extends State<CameraView> {
 
     final size = MediaQuery.of(context).size;
     // 화면 및 카메라 비율에 따른 스케일 계산
-    // 원문: calculate scale depending on screen and camera ratios
-    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
-    // because camera preview size is received as landscape
-    // but we're calculating for portrait orientation
     var scale = size.aspectRatio * _controller!.value.aspectRatio;
 
     // to prevent scaling down, invert the value
@@ -160,45 +161,40 @@ class _CameraViewState extends State<CameraView> {
                   : (maxZoomLevel - 1).toInt(),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
             children: [
-              TextButton(
-                onPressed: () {
-                  debugPrint("start");
-                  setState(() {
-                    startColor = Colors.blue;
-                    endColor = Colors.black;
-                  });
-                  widget.setIsStarted(true);
-                },
-                child: Text("Start", style: TextStyle(color: startColor)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      if (!isMusicStart) {
+                        AudioPlayerUtil().play(
+                            "https://ccrma.stanford.edu/~jos/mp3/harpsi-cs.mp3",
+                            widget.setIsSkeletonDetectStart,
+                            setIsMusicStart);
+                      }
+                    },
+                    child: Text(
+                      isMusicStart ? "~🎵~" : "▶️",
+                      style: TextStyle(
+                          color: isMusicStart ? Colors.red : Colors.black),
+                    ),
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: () {
-                  debugPrint("end");
-                  widget.setIsStarted(false);
-                  setState(() {
-                    startColor = Colors.black;
-                    endColor = Colors.blue;
-                  });
-                  //debugPrint("mmm result: $inputMap");
-                },
-                child: Text("End", style: TextStyle(color: endColor)),
-              ),
-              // if (_byteImage != null)
-              //   Image.memory(_byteImage!,
-              //       width: 100, height: 100, fit: BoxFit.fill),
             ],
-          ),
-          // if (_byteImage != null)
-          //   Image.memory(_byteImage!, width: 100, height: 100),
-          // if (_byteImage != null)
-          //   Image(image: MemoryImage(_byteImage!), width: 100, height: 100),
+          )
         ],
       ),
     );
+  }
+
+  setIsMusicStart(bool value) {
+    setState(() {
+      isMusicStart = value;
+    });
   }
 
   // 실시간으로 카메라에서 이미지 받기(비동기적)
