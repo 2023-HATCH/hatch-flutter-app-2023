@@ -68,6 +68,7 @@ class _SkeletonCutomViewState extends State<SkeletonCutomView> {
     // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
+      // 여기만 2개만 수정 ! PosePainter -> CustomPosePainter
       final painter = CustomPosePainter(poses, inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation);
       _customPaint = CustomPaint(painter: painter);

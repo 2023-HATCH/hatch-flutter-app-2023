@@ -2,6 +2,7 @@
 // translateX, translateY를 사용해 추출된 좌표를 휴대폰 화면 크기에 맞게 변형하여 그려줌
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/coordinates_translator.dart';
 
 class CustomPosePainter extends CustomPainter {
@@ -16,36 +17,30 @@ class CustomPosePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // 초록: 33개의 관절 포인트(랜드마크) 색깔
-    final paint = Paint()
+    // Outer 네온 효과
+    final neonOuterPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8.0
+      ..strokeCap = StrokeCap.round
+      ..color = AppColor.mintNeonColor
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+
+    // Inner 네온 효과
+    final neonInnerPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0
-      ..color = Colors.green;
+      ..strokeCap = StrokeCap.round
+      ..color = AppColor.mintNeonColor
+      ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 2.0);
 
-    // 노랑: 왼쪽 선 색깔(왼팔~왼다리)
-    final leftPaint = Paint()
+    // 기본 라인
+    final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.yellow;
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round // 끝을 둥글게
+      ..color = Colors.white;
 
-    // 초록: 오른쪽 선 색깔(오른팔~오른다리)
-    final rightPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.blueAccent;
-
-    // 추출된 관절 포인트 갯수만큼 점 그리기
     for (final pose in poses) {
-      pose.landmarks.forEach((_, landmark) {
-        canvas.drawCircle(
-            Offset(
-              translateX(landmark.x, rotation, size, absoluteImageSize),
-              translateY(landmark.y, rotation, size, absoluteImageSize),
-            ),
-            1,
-            paint);
-      });
-
       // 점1과 점2를 선으로 이어주는 함수(랜드마크 타입1, 랜드마크 타입2, 선 색깔 타입)
       void paintLine(
           PoseLandmarkType type1, PoseLandmarkType type2, Paint paintType) {
@@ -59,30 +54,107 @@ class CustomPosePainter extends CustomPainter {
             paintType);
       }
 
+      // 점 1과 점 2를 네온 선으로 이어주는 함수(랜드마크 타입1, 랜드마크 타입2, 선 색깔 타입)
+      // 네온은 총 3번 그려야한다.
+      void paintNeonLine(
+          PoseLandmarkType type1, PoseLandmarkType type2, Paint paintType) {
+        paintLine(type1, type2, neonOuterPaint);
+        paintLine(type1, type2, neonInnerPaint);
+        paintLine(type1, type2, paintType);
+      }
+
       //Draw arms
-      paintLine(
-          PoseLandmarkType.leftShoulder, PoseLandmarkType.leftElbow, leftPaint);
-      paintLine(
-          PoseLandmarkType.leftElbow, PoseLandmarkType.leftWrist, leftPaint);
-      paintLine(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightElbow,
-          rightPaint);
-      paintLine(
-          PoseLandmarkType.rightElbow, PoseLandmarkType.rightWrist, rightPaint);
+      paintNeonLine(
+          PoseLandmarkType.leftShoulder, PoseLandmarkType.leftElbow, paint);
+      paintNeonLine(
+          PoseLandmarkType.leftElbow, PoseLandmarkType.leftWrist, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightShoulder, PoseLandmarkType.rightElbow, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightElbow, PoseLandmarkType.rightWrist, paint);
+
+      //Draw hands
+      paintNeonLine(
+          PoseLandmarkType.leftThumb, PoseLandmarkType.leftWrist, paint);
+      paintNeonLine(
+          PoseLandmarkType.leftWrist, PoseLandmarkType.leftPinky, paint);
+      paintNeonLine(
+          PoseLandmarkType.leftPinky, PoseLandmarkType.leftIndex, paint);
+      paintNeonLine(
+          PoseLandmarkType.leftIndex, PoseLandmarkType.leftWrist, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightThumb, PoseLandmarkType.rightWrist, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightWrist, PoseLandmarkType.rightPinky, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightPinky, PoseLandmarkType.rightIndex, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightIndex, PoseLandmarkType.rightWrist, paint);
+
+      //Draw foots
+      paintNeonLine(
+          PoseLandmarkType.leftAnkle, PoseLandmarkType.leftFootIndex, paint);
+      paintNeonLine(
+          PoseLandmarkType.leftFootIndex, PoseLandmarkType.leftHeel, paint);
+      paintNeonLine(
+          PoseLandmarkType.leftHeel, PoseLandmarkType.leftAnkle, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightAnkle, PoseLandmarkType.rightFootIndex, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightFootIndex, PoseLandmarkType.rightHeel, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightHeel, PoseLandmarkType.rightAnkle, paint);
 
       //Draw Body
-      paintLine(
-          PoseLandmarkType.leftShoulder, PoseLandmarkType.leftHip, leftPaint);
-      paintLine(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightHip,
-          rightPaint);
+      paintNeonLine(
+          PoseLandmarkType.leftShoulder, PoseLandmarkType.leftHip, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightShoulder, PoseLandmarkType.rightHip, paint);
 
       //Draw legs
-      paintLine(PoseLandmarkType.leftHip, PoseLandmarkType.leftKnee, leftPaint);
-      paintLine(
-          PoseLandmarkType.leftKnee, PoseLandmarkType.leftAnkle, leftPaint);
-      paintLine(
-          PoseLandmarkType.rightHip, PoseLandmarkType.rightKnee, rightPaint);
-      paintLine(
-          PoseLandmarkType.rightKnee, PoseLandmarkType.rightAnkle, rightPaint);
+      paintNeonLine(PoseLandmarkType.leftHip, PoseLandmarkType.leftKnee, paint);
+      paintNeonLine(
+          PoseLandmarkType.leftKnee, PoseLandmarkType.leftAnkle, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightHip, PoseLandmarkType.rightKnee, paint);
+      paintNeonLine(
+          PoseLandmarkType.rightKnee, PoseLandmarkType.rightAnkle, paint);
+
+      //Draw connect body
+      paintNeonLine(
+          PoseLandmarkType.leftShoulder, PoseLandmarkType.rightShoulder, paint);
+      paintNeonLine(PoseLandmarkType.leftHip, PoseLandmarkType.rightHip, paint);
+
+      // Draw face
+      final noseLandmark = pose.landmarks[PoseLandmarkType.nose];
+      final leftEyeLandmark = pose.landmarks[PoseLandmarkType.leftEye];
+      final rightEyeLandmark = pose.landmarks[PoseLandmarkType.rightEye];
+
+      if (noseLandmark != null &&
+          leftEyeLandmark != null &&
+          rightEyeLandmark != null) {
+        final nosePoint = Offset(
+          translateX(noseLandmark.x, rotation, size, absoluteImageSize),
+          translateY(noseLandmark.y, rotation, size, absoluteImageSize),
+        );
+        final leftEyePoint = Offset(
+          translateX(leftEyeLandmark.x, rotation, size, absoluteImageSize),
+          translateY(leftEyeLandmark.y, rotation, size, absoluteImageSize),
+        );
+        final rightEyePoint = Offset(
+          translateX(rightEyeLandmark.x, rotation, size, absoluteImageSize),
+          translateY(rightEyeLandmark.y, rotation, size, absoluteImageSize),
+        );
+
+        // Calculate face radius
+        final eyeDistance = leftEyePoint.dx - rightEyePoint.dx;
+        final faceRadius = eyeDistance * 1.5;
+
+        // Draw face circle
+        canvas.drawCircle(nosePoint, faceRadius, neonOuterPaint);
+        canvas.drawCircle(nosePoint, faceRadius, neonInnerPaint);
+        canvas.drawCircle(nosePoint, faceRadius, paint);
+      }
     }
   }
 
