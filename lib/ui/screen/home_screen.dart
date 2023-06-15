@@ -171,7 +171,7 @@ class VideoFrameHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       //color: Colors.red,
-      margin: const EdgeInsets.fromLTRB(20, 35, 20, 30),
+      margin: const EdgeInsets.fromLTRB(20, 40, 20, 30),
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -218,7 +218,7 @@ class VideoFrameRightWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       //color: Colors.orange,
-      margin: const EdgeInsets.fromLTRB(335, 515, 20, 60),
+      margin: const EdgeInsets.fromLTRB(335, 520, 20, 60),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -292,7 +292,7 @@ class VideoFrameContentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       //color: Colors.green,
-      margin: const EdgeInsets.fromLTRB(20, 615, 100, 80),
+      margin: const EdgeInsets.fromLTRB(20, 620, 100, 80),
       child: Column(children: <Widget>[
         GestureDetector(
           onTap: () {
