@@ -164,7 +164,7 @@ class _CameraViewState extends State<CameraView> {
                     onPressed: () {
                       if (!isMusicStart) {
                         AudioPlayerUtil().play(
-                            "https://ccrma.stanford.edu/~jos/mp3/harpsi-cs.mp3",
+                            "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
                             widget.setIsSkeletonDetectStart,
                             setIsMusicStart);
                       }
