@@ -11,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late PageController _pageController;
   late List<VideoPlayerController> _videoControllers;
-  late Future<void> _initializeVideoPlayerFuture;
+  late List<Future<void>> _initializeVideoPlayerFutures;
 
   List<String> videoLinks = [
     'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-2.mp4',
@@ -27,14 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     _pageController = PageController();
 
-    // // 모든 비디오 로드
-    // for (int i = 0; i < videoLinks.length; i++) {
-    //   _videoControllers[i] = VideoPlayerController.network(videoLinks[i]);
-    // }
-
-    // // 첫번째 비디오로 초기화
-    // _initializeVideoPlayerFuture = _videoControllers[currentIndex].initialize();
-
     // 모든 비디오 로드
     _videoControllers = List<VideoPlayerController>.generate(
       videoLinks.length,
@@ -42,11 +34,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     // 비디오 초기화 완료를 기다리는 Future 리스트
-    _initializeVideoPlayerFuture = _videoControllers[currentIndex].initialize();
+    _initializeVideoPlayerFutures = List<Future<void>>.generate(
+      videoLinks.length,
+      (index) => _videoControllers[index].initialize(),
+    );
 
-    _videoControllers[currentIndex].play();
-    _videoControllers[currentIndex].setLooping(true);
-    _videoControllers[currentIndex].setVolume(1.0);
+    // 비디오 기본 값 설정
+    _videoControllers[currentIndex].play(); // 재생되는 상태
+    _videoControllers[currentIndex].setLooping(true); // 영상 무한 반복
+    _videoControllers[currentIndex].setVolume(1.0); // 볼륨 설정
 
     super.initState();
   }
@@ -63,12 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void onPageChanged(int index) {
     setState(() {
       _videoControllers[currentIndex].pause().then((_) {
+        // 다음 비디오로 변경
         currentIndex = index;
 
-        // 다음 비디오로 초기화
-        _initializeVideoPlayerFuture =
-            _videoControllers[currentIndex].initialize();
-
+        // 다음 비디오 기본 값 설정
         _videoControllers[currentIndex].play();
         _videoControllers[currentIndex].setLooping(true);
         _videoControllers[currentIndex].setVolume(1.0);
@@ -79,19 +73,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: _initializeVideoPlayerFuture,
-        builder: (context, snapshot) {
-          // ConnectionState : 비동기 계산에 대한 연결 상태
-          if (snapshot.connectionState == ConnectionState.done) {
-            // VideoPlayerController 초기화 끝나면, 제공된 데이터 사용하여 VideoPlayer 종횡비 제한.
-            return PageView.builder(
-              controller: _pageController,
-              scrollDirection: Axis.vertical,
-              allowImplicitScrolling: true,
-              itemCount: videoLinks.length,
-              itemBuilder: (context, index) {
+        body: PageView.builder(
+      controller: _pageController,
+      scrollDirection: Axis.vertical,
+      allowImplicitScrolling: true,
+      itemCount: videoLinks.length,
+      itemBuilder: (context, index) {
+        return FutureBuilder(
+            future: _initializeVideoPlayerFutures[currentIndex],
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                // 데이터가 수신되었을 때
                 return GestureDetector(
+                  // 비디오 클릭 시 영상 정지/재생
                   onTap: () {
                     if (_videoControllers[index].value.isPlaying) {
                       _videoControllers[index].pause();
@@ -102,15 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: VideoPlayer(_videoControllers[index]),
                 );
-              },
-              onPageChanged: onPageChanged,
-            );
-          } else {
-            // 만약 VideoPlayerController가 여전히 초기화 중이라면, 로딩 스피너를 보여줌.
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-    );
+              } else {
+                // 만약 VideoPlayerController가 여전히 초기화 중이라면, 로딩 스피너를 보여줌.
+                return const Center(child: CircularProgressIndicator());
+              }
+            });
+      },
+      onPageChanged: onPageChanged,
+    ));
   }
 }
