@@ -14,24 +14,18 @@ class AudioPlayerUtil {
   }
 
   // 노래 종료 후 실행할 함수 설정
-  setPlayerCompletion(
-      Function setIsSkeletonDetectStart, Function setIsMusicStart) {
+  setPlayerCompletion(Function setIsSkeletonDetectStart) {
     player.onPlayerCompletion.listen((event) {
       // 스켈레톤 추출 종료
       setIsSkeletonDetectStart(false);
-      // 시작 버튼 검정색 텍스트로
-      setIsMusicStart(false);
     });
   }
 
-  play(String musicUrl, Function setIsSkeletonDetectStart,
-      Function setIsMusicStart) async {
+  play(String musicUrl, Function setIsSkeletonDetectStart) async {
     // 내부 음악 실행
     await player.play(musicUrl);
     // 스켈레톤 추출 시작
     setIsSkeletonDetectStart(true);
-    // 시작 버튼 빨간 텍스트로
-    setIsMusicStart(true);
     // 외부 음악 종료
     await audioSession.setActive(false);
   }

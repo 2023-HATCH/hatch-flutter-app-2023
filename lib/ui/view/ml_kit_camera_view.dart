@@ -1,4 +1,5 @@
 // 카메라 화면
+import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -37,7 +38,9 @@ class _CameraViewState extends State<CameraView> {
   // 확대 축소 레벨
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
   // 음악 버튼 텍스트
-  bool isMusicStart = false;
+  bool _countdownVisibility = true;
+  int _seconds = 3;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -67,6 +70,32 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
+
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_seconds == 1) {
+        _stopTimer();
+
+        setState(() {
+          _countdownVisibility = false;
+        });
+
+        AudioPlayerUtil().play(
+            "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
+            widget.setIsSkeletonDetectStart);
+      } else {
+        setState(() {
+          _seconds--;
+        });
+      }
+    });
+  }
+
+  void _stopTimer() {
+    _timer.cancel();
   }
 
   @override
@@ -79,8 +108,7 @@ class _CameraViewState extends State<CameraView> {
   @override
   Widget build(BuildContext context) {
     // AudioPlayer 초기화
-    AudioPlayerUtil()
-        .setPlayerCompletion(widget.setIsSkeletonDetectStart, setIsMusicStart);
+    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectStart);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -155,39 +183,18 @@ class _CameraViewState extends State<CameraView> {
             ),
           ),
           Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      if (!isMusicStart) {
-                        AudioPlayerUtil().play(
-                            "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
-                            widget.setIsSkeletonDetectStart,
-                            setIsMusicStart);
-                      }
-                    },
-                    child: Text(
-                      isMusicStart ? "~🎵~" : "▶️",
-                      style: TextStyle(
-                          color: isMusicStart ? Colors.red : Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+              Visibility(
+                visible: _countdownVisibility,
+                child: Text('$_seconds',
+                    style: const TextStyle(fontSize: 72, color: Colors.white)),
+              )
             ],
           )
         ],
       ),
     );
-  }
-
-  setIsMusicStart(bool value) {
-    setState(() {
-      isMusicStart = value;
-    });
   }
 
   // 실시간으로 카메라에서 이미지 받기(비동기적)
