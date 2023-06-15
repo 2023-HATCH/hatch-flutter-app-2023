@@ -37,9 +37,7 @@ class _SkeletonCutomViewState extends State<SkeletonCutomView> {
   @override
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
-    return
-        // const Image(image: 'assets/icons/bottom_popo.svg')
-        CameraView(
+    return CameraView(
       setIsSkeletonDetectStart: setIsStarted,
       // 스켈레톤 그려주는 객체 전달
       customPaint: _customPaint,

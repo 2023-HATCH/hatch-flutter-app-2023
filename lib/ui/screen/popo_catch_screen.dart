@@ -14,6 +14,7 @@ class PoPoCatchScreen extends StatelessWidget {
         ),
       ),
       child: Scaffold(
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
           actions: [
             IconButton(
@@ -26,7 +27,6 @@ class PoPoCatchScreen extends StatelessWidget {
                 icon: const Icon(Icons.navigate_next_rounded)),
           ],
         ),
-        backgroundColor: Colors.pink,
         body: const Text(
           "캐치",
           style: TextStyle(color: Colors.white),

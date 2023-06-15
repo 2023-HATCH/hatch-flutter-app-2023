@@ -36,8 +36,6 @@ class _CameraViewState extends State<CameraView> {
   int _cameraIndex = -1;
   // 확대 축소 레벨
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
-  // 카메라 렌즈 변경 변수
-  bool _changingCameraLens = false;
   // 음악 버튼 텍스트
   bool isMusicStart = false;
 
@@ -85,6 +83,7 @@ class _CameraViewState extends State<CameraView> {
         .setPlayerCompletion(widget.setIsSkeletonDetectStart, setIsMusicStart);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
       body: _liveFeedBody(),
       // 전면<->후면 변경 버튼
@@ -124,21 +123,15 @@ class _CameraViewState extends State<CameraView> {
     if (scale < 1) scale = 1 / scale;
 
     return Container(
-      color: Colors.black,
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: AssetImage('assets/image/bg_popo_comm.png'),
+        ),
+      ),
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          // 전면 후면 변경 시 화면 변경 처리
-          Transform.scale(
-            scale: scale,
-            child: Center(
-              child: _changingCameraLens
-                  ? const Center(
-                      child: Text('Changing camera lens'),
-                    )
-                  : CameraPreview(_controller!),
-            ),
-          ),
           // 추출된 스켈레톤 그리기
           if (widget.customPaint != null) widget.customPaint!,
           // 화면 확대 축소 위젯
@@ -230,12 +223,10 @@ class _CameraViewState extends State<CameraView> {
 
   // 전면<->후면 카메라 변경 함수
   Future _switchLiveCamera() async {
-    setState(() => _changingCameraLens = true);
     _cameraIndex = (_cameraIndex + 1) % cameras.length;
 
     await _stopLiveFeed();
     await _startLiveFeed();
-    setState(() => _changingCameraLens = false);
   }
 
   // 카메라에서 실시간으로 받아온 이미치 처리: PoseDetectorView에서 받아온 함수인 onImage(이미지에 포즈가 추출되었으면 스켈레톤 그려주는 함수) 실행
