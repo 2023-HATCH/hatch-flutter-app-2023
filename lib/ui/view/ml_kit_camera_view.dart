@@ -44,6 +44,7 @@ class _CameraViewState extends State<CameraView> {
   bool _countdownVisibility = true;
   int _seconds = 3;
   late Timer _timer;
+  late bool isPlayStage;
 
   @override
   void initState() {
@@ -73,8 +74,9 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
+    isPlayStage = widget.getStageState() == StageStage.playState;
 
-    if (widget.getStageState() == StageStage.playState) {
+    if (isPlayStage) {
       _startTimer();
     }
   }
@@ -88,7 +90,7 @@ class _CameraViewState extends State<CameraView> {
           _countdownVisibility = false;
         });
 
-        if (widget.getStageState() == StageStage.playState) {
+        if (isPlayStage) {
           AudioPlayerUtil().play(
               "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
               widget.setIsSkeletonDetectStart);
@@ -158,10 +160,12 @@ class _CameraViewState extends State<CameraView> {
     if (scale < 1) scale = 1 / scale;
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: AssetImage('assets/images/bg_popo_comm.png'),
+          image: AssetImage((isPlayStage)
+              ? 'assets/images/bg_popo_comm.png'
+              : 'assets/images/bg_popo_result.png'),
         ),
       ),
       child: Stack(
