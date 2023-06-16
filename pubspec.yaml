@@ -38,6 +38,8 @@ flutter:
   assets:
     - assets/
     - assets/icons/
+    - assets/images/
+    - assets/fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -51,11 +53,11 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-      - family: GmarketSans
-        fonts:
-          - asset: assets/fonts/GmarketSansTTFBold.ttf
-          - asset: assets/fonts/GmarketSansTTFLight.ttf
-          - asset: assets/fonts/GmarketSansTTFMedium.ttf
+    - family: GmarketSans
+      fonts:
+        - asset: assets/fonts/GmarketSansTTFBold.ttf
+        - asset: assets/fonts/GmarketSansTTFLight.ttf
+        - asset: assets/fonts/GmarketSansTTFMedium.ttf
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

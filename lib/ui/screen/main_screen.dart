@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/ui/screen/home_screen.dart';
-import 'package:pocket_pose/ui/screen/popo_screen.dart';
+import 'package:pocket_pose/ui/screen/popo_wait_screen.dart';
 import 'package:pocket_pose/ui/screen/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
   void _onFloatingButtonClicked() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PoPoScreen()),
+      MaterialPageRoute(builder: (context) => const PoPoWaitScreen()),
     );
   }
 

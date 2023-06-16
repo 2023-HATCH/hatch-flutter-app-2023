@@ -1,4 +1,5 @@
 // 카메라 화면
+import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -36,10 +37,10 @@ class _CameraViewState extends State<CameraView> {
   int _cameraIndex = -1;
   // 확대 축소 레벨
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
-  // 카메라 렌즈 변경 변수
-  bool _changingCameraLens = false;
   // 음악 버튼 텍스트
-  bool isMusicStart = false;
+  bool _countdownVisibility = true;
+  int _seconds = 3;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -69,6 +70,32 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
+
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_seconds == 1) {
+        _stopTimer();
+
+        setState(() {
+          _countdownVisibility = false;
+        });
+
+        AudioPlayerUtil().play(
+            "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
+            widget.setIsSkeletonDetectStart);
+      } else {
+        setState(() {
+          _seconds--;
+        });
+      }
+    });
+  }
+
+  void _stopTimer() {
+    _timer.cancel();
   }
 
   @override
@@ -81,10 +108,10 @@ class _CameraViewState extends State<CameraView> {
   @override
   Widget build(BuildContext context) {
     // AudioPlayer 초기화
-    AudioPlayerUtil()
-        .setPlayerCompletion(widget.setIsSkeletonDetectStart, setIsMusicStart);
+    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectStart);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
       body: _liveFeedBody(),
       // 전면<->후면 변경 버튼
@@ -124,21 +151,15 @@ class _CameraViewState extends State<CameraView> {
     if (scale < 1) scale = 1 / scale;
 
     return Container(
-      color: Colors.black,
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: AssetImage('assets/images/bg_popo_comm.png'),
+        ),
+      ),
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          // 전면 후면 변경 시 화면 변경 처리
-          Transform.scale(
-            scale: scale,
-            child: Center(
-              child: _changingCameraLens
-                  ? const Center(
-                      child: Text('Changing camera lens'),
-                    )
-                  : CameraPreview(_controller!),
-            ),
-          ),
           // 추출된 스켈레톤 그리기
           if (widget.customPaint != null) widget.customPaint!,
           // 화면 확대 축소 위젯
@@ -162,39 +183,18 @@ class _CameraViewState extends State<CameraView> {
             ),
           ),
           Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      if (!isMusicStart) {
-                        AudioPlayerUtil().play(
-                            "https://ccrma.stanford.edu/~jos/mp3/harpsi-cs.mp3",
-                            widget.setIsSkeletonDetectStart,
-                            setIsMusicStart);
-                      }
-                    },
-                    child: Text(
-                      isMusicStart ? "~🎵~" : "▶️",
-                      style: TextStyle(
-                          color: isMusicStart ? Colors.red : Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+              Visibility(
+                visible: _countdownVisibility,
+                child: Text('$_seconds',
+                    style: const TextStyle(fontSize: 72, color: Colors.white)),
+              )
             ],
           )
         ],
       ),
     );
-  }
-
-  setIsMusicStart(bool value) {
-    setState(() {
-      isMusicStart = value;
-    });
   }
 
   // 실시간으로 카메라에서 이미지 받기(비동기적)
@@ -230,12 +230,10 @@ class _CameraViewState extends State<CameraView> {
 
   // 전면<->후면 카메라 변경 함수
   Future _switchLiveCamera() async {
-    setState(() => _changingCameraLens = true);
     _cameraIndex = (_cameraIndex + 1) % cameras.length;
 
     await _stopLiveFeed();
     await _startLiveFeed();
-    setState(() => _changingCameraLens = false);
   }
 
   // 카메라에서 실시간으로 받아온 이미치 처리: PoseDetectorView에서 받아온 함수인 onImage(이미지에 포즈가 추출되었으면 스켈레톤 그려주는 함수) 실행
