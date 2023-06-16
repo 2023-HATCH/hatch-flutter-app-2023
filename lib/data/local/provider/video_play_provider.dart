@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayProvider with ChangeNotifier {
-  late List<VideoPlayerController> _videoControllers;
+  late List<VideoPlayerController> controllers;
 
   List<String> videoLinks = [
     'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-2.mp4',
@@ -52,11 +52,9 @@ class VideoPlayProvider with ChangeNotifier {
     '최애의 완소 퍼펙트 반장❤️ #최애의아이',
   ];
 
-  int currentIndex = 0;
-
   void loadVideo() {
     // 모든 비디오 로드
-    _videoControllers = List<VideoPlayerController>.generate(
+    controllers = List<VideoPlayerController>.generate(
       videoLinks.length,
       (index) => VideoPlayerController.network(videoLinks[index]),
     );
@@ -65,9 +63,9 @@ class VideoPlayProvider with ChangeNotifier {
 
   void setVideo(int currentIndex) {
     // 비디오 기본 값 설정
-    _videoControllers[currentIndex].play(); // 재생되는 상태
-    _videoControllers[currentIndex].setLooping(true); // 영상 무한 반복
-    _videoControllers[currentIndex].setVolume(1.0); // 볼륨 설정
+    controllers[currentIndex].play(); // 재생되는 상태
+    controllers[currentIndex].setLooping(true); // 영상 무한 반복
+    controllers[currentIndex].setVolume(1.0); // 볼륨 설정
 
     notifyListeners();
   }
@@ -75,7 +73,7 @@ class VideoPlayProvider with ChangeNotifier {
   void disposeVideoController() {
     // 자원을 반환하기 위해 VideoPlayerController dispose.
     for (int i = 0; i < videoLinks.length; i++) {
-      _videoControllers[i].dispose();
+      controllers[i].dispose();
     }
 
     notifyListeners();
