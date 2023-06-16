@@ -78,7 +78,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             backgroundColor: Colors.transparent,
             elevation: 0.0,
             leading: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
               icon: SvgPicture.asset(
                 'assets/icons/ic_home.svg',
               ),
