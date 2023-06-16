@@ -115,49 +115,51 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView.builder(
-        controller: _pageController,
-        scrollDirection: Axis.vertical,
-        allowImplicitScrolling: true,
-        itemCount: videoLinks.length,
-        itemBuilder: (context, index) {
-          return FutureBuilder(
-              future: _initializeVideoPlayerFutures[currentIndex],
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  // 데이터가 수신되었을 때
-                  return Stack(children: <Widget>[
-                    GestureDetector(
-                      // 비디오 클릭 시 영상 정지/재생
-                      onTap: () {
-                        if (_videoControllers[index].value.isPlaying) {
-                          _videoControllers[index].pause();
-                        } else {
-                          // 만약 영상 일시 중지 상태였다면, 재생.
-                          _videoControllers[index].play();
-                        }
-                      },
-                      child: VideoPlayer(_videoControllers[index]),
-                    ),
-                    // PoPo, Upload, Search
-                    const VideoFrameHeaderWidget(),
-                    // like, chat, share, progress
-                    VideoFrameRightWidget(
-                        like: likes[index], chat: chats[index]),
-                    // profile, nicname, content
-                    VideoFrameContentWidget(
-                        profile: profiles[index],
-                        nickname: nicknames[index],
-                        content: contents[index]),
-                  ]);
-                } else {
-                  // 만약 VideoPlayerController가 여전히 초기화 중이라면, 로딩 스피너를 보여줌.
-                  return const Center(child: CircularProgressIndicator());
-                }
-              });
-        },
-        onPageChanged: onPageChanged,
-      ),
+      body: Stack(children: <Widget>[
+        PageView.builder(
+          controller: _pageController,
+          scrollDirection: Axis.vertical,
+          allowImplicitScrolling: true,
+          itemCount: videoLinks.length,
+          itemBuilder: (context, index) {
+            return FutureBuilder(
+                future: _initializeVideoPlayerFutures[currentIndex],
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    // 데이터가 수신되었을 때
+                    return Stack(children: <Widget>[
+                      GestureDetector(
+                        // 비디오 클릭 시 영상 정지/재생
+                        onTap: () {
+                          if (_videoControllers[index].value.isPlaying) {
+                            _videoControllers[index].pause();
+                          } else {
+                            // 만약 영상 일시 중지 상태였다면, 재생.
+                            _videoControllers[index].play();
+                          }
+                        },
+                        child: VideoPlayer(_videoControllers[index]),
+                      ),
+                      // like, chat, share, progress
+                      VideoFrameRightWidget(
+                          like: likes[index], chat: chats[index]),
+                      // profile, nicname, content
+                      VideoFrameContentWidget(
+                          profile: profiles[index],
+                          nickname: nicknames[index],
+                          content: contents[index]),
+                    ]);
+                  } else {
+                    // 만약 VideoPlayerController가 여전히 초기화 중이라면, 로딩 스피너를 보여줌.
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                });
+          },
+          onPageChanged: onPageChanged,
+        ),
+        // PoPo, upload, search
+        const VideoFrameHeaderWidget(),
+      ]),
     );
   }
 }
