@@ -14,8 +14,13 @@ class PoPoWaitScreen extends StatelessWidget {
         ),
       ),
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          centerTitle: true,
+          title: const Text("PoPo 스테이지"),
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
           actions: [
             IconButton(
                 onPressed: () {
