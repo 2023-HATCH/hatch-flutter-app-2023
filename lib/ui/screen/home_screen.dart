@@ -220,7 +220,8 @@ class VideoFrameRightWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       //color: Colors.orange,
-      margin: const EdgeInsets.fromLTRB(335, 520, 20, 60),
+      width: 60,
+      margin: const EdgeInsets.fromLTRB(330, 520, 10, 60),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -235,7 +236,7 @@ class VideoFrameRightWidget extends StatelessWidget {
                 const Padding(padding: EdgeInsets.only(bottom: 2)),
                 Text(
                   like,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ]),
             ),
@@ -251,7 +252,7 @@ class VideoFrameRightWidget extends StatelessWidget {
                 const Padding(padding: EdgeInsets.only(bottom: 2)),
                 Text(
                   chat,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ]),
             ),
