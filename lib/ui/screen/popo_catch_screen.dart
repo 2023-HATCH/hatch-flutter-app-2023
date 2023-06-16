@@ -11,7 +11,7 @@ class PoPoCatchScreen extends StatelessWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: AssetImage('assets/image/bg_popo_comm.png'),
+          image: AssetImage('assets/images/bg_popo_comm.png'),
         ),
       ),
       child: Scaffold(
