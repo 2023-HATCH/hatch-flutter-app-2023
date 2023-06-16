@@ -31,6 +31,7 @@ class _PoPoWaitViewState extends State<PoPoWaitView> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18, color: Colors.white),
           ),
+          const SizedBox(height: 40.0),
           SvgPicture.asset(
             'assets/images/charactor_popo_wait.svg',
           ),
