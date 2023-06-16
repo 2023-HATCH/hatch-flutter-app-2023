@@ -8,15 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
+import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
+      required this.getStageState,
       required this.setIsSkeletonDetectStart,
       required this.customPaint,
       required this.onImage,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
+  Function getStageState;
   // skeleton 트리거
   Function setIsSkeletonDetectStart;
   // 스켈레톤을 그려주는 객체
@@ -71,7 +74,9 @@ class _CameraViewState extends State<CameraView> {
       _startLiveFeed();
     }
 
-    _startTimer();
+    if (widget.getStageState() == StageStage.playState) {
+      _startTimer();
+    }
   }
 
   void _startTimer() {
@@ -83,9 +88,11 @@ class _CameraViewState extends State<CameraView> {
           _countdownVisibility = false;
         });
 
-        AudioPlayerUtil().play(
-            "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
-            widget.setIsSkeletonDetectStart);
+        if (widget.getStageState() == StageStage.playState) {
+          AudioPlayerUtil().play(
+              "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
+              widget.setIsSkeletonDetectStart);
+        }
       } else {
         setState(() {
           _seconds--;

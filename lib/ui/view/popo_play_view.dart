@@ -1,19 +1,24 @@
-// 카메라에서 스켈레톤 추출하는 화면
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
+import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
-class SkeletonCutomView extends StatefulWidget {
-  const SkeletonCutomView({super.key});
+// ml_kit_skeleton_custom_view
+class PoPoPlayView extends StatefulWidget {
+  PoPoPlayView(
+      {Key? key, required this.setStageState, required this.getStageState})
+      : super(key: key);
+  Function setStageState;
+  Function getStageState;
 
   @override
-  State<StatefulWidget> createState() => _SkeletonCutomViewState();
+  State<StatefulWidget> createState() => _PoPoPlayViewState();
 }
 
-class _SkeletonCutomViewState extends State<SkeletonCutomView> {
+class _PoPoPlayViewState extends State<PoPoPlayView> {
   // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
   final PoseDetector _poseDetector =
       PoseDetector(options: PoseDetectorOptions());
@@ -38,6 +43,7 @@ class _SkeletonCutomViewState extends State<SkeletonCutomView> {
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
     return CameraView(
+      getStageState: widget.getStageState,
       setIsSkeletonDetectStart: setIsStarted,
       // 스켈레톤 그려주는 객체 전달
       customPaint: _customPaint,
@@ -95,7 +101,8 @@ class _SkeletonCutomViewState extends State<SkeletonCutomView> {
                   textColor: Colors.white,
                   fontSize: 16.0,
                 ))
-            .then((value) => _inputLists.clear());
+            .then((_) => _inputLists.clear())
+            .then((_) => widget.setStageState(StageStage.resultState));
       }
     });
   }

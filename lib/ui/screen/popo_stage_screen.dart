@@ -2,8 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
+import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
+
+enum StageStage { waitState, catchState, playState, resultState }
 
 class PoPoStageScreen extends StatefulWidget {
   const PoPoStageScreen({super.key});
@@ -16,6 +20,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _userCount = 1;
   late Timer _timer;
 
+  StageStage _stageStage = StageStage.waitState;
+
   @override
   void initState() {
     super.initState();
@@ -25,8 +31,12 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      // 임시로 3초 되면 캐치로 이동
       if (_userCount == 3) {
         _stopTimer();
+        setState(() {
+          _stageStage = StageStage.catchState;
+        });
       } else {
         setState(() {
           _userCount++;
@@ -39,16 +49,24 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     _timer.cancel();
   }
 
+  void setStageState(StageStage newStageStage) {
+    setState(() {
+      _stageStage = newStageStage;
+    });
+  }
+
+  StageStage getStageState() => _stageStage;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: AssetImage('assets/images/bg_popo_comm.png'),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage('assets/images/bg_popo_comm.png'),
+          ),
         ),
-      ),
-      child: Scaffold(
+        child: Scaffold(
           extendBodyBehindAppBar: true,
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -89,8 +107,26 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               ),
             ],
           ),
-          body:
-              (_userCount >= 3) ? const PoPoCatchView() : const PoPoWaitView()),
-    );
+          body: getStageView(_stageStage),
+        ));
+  }
+
+  Widget getStageView(StageStage state) {
+    switch (state) {
+      case StageStage.waitState:
+        return (_userCount < 3)
+            ? const PoPoWaitView()
+            : PoPoCatchView(setStageState: setStageState);
+      case StageStage.catchState:
+        return PoPoCatchView(setStageState: setStageState);
+      case StageStage.playState:
+        return PoPoPlayView(
+            setStageState: setStageState, getStageState: getStageState);
+      case StageStage.resultState:
+        return PoPoResultView(
+            setStageState: setStageState, getStageState: getStageState);
+      default:
+        return const PoPoWaitView();
+    }
   }
 }
