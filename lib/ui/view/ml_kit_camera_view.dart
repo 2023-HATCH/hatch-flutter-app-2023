@@ -8,18 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
-import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
-      required this.getStageState,
+      required this.isPlayState,
       required this.setIsSkeletonDetectStart,
       required this.customPaint,
       required this.onImage,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
-  Function getStageState;
+  bool isPlayState;
   // skeleton 트리거
   Function setIsSkeletonDetectStart;
   // 스켈레톤을 그려주는 객체
@@ -44,7 +43,6 @@ class _CameraViewState extends State<CameraView> {
   bool _countdownVisibility = true;
   int _seconds = 3;
   late Timer _timer;
-  late bool isPlayStage;
 
   @override
   void initState() {
@@ -74,9 +72,8 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
-    isPlayStage = widget.getStageState() == StageStage.playState;
 
-    if (isPlayStage) {
+    if (widget.isPlayState) {
       _startTimer();
     }
   }
@@ -90,7 +87,7 @@ class _CameraViewState extends State<CameraView> {
           _countdownVisibility = false;
         });
 
-        if (isPlayStage) {
+        if (widget.isPlayState) {
           AudioPlayerUtil().play(
               "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
               widget.setIsSkeletonDetectStart);
@@ -160,14 +157,6 @@ class _CameraViewState extends State<CameraView> {
     if (scale < 1) scale = 1 / scale;
 
     return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: AssetImage((isPlayStage)
-              ? 'assets/images/bg_popo_comm.png'
-              : 'assets/images/bg_popo_result.png'),
-        ),
-      ),
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
