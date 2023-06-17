@@ -88,25 +88,29 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               ),
             ),
             actions: [
-              OutlinedButton.icon(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  minimumSize: Size.zero,
-                  // padding: const EdgeInsets.fromLTRB(11, 7, 11, 7),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+              Container(
+                margin:
+                    const EdgeInsets.only(right: 16.0, top: 16.0, bottom: 16.0),
+                child: OutlinedButton.icon(
+                  onPressed: () {},
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: Size.zero,
+                    // padding: const EdgeInsets.fromLTRB(11, 7, 11, 7),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    side: const BorderSide(
+                      color: Colors.white,
+                      width: 1.0,
+                    ),
                   ),
-                  side: const BorderSide(
-                    color: Colors.white,
-                    width: 1.0,
+                  icon: SvgPicture.asset(
+                    'assets/icons/ic_users.svg',
                   ),
-                ),
-                icon: SvgPicture.asset(
-                  'assets/icons/ic_users.svg',
-                ),
-                label: Text(
-                  '$_userCount',
-                  style: const TextStyle(color: Colors.white),
+                  label: Text(
+                    '$_userCount',
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],
