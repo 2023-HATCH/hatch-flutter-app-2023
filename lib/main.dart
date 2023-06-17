@@ -1,5 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 
 // 카메라 목록 변수
@@ -11,7 +13,9 @@ Future<void> main() async {
   // 사용 가능한 카메라 목록 받아옴
   cameras = await availableCameras();
 
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => VideoPlayProvider()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

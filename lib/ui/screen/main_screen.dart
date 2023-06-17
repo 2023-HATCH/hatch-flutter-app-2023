@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/screen/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_wait_screen.dart';
 import 'package:pocket_pose/ui/screen/profile_screen.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -15,7 +17,17 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late VideoPlayProvider _videoPlayProvider;
   int _bottomNavIndex = 0;
+
+  @override
+  void initState() {
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _videoPlayProvider.initializeVideoPlayerFutures();
+
+    // TODO: implement initState
+    super.initState();
+  }
 
   final List<Widget> _screens = <Widget>[
     const HomeScreen(),
@@ -25,13 +37,21 @@ class _MainScreenState extends State<MainScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _bottomNavIndex = index;
+
+      if (index == 1) {
+        _videoPlayProvider.pauseVideo();
+      } else {
+        _videoPlayProvider.playVideo();
+      }
     });
   }
 
   void _onFloatingButtonClicked() {
+    _videoPlayProvider.pauseVideo();
+
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PoPoWaitScreen()),
+      MaterialPageRoute(builder: (context) => PoPoWaitScreen()),
     );
   }
 
