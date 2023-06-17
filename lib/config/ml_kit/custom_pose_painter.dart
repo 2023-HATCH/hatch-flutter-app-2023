@@ -125,35 +125,93 @@ class CustomPosePainter extends CustomPainter {
           PoseLandmarkType.leftShoulder, PoseLandmarkType.rightShoulder, paint);
       paintNeonLine(PoseLandmarkType.leftHip, PoseLandmarkType.rightHip, paint);
 
-      // Draw face
-      final noseLandmark = pose.landmarks[PoseLandmarkType.nose];
-      final leftEyeLandmark = pose.landmarks[PoseLandmarkType.leftEye];
-      final rightEyeLandmark = pose.landmarks[PoseLandmarkType.rightEye];
+      // Draw Face
+      Offset centerPoint;
+      Offset leftPoint;
+      Offset rightPoint;
 
-      if (noseLandmark != null &&
-          leftEyeLandmark != null &&
-          rightEyeLandmark != null) {
-        final nosePoint = Offset(
+      final noseLandmark = pose.landmarks[PoseLandmarkType.nose];
+      final leftShoulderLandmark =
+          pose.landmarks[PoseLandmarkType.leftShoulder];
+      final rightShoulderLandmark =
+          pose.landmarks[PoseLandmarkType.rightShoulder];
+
+      if (noseLandmark != null) {
+        // 코가 추출될 경우
+        centerPoint = Offset(
           translateX(noseLandmark.x, rotation, size, absoluteImageSize),
           translateY(noseLandmark.y, rotation, size, absoluteImageSize),
         );
-        final leftEyePoint = Offset(
-          translateX(leftEyeLandmark.x, rotation, size, absoluteImageSize),
-          translateY(leftEyeLandmark.y, rotation, size, absoluteImageSize),
+
+        final leftEyeLandmark = pose.landmarks[PoseLandmarkType.leftEye];
+        final rightEyeLandmark = pose.landmarks[PoseLandmarkType.rightEye];
+
+        if (leftEyeLandmark != null && rightEyeLandmark != null) {
+          // 눈이 추출될 경우: 가장 perfect
+          leftPoint = Offset(
+            translateX(leftEyeLandmark.x, rotation, size, absoluteImageSize),
+            translateY(leftEyeLandmark.y, rotation, size, absoluteImageSize),
+          );
+          rightPoint = Offset(
+            translateX(rightEyeLandmark.x, rotation, size, absoluteImageSize),
+            translateY(rightEyeLandmark.y, rotation, size, absoluteImageSize),
+          );
+        } else {
+          //눈 추출이 안되면 임의의 값으로 그림
+          int dis = 10; // 적당한 값인지 테스트 필요..
+          leftPoint = Offset(
+            translateX(noseLandmark.x - dis, rotation, size, absoluteImageSize),
+            translateY(noseLandmark.y, rotation, size, absoluteImageSize),
+          );
+          rightPoint = Offset(
+            translateX(noseLandmark.x + dis, rotation, size, absoluteImageSize),
+            translateY(noseLandmark.y, rotation, size, absoluteImageSize),
+          );
+        }
+
+        // Calculate face radius
+        final distance = leftPoint.dx - rightPoint.dx;
+        final faceRadius = distance * 2;
+
+        // Draw face circle
+        canvas.drawCircle(centerPoint, faceRadius, neonOuterPaint);
+        canvas.drawCircle(centerPoint, faceRadius, neonInnerPaint);
+        canvas.drawCircle(centerPoint, faceRadius, paint);
+      } else if (leftShoulderLandmark != null &&
+          rightShoulderLandmark != null) {
+        // 양쪽 어깨가 추출될 경우
+        // 어께로부터 떨어진 거리(임의의 값)
+        int upHeight = 2;
+
+        leftPoint = Offset(
+          translateX(leftShoulderLandmark.x, rotation, size, absoluteImageSize),
+          translateY(leftShoulderLandmark.y + upHeight, rotation, size,
+              absoluteImageSize),
         );
-        final rightEyePoint = Offset(
-          translateX(rightEyeLandmark.x, rotation, size, absoluteImageSize),
-          translateY(rightEyeLandmark.y, rotation, size, absoluteImageSize),
+
+        rightPoint = Offset(
+          translateX(
+              rightShoulderLandmark.x, rotation, size, absoluteImageSize),
+          translateY(rightShoulderLandmark.y + upHeight, rotation, size,
+              absoluteImageSize),
         );
 
         // Calculate face radius
-        final eyeDistance = leftEyePoint.dx - rightEyePoint.dx;
-        final faceRadius = eyeDistance * 1.5;
+        final xDistance = leftPoint.dx - rightPoint.dx;
+        final yDistance = leftPoint.dx - rightPoint.dx;
+
+        centerPoint = Offset(
+          translateX(xDistance, rotation, size, absoluteImageSize),
+          translateY(yDistance, rotation, size, absoluteImageSize),
+        );
+
+        // Calculate face radius
+        final faceRadius = xDistance * 2;
 
         // Draw face circle
-        canvas.drawCircle(nosePoint, faceRadius, neonOuterPaint);
-        canvas.drawCircle(nosePoint, faceRadius, neonInnerPaint);
-        canvas.drawCircle(nosePoint, faceRadius, paint);
+        canvas.drawCircle(centerPoint, faceRadius, neonOuterPaint);
+        canvas.drawCircle(centerPoint, faceRadius, neonInnerPaint);
+        canvas.drawCircle(centerPoint, faceRadius, paint);
       }
     }
   }
