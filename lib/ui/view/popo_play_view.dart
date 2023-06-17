@@ -54,7 +54,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       onImage: (inputImage) {
         // start 버튼 눌렀을 때만 스켈레톤 추출
         if (_isStarted) {
-          print("mmmmm pppppppp");
           processImage(inputImage);
         }
       },
