@@ -89,23 +89,11 @@ class VideoPlayProvider with ChangeNotifier {
 
   void pauseVideo() {
     controllers[currentIndex].pause();
-    // for (int i = 0; i < videoLinks.length; i++) {
-    //   controllers[i].pause();
-    // }
   }
 
   void playVideo() {
     controllers[currentIndex].play();
-    // for (int i = 0; i < videoLinks.length; i++) {
-    //   controllers[i].pause();
-    // }
-  }
 
-  void disposeVideoController() {
-    // 자원을 반환하기 위해 VideoPlayerController dispose.
-    // for (int i = 0; i < videoLinks.length; i++) {
-    //   controllers[i].dispose();
-    // }
     notifyListeners();
   }
 }

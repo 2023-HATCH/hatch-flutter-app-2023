@@ -3,6 +3,7 @@ import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/screen/popo_catch_screen.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class PoPoWaitScreen extends StatelessWidget {
   PoPoWaitScreen({super.key});
   late VideoPlayProvider _videoPlayProvider;
