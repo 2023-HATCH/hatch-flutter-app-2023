@@ -8,10 +8,10 @@ import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
 class PoPoResultView extends StatefulWidget {
   PoPoResultView(
-      {Key? key, required this.setStageState, required this.isPlayState})
+      {Key? key, required this.setStageState, required this.isResultState})
       : super(key: key);
   Function setStageState;
-  bool isPlayState;
+  bool isResultState;
 
   @override
   State<StatefulWidget> createState() => _PoPoResultViewState();
@@ -66,7 +66,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
     return CameraView(
-      isPlayState: widget.isPlayState,
+      isResultState: widget.isResultState,
       setIsSkeletonDetectStart: setIsStarted,
       // 스켈레톤 그려주는 객체 전달
       customPaint: _customPaint,

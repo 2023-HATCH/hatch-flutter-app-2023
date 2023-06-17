@@ -55,7 +55,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     });
   }
 
-  bool getIsPlayState() => _stageStage == StageStage.playState;
+  bool getIsResultState() => _stageStage == StageStage.resultState;
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +63,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         decoration: BoxDecoration(
           image: DecorationImage(
             fit: BoxFit.cover,
-            image: AssetImage((getIsPlayState())
-                ? 'assets/images/bg_popo_comm.png'
-                : 'assets/images/bg_popo_result.png'),
+            image: AssetImage((getIsResultState())
+                ? 'assets/images/bg_popo_result.png'
+                : 'assets/images/bg_popo_comm.png'),
           ),
         ),
         child: Scaffold(
@@ -125,10 +125,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         return PoPoCatchView(setStageState: setStageState);
       case StageStage.playState:
         return PoPoPlayView(
-            setStageState: setStageState, isPlayState: getIsPlayState());
+            setStageState: setStageState, isResultState: getIsResultState());
       case StageStage.resultState:
         return PoPoResultView(
-            setStageState: setStageState, isPlayState: getIsPlayState());
+            setStageState: setStageState, isResultState: getIsResultState());
       default:
         return const PoPoWaitView();
     }
