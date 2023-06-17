@@ -1,19 +1,22 @@
-// 카메라에서 스켈레톤 추출하는 화면
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
-import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
+import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
-class SkeletonCutomView extends StatefulWidget {
-  const SkeletonCutomView({super.key});
+// ml_kit_skeleton_custom_view
+class PoPoResultView extends StatefulWidget {
+  PoPoResultView(
+      {Key? key, required this.setStageState, required this.isResultState})
+      : super(key: key);
+  Function setStageState;
+  bool isResultState;
 
   @override
-  State<StatefulWidget> createState() => _SkeletonCutomViewState();
+  State<StatefulWidget> createState() => _PoPoResultViewState();
 }
 
-class _SkeletonCutomViewState extends State<SkeletonCutomView> {
+class _PoPoResultViewState extends State<PoPoResultView> {
   // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
   final PoseDetector _poseDetector =
       PoseDetector(options: PoseDetectorOptions());
@@ -25,7 +28,6 @@ class _SkeletonCutomViewState extends State<SkeletonCutomView> {
   bool _isStarted = false;
   // input Lists
   final List<List<double>> _inputLists = [];
-  final _provider = PoPoSkeletonProviderImpl();
 
   @override
   void dispose() async {
@@ -38,6 +40,7 @@ class _SkeletonCutomViewState extends State<SkeletonCutomView> {
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
     return CameraView(
+      isResultState: widget.isResultState,
       setIsSkeletonDetectStart: setIsStarted,
       // 스켈레톤 그려주는 객체 전달
       customPaint: _customPaint,
@@ -85,17 +88,8 @@ class _SkeletonCutomViewState extends State<SkeletonCutomView> {
       _isStarted = bool;
 
       if (!_isStarted) {
-        _provider
-            .postSkeletonList(_inputLists)
-            .then((value) => Fluttertoast.showToast(
-                  msg: value.toString(),
-                  toastLength: Toast.LENGTH_SHORT,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                ))
-            .then((value) => _inputLists.clear());
+        _inputLists.clear();
+        widget.setStageState(StageStage.waitState);
       }
     });
   }
