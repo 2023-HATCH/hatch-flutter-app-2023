@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 
 class PoPoCatchView extends StatefulWidget {
@@ -13,7 +14,7 @@ class PoPoCatchView extends StatefulWidget {
 }
 
 class _PoPoCatchViewState extends State<PoPoCatchView> {
-  int _seconds = 3;
+  int _seconds = 20;
   late Timer _timer;
 
   @override
@@ -27,6 +28,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_seconds == 0) {
         _stopTimer();
+        Fluttertoast.showToast(msg: '캐치 성공!');
         widget.setStageState(StageStage.playState);
       } else {
         setState(() {
