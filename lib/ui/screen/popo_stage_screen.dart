@@ -3,10 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
-import 'package:pocket_pose/ui/view/popo_play_view.dart';
-import 'package:pocket_pose/ui/view/popo_catch_view.dart';
-import 'package:pocket_pose/ui/view/popo_result_view.dart';
-import 'package:pocket_pose/ui/view/popo_wait_view.dart';
 
 enum StageStage { waitState, catchState, playState, resultState }
 

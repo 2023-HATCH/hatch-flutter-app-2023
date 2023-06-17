@@ -1,4 +1,4 @@
-// ml kit 코드 카메라 화면
+// 카메라 화면
 import 'dart:async';
 
 import 'package:camera/camera.dart';
