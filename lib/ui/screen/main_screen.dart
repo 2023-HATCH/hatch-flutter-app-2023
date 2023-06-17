@@ -25,7 +25,6 @@ class _MainScreenState extends State<MainScreen> {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
     _videoPlayProvider.initializeVideoPlayerFutures();
 
-    // TODO: implement initState
     super.initState();
   }
 

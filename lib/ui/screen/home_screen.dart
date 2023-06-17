@@ -14,52 +14,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with AutomaticKeepAliveClientMixin {
-  // (1) 추가
-  late VideoPlayProvider _videoPlayProvider;
-
-  // (2) 추가
+  // 새로고침 방지 (1) 추가
+  // 새로고침 방지 (2) 추가
   @override
   bool get wantKeepAlive => true;
 
+  late VideoPlayProvider _videoPlayProvider;
+
   @override
   void initState() {
-    // _pageController = PageController();
     // listen: false 상태 변화에 대해 위젯을 새로고치지 않겠다.
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
 
-    // // 모든 비디오 로드
-    // _videoControllers = List<VideoPlayerController>.generate(
-    //   videoLinks.length,
-    //   (index) => VideoPlayerController.network(videoLinks[index]),
-    // );
-    //_videoPlayProvider.loadVideo();
-
-    // 비디오 초기화 완료를 기다리는 Future 리스트
-    // _initializeVideoPlayerFutures = List<Future<void>>.generate(
-    //   _videoPlayProvider.videoLinks.length,
-    //   (index) => _videoPlayProvider.controllers[index].initialize(),
-    // );
-
-    // // 비디오 기본 값 설정
-    // _videoControllers[currentIndex].play(); // 재생되는 상태
-    // _videoControllers[currentIndex].setLooping(true); // 영상 무한 반복
-    // _videoControllers[currentIndex].setVolume(1.0); // 볼륨 설정
-    // _videoPlayProvider.setVideo();
-
-    //_videoPlayProvider.playVideo();
     super.initState();
   }
-
-  // @override
-  // void dispose() {
-  //   // // 자원을 반환하기 위해 VideoPlayerController dispose.
-  //   // for (int i = 0; i < videoLinks.length; i++) {
-  //   //   _videoControllers[i].dispose();
-  //   // }
-  //   //_videoPlayProvider.disposeVideoController();
-  //   // _videoPlayProvider.pauseVideo();
-  //   //super.dispose();
-  // }
 
   void onPageChanged(int index) {
     setState(() {
@@ -69,10 +37,6 @@ class _HomeScreenState extends State<HomeScreen>
         // 다음 비디오로 변경
         _videoPlayProvider.currentIndex = index;
 
-        // 다음 비디오 기본 값 설정
-        // _videoControllers[currentIndex].play();
-        // _videoControllers[currentIndex].setLooping(true);
-        // _videoControllers[currentIndex].setVolume(1.0);
         _videoPlayProvider.setVideo();
       });
     });
@@ -80,10 +44,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: Stack(children: <Widget>[
         PageView.builder(
-          //controller: _videoPlayProvider.pageController,
           controller: PageController(
             initialPage: _videoPlayProvider.currentIndex, //시작 페이지
           ),
@@ -174,6 +138,7 @@ class VideoFrameHeaderWidget extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class VideoFrameRightWidget extends StatelessWidget {
   VideoFrameRightWidget({super.key, required this.index});
 
@@ -245,6 +210,7 @@ class VideoFrameRightWidget extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class VideoFrameContentWidget extends StatelessWidget {
   VideoFrameContentWidget({super.key, required this.index});
 
