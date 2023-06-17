@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
+<<<<<<< HEAD
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
+=======
+import 'package:pocket_pose/ui/view/camera_view.dart';
+>>>>>>> 37d01c2 (:pencil2: [fix] #10 머지 오류 해결)
 
 // ml_kit_skeleton_custom_view
 class PoPoResultView extends StatefulWidget {
