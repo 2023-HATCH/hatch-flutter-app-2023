@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   //   '최애의 완소 퍼펙트 반장❤️ #최애의아이',
   // ];
 
-  int currentIndex = 0;
+  // int currentIndex = 0;
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //   videoLinks.length,
     //   (index) => VideoPlayerController.network(videoLinks[index]),
     // );
-    _videoPlayProvider.loadVideo();
+    //_videoPlayProvider.loadVideo();
 
     // 비디오 초기화 완료를 기다리는 Future 리스트
     _initializeVideoPlayerFutures = List<Future<void>>.generate(
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // _videoControllers[currentIndex].play(); // 재생되는 상태
     // _videoControllers[currentIndex].setLooping(true); // 영상 무한 반복
     // _videoControllers[currentIndex].setVolume(1.0); // 볼륨 설정
-    _videoPlayProvider.setVideo(currentIndex);
+    _videoPlayProvider.setVideo();
 
     super.initState();
   }
@@ -103,21 +103,24 @@ class _HomeScreenState extends State<HomeScreen> {
     // for (int i = 0; i < videoLinks.length; i++) {
     //   _videoControllers[i].dispose();
     // }
-    _videoPlayProvider.dispose();
+    //_videoPlayProvider.disposeVideoController();
+    _videoPlayProvider.pauseVideo();
     super.dispose();
   }
 
   void onPageChanged(int index) {
     setState(() {
-      _videoPlayProvider.controllers[currentIndex].pause().then((_) {
+      _videoPlayProvider.controllers[_videoPlayProvider.currentIndex]
+          .pause()
+          .then((_) {
         // 다음 비디오로 변경
-        currentIndex = index;
+        _videoPlayProvider.currentIndex = index;
 
         // 다음 비디오 기본 값 설정
         // _videoControllers[currentIndex].play();
         // _videoControllers[currentIndex].setLooping(true);
         // _videoControllers[currentIndex].setVolume(1.0);
-        _videoPlayProvider.setVideo(currentIndex);
+        _videoPlayProvider.setVideo();
       });
     });
   }
@@ -133,7 +136,8 @@ class _HomeScreenState extends State<HomeScreen> {
           itemCount: _videoPlayProvider.videoLinks.length,
           itemBuilder: (context, index) {
             return FutureBuilder(
-                future: _initializeVideoPlayerFutures[currentIndex],
+                future: _initializeVideoPlayerFutures[
+                    _videoPlayProvider.currentIndex],
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     // 데이터가 수신되었을 때

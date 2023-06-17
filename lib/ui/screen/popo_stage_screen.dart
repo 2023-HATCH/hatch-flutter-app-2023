@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
@@ -81,6 +82,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             elevation: 0.0,
             leading: IconButton(
               onPressed: () {
+                AudioPlayerUtil().stop();
                 Navigator.pop(context);
               },
               icon: SvgPicture.asset(
@@ -88,35 +90,36 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               ),
             ),
             actions: [
-              Container(
-                margin:
-                    const EdgeInsets.only(right: 16.0, top: 16.0, bottom: 16.0),
-                child: OutlinedButton.icon(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: Size.zero,
-                    // padding: const EdgeInsets.fromLTRB(11, 7, 11, 7),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    side: const BorderSide(
-                      color: Colors.white,
-                      width: 1.0,
-                    ),
-                  ),
-                  icon: SvgPicture.asset(
-                    'assets/icons/ic_users.svg',
-                  ),
-                  label: Text(
-                    '$_userCount',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
+              userCountWidget(),
             ],
           ),
           body: getStageView(_stageStage),
         ));
+  }
+
+  Container userCountWidget() {
+    return Container(
+      margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
+      child: OutlinedButton.icon(
+        onPressed: () {},
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          side: const BorderSide(
+            color: Colors.white,
+            width: 1.0,
+          ),
+        ),
+        icon: SvgPicture.asset(
+          'assets/icons/ic_users.svg',
+        ),
+        label: Text(
+          '$_userCount',
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    );
   }
 
   Widget getStageView(StageStage state) {

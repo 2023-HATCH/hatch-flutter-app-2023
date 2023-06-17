@@ -8,6 +8,7 @@ import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
 
+// ignore: must_be_immutable
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
@@ -74,6 +75,7 @@ class _CameraViewState extends State<CameraView> {
 
     // AudioPlayer 초기화
     AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectStart);
+    AudioPlayerUtil().setCameraController(_controller);
 
     // 결과 상태인 경우
     if (widget.isResultState) {
@@ -114,16 +116,17 @@ class _CameraViewState extends State<CameraView> {
     _timer.cancel();
   }
 
-  Future _stopLiveFeed() async {
-    await _controller?.stopImageStream();
-    await _controller?.dispose();
-    _controller = null;
-  }
+  // Future _stopLiveFeed() async {
+  //   await _controller?.stopImageStream();
+  //   await _controller?.dispose();
+  //   AudioPlayerUtil().stop();
+  //   _controller = null;
+  // }
 
   @override
   void dispose() {
     if (widget.isResultState) {
-      _stopLiveFeed();
+      // _stopLiveFeed();
       AudioPlayerUtil().stop();
     }
     super.dispose();

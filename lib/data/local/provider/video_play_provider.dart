@@ -52,6 +52,8 @@ class VideoPlayProvider with ChangeNotifier {
     '최애의 완소 퍼펙트 반장❤️ #최애의아이',
   ];
 
+  int currentIndex = 0;
+
   void loadVideo() {
     // 모든 비디오 로드
     controllers = List<VideoPlayerController>.generate(
@@ -61,7 +63,7 @@ class VideoPlayProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setVideo(int currentIndex) {
+  void setVideo() {
     // 비디오 기본 값 설정
     controllers[currentIndex].play(); // 재생되는 상태
     controllers[currentIndex].setLooping(true); // 영상 무한 반복
@@ -70,12 +72,25 @@ class VideoPlayProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void pauseVideo() {
+    controllers[currentIndex].pause();
+    // for (int i = 0; i < videoLinks.length; i++) {
+    //   controllers[i].pause();
+    // }
+  }
+
+  void playVideo() {
+    controllers[currentIndex].play();
+    // for (int i = 0; i < videoLinks.length; i++) {
+    //   controllers[i].pause();
+    // }
+  }
+
   void disposeVideoController() {
     // 자원을 반환하기 위해 VideoPlayerController dispose.
-    for (int i = 0; i < videoLinks.length; i++) {
-      controllers[i].dispose();
-    }
-
+    // for (int i = 0; i < videoLinks.length; i++) {
+    //   controllers[i].dispose();
+    // }
     notifyListeners();
   }
 }
