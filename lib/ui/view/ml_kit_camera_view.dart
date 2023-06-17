@@ -9,6 +9,7 @@ import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
 
+// ignore: must_be_immutable
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
