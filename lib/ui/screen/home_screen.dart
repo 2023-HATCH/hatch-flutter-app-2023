@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/ui/widget/home_video_frame_header_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+
+import '../widget/home_video_frame_content_widget.dart';
+import '../widget/home_video_frame_right_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -91,165 +93,6 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         // PoPo, upload, search
         const VideoFrameHeaderWidget(),
-      ]),
-    );
-  }
-}
-
-class VideoFrameHeaderWidget extends StatelessWidget {
-  const VideoFrameHeaderWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      //color: Colors.red,
-      margin: const EdgeInsets.fromLTRB(20, 40, 20, 30),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SvgPicture.asset(
-              'assets/icons/home_popo.svg',
-            ),
-            Row(children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  Fluttertoast.showToast(msg: 'upload 클릭');
-                },
-                child: SvgPicture.asset(
-                  'assets/icons/home_upload.svg',
-                  width: 18,
-                ),
-              ),
-              const Padding(padding: EdgeInsets.only(left: 18)),
-              GestureDetector(
-                onTap: () {
-                  Fluttertoast.showToast(msg: 'search 클릭');
-                },
-                child: SvgPicture.asset(
-                  'assets/icons/home_search.svg',
-                  width: 18,
-                ),
-              ),
-            ]),
-          ]),
-    );
-  }
-}
-
-// ignore: must_be_immutable
-class VideoFrameRightWidget extends StatelessWidget {
-  VideoFrameRightWidget({super.key, required this.index});
-
-  late VideoPlayProvider _videoPlayProvider;
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-
-    return Container(
-      //color: Colors.orange,
-      width: 60,
-      margin: const EdgeInsets.fromLTRB(330, 520, 10, 60),
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                Fluttertoast.showToast(msg: 'like 클릭');
-              },
-              child: Column(children: <Widget>[
-                SvgPicture.asset(
-                  'assets/icons/home_like.svg',
-                ),
-                const Padding(padding: EdgeInsets.only(bottom: 2)),
-                Text(
-                  _videoPlayProvider.likes[index],
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ]),
-            ),
-            const Padding(padding: EdgeInsets.only(bottom: 14)),
-            GestureDetector(
-              onTap: () {
-                Fluttertoast.showToast(msg: 'chat 클릭');
-              },
-              child: Column(children: <Widget>[
-                SvgPicture.asset(
-                  'assets/icons/home_chat.svg',
-                ),
-                const Padding(padding: EdgeInsets.only(bottom: 2)),
-                Text(
-                  _videoPlayProvider.chats[index],
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ]),
-            ),
-            const Padding(padding: EdgeInsets.only(bottom: 14)),
-            Column(children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  Fluttertoast.showToast(msg: 'share 클릭');
-                },
-                child: SvgPicture.asset(
-                  'assets/icons/home_share.svg',
-                ),
-              ),
-              const Padding(padding: EdgeInsets.only(bottom: 2)),
-            ]),
-            const Padding(padding: EdgeInsets.only(bottom: 14)),
-            Column(children: <Widget>[
-              SvgPicture.asset(
-                'assets/icons/home_progress.svg',
-              ),
-            ]),
-          ]),
-    );
-  }
-}
-
-// ignore: must_be_immutable
-class VideoFrameContentWidget extends StatelessWidget {
-  VideoFrameContentWidget({super.key, required this.index});
-
-  late VideoPlayProvider _videoPlayProvider;
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-
-    return Container(
-      //color: Colors.green,
-      margin: const EdgeInsets.fromLTRB(20, 620, 100, 80),
-      child: Column(children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            Fluttertoast.showToast(msg: 'user 클릭');
-          },
-          child: Row(children: <Widget>[
-            ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child:
-                    Image.asset(_videoPlayProvider.profiles[index], width: 35)),
-            const Padding(padding: EdgeInsets.only(left: 8)),
-            Text(
-              _videoPlayProvider.nicknames[index],
-              style: const TextStyle(color: Colors.white),
-            ),
-          ]),
-        ),
-        const Padding(padding: EdgeInsets.only(bottom: 8)),
-        Text(
-          _videoPlayProvider.contents[index],
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: Colors.white,
-          ),
-        ),
       ]),
     );
   }
