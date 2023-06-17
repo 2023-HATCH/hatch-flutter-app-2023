@@ -20,6 +20,15 @@ class _MainScreenState extends State<MainScreen> {
   late VideoPlayProvider _videoPlayProvider;
   int _bottomNavIndex = 0;
 
+  @override
+  void initState() {
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _videoPlayProvider.initializeVideoPlayerFutures();
+
+    // TODO: implement initState
+    super.initState();
+  }
+
   final List<Widget> _screens = <Widget>[
     const HomeScreen(),
     const ProfileScreen(),
@@ -28,6 +37,12 @@ class _MainScreenState extends State<MainScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _bottomNavIndex = index;
+
+      if (index == 1) {
+        _videoPlayProvider.pauseVideo();
+      } else {
+        _videoPlayProvider.playVideo();
+      }
     });
   }
 
@@ -42,9 +57,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-    _videoPlayProvider.loadVideo();
-
     return Scaffold(
       extendBody: true,
       body: _screens[_bottomNavIndex],

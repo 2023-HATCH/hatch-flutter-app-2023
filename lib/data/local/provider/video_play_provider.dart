@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayProvider with ChangeNotifier {
+  late PageController pageController;
   late List<VideoPlayerController> controllers;
+  late List<Future<void>> videoPlayerFutures;
 
   List<String> videoLinks = [
     'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-2.mp4',
@@ -53,6 +55,19 @@ class VideoPlayProvider with ChangeNotifier {
   ];
 
   int currentIndex = 0;
+
+  void initializeVideoPlayerFutures() {
+    loadVideo();
+    pageController = PageController();
+
+    videoPlayerFutures = List<Future<void>>.generate(
+      videoLinks.length,
+      (index) => controllers[index].initialize(),
+    );
+    setVideo();
+
+    notifyListeners();
+  }
 
   void loadVideo() {
     // 모든 비디오 로드
