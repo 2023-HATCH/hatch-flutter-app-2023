@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/screen/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_wait_screen.dart';
 import 'package:pocket_pose/ui/screen/profile_screen.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -15,6 +17,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late VideoPlayProvider _videoPlayProvider;
   int _bottomNavIndex = 0;
 
   final List<Widget> _screens = <Widget>[
@@ -29,14 +32,19 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onFloatingButtonClicked() {
+    _videoPlayProvider.pauseVideo();
+
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PoPoWaitScreen()),
+      MaterialPageRoute(builder: (context) => PoPoWaitScreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _videoPlayProvider.loadVideo();
+
     return Scaffold(
       extendBody: true,
       body: _screens[_bottomNavIndex],

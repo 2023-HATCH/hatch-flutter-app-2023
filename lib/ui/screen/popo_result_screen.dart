@@ -21,8 +21,7 @@ class PoPoResultScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          const PoPoWaitScreen()));
+                      builder: (BuildContext context) => PoPoWaitScreen()));
                 },
                 icon: const Icon(Icons.navigate_next_rounded))
           ],
