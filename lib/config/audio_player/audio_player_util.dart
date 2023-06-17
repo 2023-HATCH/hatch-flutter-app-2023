@@ -2,12 +2,14 @@ import 'package:audio_session/audio_session.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class AudioPlayerUtil {
-  late AudioSession audioSession;
+  AudioSession? audioSession;
   AudioPlayer player = AudioPlayer();
 
   static final AudioPlayerUtil _instance = AudioPlayerUtil._internal();
 
-  factory AudioPlayerUtil() => _instance;
+  factory AudioPlayerUtil() {
+    return _instance;
+  }
 
   AudioPlayerUtil._internal() {
     _audioSessionConfigure();
@@ -27,14 +29,14 @@ class AudioPlayerUtil {
     // 스켈레톤 추출 시작
     setIsSkeletonDetectStart(true);
     // 외부 음악 종료
-    await audioSession.setActive(false);
+    await audioSession?.setActive(false);
   }
 
   stop() async {
     // 내부 음악 종료
     await player.stop();
     // 외부 음악 실행
-    await audioSession.setActive(true);
+    await audioSession?.setActive(true);
   }
 
   // 외부 음악 들릴 때 반응 설정

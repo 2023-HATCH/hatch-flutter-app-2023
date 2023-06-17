@@ -81,6 +81,9 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
             ),
             onPressed: () {},
           ),
+          const SizedBox(height: 10.0),
+          Text('$_seconds',
+              style: const TextStyle(fontSize: 14, color: Colors.white))
         ],
       ),
     );

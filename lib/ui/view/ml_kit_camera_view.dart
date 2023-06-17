@@ -38,9 +38,9 @@ class _CameraViewState extends State<CameraView> {
   int _cameraIndex = -1;
   // 확대 축소 레벨
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
-  // 음악 버튼 텍스트
-  bool _countdownVisibility = true;
-  int _seconds = 3;
+  // 5초 카운트다운 텍스트
+  bool _countdownVisibility = false;
+  int _seconds = 5;
   late Timer _timer;
 
   @override
@@ -72,7 +72,21 @@ class _CameraViewState extends State<CameraView> {
       _startLiveFeed();
     }
 
-    if (!widget.isResultState) {
+    // AudioPlayer 초기화
+    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectStart);
+
+    // 결과 상태인 경우
+    if (widget.isResultState) {
+      AudioPlayerUtil().play(
+          "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3",
+          widget.setIsSkeletonDetectStart);
+    }
+    // 플레이 상태인 경우
+    else {
+      // 카운트다운 시작 후 노래 재생
+      setState(() {
+        _countdownVisibility = true;
+      });
       _startTimer();
     }
   }
@@ -85,12 +99,9 @@ class _CameraViewState extends State<CameraView> {
         setState(() {
           _countdownVisibility = false;
         });
-
-        if (!widget.isResultState) {
-          AudioPlayerUtil().play(
-              "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
-              widget.setIsSkeletonDetectStart);
-        }
+        AudioPlayerUtil().play(
+            "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
+            widget.setIsSkeletonDetectStart);
       } else {
         setState(() {
           _seconds--;
@@ -112,15 +123,15 @@ class _CameraViewState extends State<CameraView> {
   @override
   void dispose() {
     _stopLiveFeed();
-    AudioPlayerUtil().stop();
+    if (widget.isResultState) {
+      //_stopLiveFeed();
+      AudioPlayerUtil().stop();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // AudioPlayer 초기화
-    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectStart);
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
@@ -141,24 +152,22 @@ class _CameraViewState extends State<CameraView> {
     // to prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
 
-    return Container(
-      child: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          // 추출된 스켈레톤 그리기
-          if (widget.customPaint != null) widget.customPaint!,
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Visibility(
-                visible: _countdownVisibility,
-                child: Text('$_seconds',
-                    style: const TextStyle(fontSize: 72, color: Colors.white)),
-              )
-            ],
-          )
-        ],
-      ),
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        // 추출된 스켈레톤 그리기
+        if (widget.customPaint != null) widget.customPaint!,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Visibility(
+              visible: _countdownVisibility,
+              child: Text('$_seconds',
+                  style: const TextStyle(fontSize: 72, color: Colors.white)),
+            )
+          ],
+        )
+      ],
     );
   }
 
