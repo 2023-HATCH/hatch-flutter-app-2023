@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
@@ -116,17 +117,9 @@ class _CameraViewState extends State<CameraView> {
     _timer.cancel();
   }
 
-  // Future _stopLiveFeed() async {
-  //   await _controller?.stopImageStream();
-  //   await _controller?.dispose();
-  //   AudioPlayerUtil().stop();
-  //   _controller = null;
-  // }
-
   @override
   void dispose() {
     if (widget.isResultState) {
-      // _stopLiveFeed();
       AudioPlayerUtil().stop();
     }
     super.dispose();
@@ -157,6 +150,24 @@ class _CameraViewState extends State<CameraView> {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
+        Positioned(
+          top: 80,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                'assets/icons/ic_music_note_small.svg',
+              ),
+              const SizedBox(width: 8.0),
+              const Text(
+                "I AM-IVE",
+                style: TextStyle(fontSize: 10, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
         // 추출된 스켈레톤 그리기
         if (widget.customPaint != null) widget.customPaint!,
         Column(

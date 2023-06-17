@@ -25,7 +25,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _count = 1;
   late Timer _timer;
 
-  StageStage _stageStage = StageStage.waitState;
+  StageStage _stageStage = StageStage.playState;
   late VideoPlayProvider _videoPlayProvider;
   @override
   void initState() {
