@@ -1,6 +1,5 @@
 // 카메라 화면
 import 'dart:async';
-import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
@@ -13,11 +12,13 @@ import 'package:pocket_pose/main.dart';
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
+      required this.isResultState,
       required this.setIsSkeletonDetectStart,
       required this.customPaint,
       required this.onImage,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
+  bool isResultState;
   // skeleton 트리거
   Function setIsSkeletonDetectStart;
   // 스켈레톤을 그려주는 객체
@@ -38,9 +39,9 @@ class _CameraViewState extends State<CameraView> {
   int _cameraIndex = -1;
   // 확대 축소 레벨
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
-  // 음악 버튼 텍스트
-  bool _countdownVisibility = true;
-  int _seconds = 3;
+  // 5초 카운트다운 텍스트
+  bool _countdownVisibility = false;
+  int _seconds = 5;
   late Timer _timer;
 
   @override
@@ -72,7 +73,24 @@ class _CameraViewState extends State<CameraView> {
       _startLiveFeed();
     }
 
-    _startTimer();
+    // AudioPlayer 초기화
+    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectStart);
+    AudioPlayerUtil().setCameraController(_controller);
+
+    // 결과 상태인 경우
+    if (widget.isResultState) {
+      AudioPlayerUtil().play(
+          "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3",
+          widget.setIsSkeletonDetectStart);
+    }
+    // 플레이 상태인 경우
+    else {
+      // 카운트다운 시작 후 노래 재생
+      setState(() {
+        _countdownVisibility = true;
+      });
+      _startTimer();
+    }
   }
 
   void _startTimer() {
@@ -83,7 +101,6 @@ class _CameraViewState extends State<CameraView> {
         setState(() {
           _countdownVisibility = false;
         });
-
         AudioPlayerUtil().play(
             "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
             widget.setIsSkeletonDetectStart);
@@ -99,43 +116,29 @@ class _CameraViewState extends State<CameraView> {
     _timer.cancel();
   }
 
+  // Future _stopLiveFeed() async {
+  //   await _controller?.stopImageStream();
+  //   await _controller?.dispose();
+  //   AudioPlayerUtil().stop();
+  //   _controller = null;
+  // }
+
   @override
   void dispose() {
-    _stopLiveFeed();
-    AudioPlayerUtil().stop();
+    if (widget.isResultState) {
+      // _stopLiveFeed();
+      AudioPlayerUtil().stop();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // AudioPlayer 초기화
-    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectStart);
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
       body: _liveFeedBody(),
-      // 전면<->후면 변경 버튼
-      floatingActionButton: _floatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
-  }
-
-  // 전면<->후면 카메라 변경 버튼
-  Widget? _floatingActionButton() {
-    if (cameras.length == 1) return null;
-    return SizedBox(
-        height: 70.0,
-        width: 70.0,
-        child: FloatingActionButton(
-          onPressed: _switchLiveCamera,
-          child: Icon(
-            Platform.isIOS
-                ? Icons.flip_camera_ios_outlined
-                : Icons.flip_camera_android_outlined,
-            size: 40,
-          ),
-        ));
   }
 
   // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
@@ -151,56 +154,28 @@ class _CameraViewState extends State<CameraView> {
     // to prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
 
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: AssetImage('assets/images/bg_popo_comm.png'),
-        ),
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          // 추출된 스켈레톤 그리기
-          if (widget.customPaint != null) widget.customPaint!,
-          // 화면 확대 축소 위젯
-          Positioned(
-            bottom: 100,
-            left: 50,
-            right: 50,
-            child: Slider(
-              value: zoomLevel,
-              min: minZoomLevel,
-              max: maxZoomLevel,
-              onChanged: (newSliderValue) {
-                setState(() {
-                  zoomLevel = newSliderValue;
-                  _controller!.setZoomLevel(zoomLevel);
-                });
-              },
-              divisions: (maxZoomLevel - 1).toInt() < 1
-                  ? null
-                  : (maxZoomLevel - 1).toInt(),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Visibility(
-                visible: _countdownVisibility,
-                child: Text('$_seconds',
-                    style: const TextStyle(fontSize: 72, color: Colors.white)),
-              )
-            ],
-          )
-        ],
-      ),
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        // 추출된 스켈레톤 그리기
+        if (widget.customPaint != null) widget.customPaint!,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Visibility(
+              visible: _countdownVisibility,
+              child: Text('$_seconds',
+                  style: const TextStyle(fontSize: 72, color: Colors.white)),
+            )
+          ],
+        )
+      ],
     );
   }
 
   // 실시간으로 카메라에서 이미지 받기(비동기적)
   Future _startLiveFeed() async {
-    final camera = cameras[_cameraIndex];
+    final camera = cameras[(_cameraIndex + 1) % cameras.length];
     _controller = CameraController(
       camera,
       ResolutionPreset.high,
@@ -223,20 +198,6 @@ class _CameraViewState extends State<CameraView> {
     });
   }
 
-  Future _stopLiveFeed() async {
-    await _controller?.stopImageStream();
-    await _controller?.dispose();
-    _controller = null;
-  }
-
-  // 전면<->후면 카메라 변경 함수
-  Future _switchLiveCamera() async {
-    _cameraIndex = (_cameraIndex + 1) % cameras.length;
-
-    await _stopLiveFeed();
-    await _startLiveFeed();
-  }
-
   // 카메라에서 실시간으로 받아온 이미치 처리: PoseDetectorView에서 받아온 함수인 onImage(이미지에 포즈가 추출되었으면 스켈레톤 그려주는 함수) 실행
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();
@@ -248,7 +209,7 @@ class _CameraViewState extends State<CameraView> {
     final Size imageSize =
         Size(image.width.toDouble(), image.height.toDouble());
 
-    final camera = cameras[_cameraIndex];
+    final camera = cameras[(_cameraIndex + 1) % cameras.length];
     final imageRotation =
         InputImageRotationValue.fromRawValue(camera.sensorOrientation);
     if (imageRotation == null) return;

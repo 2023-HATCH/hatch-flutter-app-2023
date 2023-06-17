@@ -1,7 +1,9 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:camera/camera.dart';
 
 class AudioPlayerUtil {
+  late CameraController? _controller;
   late AudioSession audioSession;
   AudioPlayer player = AudioPlayer();
 
@@ -11,6 +13,10 @@ class AudioPlayerUtil {
 
   AudioPlayerUtil._internal() {
     _audioSessionConfigure();
+  }
+
+  setCameraController(CameraController? cameraController) {
+    _controller = cameraController;
   }
 
   // 노래 종료 후 실행할 함수 설정
@@ -31,6 +37,11 @@ class AudioPlayerUtil {
   }
 
   stop() async {
+    // 카메라 종료(포포 스테이지 종료)
+    await _controller?.stopImageStream();
+    await _controller?.dispose();
+    _controller = null;
+
     // 내부 음악 종료
     await player.stop();
     // 외부 음악 실행
