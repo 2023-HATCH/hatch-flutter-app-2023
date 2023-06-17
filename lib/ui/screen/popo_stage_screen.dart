@@ -34,6 +34,12 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     _startTimer();
   }
 
+  @override
+  void dispose() {
+    AudioPlayerUtil().stop();
+    super.dispose();
+  }
+
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       // 임시로 14초 되면 캐치로 이동
