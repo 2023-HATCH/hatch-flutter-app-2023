@@ -122,9 +122,8 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   void dispose() {
-    _stopLiveFeed();
     if (widget.isResultState) {
-      //_stopLiveFeed();
+      _stopLiveFeed();
       AudioPlayerUtil().stop();
     }
     super.dispose();
