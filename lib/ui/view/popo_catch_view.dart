@@ -13,7 +13,7 @@ class PoPoCatchView extends StatefulWidget {
 }
 
 class _PoPoCatchViewState extends State<PoPoCatchView> {
-  int _seconds = 3;
+  int _seconds = 20;
   late Timer _timer;
 
   @override

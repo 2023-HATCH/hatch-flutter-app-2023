@@ -22,6 +22,7 @@ class PoPoStageScreen extends StatefulWidget {
 
 class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _userCount = 1;
+  int _count = 1;
   late Timer _timer;
 
   StageStage _stageStage = StageStage.waitState;
@@ -35,7 +36,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      // 임시로 3초 되면 캐치로 이동
+      // 임시로 14초 되면 캐치로 이동
       if (_userCount == 3) {
         _stopTimer();
         setState(() {
@@ -43,7 +44,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         });
       } else {
         setState(() {
-          _userCount++;
+          _count++;
+          _userCount = _count ~/ 7 + 1;
         });
       }
     });
