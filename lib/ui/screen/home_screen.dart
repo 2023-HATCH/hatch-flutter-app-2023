@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     // listen: false 상태 변화에 대해 위젯을 새로고치지 않겠다.
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-
     super.initState();
   }
 

@@ -37,6 +37,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void dispose() {
     AudioPlayerUtil().stop();
+    _videoPlayProvider.playVideo();
     super.dispose();
   }
 

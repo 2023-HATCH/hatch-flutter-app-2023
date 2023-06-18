@@ -89,6 +89,8 @@ class VideoPlayProvider with ChangeNotifier {
 
   void pauseVideo() {
     controllers[currentIndex].pause();
+
+    notifyListeners();
   }
 
   void playVideo() {
