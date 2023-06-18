@@ -131,13 +131,8 @@ class CustomPosePainter extends CustomPainter {
       Offset rightPoint;
 
       final noseLandmark = pose.landmarks[PoseLandmarkType.nose];
-      final leftShoulderLandmark =
-          pose.landmarks[PoseLandmarkType.leftShoulder];
-      final rightShoulderLandmark =
-          pose.landmarks[PoseLandmarkType.rightShoulder];
 
       if (noseLandmark != null) {
-        // 코가 추출될 경우
         centerPoint = Offset(
           translateX(noseLandmark.x, rotation, size, absoluteImageSize),
           translateY(noseLandmark.y, rotation, size, absoluteImageSize),
@@ -171,42 +166,11 @@ class CustomPosePainter extends CustomPainter {
 
         // Calculate face radius
         final distance = leftPoint.dx - rightPoint.dx;
-        final faceRadius = distance * 2;
+        double faceRadius = distance * 2;
 
-        // Draw face circle
-        canvas.drawCircle(centerPoint, faceRadius, neonOuterPaint);
-        canvas.drawCircle(centerPoint, faceRadius, neonInnerPaint);
-        canvas.drawCircle(centerPoint, faceRadius, paint);
-      } else if (leftShoulderLandmark != null &&
-          rightShoulderLandmark != null) {
-        // 양쪽 어깨가 추출될 경우
-        // 어께로부터 떨어진 거리(임의의 값)
-        int upHeight = 2;
+        if (faceRadius < 0) faceRadius = faceRadius * -1;
 
-        leftPoint = Offset(
-          translateX(leftShoulderLandmark.x, rotation, size, absoluteImageSize),
-          translateY(leftShoulderLandmark.y + upHeight, rotation, size,
-              absoluteImageSize),
-        );
-
-        rightPoint = Offset(
-          translateX(
-              rightShoulderLandmark.x, rotation, size, absoluteImageSize),
-          translateY(rightShoulderLandmark.y + upHeight, rotation, size,
-              absoluteImageSize),
-        );
-
-        // Calculate face radius
-        final xDistance = leftPoint.dx - rightPoint.dx;
-        final yDistance = leftPoint.dx - rightPoint.dx;
-
-        centerPoint = Offset(
-          translateX(xDistance, rotation, size, absoluteImageSize),
-          translateY(yDistance, rotation, size, absoluteImageSize),
-        );
-
-        // Calculate face radius
-        final faceRadius = xDistance * 2;
+        debugPrint("faceRadius: ${faceRadius.toString()}");
 
         // Draw face circle
         canvas.drawCircle(centerPoint, faceRadius, neonOuterPaint);
