@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
@@ -90,21 +91,21 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       _isStarted = bool;
 
       if (!_isStarted) {
-        // ai 서버 오류로 잠시 주석처리
-        _inputLists.clear();
-        widget.setStageState(StageStage.resultState);
-        // _provider
-        //     .postSkeletonList(_inputLists)
-        //     .then((value) => Fluttertoast.showToast(
-        //           msg: value.toString(),
-        //           toastLength: Toast.LENGTH_SHORT,
-        //           timeInSecForIosWeb: 1,
-        //           backgroundColor: Colors.black,
-        //           textColor: Colors.white,
-        //           fontSize: 16.0,
-        //         ))
-        //     .then((_) => _inputLists.clear())
-        //     .then((_) => widget.setStageState(StageStage.resultState));
+        // // ai 서버 오류로 잠시 주석처리
+        // _inputLists.clear();
+        // widget.setStageState(StageStage.resultState);
+        _provider
+            .postSkeletonList(_inputLists)
+            .then((value) => Fluttertoast.showToast(
+                  msg: value.toString(),
+                  toastLength: Toast.LENGTH_SHORT,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                ))
+            .then((_) => _inputLists.clear())
+            .then((_) => widget.setStageState(StageStage.resultState));
       }
     });
   }
