@@ -42,7 +42,7 @@ class _CameraViewState extends State<CameraView> {
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
   // 5초 카운트다운 텍스트
   bool _countdownVisibility = false;
-  int _seconds = 5;
+  int _seconds = 20;
   late Timer _timer;
 
   @override
