@@ -82,6 +82,29 @@ class _HomeScreenState extends State<HomeScreen>
                       // profile, nicname, content
                       VideoFrameContentWidget(index: index),
                     ]);
+                  } else if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    // 데이터가 로딩중일 때
+                    return Stack(children: <Widget>[
+                      GestureDetector(
+                        // 비디오 클릭 시 영상 정지/재생
+                        onTap: () {
+                          if (_videoPlayProvider
+                              .controllers[index].value.isPlaying) {
+                            _videoPlayProvider.controllers[index].pause();
+                          } else {
+                            // 만약 영상 일시 중지 상태였다면, 재생.
+                            _videoPlayProvider.controllers[index].play();
+                          }
+                        },
+                        child:
+                            VideoPlayer(_videoPlayProvider.controllers[index]),
+                      ),
+                      // like, chat, share, progress
+                      VideoFrameRightWidget(index: index),
+                      // profile, nicname, content
+                      VideoFrameContentWidget(index: index),
+                    ]);
                   } else {
                     // 만약 VideoPlayerController가 여전히 초기화 중이라면, 로딩 스피너를 보여줌.
                     return const Center(child: CircularProgressIndicator());
