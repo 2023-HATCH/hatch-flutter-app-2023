@@ -26,8 +26,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   bool _isBusy = false;
   // 스켈레톤 모양을 그려주는 변수
   CustomPaint? _customPaint;
-  // start, end btn trigger
-  bool _isStarted = false;
+  // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
+  SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
+  final bool _isPlayer = true;
   // input Lists
   final List<List<double>> _inputLists = [];
   final _provider = PoPoSkeletonProviderImpl();
@@ -44,13 +45,14 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     // 카메라뷰 보이기
     return CameraView(
       isResultState: widget.isResultState,
-      setIsSkeletonDetectStart: setIsStarted,
+      setIsSkeletonDetectMode: setIsSkeletonDetectMode,
       // 스켈레톤 그려주는 객체 전달
       customPaint: _customPaint,
       // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
       onImage: (inputImage) {
-        // start 버튼 눌렀을 때만 스켈레톤 추출
-        if (_isStarted) {
+        // user이거나 노래가 종료된 거 아닌 이상 항상 스켈레톤 추출
+        if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
+            _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
           processImage(inputImage);
         }
       },
@@ -65,8 +67,11 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     // poseDetector에서 추출된 포즈 가져오기
     List<Pose> poses = await _poseDetector.processImage(inputImage);
 
-    for (final pose in poses) {
-      _inputLists.add(_poseMapToInputList(pose.landmarks));
+    // 사용자가 춤 추기 시작할 때 스켈레톤 배열에 저장
+    if (_skeletonDetectMode == SkeletonDetectMode.musicStartMode) {
+      for (final pose in poses) {
+        _inputLists.add(_poseMapToInputList(pose.landmarks));
+      }
     }
 
     // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
@@ -86,28 +91,29 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     }
   }
 
-  void setIsStarted(bool bool) async {
-    setState(() {
-      _isStarted = bool;
+  void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
+    if (_isPlayer) {
+      setState(() {
+        _skeletonDetectMode = mode;
 
-      if (!_isStarted) {
-        // // ai 서버 오류로 잠시 주석처리
-        // _inputLists.clear();
-        // widget.setStageState(StageStage.resultState);
-        _provider
-            .postSkeletonList(_inputLists)
-            .then((value) => Fluttertoast.showToast(
-                  msg: value.toString(),
-                  toastLength: Toast.LENGTH_SHORT,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                ))
-            .then((_) => _inputLists.clear())
-            .then((_) => widget.setStageState(StageStage.resultState));
-      }
-    });
+        // 노래 끝나면 스켈레톤 서버에 보내기
+        if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
+          // // ai 서버 오류로 잠시 주석처리
+          _provider
+              .postSkeletonList(_inputLists)
+              .then((value) => Fluttertoast.showToast(
+                    msg: value.toString(),
+                    toastLength: Toast.LENGTH_SHORT,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.black,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  ))
+              .then((_) => _inputLists.clear())
+              .then((_) => widget.setStageState(StageStage.resultState));
+        }
+      });
+    }
   }
 
   List<double> _poseMapToInputList(Map<PoseLandmarkType, PoseLandmark> entry) {

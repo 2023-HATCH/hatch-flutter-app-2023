@@ -24,8 +24,9 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   bool _isBusy = false;
   // 스켈레톤 모양을 그려주는 변수
   CustomPaint? _customPaint;
-  // start, end btn trigger
-  bool _isStarted = false;
+  // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
+  SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
+  final bool _isPlayer = true;
   // input Lists
   final List<List<double>> _inputLists = [];
 
@@ -41,13 +42,14 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     // 카메라뷰 보이기
     return CameraView(
       isResultState: widget.isResultState,
-      setIsSkeletonDetectStart: setIsStarted,
+      setIsSkeletonDetectMode: setIsSkeletonDetectMode,
       // 스켈레톤 그려주는 객체 전달
       customPaint: _customPaint,
       // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
       onImage: (inputImage) {
-        // start 버튼 눌렀을 때만 스켈레톤 추출
-        if (_isStarted) {
+        // player는 항상 스켈레톤 추출
+        if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
+            _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
           processImage(inputImage);
         }
       },
@@ -83,15 +85,18 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     }
   }
 
-  void setIsStarted(bool bool) async {
-    setState(() {
-      _isStarted = bool;
+  void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
+    if (_isPlayer) {
+      setState(() {
+        _skeletonDetectMode = mode;
 
-      if (!_isStarted) {
-        _inputLists.clear();
-        widget.setStageState(StageStage.waitState);
-      }
-    });
+        // 노래 끝나면 대기 화면으로 이동
+        if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
+          _inputLists.clear();
+          widget.setStageState(StageStage.waitState);
+        }
+      });
+    }
   }
 
   List<double> _poseMapToInputList(Map<PoseLandmarkType, PoseLandmark> entry) {
