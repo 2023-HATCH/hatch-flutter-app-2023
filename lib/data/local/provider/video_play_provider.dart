@@ -5,6 +5,7 @@ class VideoPlayProvider with ChangeNotifier {
   late PageController pageController;
   late List<VideoPlayerController> controllers;
   late List<Future<void>> videoPlayerFutures;
+  late bool loading = false;
 
   List<String> videoLinks = [
     'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-2.mp4',
