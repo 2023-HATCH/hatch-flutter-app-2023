@@ -9,19 +9,27 @@ import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
 
+enum SkeletonDetectMode {
+  playerWaitMode, // 플레이어가 춤 추기 전 준비하는 모드(스켈레톤 추출 O, 스켈레톤 배열에 저장 X)
+  musicStartMode, // 노래 시작. 플레이어의 스켈레톤을 배열에 저장하는 모드 (스켈레톤 추출 O, 스켈레톤 배열에 저장 시작)
+  musicEndMode, // 노래 종료. 플레이어의 스켈레톤을 서버에 전달  (스켈레톤 추출 종료, 스켈레톤 배열에 저장 종료)
+  resultMode, // 결과 화면. 항상 스켈레톤 추출 (스켈레톤 추출 O, 스켈레톤 배열에 저장 X)
+  userMode // 유저 모드. 스켈레톤 추출 안 함 (스켈레톤 추출 X, 스켈레톤 배열에 저장 X)
+}
+
 // ignore: must_be_immutable
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
       required this.isResultState,
-      required this.setIsSkeletonDetectStart,
+      required this.setIsSkeletonDetectMode,
       required this.customPaint,
       required this.onImage,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
   bool isResultState;
   // skeleton 트리거
-  Function setIsSkeletonDetectStart;
+  Function setIsSkeletonDetectMode;
   // 스켈레톤을 그려주는 객체
   final CustomPaint? customPaint;
   // 이미지 받을 때마다 실행하는 함수
@@ -75,14 +83,14 @@ class _CameraViewState extends State<CameraView> {
     }
 
     // AudioPlayer 초기화
-    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectStart);
+    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectMode);
     AudioPlayerUtil().setCameraController(_controller);
 
     // 결과 상태인 경우
     if (widget.isResultState) {
       AudioPlayerUtil().play(
           "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3",
-          widget.setIsSkeletonDetectStart);
+          widget.setIsSkeletonDetectMode);
     }
     // 플레이 상태인 경우
     else {
@@ -104,7 +112,7 @@ class _CameraViewState extends State<CameraView> {
         });
         AudioPlayerUtil().play(
             "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
-            widget.setIsSkeletonDetectStart);
+            widget.setIsSkeletonDetectMode);
       } else {
         setState(() {
           _seconds--;
