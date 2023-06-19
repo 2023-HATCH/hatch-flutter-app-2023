@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/home_video_frame_header_widget.dart';
 import 'package:provider/provider.dart';
@@ -60,8 +62,12 @@ class _HomeScreenState extends State<HomeScreen>
                 future: _videoPlayProvider
                     .videoPlayerFutures[_videoPlayProvider.currentIndex],
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
+                  // if (snapshot.connectionState == ConnectionState.done) {
+                  //   _videoPlayProvider.loading = true;
+
+                  if (false) {
                     _videoPlayProvider.loading = true;
+
                     // 데이터가 수신되었을 때
                     return Stack(children: <Widget>[
                       GestureDetector(
@@ -83,9 +89,10 @@ class _HomeScreenState extends State<HomeScreen>
                       // profile, nicname, content
                       VideoFrameContentWidget(index: index),
                     ]);
-                  } else if (snapshot.connectionState ==
-                          ConnectionState.waiting &&
-                      _videoPlayProvider.loading) {
+                    // } else if (snapshot.connectionState ==
+                    //         ConnectionState.waiting &&
+                    //     _videoPlayProvider.loading) {
+                  } else if (false) {
                     // 데이터가 로딩중일 때
                     return Stack(children: <Widget>[
                       GestureDetector(
@@ -109,7 +116,20 @@ class _HomeScreenState extends State<HomeScreen>
                     ]);
                   } else {
                     // 만약 VideoPlayerController가 여전히 초기화 중이라면, 로딩 스피너를 보여줌.
-                    return const Center(child: CircularProgressIndicator());
+                    return Container(
+                      color: Colors.black87,
+                      child: SpinKitSpinningCircle(
+                        size: 160.0,
+                        duration: const Duration(milliseconds: 2400),
+                        itemBuilder: (context, index) {
+                          return Center(
+                            child: SvgPicture.asset(
+                              'assets/icons/ic_dance_popo.svg',
+                            ),
+                          );
+                        },
+                      ),
+                    );
                   }
                 });
           },

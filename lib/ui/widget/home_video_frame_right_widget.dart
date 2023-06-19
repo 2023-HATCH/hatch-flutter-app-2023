@@ -18,7 +18,7 @@ class VideoFrameRightWidget extends StatelessWidget {
 
     return Positioned(
       right: 12,
-      bottom: 100,
+      bottom: 110,
       child: SizedBox(
         //color: Colors.orange,
         width: 60,
