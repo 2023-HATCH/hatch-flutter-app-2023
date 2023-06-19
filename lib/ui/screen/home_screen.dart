@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/ui/widget/dancing_popo_widget.dart';
 import 'package:pocket_pose/ui/widget/home_video_frame_header_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -62,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen>
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     // 데이터가 수신되었을 때
+                    _videoPlayProvider.loading = true;
+
                     return Stack(children: <Widget>[
                       GestureDetector(
                         // 비디오 클릭 시 영상 정지/재생
@@ -83,7 +86,8 @@ class _HomeScreenState extends State<HomeScreen>
                       VideoFrameContentWidget(index: index),
                     ]);
                   } else if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
+                          ConnectionState.waiting &&
+                      _videoPlayProvider.loading) {
                     // 데이터가 로딩중일 때
                     return Stack(children: <Widget>[
                       GestureDetector(
@@ -106,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen>
                       VideoFrameContentWidget(index: index),
                     ]);
                   } else {
-                    // 만약 VideoPlayerController가 여전히 초기화 중이라면, 로딩 스피너를 보여줌.
-                    return const Center(child: CircularProgressIndicator());
+                    // 만약 VideoPlayerController가 여전히 초기화 중이라면, 포포 로딩 스피너를 보여줌.
+                    return const DancingPopo();
                   }
                 });
           },
