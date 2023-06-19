@@ -62,6 +62,10 @@ class _HomeScreenState extends State<HomeScreen>
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     // 데이터가 수신되었을 때
+
+                    if (_videoPlayProvider.loading == false) {
+                      _videoPlayProvider.loading = true;
+                    }
                     return Stack(children: <Widget>[
                       GestureDetector(
                         // 비디오 클릭 시 영상 정지/재생
@@ -83,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen>
                       VideoFrameContentWidget(index: index),
                     ]);
                   } else if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
+                          ConnectionState.waiting &&
+                      _videoPlayProvider.loading) {
                     // 데이터가 로딩중일 때
                     return Stack(children: <Widget>[
                       GestureDetector(
