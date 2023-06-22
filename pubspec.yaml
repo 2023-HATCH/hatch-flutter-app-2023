@@ -28,6 +28,7 @@ dependencies:
   video_player: ^2.6.1
   json_annotation: ^4.8.0
   change_app_package_name: ^1.1.0
+  kakao_flutter_sdk_user: ^1.4.3
 
 dev_dependencies:
   flutter_test:
