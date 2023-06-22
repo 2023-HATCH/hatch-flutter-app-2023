@@ -39,6 +39,70 @@ class _MainScreenState extends State<MainScreen> {
 
       if (index == 1) {
         _videoPlayProvider.pauseVideo();
+
+        showModalBottomSheet(
+          context: context,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+            top: Radius.circular(30.0),
+          )),
+          builder: (BuildContext context) {
+            return Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(18, 18, 0, 0),
+                        child: SvgPicture.asset(
+                          'assets/icons/ic_exit.svg',
+                          width: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 14, 0, 14),
+                        child: const Text(
+                          "Pocket Pose 가입하기",
+                          style: TextStyle(
+                              fontSize: 26, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 14),
+                        child: const Text(
+                          "간편하게 로그인하고 다양한 서비스를 이용해보세요.",
+                          style: TextStyle(color: Colors.black87),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: SvgPicture.asset(
+                          'assets/images/kakao_login_popo.svg',
+                          width: 150,
+                        ),
+                      ),
+                      Image.asset(
+                        'assets/images/kakao_login.png',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
       } else {
         _videoPlayProvider.playVideo();
       }

@@ -84,9 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     authProvider = Provider.of<AuthProvider>(context);
 
-    debugPrint("토큰${authProvider.accessToken}");
+    //debugPrint("토큰${authProvider.accessToken}");
+
     return authProvider.accessToken != null
+        //토큰이 존재할 경우
         ? Container()
+        //토큰이 존재하지 않는 경우
         : Scaffold(
             body: Center(
               child: _loginPlatform != LoginPlatform.none
