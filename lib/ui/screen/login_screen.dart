@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/domain/enum/login_platform.dart';
+import 'package:pocket_pose/domain/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,6 +19,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   //현재 로그인한 플랫폼을 저장할 변수를 선언
   LoginPlatform _loginPlatform = LoginPlatform.none;
+
+  late AuthProvider authProvider;
 
   void signInWithKakao() async {
     try {
@@ -50,6 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _loginPlatform = LoginPlatform.kakao;
       });
+      // 로그인 성공
+      authProvider.storeAccessToken(token.accessToken);
     } catch (error) {
       debugPrint('카카오톡으로 로그인 실패 $error');
     }
@@ -65,27 +71,37 @@ class _LoginScreenState extends State<LoginScreen> {
         break;
     }
 
+    debugPrint('카카오톡 로그아웃');
     setState(() {
       _loginPlatform = LoginPlatform.none;
     });
+
+    // 로그아웃 처리
+    authProvider.removeAccessToken();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-          child: _loginPlatform != LoginPlatform.none
-              ? _logoutButton()
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _loginButton(
-                      'kakao_logo',
-                      signInWithKakao,
-                    )
-                  ],
-                )),
-    );
+    authProvider = Provider.of<AuthProvider>(context);
+
+    debugPrint("토큰${authProvider.accessToken}");
+    return authProvider.accessToken != null
+        ? Container()
+        : Scaffold(
+            body: Center(
+              child: _loginPlatform != LoginPlatform.none
+                  ? _logoutButton()
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _loginButton(
+                          'kakao_logo',
+                          signInWithKakao,
+                        )
+                      ],
+                    ),
+            ),
+          );
   }
 
   Widget _loginButton(String path, VoidCallback onTap) {
