@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.pocket_pose">
+    package="com.example.pocketpose">
    <application
         android:label="Pocket Pose"
         android:name="${applicationName}"

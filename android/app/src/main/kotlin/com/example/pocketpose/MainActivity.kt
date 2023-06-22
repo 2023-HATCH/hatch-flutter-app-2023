@@ -1,4 +1,4 @@
-package com.example.pocket_pose
+package com.example.pocketpose
 
 import io.flutter.embedding.android.FlutterActivity
 
