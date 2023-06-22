@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/dancing_popo_widget.dart';
-import 'package:pocket_pose/ui/widget/home_video_frame_header_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -48,6 +48,25 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
+      appBar: AppBar(
+        //centerTitle: true, //Title text 가운데 정렬
+        title: const Text(
+          "PoPo",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.transparent, //appBar 투명색
+        elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
+        actions: [
+          Container(
+              margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+              child: SvgPicture.asset('assets/icons/home_upload.svg')),
+          Container(
+              margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+              child: SvgPicture.asset('assets/icons/home_search.svg')),
+        ],
+      ),
+      extendBodyBehindAppBar: true, //body 위에 appbar
+
       body: Stack(children: <Widget>[
         PageView.builder(
           controller: PageController(
@@ -117,8 +136,6 @@ class _HomeScreenState extends State<HomeScreen>
           },
           onPageChanged: onPageChanged,
         ),
-        // PoPo, upload, search
-        const VideoFrameHeaderWidget(),
       ]),
     );
   }
