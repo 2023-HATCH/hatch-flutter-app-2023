@@ -3,5 +3,6 @@ import 'package:flutter/material.dart';
 
 class AppColor {
   static Color mainPurpleColor = const Color(0xFF565CEA);
+  static Color purpleColor = const Color(0xFFB259F8);
   static Color mintNeonColor = const Color.fromARGB(255, 104, 250, 241);
 }
