@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/domain/provider/auth_provider.dart';
 import 'package:pocket_pose/ui/screen/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/screen/profile_screen.dart';
+import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late VideoPlayProvider _videoPlayProvider;
+  late AuthProvider authProvider;
   int _bottomNavIndex = 0;
 
   @override
@@ -39,6 +42,10 @@ class _MainScreenState extends State<MainScreen> {
 
       if (index == 1) {
         _videoPlayProvider.pauseVideo();
+
+        if (authProvider.accessToken == null) {
+          _showModalBottomSheet(); //토큰이 존재하지 않는 경우
+        }
       } else {
         _videoPlayProvider.playVideo();
       }
@@ -54,8 +61,24 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _showModalBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return const LoginModalContent();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       extendBody: true,
       body: _screens[_bottomNavIndex],

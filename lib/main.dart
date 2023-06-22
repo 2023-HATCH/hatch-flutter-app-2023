@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/domain/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 
@@ -8,6 +10,7 @@ import 'package:pocket_pose/ui/screen/main_screen.dart';
 List<CameraDescription> cameras = [];
 
 Future<void> main() async {
+  KakaoSdk.init(nativeAppKey: 'f03a21b3fa588715cb55730113dea1ab');
   // 비동기 메서드를 사용함
   WidgetsFlutterBinding.ensureInitialized();
   // 사용 가능한 카메라 목록 받아옴
@@ -15,6 +18,7 @@ Future<void> main() async {
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => VideoPlayProvider()),
+    ChangeNotifierProvider(create: (_) => AuthProvider()),
   ], child: const MyApp()));
 }
 
