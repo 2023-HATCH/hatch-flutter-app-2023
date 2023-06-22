@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/ui/screen/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -6,11 +7,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Colors.lightBlue,
-      body: Text(
-        "Profile",
-        style: TextStyle(color: Colors.white, fontSize: 50),
-      ),
-    );
+        backgroundColor: Colors.lightBlue, body: LoginScreen());
   }
 }
