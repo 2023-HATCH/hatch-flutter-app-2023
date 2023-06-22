@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/domain/provider/auth_provider.dart';
 import 'package:pocket_pose/ui/screen/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/screen/profile_screen.dart';
+import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late VideoPlayProvider _videoPlayProvider;
+  late AuthProvider authProvider;
   int _bottomNavIndex = 0;
 
   @override
@@ -39,81 +42,14 @@ class _MainScreenState extends State<MainScreen> {
 
       if (index == 1) {
         _videoPlayProvider.pauseVideo();
-        _showModalBottomSheet();
+
+        if (authProvider.accessToken == null) {
+          _showModalBottomSheet(); //토큰이 존재하지 않는 경우
+        }
       } else {
         _videoPlayProvider.playVideo();
       }
     });
-  }
-
-  void _showModalBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30.0),
-        ),
-      ),
-      builder: (BuildContext context) {
-        return _buildModalContent();
-      },
-    );
-  }
-
-  Widget _buildModalContent() {
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(18, 18, 0, 0),
-                child: SvgPicture.asset(
-                  'assets/icons/ic_exit.svg',
-                  width: 14,
-                ),
-              ),
-            ],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 14, 0, 14),
-                child: const Text(
-                  "Pocket Pose 가입하기",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 0, 0, 14),
-                child: const Text(
-                  "간편하게 로그인하고 다양한 서비스를 이용해보세요.",
-                  style: TextStyle(color: Colors.black87),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                child: SvgPicture.asset(
-                  'assets/images/kakao_login_popo.svg',
-                  width: 150,
-                ),
-              ),
-              Image.asset(
-                'assets/images/kakao_login.png',
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 
   void _onFloatingButtonClicked() {
@@ -125,8 +61,24 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _showModalBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return const LoginModalContent();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       extendBody: true,
       body: _screens[_bottomNavIndex],
