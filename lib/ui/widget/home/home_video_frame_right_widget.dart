@@ -2,9 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../data/local/provider/video_play_provider.dart';
 
 class VideoFrameRightWidget extends StatelessWidget {
   VideoFrameRightWidget({super.key, required this.index});

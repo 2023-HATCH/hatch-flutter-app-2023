@@ -1,9 +1,8 @@
 // ignore: must_be_immutable
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../data/local/provider/video_play_provider.dart';
 
 class VideoFrameContentWidget extends StatelessWidget {
   VideoFrameContentWidget({super.key, required this.index});
