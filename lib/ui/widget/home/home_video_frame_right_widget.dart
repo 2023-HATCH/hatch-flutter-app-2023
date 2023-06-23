@@ -30,7 +30,7 @@ class VideoFrameRightWidget extends StatelessWidget {
                 },
                 child: Column(children: <Widget>[
                   SvgPicture.asset(
-                    'assets/icons/home_like.svg',
+                    'assets/icons/ic_home_like.svg',
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 2)),
                   Text(
@@ -46,7 +46,7 @@ class VideoFrameRightWidget extends StatelessWidget {
                 },
                 child: Column(children: <Widget>[
                   SvgPicture.asset(
-                    'assets/icons/home_chat.svg',
+                    'assets/icons/ic_home_chat.svg',
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 2)),
                   Text(
@@ -62,14 +62,14 @@ class VideoFrameRightWidget extends StatelessWidget {
                     Fluttertoast.showToast(msg: 'share 클릭');
                   },
                   child: SvgPicture.asset(
-                    'assets/icons/home_share.svg',
+                    'assets/icons/ic_home_share.svg',
                   ),
                 )
               ]),
               const Padding(padding: EdgeInsets.only(bottom: 14)),
               Column(children: <Widget>[
                 SvgPicture.asset(
-                  'assets/icons/home_progress.svg',
+                  'assets/icons/ic_home_progress.svg',
                 ),
               ]),
             ]),

@@ -88,7 +88,7 @@ class _MainScreenState extends State<MainScreen> {
         splashColor: AppColor.mainPurpleColor,
         onPressed: _onFloatingButtonClicked,
         child: SvgPicture.asset(
-          'assets/icons/bottom_popo.svg',
+          'assets/icons/ic_bottom_popo.svg',
         ),
       ),
       bottomNavigationBar: AnimatedBottomNavigationBar(

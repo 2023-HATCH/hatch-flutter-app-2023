@@ -58,10 +58,10 @@ class _HomeScreenState extends State<HomeScreen>
         actions: [
           Container(
               margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-              child: SvgPicture.asset('assets/icons/home_upload.svg')),
+              child: SvgPicture.asset('assets/icons/ic_home_upload.svg')),
           Container(
               margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-              child: SvgPicture.asset('assets/icons/home_search.svg')),
+              child: SvgPicture.asset('assets/icons/ic_home_search.svg')),
         ],
       ),
       extendBodyBehindAppBar: true, //body 위에 appbar
