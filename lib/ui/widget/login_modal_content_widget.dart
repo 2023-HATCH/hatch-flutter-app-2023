@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/data/local/provider/auth_provider.dart';
+import 'package:pocket_pose/data/remote/provider/signin_signup_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +18,7 @@ class LoginModalContent extends StatefulWidget {
 
 class _LoginModalContentState extends State<LoginModalContent> {
   late AuthProvider authProvider;
+  late SignInSignUpProvider signInSignUpProvider;
 
   void signInWithKakao() async {
     try {
@@ -34,6 +36,9 @@ class _LoginModalContentState extends State<LoginModalContent> {
 
       //로그인을 성공했다면 OAuthToken 으로 accessToken 값을 받아올 수 있음
       debugPrint('카카오톡 로그인 성공! accessToken:${token.accessToken}');
+
+      // 로그인을 성공했다면 서버 api를 통해 kakao token 전송
+      signInSignUpProvider.login(token.accessToken);
 
       //유저 정보 확인
       final url = Uri.https('kapi.kakao.com', '/v2/user/me');
@@ -65,6 +70,7 @@ class _LoginModalContentState extends State<LoginModalContent> {
   @override
   Widget build(BuildContext context) {
     authProvider = Provider.of<AuthProvider>(context);
+    signInSignUpProvider = Provider.of<SignInSignUpProvider>(context);
 
     return Column(
       children: [
