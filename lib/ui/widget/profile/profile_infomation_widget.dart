@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
+import '../../../data/remote/provider/signin_signup_provider.dart';
 
 class ProfileInfomationWidget extends StatelessWidget {
   ProfileInfomationWidget({
@@ -24,6 +27,9 @@ class ProfileInfomationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final signInSignUpProvider = Provider.of<SignInSignUpProvider>(context);
+    final user = signInSignUpProvider.response?.user;
+
     return SizedBox(
       //color: Colors.yellow,
       height: 300,
@@ -44,9 +50,9 @@ class ProfileInfomationWidget extends StatelessWidget {
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
-            child: const Text(
-              "chats_chur",
-              style: TextStyle(fontWeight: FontWeight.bold),
+            child: Text(
+              user?.nickname ?? "닉네임 없음",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
           Container(

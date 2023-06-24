@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/response/signin_signup_response.dart';
@@ -30,7 +31,8 @@ class SignInSignUpRepository {
     final response = await http.post(url, headers: headers, body: body);
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      debugPrint("json: $json");
 
       final user = UserData(
         uuid: json['data']['uuid'],

@@ -5,7 +5,8 @@ import 'package:pocket_pose/data/entity/response/signin_signup_response.dart';
 import 'package:pocket_pose/data/remote/repository/signin_signup_repository.dart';
 
 class SignInSignUpProvider extends ChangeNotifier {
-  late SignInSignUpResponse? response;
+  // ignore: avoid_init_to_null
+  SignInSignUpResponse? response = null;
 
   Future<void> login(String kakaoAccessToken) async {
     try {
