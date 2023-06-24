@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/auth_provider.dart';
-import 'package:pocket_pose/data/remote/provider/signin_signup_provider.dart';
+import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
+
 import 'package:pocket_pose/ui/widget/not_login_widget.dart';
 import 'package:pocket_pose/ui/widget/profile/profile_infomation_widget.dart';
 import 'package:provider/provider.dart';
@@ -72,10 +72,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     authProvider = Provider.of<AuthProvider>(context);
-    final signInSignUpProvider = Provider.of<SignInSignUpProvider>(context);
 
     if (authProvider.accessToken != null) {
-      if (signInSignUpProvider.response != null) {
+      if (authProvider.response != null) {
         return Scaffold(
           body: CustomScrollView(
             slivers: <Widget>[

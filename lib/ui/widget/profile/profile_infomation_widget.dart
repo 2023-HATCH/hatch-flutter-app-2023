@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../../data/remote/provider/signin_signup_provider.dart';
 
 class ProfileInfomationWidget extends StatelessWidget {
   ProfileInfomationWidget({
@@ -27,8 +26,8 @@ class ProfileInfomationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final signInSignUpProvider = Provider.of<SignInSignUpProvider>(context);
-    final user = signInSignUpProvider.response?.user;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.response?.user;
 
     return SizedBox(
       //color: Colors.yellow,
