@@ -6,6 +6,9 @@ class AppUrl {
 
   static const _stageUrl = "$_apiBaseUrl/stages";
 
+  // 로그인 & 회원가입
+  static const signInSignUpUrl = "$_apiBaseUrl/auth/login?type=kakao";
+
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";
 
