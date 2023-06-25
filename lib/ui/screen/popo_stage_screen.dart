@@ -3,13 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
+import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
-import 'package:provider/provider.dart';
-
-import '../../data/local/provider/video_play_provider.dart';
 
 enum StageStage { waitState, catchState, playState, resultState }
 
@@ -26,7 +24,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late Timer _timer;
 
   StageStage _stageStage = StageStage.waitState;
-  late VideoPlayProvider _videoPlayProvider;
   @override
   void initState() {
     super.initState();
@@ -37,7 +34,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void dispose() {
     AudioPlayerUtil().stop();
-    _videoPlayProvider.playVideo();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MainScreen()),
+    );
     super.dispose();
   }
 
@@ -72,8 +72,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-
     return Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -97,8 +95,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             leading: IconButton(
               onPressed: () {
                 AudioPlayerUtil().stop();
-                Navigator.pop(context);
-                _videoPlayProvider.playVideo();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                );
               },
               icon: SvgPicture.asset(
                 'assets/icons/ic_home.svg',

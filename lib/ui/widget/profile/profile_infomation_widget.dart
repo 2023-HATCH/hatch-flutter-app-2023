@@ -45,8 +45,8 @@ class ProfileInfomationWidget extends StatelessWidget {
           Container(
             margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
             child: const Text(
-              "chats_chur",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              "cat_chur",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
           Container(
