@@ -18,7 +18,7 @@ Future<void> main() async {
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => VideoPlayProvider()),
-    ChangeNotifierProvider(create: (_) => AuthProvider()),
+    ChangeNotifierProvider(create: (_) => AuthProvider()..checkAccessToken()),
   ], child: const MyApp()));
 }
 

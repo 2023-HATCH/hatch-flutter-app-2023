@@ -29,6 +29,7 @@ class SignInSignUpRepository {
     });
 
     final response = await http.post(url, headers: headers, body: body);
+    debugPrint("response: ${response.body}");
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
