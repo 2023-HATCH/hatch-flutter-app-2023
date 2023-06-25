@@ -9,7 +9,7 @@ import 'package:pocket_pose/ui/widget/profile/profile_infomation_widget.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -72,207 +72,172 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    authProvider = Provider.of<AuthProvider>(context);
+    authProvider = Provider.of<AuthProvider>(context, listen: true);
 
-    if (authProvider.accessToken != null) {
-      if (authProvider.response != null) {
-        return Scaffold(
-          body: CustomScrollView(
-            slivers: <Widget>[
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 44, 14, 0),
-                          child: SvgPicture.asset(
-                              'assets/icons/ic_profile_edit.svg'),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ProfileSettingScreen()),
-                            );
-                          },
-                          child: Container(
+    return FutureBuilder<bool>(
+      future: authProvider.checkAccessToken(),
+      builder: (context, snapshot) {
+        if (snapshot.data == true) {
+          return Scaffold(
+            body: CustomScrollView(
+              slivers: <Widget>[
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
                             margin: const EdgeInsets.fromLTRB(0, 44, 14, 0),
                             child: SvgPicture.asset(
-                                'assets/icons/ic_profile_setting.svg'),
+                                'assets/icons/ic_profile_edit.svg'),
                           ),
-                        )
-                      ],
-                    ),
-                    ProfileInfomationWidget(),
-                  ],
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ProfileSettingScreen()),
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.fromLTRB(0, 44, 14, 0),
+                              child: SvgPicture.asset(
+                                  'assets/icons/ic_profile_setting.svg'),
+                            ),
+                          )
+                        ],
+                      ),
+                      ProfileInfomationWidget(),
+                    ],
+                  ),
                 ),
-              ),
-              SliverAppBar(
-                pinned: true,
-                backgroundColor: Colors.white,
-                //foregroundColor: Colors.black87,
-                toolbarHeight: 0,
-                bottom: TabBar(
-                  controller: _tabController,
-                  tabs: [
-                    Tab(
-                      icon: _tabController.index == 0
-                          ? SvgPicture.asset(
-                              'assets/icons/ic_profile_list_select.svg')
-                          : SvgPicture.asset(
-                              'assets/icons/ic_profile_list_unselect.svg'),
-                    ),
-                    Tab(
-                      icon: _tabController.index == 1
-                          ? SvgPicture.asset(
-                              'assets/icons/ic_profile_heart_select.svg')
-                          : SvgPicture.asset(
-                              'assets/icons/ic_profile_heart_unselect.svg'),
-                    ),
-                  ],
-                  indicator: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AppColor.purpleColor, // 선택된 탭의 줄 색상
-                        width: 3.0, // 선택된 탭의 줄 두께
+                SliverAppBar(
+                  pinned: true,
+                  backgroundColor: Colors.white,
+                  //foregroundColor: Colors.black87,
+                  toolbarHeight: 0,
+                  bottom: TabBar(
+                    controller: _tabController,
+                    tabs: [
+                      Tab(
+                        icon: _tabController.index == 0
+                            ? SvgPicture.asset(
+                                'assets/icons/ic_profile_list_select.svg')
+                            : SvgPicture.asset(
+                                'assets/icons/ic_profile_list_unselect.svg'),
+                      ),
+                      Tab(
+                        icon: _tabController.index == 1
+                            ? SvgPicture.asset(
+                                'assets/icons/ic_profile_heart_select.svg')
+                            : SvgPicture.asset(
+                                'assets/icons/ic_profile_heart_unselect.svg'),
+                      ),
+                    ],
+                    indicator: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColor.purpleColor, // 선택된 탭의 줄 색상
+                          width: 3.0, // 선택된 탭의 줄 두께
+                        ),
                       ),
                     ),
+                    onTap: (index) {
+                      debugPrint("Selected Tab: $index");
+                      setState(
+                          () {}); // Rebuild the widget when tab is selected
+                    },
                   ),
-                  onTap: (index) {
-                    debugPrint("Selected Tab: $index");
-                    setState(() {}); // Rebuild the widget when tab is selected
-                  },
                 ),
-              ),
-              if (_tabController.index == 0) // Check if Tab 2 is selected
-                SliverGrid(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: MediaQuery.of(context).size.width /
-                        MediaQuery.of(context).size.height,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return AnimatedBuilder(
-                        animation: _tabController.animation!,
-                        builder: (context, child) {
-                          final animation = _tabController.animation!;
-                          return ScaleTransition(
-                            scale: Tween<double>(begin: 1.0, end: 0.0).animate(
-                              CurvedAnimation(
-                                parent: animation,
-                                curve: Curves.easeInOutQuart,
-                              ),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1,
+                if (_tabController.index == 0) // Check if Tab 2 is selected
+                  SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: MediaQuery.of(context).size.width /
+                          MediaQuery.of(context).size.height,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        return AnimatedBuilder(
+                          animation: _tabController.animation!,
+                          builder: (context, child) {
+                            final animation = _tabController.animation!;
+                            return ScaleTransition(
+                              scale:
+                                  Tween<double>(begin: 1.0, end: 0.0).animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeInOutQuart,
                                 ),
                               ),
-                              child: Image.asset(
-                                "assets/images/${_videoImagePath1[index]}.png",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    childCount: _videoImagePath1.length,
-                  ),
-                ),
-              if (_tabController.index == 1) // Check if Tab 2 is selected
-                SliverGrid(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: MediaQuery.of(context).size.width /
-                        MediaQuery.of(context).size.height,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return AnimatedBuilder(
-                        animation: _tabController.animation!,
-                        builder: (context, child) {
-                          final animation = _tabController.animation!;
-                          return ScaleTransition(
-                            scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-                              CurvedAnimation(
-                                parent: animation,
-                                curve: Curves.easeInOutQuart,
-                              ),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Image.asset(
+                                  "assets/images/${_videoImagePath1[index]}.png",
+                                  fit: BoxFit.cover,
                                 ),
                               ),
-                              child: Image.asset(
-                                "assets/images/${_videoImagePath2[index]}.png",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    childCount: _videoImagePath2.length,
+                            );
+                          },
+                        );
+                      },
+                      childCount: _videoImagePath1.length,
+                    ),
                   ),
-                ),
-            ],
-          ),
-        );
-      } else {
-        // 사용자 정보가 로딩되지 않았을 때
-        return const Center(child: CircularProgressIndicator());
-      }
-    } else {
-      // 로그인이 되지 않았을 때
-      return const NotLoginWidget();
-    }
+                if (_tabController.index == 1) // Check if Tab 2 is selected
+                  SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: MediaQuery.of(context).size.width /
+                          MediaQuery.of(context).size.height,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        return AnimatedBuilder(
+                          animation: _tabController.animation!,
+                          builder: (context, child) {
+                            final animation = _tabController.animation!;
+                            return ScaleTransition(
+                              scale:
+                                  Tween<double>(begin: 0.0, end: 1.0).animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeInOutQuart,
+                                ),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Image.asset(
+                                  "assets/images/${_videoImagePath2[index]}.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      childCount: _videoImagePath2.length,
+                    ),
+                  ),
+              ],
+            ),
+          );
+        } else {
+          return const NotLoginWidget();
+        }
+      },
+    );
   }
 }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   authProvider = Provider.of<AuthProvider>(context);
-
-  //   return authProvider.accessToken != null
-  //       //토큰이 존재할 경우
-  //       ? Scaffold(
-  //           appBar: AppBar(
-  //             backgroundColor: Colors.transparent, //appBar 투명색
-  //             elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
-  //             actions: [
-  //               Container(
-  //                   margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-  //                   child:
-  //                       SvgPicture.asset('assets/icons/ic_profile_edit.svg')),
-  //               Container(
-  //                   margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-  //                   child: SvgPicture.asset(
-  //                       'assets/icons/ic_profile_setting.svg')),
-  //             ],
-  //           ),
-  //           extendBodyBehindAppBar: true, //body 위에 appbar
-  //           body: Column(
-  //             children: [
-  //               //(1)
-  //               ProfileInfomationWidget(),
-  //               //(2)
-  //               const GridTabBarWidget()
-  //             ],
-  //           ),
-  //         )
-
-  //       //토큰이 존재하지 않는 경우
-  //       : const NotLoginWidget();
-  // }
-

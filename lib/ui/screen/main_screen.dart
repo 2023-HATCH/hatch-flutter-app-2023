@@ -20,13 +20,14 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late VideoPlayProvider _videoPlayProvider;
-  late AuthProvider authProvider;
+  late AuthProvider _authProvider;
   int _bottomNavIndex = 0;
 
   @override
   void initState() {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
     _videoPlayProvider.initializeVideoPlayerFutures();
+    _authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     super.initState();
   }
@@ -36,20 +37,20 @@ class _MainScreenState extends State<MainScreen> {
     const ProfileScreen(),
   ];
 
-  void _onItemTapped(int index) {
+  Future<void> _onItemTapped(int index) async {
     setState(() {
       _bottomNavIndex = index;
-
-      if (index == 1) {
-        _videoPlayProvider.pauseVideo();
-
-        if (authProvider.accessToken == null) {
-          _showModalBottomSheet(); //토큰이 존재하지 않는 경우
-        }
-      } else {
-        _videoPlayProvider.playVideo();
-      }
     });
+    if (index == 1) {
+      _videoPlayProvider.pauseVideo();
+
+      // ignore: unrelated_type_equality_checks
+      if (await _authProvider.checkAccessToken() == false) {
+        _showModalBottomSheet(); //토큰이 존재하지 않는 경우
+      }
+    } else {
+      _videoPlayProvider.playVideo();
+    }
   }
 
   void _onFloatingButtonClicked() {
@@ -77,8 +78,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    authProvider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
       extendBody: true,
       body: _screens[_bottomNavIndex],

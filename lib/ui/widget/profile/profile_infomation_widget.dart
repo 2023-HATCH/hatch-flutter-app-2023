@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
-import 'package:provider/provider.dart';
 
 class ProfileInfomationWidget extends StatelessWidget {
   ProfileInfomationWidget({
@@ -26,9 +24,6 @@ class ProfileInfomationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final user = authProvider.response?.user;
-
     return SizedBox(
       //color: Colors.yellow,
       height: 300,
@@ -49,9 +44,9 @@ class ProfileInfomationWidget extends StatelessWidget {
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
-            child: Text(
-              user?.nickname ?? "닉네임 없음",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            child: const Text(
+              "cat_chur",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
           Container(

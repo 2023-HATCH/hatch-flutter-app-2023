@@ -20,6 +20,8 @@ class AuthProvider extends ChangeNotifier {
     _accessToken = await storage.read(key: _storageKey);
     _refreshToken = await storage.read(key: _refreshTokenKey);
 
+    notifyListeners();
+
     if (_accessToken != null && _refreshToken != null) {
       return true;
     } else {
