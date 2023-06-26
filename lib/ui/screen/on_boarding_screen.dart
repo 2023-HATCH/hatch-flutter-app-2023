@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -283,7 +284,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
-  void goHomepage() {
+  void goHomepage() async {
+    LocalPrefProvider().setShowOnBoarding(false);
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const MainScreen()),
     );
