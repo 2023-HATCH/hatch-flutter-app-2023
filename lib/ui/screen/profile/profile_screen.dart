@@ -131,9 +131,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                       Tab(
                         icon: _tabController.index == 1
                             ? SvgPicture.asset(
-                                'assets/icons/ic_profile_heart_select.svg')
+                                'assets/icons/ic_heart_select.svg')
                             : SvgPicture.asset(
-                                'assets/icons/ic_profile_heart_unselect.svg'),
+                                'assets/icons/ic_heart_unselect.svg'),
                       ),
                     ],
                     indicator: BoxDecoration(
