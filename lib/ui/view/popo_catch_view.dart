@@ -14,7 +14,7 @@ class PoPoCatchView extends StatefulWidget {
 }
 
 class _PoPoCatchViewState extends State<PoPoCatchView> {
-  int _seconds = 15;
+  int _seconds = 3;
   late Timer _timer;
 
   @override
@@ -31,9 +31,11 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
         Fluttertoast.showToast(msg: '캐치 성공!');
         widget.setStageState(StageStage.playState);
       } else {
-        setState(() {
-          _seconds--;
-        });
+        if (mounted) {
+          setState(() {
+            _seconds--;
+          });
+        }
       }
     });
   }

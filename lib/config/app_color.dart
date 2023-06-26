@@ -4,5 +4,7 @@ import 'package:flutter/material.dart';
 class AppColor {
   static Color mainPurpleColor = const Color(0xFF565CEA);
   static Color purpleColor = const Color(0xFFB259F8);
+  static Color purpleColor2 = const Color(0xFFBD00FF);
+  static Color blueColor = const Color(0xFF3959CD);
   static Color mintNeonColor = const Color.fromARGB(255, 104, 250, 241);
 }
