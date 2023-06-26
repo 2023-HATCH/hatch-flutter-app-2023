@@ -4,8 +4,8 @@ import 'package:camera/camera.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
 class AudioPlayerUtil {
-  late CameraController? _controller;
-  late AudioSession audioSession;
+  CameraController? _controller;
+  // late AudioSession audioSession;
   AudioPlayer player = AudioPlayer();
 
   static final AudioPlayerUtil _instance = AudioPlayerUtil._internal();
@@ -13,7 +13,7 @@ class AudioPlayerUtil {
   factory AudioPlayerUtil() => _instance;
 
   AudioPlayerUtil._internal() {
-    _audioSessionConfigure();
+    // _audioSessionConfigure();
   }
 
   setCameraController(CameraController? cameraController) {
@@ -34,19 +34,21 @@ class AudioPlayerUtil {
     // 노래 시작, 스켈레톤 추출 시작
     setIsSkeletonDetectStart(SkeletonDetectMode.musicStartMode);
     // 외부 음악 종료
-    await audioSession.setActive(false);
+    // await audioSession.setActive(false);
   }
 
   stop() async {
     // 카메라 종료(포포 스테이지 종료)
-    await _controller?.stopImageStream();
-    await _controller?.dispose();
-    _controller = null;
+    if (_controller != null) {
+      _controller = null;
+      await _controller?.stopImageStream();
+      await _controller?.dispose();
+    }
 
     // 내부 음악 종료
     await player.stop();
     // 외부 음악 실행
-    await audioSession.setActive(true);
+    // await audioSession.setActive(true);
   }
 
   // 외부 음악 들릴 때 반응 설정

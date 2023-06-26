@@ -43,16 +43,18 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      // 임시로 20초 되면 캐치로 이동
       if (_userCount == 3) {
         _stopTimer();
-        setState(() {
-          _stageStage = StageStage.catchState;
-        });
+
+        if (mounted) {
+          setState(() {
+            _stageStage = StageStage.catchState;
+          });
+        }
       } else {
         setState(() {
           _count++;
-          _userCount = _count ~/ 10 + 1;
+          _userCount = _count + 1;
         });
       }
     });
@@ -72,44 +74,50 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage((getIsResultState())
-                ? 'assets/images/bg_popo_result.png'
-                : 'assets/images/bg_popo_comm.png'),
-          ),
-        ),
-        child: Scaffold(
-          extendBodyBehindAppBar: true,
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            centerTitle: true,
-            title: const Text(
-              "PoPo 스테이지",
-              style: TextStyle(fontSize: 18),
-            ),
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            leading: IconButton(
-              onPressed: () {
-                AudioPlayerUtil().stop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainScreen()),
-                );
-              },
-              icon: SvgPicture.asset(
-                'assets/icons/ic_home.svg',
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage((getIsResultState())
+                    ? 'assets/images/bg_popo_result.png'
+                    : 'assets/images/bg_popo_comm.png'),
               ),
             ),
-            actions: [
-              userCountWidget(),
-            ],
-          ),
-          body: getStageView(_stageStage),
-        ));
+            child: Scaffold(
+              extendBodyBehindAppBar: true,
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                centerTitle: true,
+                title: const Text(
+                  "PoPo 스테이지",
+                  style: TextStyle(fontSize: 18),
+                ),
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                leading: IconButton(
+                  onPressed: () {
+                    AudioPlayerUtil().stop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainScreen()),
+                    );
+                  },
+                  icon: SvgPicture.asset(
+                    'assets/icons/ic_home.svg',
+                  ),
+                ),
+                actions: [
+                  userCountWidget(),
+                ],
+              ),
+              body: getStageView(_stageStage),
+            )),
+      ),
+    );
   }
 
   Container userCountWidget() {
