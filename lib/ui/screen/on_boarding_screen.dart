@@ -73,7 +73,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             context: "자 그럼 지금부터\n포포와 함께 춤 짱이 되러 가볼까요?😝",
             imgPath: "assets/images/bg_popo_result.png"),
       ],
-      onDone: () => goHomepage(context),
+      onDone: () => goHomepage(),
       showDoneButton: false,
       showNextButton: false,
       showSkipButton: false,
@@ -125,7 +125,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           children: [
             Text(
               title,
-              style: const TextStyle(color: Colors.white, fontSize: 24),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                shadows: [
+                  for (double i = 1; i < 7; i++)
+                    Shadow(color: AppColor.purpleColor2, blurRadius: 3 * i)
+                ],
+              ),
             ),
             const SizedBox(height: 10.0),
             SizedBox(
@@ -160,26 +167,35 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       const SizedBox(
                         height: 40.0,
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            backgroundColor: Colors.transparent,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              for (double i = 1; i < 4; i++)
+                                BoxShadow(
+                                    color: AppColor.blueColor,
+                                    blurStyle: BlurStyle.outer,
+                                    blurRadius: 3 * i)
+                            ]),
+                        child: TextButton(
+                          style: TextButton.styleFrom(
                             side: const BorderSide(
-                              width: 1.0,
-                              color: Colors.white,
-                            )),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'PoPo 입장',
-                            style: TextStyle(color: Colors.white, fontSize: 24),
+                                color: Colors.white, width: 2.5),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                          ),
+                          onPressed: () {
+                            goHomepage();
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              "PoPo 입장",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 24),
+                            ),
                           ),
                         ),
-                        onPressed: () {},
                       ),
                     ],
                   ),
@@ -209,7 +225,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(color: Colors.white, fontSize: 24),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            shadows: [
+              for (double i = 1; i < 7; i++)
+                Shadow(color: AppColor.purpleColor2, blurRadius: 3 * i)
+            ],
+          ),
         ),
         const SizedBox(height: 10.0),
         SizedBox(
@@ -260,7 +283,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
-  void goHomepage(context) {
+  void goHomepage() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const MainScreen()),
     );
