@@ -50,26 +50,26 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       ),
       key: _introKey,
       pages: [
-        getPageViewModel(
+        getImagePageViewModel(
             title: "대기",
             context: "참여자가 3명 이상이어야\n‘PoPo 스테이지’를시작할 수 있어요.🔥",
             imgPath: "assets/images/bg_popo_result.png",
             isVisibleLeft: false),
-        getPageViewModel(
+        getImagePageViewModel(
             title: "캐치",
             context:
                 "랜덤으로 챌린지 노래가 선정됩니다.\n선착순 3명만 참여 가능하니 캐치 버튼을 빨리 눌러 참여해봐요! 💪",
             imgPath: "assets/images/bg_popo_result.png"),
-        getPageViewModel(
+        getImagePageViewModel(
             title: "플레이",
             context: "노래에 맞춰 춤을 춰봐요.✨\n춤 동작 마다 점수가 표시됩니다.",
             imgPath: "assets/images/bg_popo_result.png"),
-        getPageViewModel(
+        getImagePageViewModel(
             title: "결과",
             context:
                 "최고의 평가를 받은 MVP가 선정 됩니다. 🥳🎉\nMVP는 5초간 모두의 앞에서 세레머니를 할 기회가 주어집니다.",
             imgPath: "assets/images/bg_popo_result.png"),
-        getLastPageViewModel(
+        getSvgPageViewModel(
             title: "시작하기",
             context: "자 그럼 지금부터\n포포와 함께 춤 짱이 되러 가볼까요?😝",
             imgPath: "assets/images/bg_popo_result.png"),
@@ -102,7 +102,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
-  PageViewModel getPageViewModel(
+  PageViewModel getImagePageViewModel(
       {required String title,
       required context,
       required imgPath,
@@ -112,12 +112,78 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     return PageViewModel(
       useScrollView: false,
       title: "",
-      bodyWidget:
-          getBodyWidget(title, context, isVisibleLeft, imgPath, isVisibleRight),
+      bodyWidget: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              shadows: [
+                for (double i = 1; i < 7; i++)
+                  Shadow(color: AppColor.purpleColor2, blurRadius: 3 * i)
+              ],
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          SizedBox(
+            height: 60,
+            child: Text(
+              context,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  _introKey.currentState?.previous();
+                },
+                icon: Visibility(
+                  visible: isVisibleLeft,
+                  child: SvgPicture.asset(
+                    'assets/icons/ic_left_purple.svg',
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 26.0,
+              ),
+              Expanded(
+                child: Image.asset(
+                  imgPath,
+                  fit: BoxFit.fitHeight,
+                  height: 350,
+                ),
+              ),
+              const SizedBox(
+                width: 26.0,
+              ),
+              IconButton(
+                onPressed: () {
+                  _introKey.currentState?.next();
+                },
+                icon: Visibility(
+                  visible: isVisibleRight,
+                  child: SvgPicture.asset(
+                    'assets/icons/ic_right_purple.svg',
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 
-  PageViewModel getLastPageViewModel(
+  PageViewModel getSvgPageViewModel(
       {required String title, required context, required imgPath}) {
     return PageViewModel(
         useScrollView: false,
@@ -215,78 +281,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             )
           ],
         ));
-  }
-
-  Column getBodyWidget(
-      String title, context, bool isVisibleLeft, imgPath, bool isVisibleRight) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            shadows: [
-              for (double i = 1; i < 7; i++)
-                Shadow(color: AppColor.purpleColor2, blurRadius: 3 * i)
-            ],
-          ),
-        ),
-        const SizedBox(height: 10.0),
-        SizedBox(
-          height: 60,
-          child: Text(
-            context,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ),
-        const SizedBox(height: 10.0),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: () {
-                _introKey.currentState?.previous();
-              },
-              icon: Visibility(
-                visible: isVisibleLeft,
-                child: SvgPicture.asset(
-                  'assets/icons/ic_left_purple.svg',
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 26.0,
-            ),
-            Expanded(
-              child: Image.asset(
-                imgPath,
-                fit: BoxFit.fitHeight,
-                height: 350,
-              ),
-            ),
-            const SizedBox(
-              width: 26.0,
-            ),
-            IconButton(
-              onPressed: () {
-                _introKey.currentState?.next();
-              },
-              icon: Visibility(
-                visible: isVisibleRight,
-                child: SvgPicture.asset(
-                  'assets/icons/ic_right_purple.svg',
-                ),
-              ),
-            ),
-          ],
-        )
-      ],
-    );
   }
 
   void goHomepage() async {
