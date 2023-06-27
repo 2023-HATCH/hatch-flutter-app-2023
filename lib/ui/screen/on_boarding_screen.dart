@@ -46,7 +46,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         )
       ]),
       globalFooter: const SizedBox(
-        height: 50.0,
+        height: 30.0,
       ),
       key: _introKey,
       pages: [
@@ -110,6 +110,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       bool isVisibleRight = true,
       bool isVisibleSkip = true}) {
     return PageViewModel(
+      useScrollView: false,
       title: "",
       bodyWidget:
           getBodyWidget(title, context, isVisibleLeft, imgPath, isVisibleRight),
@@ -119,6 +120,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   PageViewModel getLastPageViewModel(
       {required String title, required context, required imgPath}) {
     return PageViewModel(
+        useScrollView: false,
         title: "",
         bodyWidget: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -157,16 +159,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     'assets/icons/ic_left_purple.svg',
                   ),
                 ),
-                Expanded(
+                Flexible(
                   child: Column(
                     children: [
-                      const SizedBox(
-                        height: 50.0,
-                      ),
                       SvgPicture.asset(
-                          'assets/images/charactor_on_boarding.svg'),
-                      const SizedBox(
-                        height: 40.0,
+                        'assets/images/charactor_on_boarding.svg',
+                        height: 300,
+                        fit: BoxFit.contain,
                       ),
                       Container(
                         decoration: BoxDecoration(
@@ -263,7 +262,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             const SizedBox(
               width: 26.0,
             ),
-            Expanded(child: Image.asset(imgPath, width: 250.0)),
+            Expanded(
+              child: Image.asset(
+                imgPath,
+                fit: BoxFit.fitHeight,
+                height: 350,
+              ),
+            ),
             const SizedBox(
               width: 26.0,
             ),
