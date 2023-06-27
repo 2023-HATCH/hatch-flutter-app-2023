@@ -1,18 +1,19 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
-import 'package:pocket_pose/ui/screen/main_screen.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
+import 'package:provider/provider.dart';
 
 enum StageStage { waitState, catchState, playState, resultState }
 
 class PoPoStageScreen extends StatefulWidget {
-  const PoPoStageScreen({super.key});
+  const PoPoStageScreen({super.key, required this.getIndex()});
+  final Function getIndex;
 
   @override
   State<PoPoStageScreen> createState() => _PoPoStageScreenState();
@@ -22,6 +23,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _userCount = 1;
   int _count = 1;
   late Timer _timer;
+  late VideoPlayProvider _videoPlayProvider;
 
   StageStage _stageStage = StageStage.waitState;
   @override
@@ -34,10 +36,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void dispose() {
     AudioPlayerUtil().stop();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-    );
+    if (widget.getIndex() == 0) {
+      _videoPlayProvider.playVideo();
+    }
     super.dispose();
   }
 
@@ -74,6 +75,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -84,6 +87,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 image: AssetImage((getIsResultState())
                     ? 'assets/images/bg_popo_result.png'
                     : 'assets/images/bg_popo_comm.png'),
+
               ),
             ),
             child: Scaffold(
@@ -100,11 +104,12 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 leading: IconButton(
                   onPressed: () {
                     AudioPlayerUtil().stop();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MainScreen()),
-                    );
+                   AudioPlayerUtil().stop();
+                if (widget.getIndex() == 0) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pop(context);
+                }
                   },
                   icon: SvgPicture.asset(
                     'assets/icons/ic_home.svg',
