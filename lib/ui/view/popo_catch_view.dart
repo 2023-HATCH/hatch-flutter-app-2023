@@ -6,8 +6,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 
 class PoPoCatchView extends StatefulWidget {
-  PoPoCatchView({Key? key, required this.setStageState}) : super(key: key);
-  Function setStageState;
+  const PoPoCatchView({Key? key, required this.setStageState})
+      : super(key: key);
+  final Function setStageState;
 
   @override
   State<StatefulWidget> createState() => _PoPoCatchViewState();

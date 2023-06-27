@@ -6,11 +6,11 @@ import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
 // ml_kit_skeleton_custom_view
 class PoPoResultView extends StatefulWidget {
-  PoPoResultView(
+  const PoPoResultView(
       {Key? key, required this.setStageState, required this.isResultState})
       : super(key: key);
-  Function setStageState;
-  bool isResultState;
+  final Function setStageState;
+  final bool isResultState;
 
   @override
   State<StatefulWidget> createState() => _PoPoResultViewState();
