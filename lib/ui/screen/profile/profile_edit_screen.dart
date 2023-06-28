@@ -12,7 +12,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen>
     with TickerProviderStateMixin {
   List<Widget> selectWidgets = [];
   final List<AnimationController> _animationControllers = [];
-  final List<Animation<double>> _animations = [];
+  final List<Animation<Offset>> _animations = [];
+  bool isLeft = true;
 
   @override
   void dispose() {
@@ -24,16 +25,31 @@ class _ProfileEditScreenState extends State<ProfileEditScreen>
 
   void _handleIconClick() {
     setState(() {
+      isLeft = !isLeft;
+
       final animationController = AnimationController(
-        duration: const Duration(milliseconds: 3000),
+        duration: const Duration(milliseconds: 4000),
         vsync: this,
       );
 
-      final animation = Tween(begin: 0.0, end: -200.0).animate(CurvedAnimation(
+      const beginOffset = Offset(0.0, 0.0);
+      final middleOffset =
+          isLeft ? const Offset(-8.0, -100.0) : const Offset(8.0, -100.0);
+      const endOffset = Offset(0.0, -200.0);
+
+      final animation = TweenSequence([
+        TweenSequenceItem(
+          tween: Tween<Offset>(begin: beginOffset, end: middleOffset),
+          weight: 0.5,
+        ),
+        TweenSequenceItem(
+          tween: Tween<Offset>(begin: middleOffset, end: endOffset),
+          weight: 0.5,
+        ),
+      ]).animate(CurvedAnimation(
         parent: animationController,
         curve: Curves.easeInOut,
       ));
-
       animationController.addListener(() {
         setState(() {});
       });
@@ -44,24 +60,24 @@ class _ProfileEditScreenState extends State<ProfileEditScreen>
             selectWidgets.removeAt(0);
             _animationControllers.removeAt(0);
             _animations.removeAt(0);
-            debugPrint("${selectWidgets.length} 위젯 소멸");
           });
         }
       });
 
       selectWidgets.add(buildSelectWidget(
-          selectWidgets.length, animationController, animation));
+        selectWidgets.length,
+        animationController,
+        animation,
+      ));
       _animationControllers.add(animationController);
       _animations.add(animation);
-
-      debugPrint("${selectWidgets.length} 위젯 생성");
     });
 
     _animationControllers.last.forward(from: 0);
   }
 
   Widget buildSelectWidget(int index, AnimationController animationController,
-      Animation<double> animation) {
+      Animation<Offset> animation) {
     return Positioned(
       bottom: 0,
       right: 0,
@@ -69,7 +85,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen>
         animation: animation,
         builder: (context, child) {
           return Transform.translate(
-            offset: Offset(0, animation.value),
+            offset: Offset(
+              animation.value.dx,
+              animation.value.dy,
+            ),
             child: FadeTransition(
               opacity: animationController.drive(Tween(begin: 1.0, end: 0.0)),
               child: child,
