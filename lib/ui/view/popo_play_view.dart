@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
@@ -43,19 +44,64 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   @override
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
-    return CameraView(
-      isResultState: widget.isResultState,
-      setIsSkeletonDetectMode: setIsSkeletonDetectMode,
-      // 스켈레톤 그려주는 객체 전달
-      customPaint: _customPaint,
-      // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-      onImage: (inputImage) {
-        // user이거나 노래가 종료된 거 아닌 이상 항상 스켈레톤 추출
-        if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
-            _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
-          processImage(inputImage);
-        }
-      },
+    return Stack(
+      children: [
+        Positioned(
+          top: 100,
+          left: 20,
+          right: 20,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              getProfile(),
+              getProfile(),
+              getProfile(),
+            ],
+          ),
+        ),
+        CameraView(
+          isResultState: widget.isResultState,
+          setIsSkeletonDetectMode: setIsSkeletonDetectMode,
+          // 스켈레톤 그려주는 객체 전달
+          customPaint: _customPaint,
+          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
+          onImage: (inputImage) {
+            // user이거나 노래가 종료된 거 아닌 이상 항상 스켈레톤 추출
+            if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
+                _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
+              processImage(inputImage);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Column getProfile() {
+    return Column(
+      children: [
+        ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: Image.asset('assets/images/home_profile_1.jpg', width: 35)),
+        const SizedBox(
+          height: 8,
+        ),
+        const Text(
+          "민영",
+          style: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+        Text(
+          "Good",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            shadows: [
+              for (double i = 1; i < 7; i++)
+                Shadow(color: AppColor.purpleColor2, blurRadius: 3 * i)
+            ],
+          ),
+        ),
+      ],
     );
   }
 
