@@ -9,55 +9,69 @@ class ProfileEditScreen extends StatefulWidget {
 }
 
 class _ProfileEditScreenState extends State<ProfileEditScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   List<Widget> selectWidgets = [];
-  late AnimationController _animationController;
-  late Animation<double> _animation;
+  final List<AnimationController> _animationControllers = [];
+  final List<Animation<double>> _animations = [];
 
   @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
-      vsync: this,
-    );
-
-    _animation = Tween(begin: 0.0, end: -200.0).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    _animationController.addListener(() {
-      setState(() {});
-    });
-
-    _animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        setState(() {
-          selectWidgets.removeAt(0);
-        });
-      }
-    });
+  void dispose() {
+    for (final animationController in _animationControllers) {
+      animationController.dispose();
+    }
+    super.dispose();
   }
 
   void _handleIconClick() {
     setState(() {
-      selectWidgets.add(buildSelectWidget());
+      final animationController = AnimationController(
+        duration: const Duration(milliseconds: 3000),
+        vsync: this,
+      );
+
+      final animation = Tween(begin: 0.0, end: -200.0).animate(CurvedAnimation(
+        parent: animationController,
+        curve: Curves.easeInOut,
+      ));
+
+      animationController.addListener(() {
+        setState(() {});
+      });
+
+      animationController.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            selectWidgets.removeAt(0);
+            _animationControllers.removeAt(0);
+            _animations.removeAt(0);
+            debugPrint("${selectWidgets.length} 위젯 소멸");
+          });
+        }
+      });
+
+      selectWidgets.add(buildSelectWidget(
+          selectWidgets.length, animationController, animation));
+      _animationControllers.add(animationController);
+      _animations.add(animation);
+
+      debugPrint("${selectWidgets.length} 위젯 생성");
     });
-    _animationController.forward(from: 0);
+
+    _animationControllers.last.forward(from: 0);
   }
 
-  Widget buildSelectWidget() {
+  Widget buildSelectWidget(int index, AnimationController animationController,
+      Animation<double> animation) {
     return Positioned(
       bottom: 0,
       right: 0,
       child: AnimatedBuilder(
-        animation: _animation,
+        animation: animation,
         builder: (context, child) {
           return Transform.translate(
-            offset: Offset(0, _animation.value),
+            offset: Offset(0, animation.value),
             child: FadeTransition(
-              opacity: _animationController.drive(Tween(begin: 1.0, end: 0.0)),
+              opacity: animationController.drive(Tween(begin: 1.0, end: 0.0)),
               child: child,
             ),
           );
@@ -90,11 +104,5 @@ class _ProfileEditScreenState extends State<ProfileEditScreen>
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 }
