@@ -56,7 +56,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen>
         builder: (context, child) {
           return Transform.translate(
             offset: Offset(0, _animation.value),
-            child: child,
+            child: FadeTransition(
+              opacity: _animationController.drive(Tween(begin: 1.0, end: 0.0)),
+              child: child,
+            ),
           );
         },
         child: Image.asset(
