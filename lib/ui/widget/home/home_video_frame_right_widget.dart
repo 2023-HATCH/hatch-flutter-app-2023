@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -15,11 +17,13 @@ class VideoFrameRightWidget extends StatefulWidget {
 }
 
 class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late VideoPlayProvider _videoPlayProvider;
   bool _isLiked = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
+
+  late AnimationController _progressAnimationController;
 
   @override
   void initState() {
@@ -49,6 +53,14 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
         curve: Curves.bounceInOut,
       ),
     );
+
+    // liquid-progress
+    _progressAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+      lowerBound: 0, // 추가: 최소값 설정
+      upperBound: 1, // 추가: 최대값 설정
+    )..repeat(reverse: false); // 반복 설정
   }
 
   void _toggleLike() {
@@ -65,6 +77,7 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
   @override
   void dispose() {
     _animationController.dispose();
+    _progressAnimationController.dispose(); // 애니메이션 컨트롤러 해제
     super.dispose();
   }
 
@@ -138,8 +151,28 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
             const Padding(padding: EdgeInsets.only(bottom: 14)),
             Column(
               children: <Widget>[
-                SvgPicture.asset(
-                  'assets/icons/ic_home_progress.svg',
+                AnimatedBuilder(
+                  animation: _progressAnimationController,
+                  builder: (context, child) {
+                    return SizedBox(
+                      height: 35,
+                      width: 35,
+                      child: LiquidCircularProgressIndicator(
+                        value: _progressAnimationController.value,
+                        valueColor:
+                            AlwaysStoppedAnimation(AppColor.purpleColor),
+                        backgroundColor: Colors.white,
+                        direction: Axis.vertical,
+                        center: Container(),
+                        //임시
+                        //     Text(
+                        //   (_progressAnimationController.value * 100)
+                        //       .toStringAsFixed(0),
+                        //   style: const TextStyle(fontSize: 20),
+                        // ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
