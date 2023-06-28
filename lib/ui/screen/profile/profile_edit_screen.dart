@@ -77,7 +77,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen>
       body: Stack(
         children: [
           Positioned(
-            bottom: 0,
+            bottom: 12,
             right: 12,
             child: InkWell(
               highlightColor: Colors.transparent,
