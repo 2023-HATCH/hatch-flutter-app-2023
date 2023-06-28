@@ -1,18 +1,19 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
-import 'package:pocket_pose/ui/screen/main_screen.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
+import 'package:provider/provider.dart';
 
 enum StageStage { waitState, catchState, playState, resultState }
 
 class PoPoStageScreen extends StatefulWidget {
-  const PoPoStageScreen({super.key});
+  const PoPoStageScreen({super.key, required this.getIndex()});
+  final Function getIndex;
 
   @override
   State<PoPoStageScreen> createState() => _PoPoStageScreenState();
@@ -22,6 +23,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _userCount = 1;
   int _count = 1;
   late Timer _timer;
+  late VideoPlayProvider _videoPlayProvider;
 
   StageStage _stageStage = StageStage.waitState;
   @override
@@ -34,25 +36,26 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void dispose() {
     AudioPlayerUtil().stop();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-    );
+    if (widget.getIndex() == 0) {
+      _videoPlayProvider.playVideo();
+    }
     super.dispose();
   }
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      // 임시로 20초 되면 캐치로 이동
       if (_userCount == 3) {
         _stopTimer();
-        setState(() {
-          _stageStage = StageStage.catchState;
-        });
+
+        if (mounted) {
+          setState(() {
+            _stageStage = StageStage.catchState;
+          });
+        }
       } else {
         setState(() {
           _count++;
-          _userCount = _count ~/ 10 + 1;
+          _userCount = _count + 1;
         });
       }
     });
@@ -72,44 +75,54 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage((getIsResultState())
-                ? 'assets/images/bg_popo_result.png'
-                : 'assets/images/bg_popo_comm.png'),
-          ),
-        ),
-        child: Scaffold(
-          extendBodyBehindAppBar: true,
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            centerTitle: true,
-            title: const Text(
-              "PoPo 스테이지",
-              style: TextStyle(fontSize: 18),
-            ),
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            leading: IconButton(
-              onPressed: () {
-                AudioPlayerUtil().stop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainScreen()),
-                );
-              },
-              icon: SvgPicture.asset(
-                'assets/icons/ic_home.svg',
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage((getIsResultState())
+                    ? 'assets/images/bg_popo_result.png'
+                    : 'assets/images/bg_popo_comm.png'),
+
               ),
             ),
-            actions: [
-              userCountWidget(),
-            ],
-          ),
-          body: getStageView(_stageStage),
-        ));
+            child: Scaffold(
+              extendBodyBehindAppBar: true,
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                centerTitle: true,
+                title: const Text(
+                  "PoPo 스테이지",
+                  style: TextStyle(fontSize: 18),
+                ),
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                leading: IconButton(
+                  onPressed: () {
+                    AudioPlayerUtil().stop();
+                   AudioPlayerUtil().stop();
+                if (widget.getIndex() == 0) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pop(context);
+                }
+                  },
+                  icon: SvgPicture.asset(
+                    'assets/icons/ic_home.svg',
+                  ),
+                ),
+                actions: [
+                  userCountWidget(),
+                ],
+              ),
+              body: getStageView(_stageStage),
+            )),
+      ),
+    );
   }
 
   Container userCountWidget() {

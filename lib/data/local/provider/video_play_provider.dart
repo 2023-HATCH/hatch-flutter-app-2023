@@ -68,7 +68,7 @@ class VideoPlayProvider with ChangeNotifier {
     );
     setVideo();
 
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void loadVideo() {
@@ -77,7 +77,7 @@ class VideoPlayProvider with ChangeNotifier {
       videoLinks.length,
       (index) => VideoPlayerController.network(videoLinks[index]),
     );
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void setVideo() {
@@ -86,7 +86,7 @@ class VideoPlayProvider with ChangeNotifier {
     controllers[currentIndex].setLooping(true); // 영상 무한 반복
     controllers[currentIndex].setVolume(1.0); // 볼륨 설정
 
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void pauseVideo() {

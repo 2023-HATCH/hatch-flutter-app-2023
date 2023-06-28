@@ -170,8 +170,6 @@ class CustomPosePainter extends CustomPainter {
 
         if (faceRadius < 0) faceRadius = faceRadius * -1;
 
-        debugPrint("faceRadius: ${faceRadius.toString()}");
-
         // Draw face circle
         canvas.drawCircle(centerPoint, faceRadius, neonOuterPaint);
         canvas.drawCircle(centerPoint, faceRadius, neonInnerPaint);

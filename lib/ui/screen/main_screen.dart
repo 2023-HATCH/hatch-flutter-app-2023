@@ -21,7 +21,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   late VideoPlayProvider _videoPlayProvider;
   late AuthProvider _authProvider;
+
   int _bottomNavIndex = 0;
+
+  int getIndex() {
+    return _bottomNavIndex;
+  }
 
   @override
   void initState() {
@@ -58,7 +63,8 @@ class _MainScreenState extends State<MainScreen> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PoPoStageScreen()),
+      MaterialPageRoute(
+          builder: (context) => PoPoStageScreen(getIndex: getIndex)),
     );
   }
 
