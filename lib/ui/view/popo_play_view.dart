@@ -7,6 +7,8 @@ import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dar
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
+enum StagePlayScore { bad, good, great, excellent, perfect }
+
 // ml_kit_skeleton_custom_view
 class PoPoPlayView extends StatefulWidget {
   const PoPoPlayView(
@@ -48,14 +50,17 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       children: [
         Positioned(
           top: 100,
-          left: 20,
-          right: 20,
+          left: 35,
+          right: 35,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              getProfile(),
-              getProfile(),
-              getProfile(),
+              getProfile('assets/images/home_profile_1.jpg', 'okoi2202',
+                  StagePlayScore.good),
+              getProfile('assets/images/home_profile_2.jpg', 'ONEUS',
+                  StagePlayScore.bad),
+              getProfile('assets/images/home_profile_3.jpg', 'joyseoworld',
+                  StagePlayScore.excellent),
             ],
           ),
         ),
@@ -77,31 +82,67 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     );
   }
 
-  Column getProfile() {
+  Column getProfile(String profileImg, String nickName, StagePlayScore score) {
     return Column(
       children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(50),
-            child: Image.asset('assets/images/home_profile_1.jpg', width: 35)),
+            child: Image.asset(
+              profileImg,
+              width: 50,
+              height: 50,
+            )),
         const SizedBox(
           height: 8,
         ),
-        const Text(
-          "민영",
-          style: TextStyle(color: Colors.white, fontSize: 14),
-        ),
         Text(
-          "Good",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            shadows: [
-              for (double i = 1; i < 7; i++)
-                Shadow(color: AppColor.purpleColor2, blurRadius: 3 * i)
-            ],
-          ),
+          nickName,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
         ),
+        const SizedBox(
+          height: 8,
+        ),
+        getScoreNeonText(score),
       ],
+    );
+  }
+
+  Text getScoreNeonText(StagePlayScore score) {
+    String scoreText = "";
+    Color scoreNeonColor = Colors.transparent;
+    switch (score) {
+      case StagePlayScore.bad:
+        scoreText = "Bad";
+        scoreNeonColor = Colors.red;
+        break;
+      case StagePlayScore.good:
+        scoreText = "Good";
+        scoreNeonColor = AppColor.purpleColor2;
+        break;
+      case StagePlayScore.great:
+        scoreText = "Great";
+        scoreNeonColor = AppColor.greenColor;
+        break;
+      case StagePlayScore.excellent:
+        scoreText = "Excellent";
+        scoreNeonColor = AppColor.blueColor2;
+        break;
+      case StagePlayScore.perfect:
+        scoreText = "Perfect";
+        scoreNeonColor = AppColor.yellowColor2;
+        break;
+    }
+
+    return Text(
+      scoreText,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+        shadows: [
+          for (double i = 1; i < 6; i++)
+            Shadow(color: scoreNeonColor, blurRadius: 3 * i)
+        ],
+      ),
     );
   }
 
