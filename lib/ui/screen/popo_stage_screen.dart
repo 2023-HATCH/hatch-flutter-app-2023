@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
@@ -230,71 +231,78 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         context: context,
         barrierColor: Colors.transparent,
         builder: (BuildContext context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              side: const BorderSide(
-                color: Colors.white,
-                width: 1.0,
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                side: const BorderSide(
+                  color: Colors.white,
+                  width: 1.0,
+                ),
               ),
-            ),
-            backgroundColor: Colors.white.withOpacity(0.4),
-            title: Row(
-              children: [
-                const Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Text(
-                      '참여자 목록',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+              backgroundColor: Colors.white.withOpacity(0.3),
+              title: Row(
+                children: [
+                  const Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 20),
+                      child: Text(
+                        '참여자 목록',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Icon(
+                      Icons.close,
+                      size: 20,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            content: SizedBox(
-              width: 300,
-              height: 400,
-              child: GridView.builder(
-                itemCount: userList!.list!.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Image.asset(
-                          userList!.list!.elementAt(index).profileImg!,
-                          width: 58,
-                          height: 58,
-                          fit: BoxFit.cover,
+                ],
+              ),
+              content: SizedBox(
+                width: 265,
+                height: 365,
+                child: GridView.builder(
+                  itemCount: userList!.list!.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.asset(
+                            userList!.list!.elementAt(index).profileImg!,
+                            width: 58,
+                            height: 58,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      Text(
-                        userList!.list!.elementAt(index).nickname,
-                        style: const TextStyle(
-                          fontSize: 12,
+                        const SizedBox(
+                          height: 4,
                         ),
-                      ),
-                    ],
-                  );
-                },
+                        Text(
+                          userList!.list!.elementAt(index).nickname,
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           );
