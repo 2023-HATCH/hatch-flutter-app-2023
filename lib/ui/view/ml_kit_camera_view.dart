@@ -107,9 +107,11 @@ class _CameraViewState extends State<CameraView> {
       if (_seconds == 1) {
         _stopTimer();
 
-        setState(() {
-          _countdownVisibility = false;
-        });
+        if (mounted) {
+          setState(() {
+            _countdownVisibility = false;
+          });
+        }
         AudioPlayerUtil().play(
             "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
             widget.setIsSkeletonDetectMode);

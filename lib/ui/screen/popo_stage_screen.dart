@@ -128,7 +128,52 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     return Container(
       margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
       child: OutlinedButton.icon(
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+            context: context,
+            barrierColor: Colors.transparent,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: const BorderSide(
+                    color: Colors.white,
+                    width: 1.0,
+                  ),
+                ),
+                backgroundColor: Colors.white.withOpacity(0.4),
+                title: Row(
+                  children: [
+                    const Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          '참여자 목록',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                content: const Text('내용'),
+              );
+            },
+          );
+        },
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
