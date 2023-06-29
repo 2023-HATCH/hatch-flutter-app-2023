@@ -179,7 +179,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   }
 
   void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
-    if (_isPlayer) {
+    if (_isPlayer && mounted) {
       setState(() {
         _skeletonDetectMode = mode;
 

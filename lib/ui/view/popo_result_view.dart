@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
@@ -40,19 +41,88 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   @override
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
-    return CameraView(
-      isResultState: widget.isResultState,
-      setIsSkeletonDetectMode: setIsSkeletonDetectMode,
-      // 스켈레톤 그려주는 객체 전달
-      customPaint: _customPaint,
-      // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-      onImage: (inputImage) {
-        // player는 항상 스켈레톤 추출
-        if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
-            _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
-          processImage(inputImage);
-        }
-      },
+    return Stack(
+      children: [
+        Positioned(
+          top: 110,
+          left: 35,
+          right: 35,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildMVPWidget('assets/images/home_profile_1.jpg', 'okoi2202'),
+            ],
+          ),
+        ),
+        CameraView(
+          isResultState: widget.isResultState,
+          setIsSkeletonDetectMode: setIsSkeletonDetectMode,
+          // 스켈레톤 그려주는 객체 전달
+          customPaint: _customPaint,
+          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
+          onImage: (inputImage) {
+            // player는 항상 스켈레톤 추출
+            if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
+                _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
+              processImage(inputImage);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Container buildMVPWidget(String profileImg, String nickName) {
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(
+              color: Colors.white, width: 3.0, style: BorderStyle.solid),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            for (double i = 1; i < 5; i++)
+              BoxShadow(
+                  color: AppColor.yellowColor,
+                  blurStyle: BlurStyle.outer,
+                  blurRadius: 3 * i)
+          ]),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'MVP',
+              style: TextStyle(
+                fontSize: 25,
+                color: Colors.white,
+                shadows: [
+                  for (double i = 1; i < 6; i++)
+                    Shadow(color: AppColor.yellowColor, blurRadius: 3 * i)
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Image.asset(
+                profileImg,
+                width: 50,
+                height: 50,
+              ),
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Text(
+              nickName,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -86,7 +156,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   }
 
   void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
-    if (_isPlayer) {
+    if (_isPlayer && mounted) {
       setState(() {
         _skeletonDetectMode = mode;
 
