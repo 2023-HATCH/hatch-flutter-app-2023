@@ -33,7 +33,6 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   flutter_spinkit: ^5.2.0
   introduction_screen: ^3.1.9
-  flutter_native_splash: ^2.3.1
 
 dev_dependencies:
   flutter_test:
