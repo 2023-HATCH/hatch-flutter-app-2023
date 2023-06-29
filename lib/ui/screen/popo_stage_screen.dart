@@ -1,13 +1,86 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
+import 'package:pocket_pose/data/entity/response/stage_user_list_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
 import 'package:provider/provider.dart';
+
+final userListItem = {
+  "list": [
+    {
+      "userId": "1",
+      "profileImg": "assets/images/home_profile_1.jpg",
+      "nickname": "나비"
+    },
+    {
+      "userId": "2",
+      "profileImg": "assets/images/home_profile_2.jpg",
+      "nickname": "고양이"
+    },
+    {
+      "userId": "3",
+      "profileImg": "assets/images/home_profile_3.jpg",
+      "nickname": "네코"
+    },
+    {
+      "userId": "4",
+      "profileImg": "assets/images/home_profile_4.jpg",
+      "nickname": "냥코"
+    },
+    {
+      "userId": "5",
+      "profileImg": "assets/images/home_profile_5.jpg",
+      "nickname": "멍멍이"
+    },
+    {
+      "userId": "6",
+      "profileImg": "assets/images/home_profile_1.jpg",
+      "nickname": "강아지"
+    },
+    {
+      "userId": "7",
+      "profileImg": "assets/images/home_profile_2.jpg",
+      "nickname": "개"
+    },
+    {
+      "userId": "8",
+      "profileImg": "assets/images/home_profile_3.jpg",
+      "nickname": "포챠코"
+    },
+    {
+      "userId": "9",
+      "profileImg": "assets/images/home_profile_4.jpg",
+      "nickname": "왕왕이"
+    },
+    {
+      "userId": "10",
+      "profileImg": "assets/images/home_profile_5.jpg",
+      "nickname": "컹컹이"
+    },
+    {
+      "userId": "11",
+      "profileImg": "assets/images/home_profile_1.jpg",
+      "nickname": "왈왈이"
+    },
+    {
+      "userId": "12",
+      "profileImg": "assets/images/home_profile_2.jpg",
+      "nickname": "바둑이"
+    },
+    {
+      "userId": "13",
+      "profileImg": "assets/images/home_profile_3.jpg",
+      "nickname": "마리"
+    },
+  ]
+};
+StageUserListResponse? userList;
 
 enum StageStage { waitState, catchState, playState, resultState }
 
@@ -128,7 +201,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     return Container(
       margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
       child: OutlinedButton.icon(
-        onPressed: () {},
+        onPressed: () {
+          showUserListDialog();
+        },
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
@@ -147,6 +222,91 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         ),
       ),
     );
+  }
+
+  Future<dynamic> showUserListDialog() {
+    userList = StageUserListResponse.fromJson(userListItem);
+
+    return showDialog(
+        context: context,
+        barrierColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                side: const BorderSide(
+                  color: Colors.white,
+                  width: 1.0,
+                ),
+              ),
+              backgroundColor: Colors.white.withOpacity(0.3),
+              title: Row(
+                children: [
+                  const Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 20),
+                      child: Text(
+                        '참여자 목록',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Icon(
+                      Icons.close,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 265,
+                height: 365,
+                child: GridView.builder(
+                  itemCount: userList!.list!.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.asset(
+                            userList!.list!.elementAt(index).profileImg!,
+                            width: 58,
+                            height: 58,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          userList!.list!.elementAt(index).nickname,
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   Widget getStageView(StageStage state) {
