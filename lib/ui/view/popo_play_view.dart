@@ -49,7 +49,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     return Stack(
       children: [
         Positioned(
-          top: 100,
+          top: 115,
           left: 35,
           right: 35,
           child: Row(

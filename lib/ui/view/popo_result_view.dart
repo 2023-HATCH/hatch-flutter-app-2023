@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
@@ -44,7 +45,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     return Stack(
       children: [
         Positioned(
-          top: 110,
+          top: 115,
           left: 35,
           right: 35,
           child: Row(
@@ -103,18 +104,31 @@ class _PoPoResultViewState extends State<PoPoResultView> {
               ),
             ),
             const SizedBox(
-              height: 8,
+              height: 2,
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: Image.asset(
-                profileImg,
-                width: 50,
-                height: 50,
-              ),
+            Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                SvgPicture.asset(
+                  'assets/images/img_stage_result_mvp.svg',
+                  width: 80,
+                  height: 90,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 0, 0, 12),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Image.asset(
+                      profileImg,
+                      width: 62,
+                      height: 62,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(
-              height: 8,
+              height: 2,
             ),
             Text(
               nickName,
