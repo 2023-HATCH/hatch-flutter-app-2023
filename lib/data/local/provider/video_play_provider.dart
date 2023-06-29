@@ -92,12 +92,12 @@ class VideoPlayProvider with ChangeNotifier {
   void pauseVideo() {
     controllers[currentIndex].pause();
 
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void playVideo() {
     controllers[currentIndex].play();
 
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 }

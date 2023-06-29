@@ -87,7 +87,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 image: AssetImage((getIsResultState())
                     ? 'assets/images/bg_popo_result.png'
                     : 'assets/images/bg_popo_comm.png'),
-
               ),
             ),
             child: Scaffold(
@@ -104,15 +103,15 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 leading: IconButton(
                   onPressed: () {
                     AudioPlayerUtil().stop();
-                   AudioPlayerUtil().stop();
-                if (widget.getIndex() == 0) {
-                  Navigator.pop(context);
-                } else {
-                  Navigator.pop(context);
-                }
+                    AudioPlayerUtil().stop();
+                    if (widget.getIndex() == 0) {
+                      Navigator.pop(context);
+                    } else {
+                      Navigator.pop(context);
+                    }
                   },
                   icon: SvgPicture.asset(
-                    'assets/icons/ic_home.svg',
+                    'assets/icons/ic_stage_back_white.svg',
                   ),
                 ),
                 actions: [

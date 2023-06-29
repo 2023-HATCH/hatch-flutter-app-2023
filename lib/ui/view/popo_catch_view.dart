@@ -3,25 +3,40 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 
 class PoPoCatchView extends StatefulWidget {
-  PoPoCatchView({Key? key, required this.setStageState}) : super(key: key);
-  Function setStageState;
+  const PoPoCatchView({Key? key, required this.setStageState})
+      : super(key: key);
+  final Function setStageState;
 
   @override
   State<StatefulWidget> createState() => _PoPoCatchViewState();
 }
 
-class _PoPoCatchViewState extends State<PoPoCatchView> {
+class _PoPoCatchViewState extends State<PoPoCatchView>
+    with SingleTickerProviderStateMixin {
   int _seconds = 3;
   late Timer _timer;
+  late AnimationController _animationController;
+  late Animation<double> _opacityAnimation;
 
   @override
   void initState() {
     super.initState();
 
     _startTimer();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _opacityAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+
+    _animationController.forward();
   }
 
   void _startTimer() {
@@ -45,6 +60,12 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
@@ -60,9 +81,9 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18, color: Colors.white),
           ),
-          const SizedBox(height: 37.0),
+          const SizedBox(height: 30.0),
           musicTitleContainer('I AM-IVE'),
-          const SizedBox(height: 37.0),
+          const SizedBox(height: 30.0),
           SvgPicture.asset(
             'assets/images/charactor_popo_catch.svg',
           ),
@@ -98,24 +119,34 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
       padding: const EdgeInsets.fromLTRB(70, 11, 70, 11),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(
-              color: Colors.white, width: 3.0, style: BorderStyle.solid),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(11.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/icons/ic_music_note_big.svg',
-              ),
-              const SizedBox(width: 8.0),
-              Text(
-                title,
-                style: const TextStyle(fontSize: 24, color: Colors.white),
-              ),
-            ],
+            border: Border.all(
+                color: Colors.white, width: 3.0, style: BorderStyle.solid),
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              for (double i = 1; i < 5; i++)
+                BoxShadow(
+                    color: AppColor.yellowColor,
+                    blurStyle: BlurStyle.outer,
+                    blurRadius: 3 * i)
+            ]),
+        child: AnimatedOpacity(
+          opacity: _opacityAnimation.value,
+          duration: const Duration(milliseconds: 300),
+          child: Padding(
+            padding: const EdgeInsets.all(11.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/ic_music_note_big.svg',
+                ),
+                const SizedBox(width: 8.0),
+                Text(
+                  title,
+                  style: const TextStyle(fontSize: 24, color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
       ),

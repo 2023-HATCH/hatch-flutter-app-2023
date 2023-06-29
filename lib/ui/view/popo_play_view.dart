@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
+enum StagePlayScore { bad, good, great, excellent, perfect }
+
 // ml_kit_skeleton_custom_view
 class PoPoPlayView extends StatefulWidget {
-  PoPoPlayView(
+  const PoPoPlayView(
       {Key? key, required this.setStageState, required this.isResultState})
       : super(key: key);
-  Function setStageState;
-  bool isResultState;
+  final Function setStageState;
+  final bool isResultState;
 
   @override
   State<StatefulWidget> createState() => _PoPoPlayViewState();
@@ -43,19 +46,107 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   @override
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
-    return CameraView(
-      isResultState: widget.isResultState,
-      setIsSkeletonDetectMode: setIsSkeletonDetectMode,
-      // 스켈레톤 그려주는 객체 전달
-      customPaint: _customPaint,
-      // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-      onImage: (inputImage) {
-        // user이거나 노래가 종료된 거 아닌 이상 항상 스켈레톤 추출
-        if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
-            _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
-          processImage(inputImage);
-        }
-      },
+    return Stack(
+      children: [
+        Positioned(
+          top: 115,
+          left: 35,
+          right: 35,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              getProfile('assets/images/home_profile_1.jpg', 'okoi2202',
+                  StagePlayScore.good),
+              getProfile('assets/images/home_profile_2.jpg', 'ONEUS',
+                  StagePlayScore.bad),
+              getProfile('assets/images/home_profile_3.jpg', 'joyseoworld',
+                  StagePlayScore.excellent),
+            ],
+          ),
+        ),
+        CameraView(
+          isResultState: widget.isResultState,
+          setIsSkeletonDetectMode: setIsSkeletonDetectMode,
+          // 스켈레톤 그려주는 객체 전달
+          customPaint: _customPaint,
+          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
+          onImage: (inputImage) {
+            // user이거나 노래가 종료된 거 아닌 이상 항상 스켈레톤 추출
+            if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
+                _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
+              processImage(inputImage);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Column getProfile(String profileImg, String nickName, StagePlayScore score) {
+    return Column(
+      children: [
+        ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: Image.asset(
+              profileImg,
+              width: 50,
+              height: 50,
+            )),
+        const SizedBox(
+          height: 8,
+        ),
+        Text(
+          nickName,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        getScoreNeonText(score),
+      ],
+    );
+  }
+
+  Widget getScoreNeonText(StagePlayScore score) {
+    String scoreText = "";
+    Color scoreNeonColor = Colors.transparent;
+    switch (score) {
+      case StagePlayScore.bad:
+        scoreText = "Bad";
+        scoreNeonColor = Colors.red;
+        break;
+      case StagePlayScore.good:
+        scoreText = "Good";
+        scoreNeonColor = AppColor.purpleColor2;
+        break;
+      case StagePlayScore.great:
+        scoreText = "Great";
+        scoreNeonColor = AppColor.greenColor;
+        break;
+      case StagePlayScore.excellent:
+        scoreText = "Excellent";
+        scoreNeonColor = AppColor.blueColor2;
+        break;
+      case StagePlayScore.perfect:
+        scoreText = "Perfect";
+        scoreNeonColor = AppColor.yellowColor2;
+        break;
+    }
+
+    return SizedBox(
+      width: 90,
+      child: Text(
+        scoreText,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          shadows: [
+            for (double i = 1; i < 6; i++)
+              Shadow(color: scoreNeonColor, blurRadius: 3 * i)
+          ],
+        ),
+      ),
     );
   }
 
@@ -92,7 +183,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   }
 
   void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
-    if (_isPlayer) {
+    if (_isPlayer && mounted) {
       setState(() {
         _skeletonDetectMode = mode;
 
