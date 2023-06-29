@@ -15,15 +15,28 @@ class PoPoCatchView extends StatefulWidget {
   State<StatefulWidget> createState() => _PoPoCatchViewState();
 }
 
-class _PoPoCatchViewState extends State<PoPoCatchView> {
+class _PoPoCatchViewState extends State<PoPoCatchView>
+    with SingleTickerProviderStateMixin {
   int _seconds = 3;
   late Timer _timer;
+  late AnimationController _animationController;
+  late Animation<double> _opacityAnimation;
 
   @override
   void initState() {
     super.initState();
 
     _startTimer();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _opacityAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+
+    _animationController.forward();
   }
 
   void _startTimer() {
@@ -44,6 +57,12 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
 
   void _stopTimer() {
     _timer.cancel();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -110,20 +129,24 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
                     blurStyle: BlurStyle.outer,
                     blurRadius: 3 * i)
             ]),
-        child: Padding(
-          padding: const EdgeInsets.all(11.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/icons/ic_music_note_big.svg',
-              ),
-              const SizedBox(width: 8.0),
-              Text(
-                title,
-                style: const TextStyle(fontSize: 24, color: Colors.white),
-              ),
-            ],
+        child: AnimatedOpacity(
+          opacity: _opacityAnimation.value,
+          duration: const Duration(milliseconds: 300),
+          child: Padding(
+            padding: const EdgeInsets.all(11.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/ic_music_note_big.svg',
+                ),
+                const SizedBox(width: 8.0),
+                Text(
+                  title,
+                  style: const TextStyle(fontSize: 24, color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
       ),
