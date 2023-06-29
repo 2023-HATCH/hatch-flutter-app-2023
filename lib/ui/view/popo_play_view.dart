@@ -107,7 +107,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     );
   }
 
-  Text getScoreNeonText(StagePlayScore score) {
+  Widget getScoreNeonText(StagePlayScore score) {
     String scoreText = "";
     Color scoreNeonColor = Colors.transparent;
     switch (score) {
@@ -133,15 +133,19 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         break;
     }
 
-    return Text(
-      scoreText,
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 20,
-        shadows: [
-          for (double i = 1; i < 6; i++)
-            Shadow(color: scoreNeonColor, blurRadius: 3 * i)
-        ],
+    return SizedBox(
+      width: 90,
+      child: Text(
+        scoreText,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          shadows: [
+            for (double i = 1; i < 6; i++)
+              Shadow(color: scoreNeonColor, blurRadius: 3 * i)
+          ],
+        ),
       ),
     );
   }
