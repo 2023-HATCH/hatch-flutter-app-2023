@@ -97,6 +97,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _count = 1;
   late Timer _timer;
   late VideoPlayProvider _videoPlayProvider;
+  final TextEditingController _textController = TextEditingController();
 
   StageStage _stageStage = StageStage.waitState;
   @override
@@ -153,6 +154,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -163,6 +165,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               ),
             ),
             child: Scaffold(
+              resizeToAvoidBottomInset: false,
               extendBodyBehindAppBar: true,
               backgroundColor: Colors.transparent,
               appBar: AppBar(
@@ -175,7 +178,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 elevation: 0.0,
                 leading: IconButton(
                   onPressed: () {
-                    AudioPlayerUtil().stop();
                     AudioPlayerUtil().stop();
                     if (widget.getIndex() == 0) {
                       Navigator.pop(context);
@@ -192,7 +194,66 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 ],
               ),
               body: getStageView(_stageStage),
+              bottomSheet: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Container(
+                    width: double.infinity,
+                    color: Colors.white,
+                    child: TextField(
+                      controller: _textController,
+                      cursorColor: Colors.white,
+                      decoration: const InputDecoration(
+                        hintText: 'nickname(으)로 댓글 달기...',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        border: InputBorder.none,
+                      ),
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                ),
+              ),
             )),
+      ),
+    );
+  }
+
+  Widget buildInputArea() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        children: [
+          Container(
+            height: 50,
+            padding: const EdgeInsets.only(left: 15),
+            decoration: BoxDecoration(
+              color: Colors.black12,
+              borderRadius: BorderRadius.circular(36),
+            ),
+            child: TextField(
+              controller: _textController,
+              cursorColor: Colors.white,
+              decoration: const InputDecoration(
+                hintText: '메시지 보내기',
+                labelStyle: TextStyle(color: Colors.grey),
+                border: InputBorder.none,
+              ),
+              textInputAction: TextInputAction.next,
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.send,
+              size: 30,
+              color: Colors.grey,
+            ),
+            onPressed: () => {},
+          ),
+        ],
       ),
     );
   }
