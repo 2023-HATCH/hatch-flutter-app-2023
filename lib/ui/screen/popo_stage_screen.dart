@@ -193,67 +193,54 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                   userCountWidget(),
                 ],
               ),
-              body: getStageView(_stageStage),
-              bottomSheet: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom),
-                  child: Container(
-                    width: double.infinity,
-                    color: Colors.white,
-                    child: TextField(
-                      controller: _textController,
-                      cursorColor: Colors.white,
-                      decoration: const InputDecoration(
-                        hintText: 'nickname(으)로 댓글 달기...',
-                        labelStyle: TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                      ),
-                      textInputAction: TextInputAction.next,
-                    ),
+              body: Stack(
+                children: [
+                  getStageView(_stageStage),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: buildInputArea(context),
                   ),
-                ),
+                ],
               ),
             )),
       ),
     );
   }
 
-  Widget buildInputArea() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Row(
-        children: [
-          Container(
-            height: 50,
+  SafeArea buildInputArea(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        color: Colors.black.withOpacity(0.3),
+        child: Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
             padding: const EdgeInsets.only(left: 15),
+            width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.black12,
               borderRadius: BorderRadius.circular(36),
+              color: Colors.transparent,
+              border: Border.all(
+                color: Colors.white,
+                width: 2.0,
+              ),
             ),
             child: TextField(
+              style: const TextStyle(color: Colors.white),
               controller: _textController,
               cursorColor: Colors.white,
               decoration: const InputDecoration(
-                hintText: '메시지 보내기',
-                labelStyle: TextStyle(color: Colors.grey),
+                hintText: 'nickname(으)로 댓글 달기...',
+                hintStyle: TextStyle(color: Colors.white70),
+                labelStyle: TextStyle(color: Colors.white),
                 border: InputBorder.none,
               ),
               textInputAction: TextInputAction.next,
             ),
           ),
-          const SizedBox(
-            width: 10,
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.send,
-              size: 30,
-              color: Colors.grey,
-            ),
-            onPressed: () => {},
-          ),
-        ],
+        ),
       ),
     );
   }
