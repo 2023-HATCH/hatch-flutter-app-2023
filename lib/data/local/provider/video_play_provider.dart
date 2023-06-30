@@ -16,12 +16,12 @@ class VideoPlayProvider with ChangeNotifier {
     'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-1.mp4',
   ];
 
-  List<String> likes = [
-    '6.6천',
-    '1만',
-    '9.2만',
-    '9.4천',
-    '2.8만',
+  List<int> likes = [
+    60,
+    100,
+    92,
+    94,
+    28,
   ];
 
   List<String> chats = [
