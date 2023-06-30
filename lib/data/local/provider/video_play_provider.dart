@@ -48,6 +48,8 @@ class VideoPlayProvider with ChangeNotifier {
     '@hyezz',
   ];
 
+  List<int> videoMilliseconds = [18000, 19000, 24000, 19000, 26000];
+
   List<String> contents = [
     '나이트댄서 춤 댄스챌린지 🌸🤍 | 가사 발음 포함 버전',
     '늦었지만 토카토카 댄스!! (난 추고 본적 없음) #원어스 #ONEUS #서호',
@@ -82,7 +84,7 @@ class VideoPlayProvider with ChangeNotifier {
 
   void setVideo() {
     // 비디오 기본 값 설정
-    controllers[currentIndex].play(); // 재생되는 상태
+    playVideo(); // 재생되는 상태
     controllers[currentIndex].setLooping(true); // 영상 무한 반복
     controllers[currentIndex].setVolume(1.0); // 볼륨 설정
 
@@ -92,12 +94,12 @@ class VideoPlayProvider with ChangeNotifier {
   void pauseVideo() {
     controllers[currentIndex].pause();
 
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void playVideo() {
     controllers[currentIndex].play();
 
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 }

@@ -15,32 +15,75 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   // 새로고침 방지 (1) 추가
   // 새로고침 방지 (2) 추가
   @override
   bool get wantKeepAlive => true;
+  List<double> _progressValues = [];
 
   late VideoPlayProvider _videoPlayProvider;
+  late final List<AnimationController> _progresControllers;
 
   @override
   void initState() {
-    // listen: false 상태 변화에 대해 위젯을 새로고치지 않겠다.
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
     super.initState();
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _videoPlayProvider.setVideo();
+    });
+    // 이전에 저장된 진행 상태 로드
+    _progressValues =
+        List<double>.filled(_videoPlayProvider.videoLinks.length, 0.0);
+    createProgressController();
   }
 
   void onPageChanged(int index) {
     setState(() {
-      _videoPlayProvider.controllers[_videoPlayProvider.currentIndex]
-          .pause()
-          .then((_) {
-        // 다음 비디오로 변경
-        _videoPlayProvider.currentIndex = index;
+      _progresControllers[index].stop();
+      _videoPlayProvider.pauseVideo();
 
-        _videoPlayProvider.setVideo();
-      });
+      _videoPlayProvider.currentIndex = index;
+
+      _progresControllers[index].repeat();
+      _videoPlayProvider.setVideo();
     });
+  }
+
+  void createProgressController() {
+    _progresControllers = List<AnimationController>.generate(
+      _videoPlayProvider.videoLinks.length,
+      (index) {
+        double progressValue = _progressValues.length > index
+            ? _progressValues[index]
+            : 0.0; // 이전에 저장된 진행 상태가 있으면 사용하고, 없으면 0으로 초기화
+        var controller = AnimationController(
+          vsync: this,
+          duration: Duration(
+              milliseconds: _videoPlayProvider.videoMilliseconds[index]),
+          lowerBound: 0, // 최소값 설정
+          upperBound: 1, // 최대값 설정
+          value: progressValue, // 이전에 저장된 진행 상태를 설정
+        )..addListener(() {
+            if (_videoPlayProvider.controllers[index].value.isPlaying) {
+              _progresControllers[index].repeat();
+            } else {
+              _progresControllers[index].stop();
+            }
+            _progressValues[index] =
+                _progresControllers[index].value; // 진행 상태 저장
+          });
+        return controller;
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _progresControllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -76,62 +119,73 @@ class _HomeScreenState extends State<HomeScreen>
           itemCount: _videoPlayProvider.videoLinks.length,
           itemBuilder: (context, index) {
             return FutureBuilder(
-                future: _videoPlayProvider
-                    .videoPlayerFutures[_videoPlayProvider.currentIndex],
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    // 데이터가 수신되었을 때
-                    _videoPlayProvider.loading = true;
+              future: _videoPlayProvider.videoPlayerFutures[index],
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  // 데이터가 수신되었을 때
+                  _progresControllers[index].repeat();
+                  _videoPlayProvider.loading = true;
 
-                    return Stack(children: <Widget>[
-                      GestureDetector(
-                        // 비디오 클릭 시 영상 정지/재생
-                        onTap: () {
-                          if (_videoPlayProvider
-                              .controllers[index].value.isPlaying) {
-                            _videoPlayProvider.controllers[index].pause();
-                          } else {
-                            // 만약 영상 일시 중지 상태였다면, 재생.
-                            _videoPlayProvider.controllers[index].play();
-                          }
-                        },
-                        child:
-                            VideoPlayer(_videoPlayProvider.controllers[index]),
-                      ),
-                      // like, chat, share, progress
-                      VideoFrameRightWidget(index: index),
-                      // profile, nicname, content
-                      VideoFrameContentWidget(index: index),
-                    ]);
-                  } else if (snapshot.connectionState ==
-                          ConnectionState.waiting &&
-                      _videoPlayProvider.loading) {
-                    // 데이터가 로딩중일 때
-                    return Stack(children: <Widget>[
-                      GestureDetector(
-                        // 비디오 클릭 시 영상 정지/재생
-                        onTap: () {
-                          if (_videoPlayProvider
-                              .controllers[index].value.isPlaying) {
-                            _videoPlayProvider.controllers[index].pause();
-                          } else {
-                            // 만약 영상 일시 중지 상태였다면, 재생.
-                            _videoPlayProvider.controllers[index].play();
-                          }
-                        },
-                        child:
-                            VideoPlayer(_videoPlayProvider.controllers[index]),
-                      ),
-                      // like, chat, share, progress
-                      VideoFrameRightWidget(index: index),
-                      // profile, nicname, content
-                      VideoFrameContentWidget(index: index),
-                    ]);
-                  } else {
-                    // 만약 VideoPlayerController가 여전히 초기화 중이라면, 포포 로딩 스피너를 보여줌.
-                    return const MusicSpinner();
-                  }
-                });
+                  return Stack(children: <Widget>[
+                    GestureDetector(
+                      // 비디오 클릭 시 영상 정지/재생
+                      onTap: () {
+                        if (_videoPlayProvider
+                            .controllers[index].value.isPlaying) {
+                          _progresControllers[index].stop();
+                          _videoPlayProvider.pauseVideo();
+                        } else {
+                          // 만약 영상 일시 중지 상태였다면, 재생.
+                          _progresControllers[index].repeat();
+                          _videoPlayProvider.playVideo();
+                        }
+                      },
+                      child: VideoPlayer(_videoPlayProvider.controllers[index]),
+                    ),
+                    // like, chat, share, progress
+                    VideoFrameRightWidget(
+                      index: index,
+                      progresController: _progresControllers[index],
+                    ),
+                    // profile, nicname, content
+                    VideoFrameContentWidget(index: index),
+                  ]);
+                } else if (snapshot.connectionState ==
+                        ConnectionState.waiting &&
+                    _videoPlayProvider.loading) {
+                  // 데이터가 로딩중일 때
+                  _progresControllers[index].repeat();
+
+                  return Stack(children: <Widget>[
+                    GestureDetector(
+                      // 비디오 클릭 시 영상 정지/재생
+                      onTap: () {
+                        if (_videoPlayProvider
+                            .controllers[index].value.isPlaying) {
+                          _progresControllers[index].stop();
+                          _videoPlayProvider.pauseVideo();
+                        } else {
+                          // 만약 영상 일시 중지 상태였다면, 재생.
+                          _progresControllers[index].repeat();
+                          _videoPlayProvider.playVideo();
+                        }
+                      },
+                      child: VideoPlayer(_videoPlayProvider.controllers[index]),
+                    ),
+                    // like, chat, share, progress
+                    VideoFrameRightWidget(
+                      index: index,
+                      progresController: _progresControllers[index],
+                    ),
+                    // profile, nicname, content
+                    VideoFrameContentWidget(index: index),
+                  ]);
+                } else {
+                  // 만약 VideoPlayerController가 여전히 초기화 중이라면, 포포 로딩 스피너를 보여줌.
+                  return const MusicSpinner();
+                }
+              },
+            );
           },
           onPageChanged: onPageChanged,
         ),

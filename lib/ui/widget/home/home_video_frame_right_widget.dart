@@ -7,10 +7,12 @@ import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:provider/provider.dart';
 
 class VideoFrameRightWidget extends StatefulWidget {
-  const VideoFrameRightWidget({Key? key, required this.index})
+  const VideoFrameRightWidget(
+      {Key? key, required this.index, required this.progresController})
       : super(key: key);
 
   final int index;
+  final AnimationController progresController;
 
   @override
   _VideoFrameRightWidgetState createState() => _VideoFrameRightWidgetState();
@@ -22,8 +24,6 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
   bool _isLiked = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
-
-  late AnimationController _progressAnimationController;
 
   @override
   void initState() {
@@ -53,14 +53,6 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
         curve: Curves.bounceInOut,
       ),
     );
-
-    // liquid-progress
-    _progressAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 10),
-      lowerBound: 0, // 추가: 최소값 설정
-      upperBound: 1, // 추가: 최대값 설정
-    )..repeat(reverse: false); // 반복 설정
   }
 
   void _toggleLike() {
@@ -77,7 +69,6 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
   @override
   void dispose() {
     _animationController.dispose();
-    _progressAnimationController.dispose(); // 애니메이션 컨트롤러 해제
     super.dispose();
   }
 
@@ -152,24 +143,22 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
             Column(
               children: <Widget>[
                 AnimatedBuilder(
-                  animation: _progressAnimationController,
+                  animation: widget.progresController,
                   builder: (context, child) {
                     return SizedBox(
                       height: 35,
                       width: 35,
                       child: LiquidCircularProgressIndicator(
-                        value: _progressAnimationController.value,
+                        value: widget.progresController.value,
                         valueColor:
                             AlwaysStoppedAnimation(AppColor.purpleColor),
                         backgroundColor: Colors.white,
                         direction: Axis.vertical,
-                        center: Container(),
-                        //임시
-                        //     Text(
-                        //   (_progressAnimationController.value * 100)
-                        //       .toStringAsFixed(0),
-                        //   style: const TextStyle(fontSize: 20),
-                        // ),
+                        center: Text(
+                          (widget.progresController.value * 100)
+                              .toStringAsFixed(0),
+                          style: const TextStyle(fontSize: 20),
+                        ),
                       ),
                     );
                   },
