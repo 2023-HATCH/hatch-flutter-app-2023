@@ -99,6 +99,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
   late Timer _timer;
   late VideoPlayProvider _videoPlayProvider;
   final TextEditingController _textController = TextEditingController();
+  final FocusNode _inputFieldFocusNode = FocusNode();
+  bool _isFireIconVisible = true;
 
   List<Widget> selectWidgets = [];
   final List<AnimationController> _animationControllers = [];
@@ -111,6 +113,11 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
     super.initState();
 
     _startTimer();
+    _inputFieldFocusNode.addListener(() {
+      setState(() {
+        _isFireIconVisible = (_inputFieldFocusNode.hasFocus) ? false : true;
+      });
+    });
   }
 
   @override
@@ -122,7 +129,82 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
     for (final animationController in _animationControllers) {
       animationController.dispose();
     }
+    _textController.dispose();
+    _inputFieldFocusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Container(
+              // 플레이, 결과 상태에 따라 배경화면 변경
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage((getIsResultState())
+                      ? 'assets/images/bg_popo_result.png'
+                      : 'assets/images/bg_popo_comm.png'),
+                ),
+              ),
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                extendBodyBehindAppBar: true,
+                backgroundColor: Colors.transparent,
+                appBar: buildAppBar(context),
+                body: Stack(
+                  children: [
+                    _buildStageView(_stageStage),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: _buildInputArea(context),
+                    ),
+                    ...selectWidgets,
+                  ],
+                ),
+              )),
+        ),
+      ),
+    );
+  }
+
+  AppBar buildAppBar(BuildContext context) {
+    return AppBar(
+      centerTitle: true,
+      title: const Text(
+        "PoPo 스테이지",
+        style: TextStyle(fontSize: 18),
+      ),
+      backgroundColor: Colors.transparent,
+      elevation: 0.0,
+      leading: IconButton(
+        onPressed: () {
+          AudioPlayerUtil().stop();
+          if (widget.getIndex() == 0) {
+            Navigator.pop(context);
+          } else {
+            Navigator.pop(context);
+          }
+        },
+        icon: SvgPicture.asset(
+          'assets/icons/ic_stage_back_white.svg',
+        ),
+      ),
+      actions: [
+        _buildUserCountWidget(),
+      ],
+    );
   }
 
   void _startTimer() {
@@ -156,70 +238,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
 
   bool getIsResultState() => _stageStage == StageStage.resultState;
 
-  @override
-  Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage((getIsResultState())
-                    ? 'assets/images/bg_popo_result.png'
-                    : 'assets/images/bg_popo_comm.png'),
-              ),
-            ),
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              extendBodyBehindAppBar: true,
-              backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                centerTitle: true,
-                title: const Text(
-                  "PoPo 스테이지",
-                  style: TextStyle(fontSize: 18),
-                ),
-                backgroundColor: Colors.transparent,
-                elevation: 0.0,
-                leading: IconButton(
-                  onPressed: () {
-                    AudioPlayerUtil().stop();
-                    if (widget.getIndex() == 0) {
-                      Navigator.pop(context);
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/icons/ic_stage_back_white.svg',
-                  ),
-                ),
-                actions: [
-                  userCountWidget(),
-                ],
-              ),
-              body: Stack(
-                children: [
-                  getStageView(_stageStage),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: buildInputArea(context),
-                  ),
-                  ...selectWidgets,
-                ],
-              ),
-            )),
-      ),
-    );
-  }
-
-  SafeArea buildInputArea(BuildContext context) {
+  SafeArea _buildInputArea(BuildContext context) {
     return SafeArea(
       child: Container(
         color: Colors.black.withOpacity(0.3),
@@ -246,6 +265,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
                       style: const TextStyle(color: Colors.white),
                       controller: _textController,
                       cursorColor: Colors.white,
+                      focusNode: _inputFieldFocusNode,
                       decoration: const InputDecoration(
                         hintText: 'nickname(으)로 댓글 달기...',
                         hintStyle: TextStyle(color: Colors.white70),
@@ -257,16 +277,34 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
                   ),
                 ),
               ),
-              InkWell(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: _handleIconClick,
-                child:
-                    SvgPicture.asset('assets/icons/ic_popo_fire_unselect.svg'),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: _isFireIconVisible ? 20 : 0,
+                child: Visibility(
+                  visible: _isFireIconVisible,
+                  child: InkWell(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onTap: _handleIconClick,
+                    child: SvgPicture.asset(
+                        'assets/icons/ic_popo_fire_unselect.svg'),
+                  ),
+                ),
               ),
-              const SizedBox(
-                width: 14,
-              )
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: _isFireIconVisible ? 14 : 0,
+                child: Visibility(
+                  visible: _isFireIconVisible,
+                  child: InkWell(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: _handleIconClick,
+                      child: const SizedBox(
+                        width: 14,
+                      )),
+                ),
+              ),
             ],
           ),
         ),
@@ -274,12 +312,12 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
     );
   }
 
-  Container userCountWidget() {
+  Container _buildUserCountWidget() {
     return Container(
       margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
       child: OutlinedButton.icon(
         onPressed: () {
-          showUserListDialog();
+          _showUserListDialog();
         },
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
@@ -301,7 +339,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
     );
   }
 
-  Future<dynamic> showUserListDialog() {
+  Future<dynamic> _showUserListDialog() {
     userList = StageUserListResponse.fromJson(userListItem);
 
     return showDialog(
@@ -386,7 +424,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
         });
   }
 
-  Widget getStageView(StageStage state) {
+  Widget _buildStageView(StageStage state) {
     switch (state) {
       case StageStage.waitState:
         return (_userCount < 3)
@@ -446,7 +484,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
         }
       });
 
-      selectWidgets.add(buildSelectWidget(
+      selectWidgets.add(_buildSelectWidget(
         selectWidgets.length,
         animationController,
         animation,
@@ -458,10 +496,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen>
     _animationControllers.last.forward(from: 0);
   }
 
-  Widget buildSelectWidget(int index, AnimationController animationController,
+  Widget _buildSelectWidget(int index, AnimationController animationController,
       Animation<Offset> animation) {
     return Positioned(
-      bottom: 0,
+      bottom: 14,
       right: 0,
       child: AnimatedBuilder(
         animation: animation,

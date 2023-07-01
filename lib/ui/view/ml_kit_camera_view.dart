@@ -116,9 +116,11 @@ class _CameraViewState extends State<CameraView> {
             "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
             widget.setIsSkeletonDetectMode);
       } else {
-        setState(() {
-          _seconds--;
-        });
+        if (mounted) {
+          setState(() {
+            _seconds--;
+          });
+        }
       }
     });
   }
