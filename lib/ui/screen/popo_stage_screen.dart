@@ -10,7 +10,7 @@ import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_list.widget.dart';
-import 'package:pocket_pose/ui/widget/stage/stage_live_chat_widget.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:provider/provider.dart';
 
 final userListItem = {
@@ -155,7 +155,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           StageLiveChatListWidget(),
-                          StageLiveChatWidget(),
+                          StageLiveChatBarWidget(),
                         ],
                       ),
                     ),

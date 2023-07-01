@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class StageLiveChatWidget extends StatefulWidget {
-  const StageLiveChatWidget({super.key});
+class StageLiveChatBarWidget extends StatefulWidget {
+  const StageLiveChatBarWidget({super.key});
 
   @override
-  State<StageLiveChatWidget> createState() => _StageLiveChatWidgetState();
+  State<StageLiveChatBarWidget> createState() => _StageLiveChatBarWidgetState();
 }
 
-class _StageLiveChatWidgetState extends State<StageLiveChatWidget>
+class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
     with TickerProviderStateMixin {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _inputFieldFocusNode = FocusNode();
