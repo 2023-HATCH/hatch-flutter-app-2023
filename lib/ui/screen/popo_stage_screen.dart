@@ -93,8 +93,7 @@ class PoPoStageScreen extends StatefulWidget {
   State<PoPoStageScreen> createState() => _PoPoStageScreenState();
 }
 
-class _PoPoStageScreenState extends State<PoPoStageScreen>
-    with TickerProviderStateMixin {
+class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _userCount = 1;
   int _count = 1;
   late Timer _timer;
