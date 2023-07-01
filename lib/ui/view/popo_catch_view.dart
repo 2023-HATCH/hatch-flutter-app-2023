@@ -69,11 +69,11 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(
-            height: 40.0,
+            height: 80.0,
             width: double.infinity,
           ),
           const Text(
@@ -81,13 +81,14 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18, color: Colors.white),
           ),
-          const SizedBox(height: 30.0),
+          const SizedBox(height: 10.0),
           musicTitleContainer('I AM-IVE'),
-          const SizedBox(height: 30.0),
+          const SizedBox(height: 10.0),
           SvgPicture.asset(
             'assets/images/charactor_popo_catch.svg',
+            height: 200,
           ),
-          const SizedBox(height: 10.0),
+          // const SizedBox(height: 10.0),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
