@@ -148,16 +148,16 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                   children: [
                     _buildStageView(_stageStage),
                     const Positioned(
+                      bottom: 68,
+                      left: 0,
+                      right: 0,
+                      child: StageLiveChatListWidget(),
+                    ),
+                    const Positioned(
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          StageLiveChatListWidget(),
-                          StageLiveChatBarWidget(),
-                        ],
-                      ),
+                      child: StageLiveChatBarWidget(),
                     ),
                   ],
                 ),
