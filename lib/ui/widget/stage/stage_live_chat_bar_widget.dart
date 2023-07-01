@@ -47,13 +47,8 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
   Widget _buildInputArea(BuildContext context) {
     return Stack(
       children: [
-        Column(
-          children: [
-            // const StageLiveChatListWidget(),
-            _buildLiveChatBar(context),
-          ],
-        ),
-        ...selectWidgets
+        _buildLiveChatBar(context),
+        ...selectWidgets,
       ],
     );
   }
@@ -70,6 +65,7 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Container(
+                  height: 40,
                   padding: const EdgeInsets.only(left: 14),
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -81,13 +77,13 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                     ),
                   ),
                   child: TextField(
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                     controller: _textController,
                     cursorColor: Colors.white,
                     focusNode: _inputFieldFocusNode,
                     decoration: const InputDecoration(
                       hintText: 'nickname(으)로 댓글 달기...',
-                      hintStyle: TextStyle(color: Colors.white70),
+                      hintStyle: TextStyle(color: Colors.white70, fontSize: 14),
                       labelStyle: TextStyle(color: Colors.white),
                       border: InputBorder.none,
                     ),
