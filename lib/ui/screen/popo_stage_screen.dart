@@ -9,6 +9,7 @@ import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_live_chat_list.widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -150,7 +151,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      child: StageLiveChatWidget(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          StageLiveChatListWidget(),
+                          StageLiveChatWidget(),
+                        ],
+                      ),
                     ),
                   ],
                 ),

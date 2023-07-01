@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pocket_pose/ui/widget/stage/stage_live_chat_list.widget.dart';
 
 class StageLiveChatWidget extends StatefulWidget {
   const StageLiveChatWidget({super.key});
@@ -45,19 +44,17 @@ class _StageLiveChatWidgetState extends State<StageLiveChatWidget>
     return _buildInputArea(context);
   }
 
-  SafeArea _buildInputArea(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              const StageLiveChatListWidget(),
-              _buildLiveChatBar(context),
-            ],
-          ),
-          ...selectWidgets
-        ],
-      ),
+  Widget _buildInputArea(BuildContext context) {
+    return Stack(
+      children: [
+        Column(
+          children: [
+            // const StageLiveChatListWidget(),
+            _buildLiveChatBar(context),
+          ],
+        ),
+        ...selectWidgets
+      ],
     );
   }
 
