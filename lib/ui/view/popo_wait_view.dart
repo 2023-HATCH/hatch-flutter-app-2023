@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -14,7 +13,7 @@ class _PoPoWaitViewState extends State<PoPoWaitView> {
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(
@@ -26,15 +25,16 @@ class _PoPoWaitViewState extends State<PoPoWaitView> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 40, color: Colors.white),
           ),
-          const SizedBox(height: 40.0),
+          const SizedBox(height: 20.0),
           const Text(
             "3명 이상 참여하면 시작됩니다!",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18, color: Colors.white),
           ),
-          const SizedBox(height: 40.0),
+          const SizedBox(height: 20.0),
           SvgPicture.asset(
             'assets/images/charactor_popo_wait.svg',
+            height: 300,
           ),
         ],
       ),
