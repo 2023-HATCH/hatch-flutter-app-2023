@@ -1,24 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
-class StageLiveChatListWidget extends StatelessWidget {
+class StageLiveChatListWidget extends StatefulWidget {
   const StageLiveChatListWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<String> entries = <String>[
-      'a',
-      'b',
-      'c',
-      'd',
-      'e',
-      'f',
-      'g',
-      '1',
-      '2',
-      '3'
-    ];
+  State<StageLiveChatListWidget> createState() =>
+      _StageLiveChatListWidgetState();
+}
 
-    return _buildStageChatList(entries);
+class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
+  final List<String> _messageList = [];
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    //이전 채팅 목록 가져오기
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _messageList.addAll(['a', 'b', 'c', 'd', 'e', 'f', 'g', '1', '2', '3']);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _scrollController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // build마다 채팅 스크롤 맨 밑으로
+    if (_messageList.isNotEmpty) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 50),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+
+    return _buildStageChatList(_messageList);
   }
 
   SingleChildScrollView _buildStageChatList(List<String> entries) {
@@ -27,6 +54,7 @@ class StageLiveChatListWidget extends StatelessWidget {
         color: Colors.black.withOpacity(0.3),
         height: 150,
         child: ListView.separated(
+            controller: _scrollController,
             padding: const EdgeInsets.all(14),
             itemCount: entries.length,
             separatorBuilder: (context, index) {
