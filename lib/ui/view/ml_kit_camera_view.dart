@@ -116,9 +116,11 @@ class _CameraViewState extends State<CameraView> {
             "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
             widget.setIsSkeletonDetectMode);
       } else {
-        setState(() {
-          _seconds--;
-        });
+        if (mounted) {
+          setState(() {
+            _seconds--;
+          });
+        }
       }
     });
   }
@@ -138,6 +140,7 @@ class _CameraViewState extends State<CameraView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
       body: _liveFeedBody(),
