@@ -69,47 +69,54 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(
-            height: 80.0,
-            width: double.infinity,
-          ),
-          const Text(
-            "이번 곡은...",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-          const SizedBox(height: 10.0),
-          musicTitleContainer('I AM-IVE'),
-          const SizedBox(height: 10.0),
-          SvgPicture.asset(
-            'assets/images/charactor_popo_catch.svg',
-            height: 200,
-          ),
-          // const SizedBox(height: 10.0),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+          Flexible(
+            flex: 2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 80.0),
+                const Text(
+                  "이번 곡은...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
-                backgroundColor: Colors.transparent,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                side: const BorderSide(
-                  width: 1.0,
-                  color: Colors.white,
-                )),
-            child: const Text(
-              '캐치!',
-              style: TextStyle(color: Colors.white, fontSize: 24),
+                const SizedBox(height: 10.0),
+                musicTitleContainer('I AM-IVE'),
+                const SizedBox(height: 10.0),
+                Flexible(
+                  child: SvgPicture.asset(
+                    'assets/images/charactor_popo_catch.svg',
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      side: const BorderSide(
+                        width: 1.0,
+                        color: Colors.white,
+                      )),
+                  child: const Text(
+                    '캐치!',
+                    style: TextStyle(color: Colors.white, fontSize: 24),
+                  ),
+                  onPressed: () {},
+                ),
+                const SizedBox(height: 10.0),
+                Text('$_seconds',
+                    style: const TextStyle(fontSize: 14, color: Colors.white)),
+              ],
             ),
-            onPressed: () {},
           ),
-          const SizedBox(height: 10.0),
-          Text('$_seconds',
-              style: const TextStyle(fontSize: 14, color: Colors.white))
+          const Flexible(flex: 1, child: SizedBox(height: 60.0 + 150.0)),
         ],
       ),
     );

@@ -95,7 +95,7 @@ class PoPoStageScreen extends StatefulWidget {
 }
 
 class _PoPoStageScreenState extends State<PoPoStageScreen> {
-  double _userCount = 1;
+  int _userCount = 1;
   int _count = 1;
   late Timer _timer;
   late VideoPlayProvider _videoPlayProvider;
@@ -197,19 +197,19 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_userCount >= 3) {
-        _stopTimer();
+      if (mounted) {
+        if (_userCount >= 5) {
+          _stopTimer();
 
-        if (mounted) {
           setState(() {
             _stageStage = StageStage.catchState;
           });
+        } else {
+          setState(() {
+            _count++;
+            _userCount = _count;
+          });
         }
-      } else {
-        setState(() {
-          _count++;
-          _userCount = _count + 0.5;
-        });
       }
     });
   }
