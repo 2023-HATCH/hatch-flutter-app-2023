@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class StageLiveChatWidget extends StatefulWidget {
-  const StageLiveChatWidget({super.key});
+class StageLiveChatBarWidget extends StatefulWidget {
+  const StageLiveChatBarWidget({super.key});
 
   @override
-  State<StageLiveChatWidget> createState() => _StageLiveChatWidgetState();
+  State<StageLiveChatBarWidget> createState() => _StageLiveChatBarWidgetState();
 }
 
-class _StageLiveChatWidgetState extends State<StageLiveChatWidget>
+class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
     with TickerProviderStateMixin {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _inputFieldFocusNode = FocusNode();
@@ -44,81 +44,84 @@ class _StageLiveChatWidgetState extends State<StageLiveChatWidget>
     return _buildInputArea(context);
   }
 
-  SafeArea _buildInputArea(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          Container(
-            color: Colors.black.withOpacity(0.3),
-            child: Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 14),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(36),
-                          color: Colors.transparent,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 2.0,
-                          ),
-                        ),
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          controller: _textController,
-                          cursorColor: Colors.white,
-                          focusNode: _inputFieldFocusNode,
-                          decoration: const InputDecoration(
-                            hintText: 'nickname(으)로 댓글 달기...',
-                            hintStyle: TextStyle(color: Colors.white70),
-                            labelStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
-                          ),
-                          textInputAction: TextInputAction.next,
-                        ),
-                      ),
+  Widget _buildInputArea(BuildContext context) {
+    return Stack(
+      children: [
+        _buildLiveChatBar(context),
+        ...selectWidgets,
+      ],
+    );
+  }
+
+  Container _buildLiveChatBar(BuildContext context) {
+    return Container(
+      color: Colors.black.withOpacity(0.3),
+      child: Padding(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Container(
+                  height: 40,
+                  padding: const EdgeInsets.only(left: 14),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(36),
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 2.0,
                     ),
                   ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: _isFireIconVisible ? 20 : 0,
-                    child: Visibility(
-                      visible: _isFireIconVisible,
-                      child: InkWell(
-                        highlightColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: _handleIconClick,
-                        child: SvgPicture.asset(
-                            'assets/icons/ic_popo_fire_unselect.svg'),
-                      ),
+                  child: TextField(
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    controller: _textController,
+                    cursorColor: Colors.white,
+                    focusNode: _inputFieldFocusNode,
+                    decoration: const InputDecoration(
+                      hintText: 'nickname(으)로 댓글 달기...',
+                      hintStyle: TextStyle(color: Colors.white70, fontSize: 14),
+                      labelStyle: TextStyle(color: Colors.white),
+                      border: InputBorder.none,
                     ),
+                    textInputAction: TextInputAction.next,
                   ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: _isFireIconVisible ? 14 : 0,
-                    child: Visibility(
-                      visible: _isFireIconVisible,
-                      child: InkWell(
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          onTap: _handleIconClick,
-                          child: const SizedBox(
-                            width: 14,
-                          )),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-          ...selectWidgets
-        ],
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: _isFireIconVisible ? 20 : 0,
+              child: Visibility(
+                visible: _isFireIconVisible,
+                child: InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: _handleIconClick,
+                  child: SvgPicture.asset(
+                      'assets/icons/ic_popo_fire_unselect.svg'),
+                ),
+              ),
+            ),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: _isFireIconVisible ? 14 : 0,
+              child: Visibility(
+                visible: _isFireIconVisible,
+                child: InkWell(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onTap: _handleIconClick,
+                    child: const SizedBox(
+                      width: 14,
+                    )),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
