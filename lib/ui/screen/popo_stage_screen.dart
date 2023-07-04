@@ -99,23 +99,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _count = 1;
   late Timer _timer;
   late VideoPlayProvider _videoPlayProvider;
-
   StageStage _stageStage = StageStage.waitState;
-  @override
-  void initState() {
-    super.initState();
-
-    _startTimer();
-  }
-
-  @override
-  void dispose() {
-    AudioPlayerUtil().stop();
-    if (widget.getIndex() == 0) {
-      _videoPlayProvider.playVideo();
-    }
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,14 +115,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           resizeToAvoidBottomInset: false,
           body: Container(
               // 플레이, 결과 상태에 따라 배경화면 변경
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage((getIsResultState())
-                      ? 'assets/images/bg_popo_result.png'
-                      : 'assets/images/bg_popo_comm.png'),
-                ),
-              ),
+              decoration: buildBackgroundImage(),
               child: Scaffold(
                 resizeToAvoidBottomInset: false,
                 extendBodyBehindAppBar: true,
@@ -163,6 +140,33 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 ),
               )),
         ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    AudioPlayerUtil().stop();
+    if (widget.getIndex() == 0) {
+      _videoPlayProvider.playVideo();
+    }
+    super.dispose();
+  }
+
+  BoxDecoration buildBackgroundImage() {
+    return BoxDecoration(
+      image: DecorationImage(
+        fit: BoxFit.cover,
+        image: AssetImage((getIsResultState())
+            ? 'assets/images/bg_popo_result.png'
+            : 'assets/images/bg_popo_comm.png'),
       ),
     );
   }

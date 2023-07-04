@@ -33,13 +33,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   final List<List<double>> _inputLists = [];
 
   @override
-  void dispose() async {
-    _canProcess = false;
-    _poseDetector.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
     return Stack(
@@ -71,6 +64,13 @@ class _PoPoResultViewState extends State<PoPoResultView> {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() async {
+    _canProcess = false;
+    _poseDetector.close();
+    super.dispose();
   }
 
   Container buildMVPWidget(String profileImg, String nickName) {

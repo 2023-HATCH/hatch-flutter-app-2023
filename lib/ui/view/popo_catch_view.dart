@@ -23,49 +23,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   late Animation<double> _opacityAnimation;
 
   @override
-  void initState() {
-    super.initState();
-
-    _startTimer();
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-
-    _opacityAnimation =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-
-    _animationController.forward();
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_seconds == 0) {
-        _stopTimer();
-        Fluttertoast.showToast(msg: '캐치 성공!');
-        widget.setStageState(StageStage.playState);
-      } else {
-        if (mounted) {
-          setState(() {
-            _seconds--;
-          });
-        }
-      }
-    });
-  }
-
-  void _stopTimer() {
-    _timer.cancel();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -118,6 +75,49 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
         const Flexible(flex: 1, child: SizedBox(height: 60.0 + 150.0)),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _startTimer();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _opacityAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+
+    _animationController.forward();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_seconds == 0) {
+        _stopTimer();
+        Fluttertoast.showToast(msg: '캐치 성공!');
+        widget.setStageState(StageStage.playState);
+      } else {
+        if (mounted) {
+          setState(() {
+            _seconds--;
+          });
+        }
+      }
+    });
+  }
+
+  void _stopTimer() {
+    _timer.cancel();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Widget musicTitleContainer(String title) {
