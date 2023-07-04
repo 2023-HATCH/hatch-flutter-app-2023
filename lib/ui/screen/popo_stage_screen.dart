@@ -9,8 +9,6 @@ import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
-import 'package:pocket_pose/ui/widget/stage/stage_live_chat_list.widget.dart';
-import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:provider/provider.dart';
 
 final userListItem = {
@@ -147,18 +145,18 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 body: Stack(
                   children: [
                     _buildStageView(_stageStage),
-                    const Positioned(
-                      bottom: 68,
-                      left: 0,
-                      right: 0,
-                      child: StageLiveChatListWidget(),
-                    ),
-                    const Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: StageLiveChatBarWidget(),
-                    ),
+                    // const Positioned(
+                    //   bottom: 68,
+                    //   left: 0,
+                    //   right: 0,
+                    //   child: StageLiveChatListWidget(),
+                    // ),
+                    // const Positioned(
+                    //   bottom: 0,
+                    //   left: 0,
+                    //   right: 0,
+                    //   child: StageLiveChatBarWidget(),
+                    // ),
                   ],
                 ),
               )),
@@ -275,18 +273,16 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               backgroundColor: Colors.white.withOpacity(0.3),
               title: Row(
                 children: [
-                  const Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 20),
-                      child: Text(
-                        '참여자 목록',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Text(
+                      '참여자 목록',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   GestureDetector(
