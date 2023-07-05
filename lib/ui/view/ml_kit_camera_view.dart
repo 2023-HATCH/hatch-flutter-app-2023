@@ -173,7 +173,17 @@ class _CameraViewState extends State<CameraView> {
 
   // 결과 화면: MVP 1명의 스켈레톤만 보임
   Widget _liveFeedBodyResult() {
-    return (widget.customPaint != null) ? widget.customPaint! : Container();
+    return Row(
+      children: [
+        Expanded(flex: 2, child: Container()),
+        Expanded(
+            flex: 4,
+            child: (widget.customPaint != null)
+                ? SizedBox(height: 300, child: widget.customPaint!)
+                : Container()),
+        Expanded(flex: 2, child: Container()),
+      ],
+    );
   }
 
   // 플레이 화면: 플레이어 3명 스켈레톤 보임
