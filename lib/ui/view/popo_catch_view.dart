@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
+import 'package:semicircle_indicator/semicircle_indicator.dart';
 
 class PoPoCatchView extends StatefulWidget {
   const PoPoCatchView({Key? key, required this.setStageState})
@@ -17,7 +18,8 @@ class PoPoCatchView extends StatefulWidget {
 
 class _PoPoCatchViewState extends State<PoPoCatchView>
     with SingleTickerProviderStateMixin {
-  int _seconds = 3;
+  int _milliseconds = 0;
+  double _catchCountDown = 0.0;
   late Timer _timer;
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
@@ -48,32 +50,36 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
                   'assets/images/charactor_popo_catch.svg',
                 ),
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    side: const BorderSide(
-                      width: 1.0,
-                      color: Colors.white,
-                    )),
-                child: const Text(
-                  '캐치!',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
-                ),
-                onPressed: () {},
-              ),
-              const SizedBox(height: 10.0),
-              Text('$_seconds',
-                  style: const TextStyle(fontSize: 14, color: Colors.white)),
+              _buildCatchButton(),
             ],
           ),
         ),
         const Flexible(flex: 1, child: SizedBox(height: 60.0 + 150.0)),
       ],
+    );
+  }
+
+  SizedBox _buildCatchButton() {
+    return SizedBox(
+      width: 100,
+      height: 45,
+      child: SemicircularIndicator(
+        progress: _catchCountDown,
+        color: Colors.white,
+        bottomPadding: 0,
+        strokeWidth: 4,
+        child: Text(
+          '캐치!',
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.white,
+            shadows: [
+              for (double i = 1; i < 6; i++)
+                Shadow(color: AppColor.blueColor3, blurRadius: 6 * i)
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -95,15 +101,16 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_seconds == 0) {
+    _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      if (_milliseconds >= 3000) {
         _stopTimer();
         Fluttertoast.showToast(msg: '캐치 성공!');
         widget.setStageState(StageStage.playState);
       } else {
         if (mounted) {
           setState(() {
-            _seconds--;
+            _milliseconds = _milliseconds + 10;
+            _catchCountDown = _milliseconds / 3000;
           });
         }
       }
