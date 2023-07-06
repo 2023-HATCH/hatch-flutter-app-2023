@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:semicircle_indicator/semicircle_indicator.dart';
+import 'dart:math' as math;
 
 class PoPoCatchView extends StatefulWidget {
   const PoPoCatchView({Key? key, required this.setStageState})
@@ -50,6 +51,12 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
                   'assets/images/charactor_popo_catch.svg',
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(right: 90),
+                child: CustomPaint(
+                  painter: CatchCountDownPainter(),
+                ),
+              ),
               _buildCatchButton(),
             ],
           ),
@@ -65,9 +72,10 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
       height: 45,
       child: SemicircularIndicator(
         progress: _catchCountDown,
-        color: Colors.white,
+        color: Colors.yellow,
         bottomPadding: 0,
-        strokeWidth: 4,
+        strokeWidth: 2,
+        backgroundColor: Colors.transparent,
         child: Text(
           '캐치!',
           style: TextStyle(
@@ -165,4 +173,48 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
       ),
     );
   }
+}
+
+class CatchCountDownPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Outer 네온 효과
+    final neonOuterPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8.0
+      ..strokeCap = StrokeCap.round
+      ..color = AppColor.blueColor3
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+
+    // Inner 네온 효과
+    final neonInnerPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8.0
+      ..strokeCap = StrokeCap.round
+      ..color = AppColor.blueColor3
+      ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 2.0);
+
+    // 흰 라인
+    final basePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6.0
+      ..strokeCap = StrokeCap.round // 끝을 둥글게
+      ..color = Colors.white;
+
+    // 검정 라인
+    final innerBasePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round // 끝을 둥글게
+      ..color = Colors.black;
+
+    const rect = Rect.fromLTWH(0, 0, 90, 90);
+    canvas.drawArc(rect, -math.pi, math.pi, false, neonOuterPaint);
+    canvas.drawArc(rect, -math.pi, math.pi, false, neonInnerPaint);
+    canvas.drawArc(rect, -math.pi, math.pi, false, basePaint);
+    canvas.drawArc(rect, -math.pi, math.pi, false, innerBasePaint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
