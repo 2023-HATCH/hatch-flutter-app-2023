@@ -76,15 +76,18 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
         bottomPadding: 0,
         strokeWidth: 2,
         backgroundColor: Colors.transparent,
-        child: Text(
-          '캐치!',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.white,
-            shadows: [
-              for (double i = 1; i < 6; i++)
-                Shadow(color: AppColor.blueColor3, blurRadius: 6 * i)
-            ],
+        child: TextButton(
+          onPressed: () {},
+          child: Text(
+            '캐치!',
+            style: TextStyle(
+              fontSize: 24,
+              color: Colors.white,
+              shadows: [
+                for (double i = 1; i < 6; i++)
+                  Shadow(color: AppColor.blueColor3, blurRadius: 6 * i)
+              ],
+            ),
           ),
         ),
       ),
