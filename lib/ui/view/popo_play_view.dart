@@ -37,13 +37,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   final _provider = PoPoSkeletonProviderImpl();
 
   @override
-  void dispose() async {
-    _canProcess = false;
-    _poseDetector.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     // 카메라뷰 보이기
     return Stack(
@@ -80,6 +73,13 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() async {
+    _canProcess = false;
+    _poseDetector.close();
+    super.dispose();
   }
 
   Column getProfile(String profileImg, String nickName, StagePlayScore score) {
