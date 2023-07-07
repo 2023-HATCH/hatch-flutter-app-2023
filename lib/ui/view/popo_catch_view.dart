@@ -37,7 +37,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 80.0),
+              const SizedBox(height: 60.0),
               const Text(
                 "이번 곡은...",
                 textAlign: TextAlign.center,
@@ -76,8 +76,11 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
         bottomPadding: 0,
         strokeWidth: 2,
         backgroundColor: Colors.transparent,
-        child: TextButton(
-          onPressed: () {},
+        child: InkWell(
+          onTap: () {},
+          borderRadius: const BorderRadius.all(
+            Radius.circular(20.0),
+          ),
           child: Text(
             '캐치!',
             style: TextStyle(
@@ -85,7 +88,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
               color: Colors.white,
               shadows: [
                 for (double i = 1; i < 6; i++)
-                  Shadow(color: AppColor.blueColor3, blurRadius: 6 * i)
+                  Shadow(color: AppColor.blueColor3, blurRadius: 5 * i)
               ],
             ),
           ),
@@ -195,7 +198,7 @@ class CatchCountDownPainter extends CustomPainter {
       ..strokeWidth = 8.0
       ..strokeCap = StrokeCap.round
       ..color = AppColor.blueColor3
-      ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 2.0);
+      ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 3.0);
 
     // 흰 라인
     final basePaint = Paint()
