@@ -4,7 +4,7 @@ import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/music_spinner_widget.dart';
 import 'package:pocket_pose/ui/widget/home/home_video_frame_content_widget.dart';
 import 'package:pocket_pose/ui/widget/home/home_video_frame_right_widget.dart';
-import 'package:pocket_pose/ui/widget/upload_button_widget.dart';
+import 'package:pocket_pose/ui/widget/home/upload_button_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
