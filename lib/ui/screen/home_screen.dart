@@ -4,6 +4,7 @@ import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/music_spinner_widget.dart';
 import 'package:pocket_pose/ui/widget/home/home_video_frame_content_widget.dart';
 import 'package:pocket_pose/ui/widget/home/home_video_frame_right_widget.dart';
+import 'package:pocket_pose/ui/widget/upload_button_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -56,9 +57,7 @@ class _HomeScreenState extends State<HomeScreen>
         backgroundColor: Colors.transparent, //appBar 투명색
         elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
         actions: [
-          Container(
-              margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-              child: SvgPicture.asset('assets/icons/ic_home_upload.svg')),
+          UploadButtonWidget(context: context),
           Container(
               margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
               child: SvgPicture.asset('assets/icons/ic_home_search.svg')),
