@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/music_spinner_widget.dart';
 import 'package:pocket_pose/ui/widget/home/home_video_frame_content_widget.dart';
 import 'package:pocket_pose/ui/widget/home/home_video_frame_right_widget.dart';
+import 'package:pocket_pose/ui/widget/upload_button_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen>
         backgroundColor: Colors.transparent, //appBar 투명색
         elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
         actions: [
-          _buildUploadButton(),
+          UploadButtonWidget(context: context),
           Container(
               margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
               child: SvgPicture.asset('assets/icons/ic_home_search.svg')),
@@ -135,108 +135,6 @@ class _HomeScreenState extends State<HomeScreen>
           onPageChanged: onPageChanged,
         ),
       ]),
-    );
-  }
-
-  InkWell _buildUploadButton() {
-    return InkWell(
-      onTap: () => {
-        showModalBottomSheet(
-          context: context,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(15.0),
-            ),
-          ),
-          backgroundColor: Colors.black,
-          builder: (context) {
-            return SizedBox(
-              height: 160,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(20, 23, 20, 8),
-                    child: Text(
-                      "만들기",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () => {},
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: AppColor.grayColor,
-                              shape: BoxShape.circle,
-                            ),
-                            child: SvgPicture.asset(
-                              'assets/icons/ic_home_upload_gallery.svg',
-                              width: 16,
-                              height: 16,
-                              fit: BoxFit.scaleDown,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          const Text(
-                            "갤러리에서 가져오기",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () => {},
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: AppColor.grayColor,
-                              shape: BoxShape.circle,
-                            ),
-                            child: SvgPicture.asset(
-                              'assets/icons/ic_home_upload_camera.svg',
-                              width: 16,
-                              height: 16,
-                              fit: BoxFit.scaleDown,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          const Text(
-                            "직접 촬영하기",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      },
-      borderRadius: const BorderRadius.all(
-        Radius.circular(90.0),
-      ),
-      child: Container(
-          padding: const EdgeInsets.all(14),
-          child: SvgPicture.asset('assets/icons/ic_home_upload.svg')),
     );
   }
 }
