@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/ui/screen/upload_screen.dart';
 
-class UploadButtonWidget extends StatelessWidget {
+class UploadButtonWidget extends StatefulWidget {
   const UploadButtonWidget({
     super.key,
     required this.context,
@@ -11,7 +15,40 @@ class UploadButtonWidget extends StatelessWidget {
   final BuildContext context;
 
   @override
+  State<UploadButtonWidget> createState() => _UploadButtonWidgetState();
+}
+
+class _UploadButtonWidgetState extends State<UploadButtonWidget> {
+  @override
   Widget build(BuildContext context) {
+    File? videoFile;
+    final picker = ImagePicker();
+
+    Future getVideo(
+      ImageSource img,
+    ) async {
+      final pickedFile = await picker.pickVideo(
+          source: img,
+          preferredCameraDevice: CameraDevice.front,
+          maxDuration: const Duration(minutes: 10));
+      XFile? xfilePick = pickedFile;
+      setState(
+        () {
+          if (xfilePick != null) {
+            videoFile = File(pickedFile!.path);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UploadScreen(uploadFile: videoFile!)),
+            );
+          } else {
+            ScaffoldMessenger.of(widget.context).showSnackBar(
+                const SnackBar(content: Text('Nothing is selected')));
+          }
+        },
+      );
+    }
+
     return InkWell(
       onTap: () => {
         showModalBottomSheet(
@@ -37,7 +74,10 @@ class UploadButtonWidget extends StatelessWidget {
                     ),
                   ),
                   InkWell(
-                    onTap: () => {},
+                    onTap: () {
+                      getVideo(ImageSource.gallery);
+                      Navigator.of(context).pop();
+                    },
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
                       child: Row(
@@ -68,7 +108,10 @@ class UploadButtonWidget extends StatelessWidget {
                     ),
                   ),
                   InkWell(
-                    onTap: () => {},
+                    onTap: () {
+                      getVideo(ImageSource.camera);
+                      Navigator.of(context).pop();
+                    },
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
                       child: Row(
