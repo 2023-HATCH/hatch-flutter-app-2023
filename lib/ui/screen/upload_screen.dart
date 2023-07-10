@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key, required this.uploadFile});
@@ -13,6 +14,20 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
+  late VideoPlayerController _videoPlayerController;
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    super.dispose();
+  }
+
+  Future _initVideoPlayer() async {
+    _videoPlayerController = VideoPlayerController.file(widget.uploadFile);
+    await _videoPlayerController.initialize();
+    await _videoPlayerController.setLooping(true);
+    await _videoPlayerController.play();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,14 +63,24 @@ class _UploadScreenState extends State<UploadScreen> {
       body: Container(
         child: Column(
           children: [
+            Container(
+              color: Colors.purple,
+              height: 3,
+            ),
             Expanded(
-              child: Text(
-                widget.uploadFile.toString(),
-                style: const TextStyle(fontSize: 14, color: Colors.black),
+              child: FutureBuilder(
+                future: _initVideoPlayer(),
+                builder: (context, state) {
+                  if (state.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return VideoPlayer(_videoPlayerController);
+                  }
+                },
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 7, 18, 7),
+              padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
               child: Row(
                 children: [
                   const Text(
