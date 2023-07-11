@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class UploadScreen extends StatefulWidget {
@@ -15,9 +17,19 @@ class _UploadScreenState extends State<UploadScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
   late VideoPlayerController _videoPlayerController;
+  late VideoPlayProvider _videoPlayProvider;
+
+  @override
+  void initState() {
+    _videoPlayProvider = Provider.of(context, listen: false);
+    _videoPlayProvider.pauseVideo();
+
+    super.initState();
+  }
 
   @override
   void dispose() {
+    _videoPlayProvider.playVideo();
     _videoPlayerController.dispose();
     super.dispose();
   }
@@ -53,7 +65,11 @@ class _UploadScreenState extends State<UploadScreen> {
                 },
               ),
             ),
-            _buildVideoInfoArea(),
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: _buildVideoInfoArea(),
+            ),
           ],
         ),
       ),
@@ -62,6 +78,8 @@ class _UploadScreenState extends State<UploadScreen> {
 
   Column _buildVideoInfoArea() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
