@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -14,9 +15,8 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _tagController = TextEditingController();
-  late VideoPlayerController _videoPlayerController;
+  final TextEditingController _titleTextController = TextEditingController();
+  VideoPlayerController? _videoPlayerController;
   late VideoPlayProvider _videoPlayProvider;
 
   @override
@@ -30,15 +30,17 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   void dispose() {
     _videoPlayProvider.playVideo();
-    _videoPlayerController.dispose();
+    _videoPlayerController?.dispose();
     super.dispose();
   }
 
   Future _initVideoPlayer() async {
-    _videoPlayerController = VideoPlayerController.file(widget.uploadFile);
-    await _videoPlayerController.initialize();
-    await _videoPlayerController.setLooping(true);
-    await _videoPlayerController.play();
+    if (_videoPlayerController == null) {
+      _videoPlayerController = VideoPlayerController.file(widget.uploadFile);
+      await _videoPlayerController!.initialize();
+      await _videoPlayerController!.setLooping(true);
+      await _videoPlayerController!.play();
+    }
   }
 
   @override
@@ -60,7 +62,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   if (state.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else {
-                    return VideoPlayer(_videoPlayerController);
+                    return VideoPlayer(_videoPlayerController!);
                   }
                 },
               ),
@@ -106,7 +108,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                   child: TextField(
                     style: const TextStyle(color: Colors.black, fontSize: 14),
-                    controller: _titleController,
+                    controller: _titleTextController,
                     cursorColor: Colors.grey,
                     decoration: const InputDecoration(
                       hintText: '포포와 함께 댄스 파티',
@@ -121,44 +123,18 @@ class _UploadScreenState extends State<UploadScreen> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(18, 7, 18, 20),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(18, 7, 18, 20),
           child: Row(
             children: [
-              const Text(
+              Text(
                 "태그",
                 style: TextStyle(fontSize: 14, color: Colors.black),
               ),
-              const SizedBox(
+              SizedBox(
                 width: 18,
               ),
-              Expanded(
-                child: Container(
-                  height: 40,
-                  width: double.infinity,
-                  padding: const EdgeInsets.only(left: 14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.transparent,
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2.5,
-                    ),
-                  ),
-                  child: TextField(
-                    style: const TextStyle(color: Colors.black, fontSize: 14),
-                    controller: _tagController,
-                    cursorColor: Colors.grey,
-                    decoration: const InputDecoration(
-                      hintText: '#포포 #댄스챌린지',
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                      labelStyle: TextStyle(color: Colors.grey),
-                      border: InputBorder.none,
-                    ),
-                    textInputAction: TextInputAction.next,
-                  ),
-                ),
-              ),
+              UploadTagTextFieldWidget(),
             ],
           ),
         ),
