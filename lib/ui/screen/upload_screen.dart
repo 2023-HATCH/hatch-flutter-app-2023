@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
 import 'package:provider/provider.dart';
@@ -90,9 +91,9 @@ class _UploadScreenState extends State<UploadScreen> {
             padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
             child: Row(
               children: [
-                const Text(
+                Text(
                   "제목",
-                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  style: TextStyle(fontSize: 14, color: AppColor.blackColor),
                 ),
                 const SizedBox(
                   width: 18,
@@ -105,7 +106,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: Colors.grey,
+                        color: AppColor.grayColor2,
                         width: 2.5,
                       ),
                     ),
@@ -113,10 +114,13 @@ class _UploadScreenState extends State<UploadScreen> {
                       style: const TextStyle(color: Colors.black, fontSize: 14),
                       controller: _titleTextController,
                       cursorColor: Colors.grey,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '포포와 함께 댄스 파티',
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                        labelStyle: TextStyle(color: Colors.grey),
+                        hintStyle: TextStyle(
+                            color: AppColor.blackColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300),
+                        labelStyle: const TextStyle(color: Colors.grey),
                         border: InputBorder.none,
                       ),
                       textInputAction: TextInputAction.next,
@@ -129,18 +133,18 @@ class _UploadScreenState extends State<UploadScreen> {
         ),
         Container(
           color: Colors.white,
-          child: const Padding(
-            padding: EdgeInsets.fromLTRB(18, 7, 18, 20),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 7, 18, 20),
             child: Row(
               children: [
                 Text(
                   "태그",
-                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  style: TextStyle(fontSize: 14, color: AppColor.blackColor),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 18,
                 ),
-                UploadTagTextFieldWidget(),
+                const UploadTagTextFieldWidget(),
               ],
             ),
           ),
@@ -171,9 +175,9 @@ class _UploadScreenState extends State<UploadScreen> {
       actions: [
         TextButton(
           onPressed: () {},
-          child: const Text(
+          child: Text(
             "업로드",
-            style: TextStyle(color: Colors.blue, fontSize: 14),
+            style: TextStyle(color: AppColor.blueColor4, fontSize: 14),
           ),
         )
       ],

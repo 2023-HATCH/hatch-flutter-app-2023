@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
 class UploadTagTextFieldWidget extends StatefulWidget {
@@ -48,7 +49,7 @@ class _UploadTagTextFieldWidgetState extends State<UploadTagTextFieldWidget> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: Colors.grey,
+                  color: AppColor.grayColor2,
                   width: 2.5,
                 ),
               ),
@@ -59,7 +60,10 @@ class _UploadTagTextFieldWidgetState extends State<UploadTagTextFieldWidget> {
                   isDense: true,
                   border: InputBorder.none,
                   hintText: _tagController.hasTags ? '' : "#포포 #댄스챌린지",
-                  hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+                  hintStyle: TextStyle(
+                      color: AppColor.blackColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300),
                   errorText: error,
                   prefixIconConstraints:
                       BoxConstraints(maxWidth: _distanceToField * 0.54),
