@@ -49,13 +49,14 @@ class _UploadScreenState extends State<UploadScreen> {
       resizeToAvoidBottomInset: false,
       appBar: _buildAppBar(context),
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
             Container(
               color: Colors.purple,
               height: 3,
             ),
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 3, 0, 134),
               child: FutureBuilder(
                 future: _initVideoPlayer(),
                 builder: (context, state) {
@@ -78,64 +79,70 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
-  Column _buildVideoInfoArea() {
+  Widget _buildVideoInfoArea() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
-          child: Row(
-            children: [
-              const Text(
-                "제목",
-                style: TextStyle(fontSize: 14, color: Colors.black),
-              ),
-              const SizedBox(
-                width: 18,
-              ),
-              Expanded(
-                child: Container(
-                  height: 40,
-                  width: double.infinity,
-                  padding: const EdgeInsets.only(left: 14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2.5,
+        Container(
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
+            child: Row(
+              children: [
+                const Text(
+                  "제목",
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+                const SizedBox(
+                  width: 18,
+                ),
+                Expanded(
+                  child: Container(
+                    height: 40,
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(left: 14),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 2.5,
+                      ),
                     ),
-                  ),
-                  child: TextField(
-                    style: const TextStyle(color: Colors.black, fontSize: 14),
-                    controller: _titleTextController,
-                    cursorColor: Colors.grey,
-                    decoration: const InputDecoration(
-                      hintText: '포포와 함께 댄스 파티',
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                      labelStyle: TextStyle(color: Colors.grey),
-                      border: InputBorder.none,
+                    child: TextField(
+                      style: const TextStyle(color: Colors.black, fontSize: 14),
+                      controller: _titleTextController,
+                      cursorColor: Colors.grey,
+                      decoration: const InputDecoration(
+                        hintText: '포포와 함께 댄스 파티',
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        labelStyle: TextStyle(color: Colors.grey),
+                        border: InputBorder.none,
+                      ),
+                      textInputAction: TextInputAction.next,
                     ),
-                    textInputAction: TextInputAction.next,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(18, 7, 18, 20),
-          child: Row(
-            children: [
-              Text(
-                "태그",
-                style: TextStyle(fontSize: 14, color: Colors.black),
-              ),
-              SizedBox(
-                width: 18,
-              ),
-              UploadTagTextFieldWidget(),
-            ],
+        Container(
+          color: Colors.white,
+          child: const Padding(
+            padding: EdgeInsets.fromLTRB(18, 7, 18, 20),
+            child: Row(
+              children: [
+                Text(
+                  "태그",
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+                SizedBox(
+                  width: 18,
+                ),
+                UploadTagTextFieldWidget(),
+              ],
+            ),
           ),
         ),
       ],
