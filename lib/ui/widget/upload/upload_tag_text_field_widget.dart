@@ -52,6 +52,7 @@ class _UploadTagTextFieldWidgetState extends State<UploadTagTextFieldWidget> {
               child: TextField(
                 controller: tec,
                 focusNode: fn,
+                style: const TextStyle(color: Colors.black, fontSize: 14),
                 decoration: InputDecoration(
                   isDense: true,
                   border: InputBorder.none,

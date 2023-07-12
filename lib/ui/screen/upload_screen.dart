@@ -29,6 +29,7 @@ class _UploadScreenState extends State<UploadScreen> {
     _videoPlayProvider = Provider.of(context, listen: false);
     _videoPlayProvider.pauseVideo();
     _tagController = CustomTagTextFieldController(setIsTagsFillPutState);
+    _initVideoPlayer();
 
     super.initState();
   }
@@ -59,21 +60,12 @@ class _UploadScreenState extends State<UploadScreen> {
         child: Stack(
           children: [
             Container(
-              color: Colors.purple,
+              color: AppColor.purpleColor,
               height: 3,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 3, 0, 134),
-              child: FutureBuilder(
-                future: _initVideoPlayer(),
-                builder: (context, state) {
-                  if (state.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    return VideoPlayer(_videoPlayerController!);
-                  }
-                },
-              ),
+              child: VideoPlayer(_videoPlayerController!),
             ),
             Padding(
               padding: EdgeInsets.only(
@@ -93,74 +85,84 @@ class _UploadScreenState extends State<UploadScreen> {
       children: [
         Container(
           color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
-            child: Row(
-              children: [
-                Text(
-                  "제목",
-                  style: TextStyle(fontSize: 14, color: AppColor.blackColor),
-                ),
-                const SizedBox(
-                  width: 18,
-                ),
-                Expanded(
-                  child: Container(
-                    height: 40,
-                    width: double.infinity,
-                    padding: const EdgeInsets.only(left: 14),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: AppColor.grayColor2,
-                        width: 2.5,
+          child: Column(
+            children: [
+              Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
+                  child: Row(
+                    children: [
+                      Text(
+                        "제목",
+                        style:
+                            TextStyle(fontSize: 14, color: AppColor.blackColor),
                       ),
-                    ),
-                    child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          _isTitleFillOut = value.isNotEmpty;
-                        });
-                      },
-                      style: const TextStyle(color: Colors.black, fontSize: 14),
-                      controller: _titleTextController,
-                      cursorColor: Colors.grey,
-                      decoration: InputDecoration(
-                        hintText: '포포와 함께 댄스 파티',
-                        hintStyle: TextStyle(
-                            color: AppColor.blackColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w300),
-                        labelStyle: const TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
+                      const SizedBox(
+                        width: 18,
                       ),
-                      textInputAction: TextInputAction.next,
-                    ),
+                      Expanded(
+                        child: Container(
+                          height: 40,
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(left: 14),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: AppColor.grayColor2,
+                              width: 2.5,
+                            ),
+                          ),
+                          child: TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                _isTitleFillOut = value.isNotEmpty;
+                              });
+                            },
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 14),
+                            controller: _titleTextController,
+                            cursorColor: Colors.grey,
+                            decoration: InputDecoration(
+                              hintText: '포포와 함께 댄스 파티',
+                              hintStyle: TextStyle(
+                                  color: AppColor.blackColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w300),
+                              labelStyle: const TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                            ),
+                            textInputAction: TextInputAction.next,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-        Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(18, 7, 18, 20),
-            child: Row(
-              children: [
-                Text(
-                  "태그",
-                  style: TextStyle(fontSize: 14, color: AppColor.blackColor),
+              ),
+              Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 7, 18, 20),
+                  child: Row(
+                    children: [
+                      Text(
+                        "태그",
+                        style:
+                            TextStyle(fontSize: 14, color: AppColor.blackColor),
+                      ),
+                      const SizedBox(
+                        width: 18,
+                      ),
+                      UploadTagTextFieldWidget(
+                        tagController: _tagController,
+                        setIsTagsFillPutState: setIsTagsFillPutState,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(
-                  width: 18,
-                ),
-                UploadTagTextFieldWidget(
-                  tagController: _tagController,
-                  setIsTagsFillPutState: setIsTagsFillPutState,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
