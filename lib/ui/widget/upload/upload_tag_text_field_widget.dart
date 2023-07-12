@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/ui/widget/upload/custom_tag_text_field_controller.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
 class UploadTagTextFieldWidget extends StatefulWidget {
-  const UploadTagTextFieldWidget({super.key});
+  const UploadTagTextFieldWidget(
+      {super.key,
+      required this.tagController,
+      required this.setIsTagsFillPutState});
+  final CustomTagTextFieldController tagController;
+  final Function setIsTagsFillPutState;
 
   @override
   State<UploadTagTextFieldWidget> createState() =>
@@ -12,14 +18,6 @@ class UploadTagTextFieldWidget extends StatefulWidget {
 
 class _UploadTagTextFieldWidgetState extends State<UploadTagTextFieldWidget> {
   late double _distanceToField;
-  late TextfieldTagsController _tagController;
-
-  @override
-  void initState() {
-    _tagController = TextfieldTagsController();
-
-    super.initState();
-  }
 
   @override
   void didChangeDependencies() {
@@ -28,17 +26,15 @@ class _UploadTagTextFieldWidgetState extends State<UploadTagTextFieldWidget> {
   }
 
   @override
-  void dispose() {
-    _tagController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return TextFieldTags(
-      textfieldTagsController: _tagController,
+      textfieldTagsController: widget.tagController,
       textSeparators: const [' ', ','],
       letterCase: LetterCase.normal,
+      validator: (String tag) {
+        widget.setIsTagsFillPutState(true);
+        return null;
+      },
       inputfieldBuilder: (context, tec, fn, error, onChanged, onSubmitted) {
         return ((context, sc, tags, onTagDelete) {
           return Expanded(
@@ -59,7 +55,7 @@ class _UploadTagTextFieldWidgetState extends State<UploadTagTextFieldWidget> {
                 decoration: InputDecoration(
                   isDense: true,
                   border: InputBorder.none,
-                  hintText: _tagController.hasTags ? '' : "#포포 #댄스챌린지",
+                  hintText: widget.tagController.hasTags ? '' : "#포포 #댄스챌린지",
                   hintStyle: TextStyle(
                       color: AppColor.blackColor,
                       fontSize: 14,

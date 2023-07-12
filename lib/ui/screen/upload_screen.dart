@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/ui/widget/upload/custom_tag_text_field_controller.dart';
 import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -19,11 +20,15 @@ class _UploadScreenState extends State<UploadScreen> {
   final TextEditingController _titleTextController = TextEditingController();
   VideoPlayerController? _videoPlayerController;
   late VideoPlayProvider _videoPlayProvider;
+  late CustomTagTextFieldController _tagController;
+  bool _isTitleFillOut = false;
+  bool _isTagsFillOut = false;
 
   @override
   void initState() {
     _videoPlayProvider = Provider.of(context, listen: false);
     _videoPlayProvider.pauseVideo();
+    _tagController = CustomTagTextFieldController(setIsTagsFillPutState);
 
     super.initState();
   }
@@ -32,6 +37,7 @@ class _UploadScreenState extends State<UploadScreen> {
   void dispose() {
     _videoPlayProvider.playVideo();
     _videoPlayerController?.dispose();
+    _tagController.dispose();
     super.dispose();
   }
 
@@ -111,6 +117,11 @@ class _UploadScreenState extends State<UploadScreen> {
                       ),
                     ),
                     child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          _isTitleFillOut = value.isNotEmpty;
+                        });
+                      },
                       style: const TextStyle(color: Colors.black, fontSize: 14),
                       controller: _titleTextController,
                       cursorColor: Colors.grey,
@@ -144,13 +155,22 @@ class _UploadScreenState extends State<UploadScreen> {
                 const SizedBox(
                   width: 18,
                 ),
-                const UploadTagTextFieldWidget(),
+                UploadTagTextFieldWidget(
+                  tagController: _tagController,
+                  setIsTagsFillPutState: setIsTagsFillPutState,
+                ),
               ],
             ),
           ),
         ),
       ],
     );
+  }
+
+  setIsTagsFillPutState(bool state) {
+    setState(() {
+      _isTagsFillOut = state;
+    });
   }
 
   AppBar _buildAppBar(BuildContext context) {
@@ -174,10 +194,17 @@ class _UploadScreenState extends State<UploadScreen> {
       ),
       actions: [
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            // var title = _titleTextController.value.text;
+            // var tags = _tagController.getTags;
+          },
           child: Text(
             "업로드",
-            style: TextStyle(color: AppColor.blueColor4, fontSize: 14),
+            style: TextStyle(
+                color: (_isTitleFillOut && _isTagsFillOut)
+                    ? AppColor.blueColor5
+                    : AppColor.blueColor4,
+                fontSize: 14),
           ),
         )
       ],
