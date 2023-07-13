@@ -244,11 +244,17 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   }
 
   Future<void> skeletonToFile(List<List<double>> inputLists) async {
-    var now = DateTime.now().toString().substring(0, 18);
+    var today = DateTime.now().toString().substring(0, 9);
+    var now = DateTime.now();
+
     final dir = await ExternalPath.getExternalStoragePublicDirectory(
         ExternalPath.DIRECTORY_DOCUMENTS);
-    final path = '$dir/popo-skeleton-$now.txt';
-    debugPrint("mmm: $path");
+    // 폴더 생성
+    String folderPath = '$dir/PoPo';
+    await Directory(folderPath).create(recursive: true);
+    // 파일 생성 및 저장
+    final path =
+        '$dir/PoPo/popo-skeleton-$today-${now.hour}-${now.minute}-${now.second}.txt';
     File(path).writeAsString(inputLists.toString());
   }
 }

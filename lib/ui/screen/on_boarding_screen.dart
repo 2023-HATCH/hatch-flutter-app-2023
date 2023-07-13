@@ -161,7 +161,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 child: Image.asset(
                   imgPath,
                   fit: BoxFit.fitHeight,
-                  height: 350,
                 ),
               ),
               const SizedBox(
@@ -232,7 +231,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     children: [
                       SvgPicture.asset(
                         'assets/images/charactor_on_boarding.svg',
-                        height: 300,
                         fit: BoxFit.contain,
                       ),
                       Container(
