@@ -16,11 +16,14 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final _introKey = GlobalKey<IntroductionScreenState>();
+  late double screenHeightSize;
 
   bool _skipState = true;
 
   @override
   Widget build(BuildContext context) {
+    screenHeightSize = MediaQuery.of(context).size.height;
+
     return IntroductionScreen(
       onChange: (value) {
         if (value == 4) {
@@ -160,6 +163,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               Expanded(
                 child: Image.asset(
                   imgPath,
+                  height: screenHeightSize * 0.5,
                   fit: BoxFit.fitHeight,
                 ),
               ),
@@ -232,6 +236,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       SvgPicture.asset(
                         'assets/images/charactor_on_boarding.svg',
                         fit: BoxFit.contain,
+                        height: screenHeightSize * 0.4,
                       ),
                       Container(
                         decoration: BoxDecoration(
