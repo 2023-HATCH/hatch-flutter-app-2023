@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
@@ -189,6 +192,11 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
         // 노래 끝나면 스켈레톤 서버에 보내기
         if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
+          // 스켈레톤 파일로 저장: 실행 안 되도록 설정
+          if (1 > 2) {
+            skeletonToFile(_inputLists);
+          }
+
           // // ai 서버 오류로 잠시 주석처리
           _provider
               .postSkeletonList(_inputLists)
@@ -236,5 +244,20 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       entry[PoseLandmarkType.leftAnkle]!.x,
       entry[PoseLandmarkType.leftAnkle]!.y
     ];
+  }
+
+  Future<void> skeletonToFile(List<List<double>> inputLists) async {
+    var today = DateTime.now().toString().substring(0, 9);
+    var now = DateTime.now();
+
+    final dir = await ExternalPath.getExternalStoragePublicDirectory(
+        ExternalPath.DIRECTORY_DOCUMENTS);
+    // 폴더 생성
+    String folderPath = '$dir/PoPo';
+    await Directory(folderPath).create(recursive: true);
+    // 파일 생성 및 저장
+    final path =
+        '$dir/PoPo/popo-skeleton-$today-${now.hour}-${now.minute}-${now.second}.txt';
+    File(path).writeAsString(inputLists.toString());
   }
 }
