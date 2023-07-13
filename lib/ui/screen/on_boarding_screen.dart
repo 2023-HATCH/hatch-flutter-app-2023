@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
@@ -251,7 +253,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                 borderRadius: BorderRadius.circular(30)),
                           ),
                           onPressed: () {
-                            goHomepage();
+                            permission();
                           },
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
@@ -288,5 +290,18 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const MainScreen()),
     );
+  }
+
+  Future<bool> permission() async {
+    await [Permission.camera, Permission.storage].request();
+
+    if (await Permission.camera.isGranted &&
+        await Permission.storage.isGranted) {
+      goHomepage();
+      return Future.value(true);
+    } else {
+      Fluttertoast.showToast(msg: '포포 스테이지를 즐기기 위해 권한을 설정해주세요.');
+      return Future.value(false);
+    }
   }
 }
