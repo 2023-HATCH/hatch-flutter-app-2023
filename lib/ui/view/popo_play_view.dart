@@ -245,8 +245,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
   Future<void> skeletonToFile(List<List<double>> inputLists) async {
     var now = DateTime.now().toString().substring(0, 18);
-    print("mmm: $now");
-
     final dir = await ExternalPath.getExternalStoragePublicDirectory(
         ExternalPath.DIRECTORY_DOCUMENTS);
     final path = '$dir/popo-skeleton-$now.txt';

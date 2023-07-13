@@ -12,6 +12,15 @@
 				</array>
 			</dict>
 		</array>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>$(PRODUCT_NAME) 사진첩 접근 권한</string>
+		<key>NSCameraUsageDescription</key>
+		<string>$(PRODUCT_NAME) 카메라 접근 권한</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>$(PRODUCT_NAME) 사진첩 추가 권한</string>
+		<key>NSFileProtectionKey</key>
+		<string>$(PRODUCT_NAME) 파일 쓰기 권한</string>
+
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
