@@ -14,7 +14,6 @@ class VideoFrameRightWidget extends StatefulWidget {
   @override
   _VideoFrameRightWidgetState createState() => _VideoFrameRightWidgetState();
 }
-
 class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget> {
   late VideoPlayProvider _videoPlayProvider;
 
@@ -86,14 +85,6 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget> {
                     'assets/icons/ic_home_share.svg',
                   ),
                 )
-              ],
-            ),
-            const Padding(padding: EdgeInsets.only(bottom: 14)),
-            Column(
-              children: <Widget>[
-                SvgPicture.asset(
-                  'assets/icons/ic_home_progress.svg',
-                ),
               ],
             ),
           ],

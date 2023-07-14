@@ -82,7 +82,7 @@ class VideoPlayProvider with ChangeNotifier {
 
   void setVideo() {
     // 비디오 기본 값 설정
-    controllers[currentIndex].play(); // 재생되는 상태
+    playVideo(); // 재생되는 상태
     controllers[currentIndex].setLooping(true); // 영상 무한 반복
     controllers[currentIndex].setVolume(1.0); // 볼륨 설정
 
