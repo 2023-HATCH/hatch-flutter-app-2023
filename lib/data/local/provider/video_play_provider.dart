@@ -48,8 +48,6 @@ class VideoPlayProvider with ChangeNotifier {
     '@hyezz',
   ];
 
-  List<int> videoMilliseconds = [18000, 19000, 24000, 19000, 26000];
-
   List<String> contents = [
     '나이트댄서 춤 댄스챌린지 🌸🤍 | 가사 발음 포함 버전',
     '늦었지만 토카토카 댄스!! (난 추고 본적 없음) #원어스 #ONEUS #서호',

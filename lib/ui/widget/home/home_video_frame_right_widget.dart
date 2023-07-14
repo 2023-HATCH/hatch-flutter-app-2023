@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
-import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:provider/provider.dart';
 
 class VideoFrameRightWidget extends StatefulWidget {
-  const VideoFrameRightWidget(
-      {Key? key, required this.index, required this.progresController})
+  const VideoFrameRightWidget({Key? key, required this.index})
       : super(key: key);
 
   final int index;
-  final AnimationController progresController;
 
   @override
   _VideoFrameRightWidgetState createState() => _VideoFrameRightWidgetState();
@@ -137,32 +133,6 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget>
                     'assets/icons/ic_home_share.svg',
                   ),
                 )
-              ],
-            ),
-            const Padding(padding: EdgeInsets.only(bottom: 14)),
-            Column(
-              children: <Widget>[
-                AnimatedBuilder(
-                  animation: widget.progresController,
-                  builder: (context, child) {
-                    return SizedBox(
-                      height: 35,
-                      width: 35,
-                      child: LiquidCircularProgressIndicator(
-                        value: widget.progresController.value,
-                        valueColor:
-                            AlwaysStoppedAnimation(AppColor.purpleColor),
-                        backgroundColor: Colors.white,
-                        direction: Axis.vertical,
-                        center: Text(
-                          (widget.progresController.value * 100)
-                              .toStringAsFixed(0),
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    );
-                  },
-                ),
               ],
             ),
           ],

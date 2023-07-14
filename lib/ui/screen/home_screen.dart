@@ -20,10 +20,8 @@ class _HomeScreenState extends State<HomeScreen>
   // 새로고침 방지 (2) 추가
   @override
   bool get wantKeepAlive => true;
-  List<double> _progressValues = [];
 
   late VideoPlayProvider _videoPlayProvider;
-  late final List<AnimationController> _progresControllers;
 
   @override
   void initState() {
@@ -32,58 +30,16 @@ class _HomeScreenState extends State<HomeScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _videoPlayProvider.setVideo();
     });
-    // 이전에 저장된 진행 상태 로드
-    _progressValues =
-        List<double>.filled(_videoPlayProvider.videoLinks.length, 0.0);
-    createProgressController();
   }
 
   void onPageChanged(int index) {
     setState(() {
-      _progresControllers[index].stop();
       _videoPlayProvider.pauseVideo();
 
       _videoPlayProvider.currentIndex = index;
 
-      _progresControllers[index].repeat();
       _videoPlayProvider.setVideo();
     });
-  }
-
-  void createProgressController() {
-    _progresControllers = List<AnimationController>.generate(
-      _videoPlayProvider.videoLinks.length,
-      (index) {
-        double progressValue = _progressValues.length > index
-            ? _progressValues[index]
-            : 0.0; // 이전에 저장된 진행 상태가 있으면 사용하고, 없으면 0으로 초기화
-        var controller = AnimationController(
-          vsync: this,
-          duration: Duration(
-              milliseconds: _videoPlayProvider.videoMilliseconds[index]),
-          lowerBound: 0, // 최소값 설정
-          upperBound: 1, // 최대값 설정
-          value: progressValue, // 이전에 저장된 진행 상태를 설정
-        )..addListener(() {
-            if (_videoPlayProvider.controllers[index].value.isPlaying) {
-              _progresControllers[index].repeat();
-            } else {
-              _progresControllers[index].stop();
-            }
-            _progressValues[index] =
-                _progresControllers[index].value; // 진행 상태 저장
-          });
-        return controller;
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    for (var controller in _progresControllers) {
-      controller.dispose();
-    }
-    super.dispose();
   }
 
   @override
@@ -123,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen>
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   // 데이터가 수신되었을 때
-                  _progresControllers[index].repeat();
                   _videoPlayProvider.loading = true;
 
                   return Stack(children: <Widget>[
@@ -132,11 +87,9 @@ class _HomeScreenState extends State<HomeScreen>
                       onTap: () {
                         if (_videoPlayProvider
                             .controllers[index].value.isPlaying) {
-                          _progresControllers[index].stop();
                           _videoPlayProvider.pauseVideo();
                         } else {
                           // 만약 영상 일시 중지 상태였다면, 재생.
-                          _progresControllers[index].repeat();
                           _videoPlayProvider.playVideo();
                         }
                       },
@@ -145,7 +98,6 @@ class _HomeScreenState extends State<HomeScreen>
                     // like, chat, share, progress
                     VideoFrameRightWidget(
                       index: index,
-                      progresController: _progresControllers[index],
                     ),
                     // profile, nicname, content
                     VideoFrameContentWidget(index: index),
@@ -154,7 +106,6 @@ class _HomeScreenState extends State<HomeScreen>
                         ConnectionState.waiting &&
                     _videoPlayProvider.loading) {
                   // 데이터가 로딩중일 때
-                  _progresControllers[index].repeat();
 
                   return Stack(children: <Widget>[
                     GestureDetector(
@@ -162,11 +113,9 @@ class _HomeScreenState extends State<HomeScreen>
                       onTap: () {
                         if (_videoPlayProvider
                             .controllers[index].value.isPlaying) {
-                          _progresControllers[index].stop();
                           _videoPlayProvider.pauseVideo();
                         } else {
                           // 만약 영상 일시 중지 상태였다면, 재생.
-                          _progresControllers[index].repeat();
                           _videoPlayProvider.playVideo();
                         }
                       },
@@ -175,7 +124,6 @@ class _HomeScreenState extends State<HomeScreen>
                     // like, chat, share, progress
                     VideoFrameRightWidget(
                       index: index,
-                      progresController: _progresControllers[index],
                     ),
                     // profile, nicname, content
                     VideoFrameContentWidget(index: index),
