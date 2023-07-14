@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:like_button/like_button.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/ui/widget/home/share_button_widget.dart';
 import 'package:provider/provider.dart';
 
 class VideoFrameRightWidget extends StatefulWidget {
@@ -14,6 +15,7 @@ class VideoFrameRightWidget extends StatefulWidget {
   @override
   _VideoFrameRightWidgetState createState() => _VideoFrameRightWidgetState();
 }
+
 class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget> {
   late VideoPlayProvider _videoPlayProvider;
 
@@ -75,18 +77,7 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget> {
               ),
             ),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
-            Column(
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    Fluttertoast.showToast(msg: 'share 클릭');
-                  },
-                  child: SvgPicture.asset(
-                    'assets/icons/ic_home_share.svg',
-                  ),
-                )
-              ],
-            ),
+            const ShareButtonWidget()
           ],
         ),
       ),
