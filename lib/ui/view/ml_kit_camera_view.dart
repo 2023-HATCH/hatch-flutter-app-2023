@@ -54,6 +54,16 @@ class _CameraViewState extends State<CameraView> {
   late Timer _timer;
 
   @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.transparent,
+      // 결과 화면이면 1명의 스켈레톤, 플레이 화면이면 3명의 스켈레톤 출력
+      body: _liveFeedBody(),
+    );
+  }
+
+  @override
   void initState() {
     super.initState();
 
@@ -107,16 +117,20 @@ class _CameraViewState extends State<CameraView> {
       if (_seconds == 1) {
         _stopTimer();
 
-        setState(() {
-          _countdownVisibility = false;
-        });
+        if (mounted) {
+          setState(() {
+            _countdownVisibility = false;
+          });
+        }
         AudioPlayerUtil().play(
             "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
             widget.setIsSkeletonDetectMode);
       } else {
-        setState(() {
-          _seconds--;
-        });
+        if (mounted) {
+          setState(() {
+            _seconds--;
+          });
+        }
       }
     });
   }
@@ -131,15 +145,6 @@ class _CameraViewState extends State<CameraView> {
       AudioPlayerUtil().stop();
     }
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
-      body: _liveFeedBody(),
-    );
   }
 
   // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
@@ -158,37 +163,83 @@ class _CameraViewState extends State<CameraView> {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        Positioned(
-          top: 80,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/icons/ic_music_note_small.svg',
-              ),
-              const SizedBox(width: 8.0),
-              const Text(
-                "I AM-IVE",
-                style: TextStyle(fontSize: 10, color: Colors.white),
-              ),
-            ],
-          ),
-        ),
+        buildMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
-        if (widget.customPaint != null) widget.customPaint!,
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Visibility(
-              visible: _countdownVisibility,
-              child: Text('$_seconds',
-                  style: const TextStyle(fontSize: 72, color: Colors.white)),
-            )
-          ],
+        (widget.isResultState) ? _liveFeedBodyResult() : _liveFeedBodyPlay(),
+        buildCountdownWidget()
+      ],
+    );
+  }
+
+  // 결과 화면: MVP 1명의 스켈레톤만 보임
+  Widget _liveFeedBodyResult() {
+    return Row(
+      children: [
+        Expanded(flex: 2, child: Container()),
+        Expanded(
+            flex: 4,
+            child: (widget.customPaint != null)
+                ? SizedBox(height: 300, child: widget.customPaint!)
+                : Container()),
+        Expanded(flex: 2, child: Container()),
+      ],
+    );
+  }
+
+  // 플레이 화면: 플레이어 3명 스켈레톤 보임
+  Widget _liveFeedBodyPlay() {
+    return Row(
+      children: [
+        Expanded(
+            flex: 3,
+            child: (widget.customPaint != null)
+                ? SizedBox(height: 150, child: widget.customPaint!)
+                : Container()),
+        Expanded(
+            flex: 4,
+            child: (widget.customPaint != null)
+                ? SizedBox(height: 200, child: widget.customPaint!)
+                : Container()),
+        Expanded(
+            flex: 3,
+            child: (widget.customPaint != null)
+                ? SizedBox(height: 150, child: widget.customPaint!)
+                : Container()),
+      ],
+    );
+  }
+
+  Column buildCountdownWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Visibility(
+          visible: _countdownVisibility,
+          child: Text('$_seconds',
+              style: const TextStyle(fontSize: 72, color: Colors.white)),
         )
       ],
+    );
+  }
+
+  Positioned buildMusicInfoWidget() {
+    return Positioned(
+      top: 80,
+      left: 0,
+      right: 0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/icons/ic_music_note_small.svg',
+          ),
+          const SizedBox(width: 8.0),
+          const Text(
+            "I AM-IVE",
+            style: TextStyle(fontSize: 10, color: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 

@@ -1,4 +1,3 @@
-import 'package:audio_session/audio_session.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
@@ -52,23 +51,23 @@ class AudioPlayerUtil {
   }
 
   // 외부 음악 들릴 때 반응 설정
-  _audioSessionConfigure() =>
-      AudioSession.instance.then((audioSession) async => await audioSession
-          .configure(const AudioSessionConfiguration(
-              avAudioSessionCategory: AVAudioSessionCategory.playback,
-              avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.none,
-              avAudioSessionMode: AVAudioSessionMode.defaultMode,
-              avAudioSessionRouteSharingPolicy:
-                  AVAudioSessionRouteSharingPolicy.defaultPolicy,
-              avAudioSessionSetActiveOptions:
-                  AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
-              androidAudioAttributes: AndroidAudioAttributes(
-                contentType: AndroidAudioContentType.music,
-                flags: AndroidAudioFlags.none,
-                usage: AndroidAudioUsage.media,
-              ),
-              androidAudioFocusGainType:
-                  AndroidAudioFocusGainType.gainTransient,
-              androidWillPauseWhenDucked: true))
-          .then((_) => audioSession = audioSession));
+  // _audioSessionConfigure() =>
+  //     AudioSession.instance.then((audioSession) async => await audioSession
+  //         .configure(const AudioSessionConfiguration(
+  //             avAudioSessionCategory: AVAudioSessionCategory.playback,
+  //             avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.none,
+  //             avAudioSessionMode: AVAudioSessionMode.defaultMode,
+  //             avAudioSessionRouteSharingPolicy:
+  //                 AVAudioSessionRouteSharingPolicy.defaultPolicy,
+  //             avAudioSessionSetActiveOptions:
+  //                 AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
+  //             androidAudioAttributes: AndroidAudioAttributes(
+  //               contentType: AndroidAudioContentType.music,
+  //               flags: AndroidAudioFlags.none,
+  //               usage: AndroidAudioUsage.media,
+  //             ),
+  //             androidAudioFocusGainType:
+  //                 AndroidAudioFocusGainType.gainTransient,
+  //             androidWillPauseWhenDucked: true))
+  //         .then((_) => audioSession = audioSession));
 }
