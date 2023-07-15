@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:like_button/like_button.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/ui/widget/home/chat_button_widget.dart';
 import 'package:pocket_pose/ui/widget/home/share_button_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -59,23 +59,7 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget> {
               },
             ),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
-            GestureDetector(
-              onTap: () {
-                Fluttertoast.showToast(msg: 'chat 클릭');
-              },
-              child: Column(
-                children: <Widget>[
-                  SvgPicture.asset(
-                    'assets/icons/ic_home_chat.svg',
-                  ),
-                  const Padding(padding: EdgeInsets.only(bottom: 2)),
-                  Text(
-                    _videoPlayProvider.chats[widget.index],
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
+            ChatButtonWidget(index: widget.index),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
             const ShareButtonWidget()
           ],
