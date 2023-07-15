@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
       extendBodyBehindAppBar: true, //body 위에 appbar
-
+      resizeToAvoidBottomInset: false,
       body: Stack(children: <Widget>[
         PageView.builder(
           controller: PageController(

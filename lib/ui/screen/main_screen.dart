@@ -96,6 +96,7 @@ class _MainScreenState extends State<MainScreen> {
           'assets/icons/ic_bottom_popo.svg',
         ),
       ),
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: AnimatedBottomNavigationBar(
         activeIndex: _bottomNavIndex,
         gapLocation: GapLocation.center,
