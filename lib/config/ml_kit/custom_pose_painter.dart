@@ -2,11 +2,11 @@
 // translateX, translateY를 사용해 추출된 좌표를 휴대폰 화면 크기에 맞게 변형하여 그려줌
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
-import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/coordinates_translator.dart';
 
 class CustomPosePainter extends CustomPainter {
-  CustomPosePainter(this.poses, this.absoluteImageSize, this.rotation);
+  CustomPosePainter(
+      this.poses, this.absoluteImageSize, this.rotation, this.skeletonColor);
 
   // 추출된 포즈의 랜드마크 리스트
   final List<Pose> poses;
@@ -14,6 +14,8 @@ class CustomPosePainter extends CustomPainter {
   final Size absoluteImageSize;
   // 이미지 회전 정보
   final InputImageRotation rotation;
+  // 스켈레톤 색깔
+  final Color skeletonColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -22,7 +24,7 @@ class CustomPosePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 8.0
       ..strokeCap = StrokeCap.round
-      ..color = AppColor.mintNeonColor
+      ..color = skeletonColor //AppColor.mintNeonColor
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
 
     // Inner 네온 효과
@@ -30,7 +32,7 @@ class CustomPosePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0
       ..strokeCap = StrokeCap.round
-      ..color = AppColor.mintNeonColor
+      ..color = skeletonColor //AppColor.mintNeonColor
       ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 2.0);
 
     // 기본 라인

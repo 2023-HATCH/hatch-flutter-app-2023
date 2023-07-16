@@ -23,7 +23,9 @@ class CameraView extends StatefulWidget {
       {Key? key,
       required this.isResultState,
       required this.setIsSkeletonDetectMode,
-      required this.customPaint,
+      this.customPaintLeft,
+      required this.customPaintMid,
+      this.customPaintRight,
       required this.onImage,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
@@ -31,7 +33,9 @@ class CameraView extends StatefulWidget {
   // skeleton 트리거
   Function setIsSkeletonDetectMode;
   // 스켈레톤을 그려주는 객체
-  final CustomPaint? customPaint;
+  final CustomPaint? customPaintLeft;
+  final CustomPaint? customPaintMid;
+  final CustomPaint? customPaintRight;
   // 이미지 받을 때마다 실행하는 함수
   final Function(InputImage inputImage) onImage;
   // 카메라 렌즈 방향 변수
@@ -178,8 +182,8 @@ class _CameraViewState extends State<CameraView> {
         Expanded(flex: 2, child: Container()),
         Expanded(
             flex: 4,
-            child: (widget.customPaint != null)
-                ? SizedBox(height: 300, child: widget.customPaint!)
+            child: (widget.customPaintMid != null)
+                ? SizedBox(height: 300, child: widget.customPaintMid!)
                 : Container()),
         Expanded(flex: 2, child: Container()),
       ],
@@ -192,18 +196,18 @@ class _CameraViewState extends State<CameraView> {
       children: [
         Expanded(
             flex: 3,
-            child: (widget.customPaint != null)
-                ? SizedBox(height: 150, child: widget.customPaint!)
+            child: (widget.customPaintLeft != null)
+                ? SizedBox(height: 150, child: widget.customPaintLeft!)
                 : Container()),
         Expanded(
             flex: 4,
-            child: (widget.customPaint != null)
-                ? SizedBox(height: 200, child: widget.customPaint!)
+            child: (widget.customPaintMid != null)
+                ? SizedBox(height: 200, child: widget.customPaintMid!)
                 : Container()),
         Expanded(
             flex: 3,
-            child: (widget.customPaint != null)
-                ? SizedBox(height: 150, child: widget.customPaint!)
+            child: (widget.customPaintRight != null)
+                ? SizedBox(height: 150, child: widget.customPaintRight!)
                 : Container()),
       ],
     );

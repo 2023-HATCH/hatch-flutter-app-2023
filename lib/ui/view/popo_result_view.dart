@@ -25,7 +25,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   bool _canProcess = true;
   bool _isBusy = false;
   // 스켈레톤 모양을 그려주는 변수
-  CustomPaint? _customPaint;
+  CustomPaint? _customPaintMid;
   // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
   SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
   final bool _isPlayer = true;
@@ -52,7 +52,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
           isResultState: widget.isResultState,
           setIsSkeletonDetectMode: setIsSkeletonDetectMode,
           // 스켈레톤 그려주는 객체 전달
-          customPaint: _customPaint,
+          customPaintMid: _customPaintMid,
           // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
           onImage: (inputImage) {
             // player는 항상 스켈레톤 추출
@@ -157,11 +157,11 @@ class _PoPoResultViewState extends State<PoPoResultView> {
         inputImage.inputImageData?.imageRotation != null) {
       // 여기만 2개만 수정 ! PosePainter -> CustomPosePainter
       final painter = CustomPosePainter(poses, inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation);
-      _customPaint = CustomPaint(painter: painter);
+          inputImage.inputImageData!.imageRotation, AppColor.mintNeonColor);
+      _customPaintMid = CustomPaint(painter: painter);
     } else {
       // 추출된 포즈 없음
-      _customPaint = null;
+      _customPaintMid = null;
     }
     _isBusy = false;
     if (mounted) {

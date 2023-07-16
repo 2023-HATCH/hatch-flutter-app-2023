@@ -31,7 +31,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   bool _canProcess = true;
   bool _isBusy = false;
   // 스켈레톤 모양을 그려주는 변수
-  CustomPaint? _customPaint;
+  CustomPaint? _customPaintLeft;
+  CustomPaint? _customPaintMid;
+  CustomPaint? _customPaintRight;
   // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
   SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
   final bool _isPlayer = true;
@@ -64,7 +66,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           isResultState: widget.isResultState,
           setIsSkeletonDetectMode: setIsSkeletonDetectMode,
           // 스켈레톤 그려주는 객체 전달
-          customPaint: _customPaint,
+          customPaintLeft: _customPaintLeft,
+          customPaintMid: _customPaintMid,
+          customPaintRight: _customPaintRight,
           // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
           onImage: (inputImage) {
             // user이거나 노래가 종료된 거 아닌 이상 항상 스켈레톤 추출
@@ -172,12 +176,29 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
       // 여기만 2개만 수정 ! PosePainter -> CustomPosePainter
-      final painter = CustomPosePainter(poses, inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation);
-      _customPaint = CustomPaint(painter: painter);
+      final painterLeft = CustomPosePainter(
+          poses,
+          inputImage.inputImageData!.size,
+          inputImage.inputImageData!.imageRotation,
+          AppColor.yellowNeonColor);
+      final painterMid = CustomPosePainter(
+          poses,
+          inputImage.inputImageData!.size,
+          inputImage.inputImageData!.imageRotation,
+          AppColor.mintNeonColor);
+      final painterRignt = CustomPosePainter(
+          poses,
+          inputImage.inputImageData!.size,
+          inputImage.inputImageData!.imageRotation,
+          AppColor.greenNeonColor);
+      _customPaintLeft = CustomPaint(painter: painterLeft);
+      _customPaintMid = CustomPaint(painter: painterMid);
+      _customPaintRight = CustomPaint(painter: painterRignt);
     } else {
       // 추출된 포즈 없음
-      _customPaint = null;
+      _customPaintLeft = null;
+      _customPaintMid = null;
+      _customPaintRight = null;
     }
     _isBusy = false;
     if (mounted) {
