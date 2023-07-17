@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               );
                             },
                             child: Container(
-                              margin: const EdgeInsets.fromLTRB(0, 44, 14, 0),
+                              margin: const EdgeInsets.fromLTRB(0, 20, 14, 0),
                               child: SvgPicture.asset(
                                   'assets/icons/ic_profile_edit.svg'),
                             ),
@@ -113,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               );
                             },
                             child: Container(
-                              margin: const EdgeInsets.fromLTRB(0, 44, 14, 0),
+                              margin: const EdgeInsets.fromLTRB(0, 20, 14, 0),
                               child: SvgPicture.asset(
                                   'assets/icons/ic_profile_setting.svg'),
                             ),
