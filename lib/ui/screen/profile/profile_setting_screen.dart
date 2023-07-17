@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
-import 'package:pocket_pose/ui/view/custom_simple_dialog.dart';
+import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ProfileSettingScreen extends StatefulWidget {
