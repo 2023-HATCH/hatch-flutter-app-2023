@@ -190,9 +190,36 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     width: 1,
                                   ),
                                 ),
-                                child: Image.asset(
-                                  "assets/images/${_videoImagePath1[index]}.png",
-                                  fit: BoxFit.cover,
+                                child: Stack(
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/${_videoImagePath1[index]}.png",
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                    Positioned(
+                                      bottom: 8,
+                                      left: 8,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/icons/ic_profile_heart.svg',
+                                            width: 16,
+                                            height: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          const Text(
+                                            '1.5k',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             );
@@ -230,9 +257,36 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     width: 1,
                                   ),
                                 ),
-                                child: Image.asset(
-                                  "assets/images/${_videoImagePath2[index]}.png",
-                                  fit: BoxFit.cover,
+                                child: Stack(
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/${_videoImagePath1[index]}.png",
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                    Positioned(
+                                      bottom: 8,
+                                      left: 8,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/icons/ic_profile_heart.svg',
+                                            width: 16,
+                                            height: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          const Text(
+                                            '1.5k',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             );
