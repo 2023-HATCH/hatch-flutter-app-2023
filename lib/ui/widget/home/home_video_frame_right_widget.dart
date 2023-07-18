@@ -59,7 +59,21 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget> {
               },
             ),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
-            ChatButtonWidget(index: widget.index),
+            ChatButtonWidget(
+              index: widget.index,
+              childWidget: Column(
+                children: <Widget>[
+                  SvgPicture.asset(
+                    'assets/icons/ic_home_chat.svg',
+                  ),
+                  const Padding(padding: EdgeInsets.only(bottom: 2)),
+                  Text(
+                    _videoPlayProvider.chats[widget.index],
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
             const ShareButtonWidget()
           ],
