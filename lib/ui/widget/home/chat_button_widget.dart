@@ -66,11 +66,11 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
 
   List<Widget> textWidgets = [];
 
-  Color postTextColor = AppColor.blueColor4;
-
   @override
   void initState() {
     super.initState();
+
+    _textController.addListener(updateButtonState);
 
     for (int i = 0; i < emojiList.length; i++) {
       String emoji = emojiList[i];
@@ -87,19 +87,16 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
 
       textWidgets.add(textWidget);
     }
+  }
 
-    _textController.addListener(() {
-      setState(() {
-        postTextColor = _textController.text.isNotEmpty
-            ? AppColor.blueColor5
-            : AppColor.blueColor4;
-      });
-    });
+  void updateButtonState() {
+    setState(() {});
   }
 
   @override
   void dispose() {
-    _textController.dispose();
+    _textController.removeListener(updateButtonState);
+
     super.dispose();
   }
 
@@ -240,24 +237,26 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                                 fontSize: 14),
                                             border: InputBorder.none,
                                           ),
-                                          textInputAction: TextInputAction.next,
-                                          onChanged: (_) {
-                                            setState(() {
-                                              postTextColor = _textController
-                                                      .text.isNotEmpty
-                                                  ? AppColor.blueColor5
-                                                  : AppColor.blueColor4;
-                                            });
+                                          onChanged: (text) {
+                                            setState(() {});
                                           },
                                         ),
                                       ),
-                                      Text(
-                                        '게시',
-                                        style: TextStyle(
-                                            color: postTextColor, fontSize: 12),
+                                      TextButton(
+                                        onPressed:
+                                            _textController.text.isNotEmpty
+                                                ? () => {}
+                                                : null,
+                                        child: Text(
+                                          '게시',
+                                          style: TextStyle(
+                                              color: _textController
+                                                      .text.isNotEmpty
+                                                  ? AppColor.blueColor5
+                                                  : AppColor.blueColor4,
+                                              fontSize: 12),
+                                        ),
                                       ),
-                                      const Padding(
-                                          padding: EdgeInsets.only(left: 18)),
                                     ],
                                   ),
                                 ),
