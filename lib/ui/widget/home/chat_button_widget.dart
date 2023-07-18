@@ -70,8 +70,6 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   void initState() {
     super.initState();
 
-    _textController.addListener(updateButtonState);
-
     for (int i = 0; i < emojiList.length; i++) {
       String emoji = emojiList[i];
 
@@ -89,14 +87,9 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
     }
   }
 
-  void updateButtonState() {
-    setState(() {});
-  }
-
   @override
   void dispose() {
-    _textController.removeListener(updateButtonState);
-
+    _textController.dispose();
     super.dispose();
   }
 
@@ -115,162 +108,171 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
           ),
           backgroundColor: Colors.white,
           isScrollControlled: true,
-          builder: (context) {
-            return SizedBox(
-              height: 500,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16.0),
-                  topRight: Radius.circular(16.0),
-                ),
-                child: Scaffold(
-                  appBar: AppBar(
-                    automaticallyImplyLeading: false,
-                    elevation: 0.0,
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: Colors.black,
-                    centerTitle: true,
-                    title: Text(
-                      '댓글 ${_videoPlayProvider.chats[widget.index]}개',
-                      style: const TextStyle(fontSize: 14),
-                    ),
+          builder: (BuildContext context) {
+            return StatefulBuilder(
+                builder: (BuildContext context, StateSetter bottomState) {
+              return SizedBox(
+                height: 500,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0),
                   ),
-                  resizeToAvoidBottomInset: true,
-                  body: Padding(
-                    padding: const EdgeInsets.only(bottom: 110),
-                    child: ListView.builder(
-                      itemCount: users.length,
-                      itemBuilder: (context, index) {
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Padding(padding: EdgeInsets.only(left: 18)),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.asset(
-                                userimgs[index],
-                                width: 35,
-                              ),
-                            ),
-                            const Padding(padding: EdgeInsets.only(left: 8)),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  users[index],
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                                const Padding(
-                                    padding: EdgeInsets.only(bottom: 8)),
-                                Text(
-                                  chats[index],
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                                const Padding(
-                                    padding: EdgeInsets.only(bottom: 4)),
-                                Text(
-                                  dates[index],
-                                  style: TextStyle(
-                                      fontSize: 10, color: AppColor.grayColor2),
-                                ),
-                                const Padding(
-                                    padding: EdgeInsets.only(bottom: 20)),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
+                  child: Scaffold(
+                    appBar: AppBar(
+                      automaticallyImplyLeading: false,
+                      elevation: 0.0,
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.black,
+                      centerTitle: true,
+                      title: Text(
+                        '댓글 ${_videoPlayProvider.chats[widget.index]}개',
+                        style: const TextStyle(fontSize: 14),
+                      ),
                     ),
-                  ),
-                  bottomSheet: SizedBox(
-                    height: 110,
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 45,
-                          color: Colors.white,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: textWidgets,
-                          ),
-                        ),
-                        Container(
-                          height: 65,
-                          color: Colors.white,
-                          child: Row(
-                            children: <Widget>[
+                    resizeToAvoidBottomInset: true,
+                    body: Padding(
+                      padding: const EdgeInsets.only(bottom: 110),
+                      child: ListView.builder(
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               const Padding(padding: EdgeInsets.only(left: 18)),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(50),
                                 child: Image.asset(
-                                  _videoPlayProvider.profiles[widget.index],
-                                  width: 40,
+                                  userimgs[index],
+                                  width: 35,
                                 ),
                               ),
-                              const Padding(padding: EdgeInsets.only(left: 18)),
-                              Expanded(
-                                child: Container(
-                                  height: 36,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    border:
-                                        Border.all(color: AppColor.grayColor2),
+                              const Padding(padding: EdgeInsets.only(left: 8)),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    users[index],
+                                    style: const TextStyle(fontSize: 12),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Padding(
-                                          padding: EdgeInsets.only(left: 18)),
-                                      Expanded(
-                                        child: TextField(
-                                          controller: _textController,
-                                          cursorColor: Colors.white,
-                                          decoration: InputDecoration(
-                                            hintText:
-                                                '${_videoPlayProvider.nicknames[widget.index]}(으)로 댓글 달기...',
-                                            hintStyle: const TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 14),
-                                            labelStyle: const TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 14),
-                                            border: InputBorder.none,
-                                          ),
-                                          onChanged: (text) {
-                                            setState(() {});
-                                          },
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed:
-                                            _textController.text.isNotEmpty
-                                                ? () => {}
-                                                : null,
-                                        child: Text(
-                                          '게시',
-                                          style: TextStyle(
-                                              color: _textController
-                                                      .text.isNotEmpty
-                                                  ? AppColor.blueColor5
-                                                  : AppColor.blueColor4,
-                                              fontSize: 12),
-                                        ),
-                                      ),
-                                    ],
+                                  const Padding(
+                                      padding: EdgeInsets.only(bottom: 8)),
+                                  Text(
+                                    chats[index],
+                                    style: const TextStyle(fontSize: 14),
                                   ),
-                                ),
+                                  const Padding(
+                                      padding: EdgeInsets.only(bottom: 4)),
+                                  Text(
+                                    dates[index],
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color: AppColor.grayColor2),
+                                  ),
+                                  const Padding(
+                                      padding: EdgeInsets.only(bottom: 20)),
+                                ],
                               ),
-                              const Padding(padding: EdgeInsets.only(left: 18)),
                             ],
+                          );
+                        },
+                      ),
+                    ),
+                    bottomSheet: SizedBox(
+                      height: 110,
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 45,
+                            color: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: textWidgets,
+                            ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            height: 65,
+                            color: Colors.white,
+                            child: Row(
+                              children: <Widget>[
+                                const Padding(
+                                    padding: EdgeInsets.only(left: 18)),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: Image.asset(
+                                    _videoPlayProvider.profiles[widget.index],
+                                    width: 40,
+                                  ),
+                                ),
+                                const Padding(
+                                    padding: EdgeInsets.only(left: 18)),
+                                Expanded(
+                                  child: Container(
+                                    height: 36,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      border: Border.all(
+                                          color: AppColor.grayColor2),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Padding(
+                                            padding: EdgeInsets.only(left: 18)),
+                                        Expanded(
+                                          child: TextField(
+                                            controller: _textController,
+                                            cursorColor: Colors.white,
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  '${_videoPlayProvider.nicknames[widget.index]}(으)로 댓글 달기...',
+                                              hintStyle: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14),
+                                              labelStyle: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14),
+                                              border: InputBorder.none,
+                                            ),
+                                            onChanged: (text) {
+                                              bottomState(() {
+                                                setState(() {});
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed:
+                                              _textController.text.isNotEmpty
+                                                  ? () => {}
+                                                  : null,
+                                          child: Text(
+                                            '게시',
+                                            style: TextStyle(
+                                                color: _textController
+                                                        .text.isNotEmpty
+                                                    ? AppColor.blueColor5
+                                                    : AppColor.blueColor4,
+                                                fontSize: 12),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const Padding(
+                                    padding: EdgeInsets.only(left: 18)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
+              );
+            });
           },
         ),
       },
