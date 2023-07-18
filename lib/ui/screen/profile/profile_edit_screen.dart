@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/config/app_color.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   const ProfileEditScreen({Key? key}) : super(key: key);
@@ -8,119 +9,241 @@ class ProfileEditScreen extends StatefulWidget {
   _ProfileEditScreenState createState() => _ProfileEditScreenState();
 }
 
-class _ProfileEditScreenState extends State<ProfileEditScreen>
-    with TickerProviderStateMixin {
-  List<Widget> selectWidgets = [];
-  final List<AnimationController> _animationControllers = [];
-  final List<Animation<Offset>> _animations = [];
-  bool isLeft = true;
+class _ProfileEditScreenState extends State<ProfileEditScreen> {
+  final List<TextEditingController> _textControllers = [
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+  ];
+
+  bool isButtonEnabled() {
+    for (final controller in _textControllers) {
+      if (controller.text.isNotEmpty) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    for (final controller in _textControllers) {
+      controller.addListener(updateButtonState);
+    }
+  }
+
+  void updateButtonState() {
+    setState(() {});
+  }
 
   @override
   void dispose() {
-    for (final animationController in _animationControllers) {
-      animationController.dispose();
+    for (final controller in _textControllers) {
+      controller.removeListener(updateButtonState);
     }
     super.dispose();
-  }
-
-  void _handleIconClick() {
-    setState(() {
-      isLeft = !isLeft;
-
-      final animationController = AnimationController(
-        duration: const Duration(milliseconds: 4000),
-        vsync: this,
-      );
-
-      const beginOffset = Offset(0.0, 0.0);
-      final middleOffset =
-          isLeft ? const Offset(-8.0, -100.0) : const Offset(8.0, -100.0);
-      const endOffset = Offset(0.0, -200.0);
-
-      final animation = TweenSequence([
-        TweenSequenceItem(
-          tween: Tween<Offset>(begin: beginOffset, end: middleOffset),
-          weight: 0.5,
-        ),
-        TweenSequenceItem(
-          tween: Tween<Offset>(begin: middleOffset, end: endOffset),
-          weight: 0.5,
-        ),
-      ]).animate(CurvedAnimation(
-        parent: animationController,
-        curve: Curves.easeInOut,
-      ));
-      animationController.addListener(() {
-        setState(() {});
-      });
-
-      animationController.addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          setState(() {
-            selectWidgets.removeAt(0);
-            _animationControllers.removeAt(0);
-            _animations.removeAt(0);
-          });
-        }
-      });
-
-      selectWidgets.add(buildSelectWidget(
-        selectWidgets.length,
-        animationController,
-        animation,
-      ));
-      _animationControllers.add(animationController);
-      _animations.add(animation);
-    });
-
-    _animationControllers.last.forward(from: 0);
-  }
-
-  Widget buildSelectWidget(int index, AnimationController animationController,
-      Animation<Offset> animation) {
-    return Positioned(
-      bottom: 0,
-      right: 0,
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, child) {
-          return Transform.translate(
-            offset: Offset(
-              animation.value.dx,
-              animation.value.dy,
-            ),
-            child: FadeTransition(
-              opacity: animationController.drive(Tween(begin: 1.0, end: 0.0)),
-              child: child,
-            ),
-          );
-        },
-        child: Image.asset(
-          'assets/icons/ic_popo_fire_select.png',
-          height: 50,
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
-      body: Stack(
-        children: [
-          Positioned(
-            bottom: 12,
-            right: 12,
-            child: InkWell(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              onTap: _handleIconClick,
-              child: SvgPicture.asset('assets/icons/ic_popo_fire_unselect.svg'),
-            ),
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        title: const Text(
+          '프로필 편집',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        leading: IconButton(
+          icon: Image.asset(
+            'assets/icons/ic_back.png',
           ),
-          ...selectWidgets,
-        ],
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(2.0),
+          child: Container(
+            height: 2.0,
+            color: AppColor.purpleColor,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(35, 50, 35, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 100,
+                height: 100,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Image.asset(
+                    'assets/images/profile_profile.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
+                child: const Text(
+                  "cat_chur",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+              const SizedBox(height: 50.0),
+              Container(
+                height: 36,
+                padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColor.grayColor2),
+                ),
+                child: TextField(
+                  controller: _textControllers[0],
+                  cursorColor: Colors.white,
+                  decoration: const InputDecoration(
+                    hintText: '자기소개',
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                    labelStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  SvgPicture.asset('assets/icons/ic_profile_edit_warning.svg'),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    '10자 이내로 입력해 주세요.',
+                    style: TextStyle(color: AppColor.grayColor3, fontSize: 10),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 1.0,
+                      color: AppColor.grayColor3,
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  const Text(
+                    '소셜',
+                    style: TextStyle(fontSize: 14.0),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: Container(
+                      height: 1.0,
+                      color: AppColor.grayColor3,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18.0),
+              Row(
+                children: [
+                  Image.asset(
+                    'assets/icons/ic_profile_edit_instagram.png',
+                  ),
+                  const SizedBox(width: 18.0),
+                  Expanded(
+                    child: Container(
+                      height: 36,
+                      padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColor.grayColor2),
+                      ),
+                      child: TextField(
+                        controller: _textControllers[1],
+                        cursorColor: Colors.white,
+                        decoration: const InputDecoration(
+                          hintText: 'Instagram',
+                          hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 14),
+                          labelStyle:
+                              TextStyle(color: Colors.grey, fontSize: 14),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8.0),
+              Row(
+                children: [
+                  Image.asset(
+                    'assets/icons/ic_profile_edit_twitter.png',
+                  ),
+                  const SizedBox(width: 18.0),
+                  Expanded(
+                    child: Container(
+                      height: 36,
+                      padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColor.grayColor2),
+                      ),
+                      child: TextField(
+                        controller: _textControllers[2],
+                        cursorColor: Colors.white,
+                        decoration: const InputDecoration(
+                          hintText: 'twitter',
+                          hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 14),
+                          labelStyle:
+                              TextStyle(color: Colors.grey, fontSize: 14),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 150,
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomSheet: Padding(
+        padding: const EdgeInsets.fromLTRB(35, 0, 35, 20),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: isButtonEnabled() ? () => {} : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isButtonEnabled()
+                      ? AppColor.purpleColor
+                      : AppColor.grayColor3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                ),
+                child: const Text('확인'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
