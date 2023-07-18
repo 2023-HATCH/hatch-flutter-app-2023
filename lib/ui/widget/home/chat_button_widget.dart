@@ -69,22 +69,6 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   @override
   void initState() {
     super.initState();
-
-    for (int i = 0; i < emojiList.length; i++) {
-      String emoji = emojiList[i];
-
-      Widget textWidget = InkWell(
-        onTap: () {
-          _textController.text += emoji;
-        },
-        child: Text(
-          emoji,
-          style: const TextStyle(fontSize: 24),
-        ),
-      );
-
-      textWidgets.add(textWidget);
-    }
   }
 
   @override
@@ -187,7 +171,31 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                             color: Colors.white,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: textWidgets,
+                              children: [
+                                for (int i = 0; i < emojiList.length; i++)
+                                  InkWell(
+                                    onTap: () {
+                                      int cursorPosition =
+                                          _textController.text.length;
+                                      String text = _textController.text;
+                                      String newText = text + emojiList[i];
+                                      _textController.value = TextEditingValue(
+                                        text: newText,
+                                        selection: TextSelection.collapsed(
+                                            offset: cursorPosition +
+                                                emojiList[i].length),
+                                      );
+
+                                      bottomState(() {
+                                        setState(() {});
+                                      });
+                                    },
+                                    child: Text(
+                                      emojiList[i],
+                                      style: const TextStyle(fontSize: 24),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                           Container(
