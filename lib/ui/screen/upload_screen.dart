@@ -64,7 +64,7 @@ class _UploadScreenState extends State<UploadScreen> {
               height: 3,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 3, 0, 134),
+              padding: const EdgeInsets.fromLTRB(0, 3, 0, 0),
               child: VideoPlayer(_videoPlayerController!),
             ),
             Padding(
@@ -84,82 +84,83 @@ class _UploadScreenState extends State<UploadScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-          color: Colors.white,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black,
+              ],
+            ),
+          ),
           child: Column(
             children: [
-              Container(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
-                  child: Row(
-                    children: [
-                      Text(
-                        "제목",
-                        style:
-                            TextStyle(fontSize: 14, color: AppColor.blackColor),
-                      ),
-                      const SizedBox(
-                        width: 18,
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 40,
-                          width: double.infinity,
-                          padding: const EdgeInsets.only(left: 14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: AppColor.grayColor2,
-                              width: 2.5,
-                            ),
-                          ),
-                          child: TextField(
-                            onChanged: (value) {
-                              setState(() {
-                                _isTitleFillOut = value.isNotEmpty;
-                              });
-                            },
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 14),
-                            controller: _titleTextController,
-                            cursorColor: Colors.grey,
-                            decoration: InputDecoration(
-                              hintText: '포포와 함께 댄스 파티',
-                              hintStyle: TextStyle(
-                                  color: AppColor.blackColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w300),
-                              labelStyle: const TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                            ),
-                            textInputAction: TextInputAction.next,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
+                child: Row(
+                  children: [
+                    const Text(
+                      "제목",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    const SizedBox(
+                      width: 18,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        width: double.infinity,
+                        padding: const EdgeInsets.only(left: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2.5,
                           ),
                         ),
+                        child: TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              _isTitleFillOut = value.isNotEmpty;
+                            });
+                          },
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 14),
+                          controller: _titleTextController,
+                          cursorColor: Colors.white,
+                          decoration: const InputDecoration(
+                            hintText: '포포와 함께 댄스 파티',
+                            hintStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w300),
+                            labelStyle: TextStyle(color: Colors.white),
+                            border: InputBorder.none,
+                          ),
+                          textInputAction: TextInputAction.next,
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              Container(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 7, 18, 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        "태그",
-                        style:
-                            TextStyle(fontSize: 14, color: AppColor.blackColor),
-                      ),
-                      const SizedBox(
-                        width: 18,
-                      ),
-                      UploadTagTextFieldWidget(
-                        tagController: _tagController,
-                        setIsTagsFillPutState: setIsTagsFillPutState,
-                      ),
-                    ],
-                  ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 7, 18, 20),
+                child: Row(
+                  children: [
+                    const Text(
+                      "태그",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    const SizedBox(
+                      width: 18,
+                    ),
+                    UploadTagTextFieldWidget(
+                      tagController: _tagController,
+                      setIsTagsFillPutState: setIsTagsFillPutState,
+                    ),
+                  ],
                 ),
               ),
             ],

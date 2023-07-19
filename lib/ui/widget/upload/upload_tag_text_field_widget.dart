@@ -45,20 +45,21 @@ class _UploadTagTextFieldWidgetState extends State<UploadTagTextFieldWidget> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: AppColor.grayColor2,
+                  color: Colors.white,
                   width: 2.5,
                 ),
               ),
               child: TextField(
+                cursorColor: Colors.white,
                 controller: tec,
                 focusNode: fn,
-                style: const TextStyle(color: Colors.black, fontSize: 14),
+                style: const TextStyle(color: Colors.white, fontSize: 14),
                 decoration: InputDecoration(
                   isDense: true,
                   border: InputBorder.none,
                   hintText: widget.tagController.hasTags ? '' : "#포포 #댄스챌린지",
-                  hintStyle: TextStyle(
-                      color: AppColor.blackColor,
+                  hintStyle: const TextStyle(
+                      color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w300),
                   errorText: error,
@@ -71,11 +72,11 @@ class _UploadTagTextFieldWidgetState extends State<UploadTagTextFieldWidget> {
                           child: Row(
                               children: tags.map((String tag) {
                             return Container(
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(
+                              decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.all(
                                   Radius.circular(20.0),
                                 ),
-                                color: Colors.grey,
+                                color: AppColor.purpleColor,
                               ),
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 4.0),
