@@ -83,76 +83,88 @@ class _UploadScreenState extends State<UploadScreen> {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
-              child: Row(
-                children: [
-                  const Text(
-                    "제목",
-                    style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                  const SizedBox(
-                    width: 18,
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 40,
-                      width: double.infinity,
-                      padding: const EdgeInsets.only(left: 14),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.5,
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black,
+              ],
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 20, 18, 7),
+                child: Row(
+                  children: [
+                    const Text(
+                      "제목",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    const SizedBox(
+                      width: 18,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        width: double.infinity,
+                        padding: const EdgeInsets.only(left: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2.5,
+                          ),
                         ),
-                      ),
-                      child: TextField(
-                        onChanged: (value) {
-                          setState(() {
-                            _isTitleFillOut = value.isNotEmpty;
-                          });
-                        },
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 14),
-                        controller: _titleTextController,
-                        cursorColor: Colors.white,
-                        decoration: const InputDecoration(
-                          hintText: '포포와 함께 댄스 파티',
-                          hintStyle: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w300),
-                          labelStyle: TextStyle(color: Colors.white),
-                          border: InputBorder.none,
+                        child: TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              _isTitleFillOut = value.isNotEmpty;
+                            });
+                          },
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 14),
+                          controller: _titleTextController,
+                          cursorColor: Colors.white,
+                          decoration: const InputDecoration(
+                            hintText: '포포와 함께 댄스 파티',
+                            hintStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w300),
+                            labelStyle: TextStyle(color: Colors.white),
+                            border: InputBorder.none,
+                          ),
+                          textInputAction: TextInputAction.next,
                         ),
-                        textInputAction: TextInputAction.next,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 7, 18, 20),
-              child: Row(
-                children: [
-                  const Text(
-                    "태그",
-                    style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                  const SizedBox(
-                    width: 18,
-                  ),
-                  UploadTagTextFieldWidget(
-                    tagController: _tagController,
-                    setIsTagsFillPutState: setIsTagsFillPutState,
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 7, 18, 20),
+                child: Row(
+                  children: [
+                    const Text(
+                      "태그",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    const SizedBox(
+                      width: 18,
+                    ),
+                    UploadTagTextFieldWidget(
+                      tagController: _tagController,
+                      setIsTagsFillPutState: setIsTagsFillPutState,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
