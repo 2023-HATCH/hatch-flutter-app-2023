@@ -52,34 +52,11 @@ class _VideoViewState extends State<VideoView>
           return FutureBuilder(
             future: videoPlayProvider.videoPlayerFutures[index],
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.connectionState == ConnectionState.done ||
+                  (snapshot.connectionState == ConnectionState.waiting &&
+                      videoPlayProvider.loading)) {
                 // 데이터가 수신되었을 때
                 videoPlayProvider.loading = true;
-
-                return Stack(children: <Widget>[
-                  GestureDetector(
-                    // 비디오 클릭 시 영상 정지/재생
-                    onTap: () {
-                      if (videoPlayProvider
-                          .controllers[index].value.isPlaying) {
-                        videoPlayProvider.pauseVideo();
-                      } else {
-                        // 만약 영상 일시 중지 상태였다면, 재생.
-                        videoPlayProvider.playVideo();
-                      }
-                    },
-                    child: VideoPlayer(videoPlayProvider.controllers[index]),
-                  ),
-                  // like, chat, share, progress
-                  VideoRightFrame(
-                    index: index,
-                  ),
-                  // profile, nicname, content
-                  VideoUserInfoFrame(index: index),
-                ]);
-              } else if (snapshot.connectionState == ConnectionState.waiting &&
-                  videoPlayProvider.loading) {
-                // 데이터가 로딩중일 때
 
                 return Stack(children: <Widget>[
                   GestureDetector(
