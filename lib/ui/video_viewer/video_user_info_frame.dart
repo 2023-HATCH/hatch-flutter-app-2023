@@ -4,8 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:provider/provider.dart';
 
-class VideoFrameContentWidget extends StatelessWidget {
-  VideoFrameContentWidget({super.key, required this.index});
+class VideoUserInfoFrame extends StatelessWidget {
+  VideoUserInfoFrame({super.key, required this.index});
 
   late VideoPlayProvider _videoPlayProvider;
   final int index;

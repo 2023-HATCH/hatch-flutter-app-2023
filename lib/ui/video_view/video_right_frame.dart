@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:like_button/like_button.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
-import 'package:pocket_pose/ui/widget/home/chat_button_widget.dart';
-import 'package:pocket_pose/ui/widget/home/share_button_widget.dart';
+import 'package:pocket_pose/ui/video_viewer/widget/chat_button_widget.dart';
+import 'package:pocket_pose/ui/video_viewer/widget/like_button_widget.dart';
+import 'package:pocket_pose/ui/video_viewer/widget/share_button_widget.dart';
 import 'package:provider/provider.dart';
 
-class VideoFrameRightWidget extends StatefulWidget {
-  const VideoFrameRightWidget({Key? key, required this.index})
-      : super(key: key);
+class VideoRightFrame extends StatefulWidget {
+  const VideoRightFrame({Key? key, required this.index}) : super(key: key);
 
   final int index;
 
   @override
-  _VideoFrameRightWidgetState createState() => _VideoFrameRightWidgetState();
+  _VideoRightFrameState createState() => _VideoRightFrameState();
 }
 
-class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget> {
+class _VideoRightFrameState extends State<VideoRightFrame> {
   late VideoPlayProvider _videoPlayProvider;
 
   @override
@@ -31,33 +30,7 @@ class _VideoFrameRightWidgetState extends State<VideoFrameRightWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            LikeButton(
-              size: 25,
-              likeCount: _videoPlayProvider.likes[widget.index],
-              countPostion: CountPostion.bottom,
-              countDecoration: (count, likeCount) {
-                return Text(
-                  likeCount.toString(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                );
-              },
-              likeBuilder: (isTapped) {
-                if (isTapped) {
-                  return const Icon(
-                    Icons.favorite,
-                    size: 25,
-                    color: Colors.red,
-                  );
-                } else {
-                  return SvgPicture.asset(
-                    'assets/icons/ic_home_heart_unselect.svg',
-                  );
-                }
-              },
-            ),
+            LikeButtonWidget(index: widget.index),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
             ChatButtonWidget(
               index: widget.index,
