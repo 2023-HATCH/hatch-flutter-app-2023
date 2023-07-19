@@ -105,41 +105,38 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Container(
-              // 플레이, 결과 상태에 따라 배경화면 변경
-              decoration: buildBackgroundImage(),
-              child: Scaffold(
-                resizeToAvoidBottomInset: false,
-                extendBodyBehindAppBar: true,
-                backgroundColor: Colors.transparent,
-                appBar: buildAppBar(context),
-                body: Stack(
-                  children: [
-                    _buildStageView(_stageStage),
-                    const Positioned(
-                      bottom: 68,
-                      left: 0,
-                      right: 0,
-                      child: StageLiveChatListWidget(),
-                    ),
-                    const Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: StageLiveChatBarWidget(),
-                    ),
-                  ],
-                ),
-              )),
-        ),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Container(
+            // 플레이, 결과 상태에 따라 배경화면 변경
+            decoration: buildBackgroundImage(),
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              extendBodyBehindAppBar: true,
+              backgroundColor: Colors.transparent,
+              appBar: buildAppBar(context),
+              body: Stack(
+                children: [
+                  _buildStageView(_stageStage),
+                  const Positioned(
+                    bottom: 68,
+                    left: 0,
+                    right: 0,
+                    child: StageLiveChatListWidget(),
+                  ),
+                  const Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: StageLiveChatBarWidget(),
+                  ),
+                ],
+              ),
+            )),
       ),
     );
   }

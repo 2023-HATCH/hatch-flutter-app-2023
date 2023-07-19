@@ -95,7 +95,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
             Text(
               'MVP',
               style: TextStyle(
-                fontSize: 25,
+                fontSize: 22,
                 color: Colors.white,
                 shadows: [
                   for (double i = 1; i < 6; i++)
@@ -132,7 +132,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
             ),
             Text(
               nickName,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+              style: const TextStyle(color: Colors.white, fontSize: 12),
             ),
           ],
         ),
