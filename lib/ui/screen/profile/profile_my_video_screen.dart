@@ -115,66 +115,59 @@ class _MyVideoScreenState extends State<MyVideoScreen>
             return FutureBuilder(
               future: _videoPlayProvider.videoPlayerFutures[index],
               builder: (context, snapshot) {
-                if (_videoPlayProvider.controllers[index].value.isPlaying) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    // 데이터가 수신되었을 때
-                    _videoPlayProvider.loading = true;
+                if (snapshot.connectionState == ConnectionState.done) {
+                  // 데이터가 수신되었을 때
+                  _videoPlayProvider.loading = true;
 
-                    return Stack(children: <Widget>[
-                      GestureDetector(
-                        // 비디오 클릭 시 영상 정지/재생
-                        onTap: () {
-                          if (_videoPlayProvider
-                              .controllers[index].value.isPlaying) {
-                            _videoPlayProvider.pauseVideo();
-                          } else {
-                            // 만약 영상 일시 중지 상태였다면, 재생.
-                            _videoPlayProvider.playVideo();
-                          }
-                        },
-                        child:
-                            VideoPlayer(_videoPlayProvider.controllers[index]),
-                      ),
-                      // like, chat, share, progress
-                      VideoFrameRightWidget(
-                        index: index,
-                      ),
-                      // profile, nicname, content
-                      VideoFrameContentWidget(index: index),
-                    ]);
-                  } else if (snapshot.connectionState ==
-                          ConnectionState.waiting &&
-                      _videoPlayProvider.loading) {
-                    // 데이터가 로딩중일 때
+                  return Stack(children: <Widget>[
+                    GestureDetector(
+                      // 비디오 클릭 시 영상 정지/재생
+                      onTap: () {
+                        if (_videoPlayProvider
+                            .controllers[index].value.isPlaying) {
+                          _videoPlayProvider.pauseVideo();
+                        } else {
+                          // 만약 영상 일시 중지 상태였다면, 재생.
+                          _videoPlayProvider.playVideo();
+                        }
+                      },
+                      child: VideoPlayer(_videoPlayProvider.controllers[index]),
+                    ),
+                    // like, chat, share, progress
+                    VideoFrameRightWidget(
+                      index: index,
+                    ),
+                    // profile, nicname, content
+                    VideoFrameContentWidget(index: index),
+                  ]);
+                } else if (snapshot.connectionState ==
+                        ConnectionState.waiting &&
+                    _videoPlayProvider.loading) {
+                  // 데이터가 로딩중일 때
 
-                    return Stack(children: <Widget>[
-                      GestureDetector(
-                        // 비디오 클릭 시 영상 정지/재생
-                        onTap: () {
-                          if (_videoPlayProvider
-                              .controllers[index].value.isPlaying) {
-                            _videoPlayProvider.pauseVideo();
-                          } else {
-                            // 만약 영상 일시 중지 상태였다면, 재생.
-                            _videoPlayProvider.playVideo();
-                          }
-                        },
-                        child:
-                            VideoPlayer(_videoPlayProvider.controllers[index]),
-                      ),
-                      // like, chat, share, progress
-                      VideoFrameRightWidget(
-                        index: index,
-                      ),
-                      // profile, nicname, content
-                      VideoFrameContentWidget(index: index),
-                    ]);
-                  } else {
-                    // 만약 VideoPlayerController가 여전히 초기화 중이라면, 포포 로딩 스피너를 보여줌.
-                    return const MusicSpinner();
-                  }
+                  return Stack(children: <Widget>[
+                    GestureDetector(
+                      // 비디오 클릭 시 영상 정지/재생
+                      onTap: () {
+                        if (_videoPlayProvider
+                            .controllers[index].value.isPlaying) {
+                          _videoPlayProvider.pauseVideo();
+                        } else {
+                          // 만약 영상 일시 중지 상태였다면, 재생.
+                          _videoPlayProvider.playVideo();
+                        }
+                      },
+                      child: VideoPlayer(_videoPlayProvider.controllers[index]),
+                    ),
+                    // like, chat, share, progress
+                    VideoFrameRightWidget(
+                      index: index,
+                    ),
+                    // profile, nicname, content
+                    VideoFrameContentWidget(index: index),
+                  ]);
                 } else {
-                  // 만약 VideoPlayerController가 여전히 로딩 중이라면, 포포 로딩 스피너를 보여줌.
+                  // 만약 VideoPlayerController가 여전히 초기화 중이라면, 포포 로딩 스피너를 보여줌.
                   return const MusicSpinner();
                 }
               },

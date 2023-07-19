@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
-import 'package:pocket_pose/ui/screen/profile/profile_another_video_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_edit_screen.dart';
+import 'package:pocket_pose/ui/screen/profile/profile_my_video_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_setting_screen.dart';
 
 import 'package:pocket_pose/ui/widget/not_login_widget.dart';
@@ -189,7 +189,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => AnotherVideoScreen(
+                                          builder: (context) => MyVideoScreen(
                                               index:
                                                   0))); //사용자 index 값 넣기 (0은 임시 값)
 
