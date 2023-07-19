@@ -8,7 +8,7 @@ import 'package:pocket_pose/ui/video_viewer/screen/video_my_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_setting_screen.dart';
 
 import 'package:pocket_pose/ui/widget/not_login_widget.dart';
-import 'package:pocket_pose/ui/widget/profile/profile_infomation_widget.dart';
+import 'package:pocket_pose/ui/widget/profile/profile_user_info_widget.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -122,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           )
                         ],
                       ),
-                      ProfileInfomationWidget(),
+                      ProfileUserInfoWidget(index: 0), //사용자 index
                     ],
                   ),
                 ),

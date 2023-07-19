@@ -128,13 +128,6 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
           ),
         ),
       ]),
-      // Center(
-      //     child: TextButton(
-      //         onPressed: () {
-      //           authProvider.kakaoSignOut();
-      //           Navigator.pop(context);
-      //         },
-      //         child: const Text("로그아웃")))
     );
   }
 }

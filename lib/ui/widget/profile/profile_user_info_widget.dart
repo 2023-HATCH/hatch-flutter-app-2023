@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/ui/screen/profile/profile_follow_screen.dart';
+import 'package:provider/provider.dart';
 
-class ProfileInfomationWidget extends StatelessWidget {
-  ProfileInfomationWidget({
+class ProfileUserInfoWidget extends StatelessWidget {
+  ProfileUserInfoWidget({
     super.key,
+    required this.index,
   });
+
+  int index;
+
+  late VideoPlayProvider _videoPlayProvider;
 
   List<String> videoLinks = [
     'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-2.mp4',
@@ -24,6 +32,8 @@ class ProfileInfomationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context);
+
     return SizedBox(
       //color: Colors.yellow,
       height: 300,
@@ -37,47 +47,55 @@ class ProfileInfomationWidget extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: Image.asset(
-                'assets/images/profile_profile.png',
+                _videoPlayProvider.profiles[index],
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
-            child: const Text(
-              "cat_chur",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            child: Text(
+              _videoPlayProvider.nicknames[index],
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 0, 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 50, 0),
-                  child: Column(
+          GestureDetector(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(0, 0, 0, 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center, // 위 아래 정렬을 중앙으로 설정
+                      children: [
+                        Container(
+                            margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                            child: const Text("161")),
+                        const Text("팔로잉"),
+                      ],
+                    ),
+                  ),
+                  Column(
                     mainAxisAlignment:
                         MainAxisAlignment.center, // 위 아래 정렬을 중앙으로 설정
                     children: [
                       Container(
                           margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                          child: const Text("161")),
-                      const Text("팔로잉"),
+                          child: const Text("48.4k")),
+                      const Text("팔로워"),
                     ],
                   ),
-                ),
-                Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // 위 아래 정렬을 중앙으로 설정
-                  children: [
-                    Container(
-                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                        child: const Text("48.4k")),
-                    const Text("팔로워"),
-                  ],
-                ),
-              ],
+                ],
+              ),
+            ),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      ProfileFollowScreen(index: 0)), // 사용자 index 넘기기
             ),
           ),
           Container(
