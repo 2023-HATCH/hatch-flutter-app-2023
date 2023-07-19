@@ -104,7 +104,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         ),
         Text(
           nickName,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
         ),
         const SizedBox(
           height: 8,
@@ -147,7 +147,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.white,
-          fontSize: 20,
+          fontSize: 18,
           shadows: [
             for (double i = 1; i < 6; i++)
               Shadow(color: scoreNeonColor, blurRadius: 3 * i)
