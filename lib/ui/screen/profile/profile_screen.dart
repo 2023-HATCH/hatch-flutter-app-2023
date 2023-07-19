@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
+import 'package:pocket_pose/ui/video_viewer/screen/video_someone_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_edit_screen.dart';
+import 'package:pocket_pose/ui/video_viewer/screen/video_my_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_setting_screen.dart';
 
 import 'package:pocket_pose/ui/widget/not_login_widget.dart';
@@ -98,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               );
                             },
                             child: Container(
-                              margin: const EdgeInsets.fromLTRB(0, 20, 14, 0),
+                              margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
                               child: SvgPicture.asset(
                                   'assets/icons/ic_profile_edit.svg'),
                             ),
@@ -113,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               );
                             },
                             child: Container(
-                              margin: const EdgeInsets.fromLTRB(0, 20, 14, 0),
+                              margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
                               child: SvgPicture.asset(
                                   'assets/icons/ic_profile_setting.svg'),
                             ),
@@ -183,16 +185,53 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   curve: Curves.easeInOutQuart,
                                 ),
                               ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 1,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => VideoMyScreen(
+                                              index:
+                                                  0))); //사용자 index 값 넣기 (0은 임시 값)
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
                                   ),
-                                ),
-                                child: Image.asset(
-                                  "assets/images/${_videoImagePath1[index]}.png",
-                                  fit: BoxFit.cover,
+                                  child: Stack(
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/${_videoImagePath1[index]}.png",
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      ),
+                                      Positioned(
+                                        bottom: 8,
+                                        left: 8,
+                                        child: Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              'assets/icons/ic_profile_heart.svg',
+                                              width: 16,
+                                              height: 16,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            const Text(
+                                              '1.5k',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -223,16 +262,53 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   curve: Curves.easeInOutQuart,
                                 ),
                               ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 1,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => VideoSomeoneScreen(
+                                              index:
+                                                  0))); //사용자 index 값 넣기 (0은 임시 값)
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
                                   ),
-                                ),
-                                child: Image.asset(
-                                  "assets/images/${_videoImagePath2[index]}.png",
-                                  fit: BoxFit.cover,
+                                  child: Stack(
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/${_videoImagePath1[index]}.png",
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      ),
+                                      Positioned(
+                                        bottom: 8,
+                                        left: 8,
+                                        child: Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              'assets/icons/ic_profile_heart.svg',
+                                              width: 16,
+                                              height: 16,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            const Text(
+                                              '1.5k',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
