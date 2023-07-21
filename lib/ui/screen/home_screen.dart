@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/ui/screen/chat_list_screen.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/widget/home/upload_button_widget.dart';
 
@@ -18,6 +19,15 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: Colors.transparent, //appBar 투명색
           elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
           actions: [
+            InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ChatListScreen()),
+                  );
+                },
+                child: SvgPicture.asset('assets/icons/ic_home_chat_list.svg')),
             UploadButtonWidget(context: context),
             Container(
                 margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
