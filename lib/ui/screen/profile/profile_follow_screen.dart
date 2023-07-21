@@ -6,8 +6,10 @@ import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ProfileFollowScreen extends StatefulWidget {
-  const ProfileFollowScreen({Key? key, required this.index}) : super(key: key);
+  ProfileFollowScreen({Key? key, required this.tapNum, required this.index})
+      : super(key: key);
 
+  int tapNum;
   final int index;
 
   @override
@@ -79,7 +81,8 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
   void initState() {
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController =
+        TabController(length: 2, vsync: this, initialIndex: widget.tapNum);
   }
 
   @override

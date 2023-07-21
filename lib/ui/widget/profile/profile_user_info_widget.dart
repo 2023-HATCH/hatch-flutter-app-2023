@@ -59,13 +59,13 @@ class ProfileUserInfoWidget extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
-          GestureDetector(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(0, 0, 0, 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 0, 0, 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  child: Container(
                     margin: const EdgeInsets.fromLTRB(0, 0, 50, 0),
                     child: Column(
                       mainAxisAlignment:
@@ -74,28 +74,36 @@ class ProfileUserInfoWidget extends StatelessWidget {
                         Container(
                             margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                             child: const Text("161")),
-                        const Text("팔로잉"),
+                        const Text("팔로워"),
                       ],
                     ),
                   ),
-                  Column(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProfileFollowScreen(
+                            tapNum: 0, index: 0)), // 사용자 index 넘기기
+                  ),
+                ),
+                GestureDetector(
+                  child: Column(
                     mainAxisAlignment:
                         MainAxisAlignment.center, // 위 아래 정렬을 중앙으로 설정
                     children: [
                       Container(
                           margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                           child: const Text("48.4k")),
-                      const Text("팔로워"),
+                      const Text("팔로잉"),
                     ],
                   ),
-                ],
-              ),
-            ),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      ProfileFollowScreen(index: 0)), // 사용자 index 넘기기
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProfileFollowScreen(
+                            tapNum: 1, index: 0)), // 사용자 index 넘기기
+                  ),
+                ),
+              ],
             ),
           ),
           Container(
