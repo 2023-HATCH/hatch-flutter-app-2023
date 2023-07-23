@@ -3,13 +3,14 @@ import 'package:flutter/scheduler.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/chat_detail_list_response.dart';
 import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
+import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart';
 
 final chatDetailListString = {
   "pageNum": 1,
   "size": 10,
   "messeges": [
     {
-      "content": "1",
+      "content": "야~~",
       "sender": {
         "userId": "22",
         "profileImg": "assets/images/chat_user_2.png",
@@ -18,7 +19,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "2",
+      "content": "뭐해!!!",
       "sender": {
         "userId": "22",
         "profileImg": "assets/images/chat_user_2.png",
@@ -27,7 +28,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "3",
+      "content": "낼 같이 공부할래?",
       "sender": {
         "userId": "22",
         "profileImg": "assets/images/chat_user_2.png",
@@ -36,7 +37,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "ㅎㅇ",
+      "content": "응?",
       "sender": {
         "userId": "11",
         "profileImg": "assets/images/chat_user_2.png",
@@ -45,7 +46,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "4",
+      "content": "공부하자",
       "sender": {
         "userId": "22",
         "profileImg": "assets/images/chat_user_2.png",
@@ -54,7 +55,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "5",
+      "content": "공부하자공부하자공부하자공부하자공부하자공부하자",
       "sender": {
         "userId": "22",
         "profileImg": "assets/images/chat_user_2.png",
@@ -63,7 +64,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "ㅎㅇ",
+      "content": "뭐 뭐야",
       "sender": {
         "userId": "11",
         "profileImg": "assets/images/chat_user_2.png",
@@ -72,7 +73,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "ㅎㅇ",
+      "content": "그래",
       "sender": {
         "userId": "11",
         "profileImg": "assets/images/chat_user_2.png",
@@ -81,7 +82,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "6",
+      "content": "아싸",
       "sender": {
         "userId": "22",
         "profileImg": "assets/images/chat_user_2.png",
@@ -90,7 +91,7 @@ final chatDetailListString = {
       "createdAt": "2023-07-23T11:58:20.551705"
     },
     {
-      "content": "7",
+      "content": "낼 덕다 ㄱ",
       "sender": {
         "userId": "22",
         "profileImg": "assets/images/chat_user_2.png",
@@ -156,19 +157,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             color: AppColor.purpleColor,
             height: 3,
           ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 0, 7),
-            padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              controller: _scrollController,
-              itemCount: _messageList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return _messageList[index].sender.nickname != "pochako"
-                    ? const Text("내가 보낸 거")
-                    : const Text("포차코가 보낸 거");
-              },
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(0, 0, 0, 7),
+              padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                controller: _scrollController,
+                itemCount: _messageList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return _messageList[index].sender.nickname != "pochako"
+                      ? const Text("내가 보낸 거")
+                      : ChatDetailRightBubbleWidget(
+                          chatDetail: _messageList[index]);
+                },
+              ),
             ),
           ),
         ],
