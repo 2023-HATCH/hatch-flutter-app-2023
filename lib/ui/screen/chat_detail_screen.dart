@@ -3,11 +3,12 @@ import 'package:flutter/scheduler.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/chat_detail_list_response.dart';
 import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
+import 'package:pocket_pose/ui/widget/chat/chat_detail_left_bubble_widget.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart';
 
 final chatDetailListString = {
   "pageNum": 1,
-  "size": 10,
+  "size": 20,
   "messeges": [
     {
       "content": "야~~",
@@ -65,6 +66,15 @@ final chatDetailListString = {
     },
     {
       "content": "뭐 뭐야",
+      "sender": {
+        "userId": "11",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "min0"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어",
       "sender": {
         "userId": "11",
         "profileImg": "assets/images/chat_user_2.png",
@@ -168,8 +178,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 itemCount: _messageList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return _messageList[index].sender.nickname != "pochako"
-                      ? const Text("내가 보낸 거")
-                      : ChatDetailRightBubbleWidget(
+                      ? ChatDetailRightBubbleWidget(
+                          chatDetail: _messageList[index],
+                        )
+                      : ChatDetailLeftBubbleWidget(
                           chatDetail: _messageList[index]);
                 },
               ),

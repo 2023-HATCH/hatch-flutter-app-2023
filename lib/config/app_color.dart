@@ -22,6 +22,7 @@ class AppColor {
   static Color greenColor = const Color(0xFF00FF19);
   static Color yellowColor = const Color(0xFFEFE372);
   static Color yellowColor2 = const Color(0xFFFAFF00);
+  static Color yellowColor3 = const Color(0xFFF3ECA6);
   static Color mintNeonColor = const Color.fromARGB(255, 104, 250, 241);
   static Color yellowNeonColor = const Color(0xFFEDF156);
   static Color greenNeonColor = const Color(0xFF41EF49);
