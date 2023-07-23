@@ -1,14 +1,109 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/entity/response/chat_detail_list_response.dart';
 import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
 
-class ChatDetailScreen extends StatefulWidget {
-  // final _io.Socket socket;
+final chatDetailListString = {
+  "pageNum": 1,
+  "size": 10,
+  "messeges": [
+    {
+      "content": "1",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "2",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "3",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "ㅎㅇ",
+      "sender": {
+        "userId": "11",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "min0"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "4",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "5",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "ㅎㅇ",
+      "sender": {
+        "userId": "11",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "min0"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "ㅎㅇ",
+      "sender": {
+        "userId": "11",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "min0"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "6",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+    {
+      "content": "7",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23T11:58:20.551705"
+    },
+  ]
+};
 
+class ChatDetailScreen extends StatefulWidget {
   const ChatDetailScreen({
     Key? key,
-    // required this.socket,
   }) : super(key: key);
 
   @override
@@ -16,48 +111,20 @@ class ChatDetailScreen extends StatefulWidget {
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
-  //새로운 채팅 올때마다 추가하기위한 StreamController
-  // final StreamController<LiveChatObject> _streamController =
-  //     StreamController<LiveChatObject>();
-
-  //메세지 리스트 (노출할 채팅목록이 있는 리스트)
   final List<ChatDetailListItem> _messageList = [];
-
-  //채팅리스트 scrollController
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    //이전 채팅 목록 가져오기
-    // WidgetsBinding.instance!.addPostFrameCallback((_) {
-    //   widget.socket.emit('chats');
-    //   widget.socket.on('CHATS', (data) {
-    //     Iterable list = data['CA'];
-
-    //     //Json정보를 받아올 채팅 구조(LiveChatObject)의 리스트형태로 변환
-    //     var beforeChats =
-    //         list.map((i) => LiveChatObject.fromJson(i)).toList();
-
-    //     setState(() {
-    //       //받아온 이전 채팅목록을 messageList에 추가
-    //       beforeChats.forEach((chatData) {
-    //           _messageList.add(chatData);
-
-    //       });
-    //     });
-    //   });
-    // });
-
-    //새로운 채팅 올때마다 messageList에 추가
-    // widget.socket.on('MSSG', (data) {
-    //   _streamController.sink.add(LiveChatObject.fromJson(data));
-    //   setState(() {
-    //       _messageList.add(LiveChatObject.fromJson(data));
-
-    //   });
-    // });
+    setState(() {
+      var chatDetailJson =
+          ChatDetailListResponse.fromJson(chatDetailListString);
+      for (var element in chatDetailJson.messeges) {
+        _messageList.add(element);
+      }
+    });
   }
 
   @override
@@ -65,7 +132,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.dispose();
 
     _scrollController.dispose();
-    // _streamController.close();
   }
 
   @override
@@ -84,21 +150,28 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     return Scaffold(
       appBar: _buildAppBar(context),
       backgroundColor: AppColor.purpleColor3,
-      body: Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 7),
-        height: 170,
-        padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
-        child: ListView.builder(
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          controller: _scrollController,
-          itemCount: _messageList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _messageList[index].sender.nickname != "pochako"
-                ? const Text("내가 보낸 거")
-                : const Text("포차코가 보낸 거");
-          },
-        ),
+      body: Column(
+        children: [
+          Container(
+            color: AppColor.purpleColor,
+            height: 3,
+          ),
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 0, 0, 7),
+            padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              controller: _scrollController,
+              itemCount: _messageList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _messageList[index].sender.nickname != "pochako"
+                    ? const Text("내가 보낸 거")
+                    : const Text("포차코가 보낸 거");
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
