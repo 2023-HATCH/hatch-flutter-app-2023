@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/chat_list_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/ui/widget/chat/chat_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
 final chatListString = {
@@ -11,17 +12,17 @@ final chatListString = {
       "chatRoomId": "1",
       "opponentUser": {
         "userId": "11",
-        "profileImg": "assets/images/chat_user1.jpg",
-        "nickname": "고양이"
+        "profileImg": "assets/images/chat_user_1.png",
+        "nickname": "hello_kiti"
       },
-      "recentContent": "뭐해?"
+      "recentContent": "놀자"
     },
     {
       "chatRoomId": "2",
       "opponentUser": {
         "userId": "22",
-        "profileImg": "assets/images/chat_user2.jpg",
-        "nickname": "고양이"
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
       },
       "recentContent": "뭐해?"
     },
@@ -29,28 +30,28 @@ final chatListString = {
       "chatRoomId": "3",
       "opponentUser": {
         "userId": "33",
-        "profileImg": "assets/images/chat_user3.jpg",
-        "nickname": "고양이"
+        "profileImg": "assets/images/chat_user_3.png",
+        "nickname": "pom_pom_pulin"
       },
-      "recentContent": "뭐해?"
+      "recentContent": "밥먹자"
     },
     {
       "chatRoomId": "4",
       "opponentUser": {
         "userId": "44",
-        "profileImg": "assets/images/chat_user4.jpg",
-        "nickname": "고양이"
+        "profileImg": "assets/images/chat_user_4.png",
+        "nickname": "kelo_kelo_kelopi"
       },
-      "recentContent": "뭐해?"
+      "recentContent": "산책하자산책하자산책하자산책하자산책하자산책하자산책하자산책하자"
     },
     {
       "chatRoomId": "5",
       "opponentUser": {
         "userId": "55",
-        "profileImg": "assets/images/chat_user5.jpg",
-        "nickname": "고양이"
+        "profileImg": "assets/images/chat_user_5.png",
+        "nickname": "kogimyung_"
       },
-      "recentContent": "뭐해?"
+      "recentContent": "졸려..."
     },
   ]
 };
@@ -112,16 +113,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   ListView buildChatList(AsyncSnapshot<ChatListResponse> snapshot) {
     return ListView.separated(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.vertical,
       itemCount: snapshot.data!.list.length,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       itemBuilder: (context, index) {
         final chatInfo = snapshot.data!.list[index];
-        return Column(
-          children: [
-            Text(chatInfo.chatRoomId),
-          ],
-        );
+        return ChatListItemWidget(chat: chatInfo);
       },
       separatorBuilder: (context, index) => const SizedBox(
         width: 40,
