@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/chat_list_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
@@ -115,7 +114,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return ListView.separated(
       scrollDirection: Axis.vertical,
       itemCount: snapshot.data!.list.length,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       itemBuilder: (context, index) {
         final chatInfo = snapshot.data!.list[index];
         return ChatListItemWidget(chat: chatInfo);
@@ -140,10 +138,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
         onPressed: () {
           Navigator.pop(context);
         },
-        child: SvgPicture.asset(
-          'assets/icons/ic_left_purple.svg',
-          width: 11,
-          height: 19,
+        child: Image.asset(
+          'assets/icons/ic_back.png',
         ),
       ),
     );
