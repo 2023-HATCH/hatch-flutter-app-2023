@@ -33,7 +33,7 @@ final chatListString = {
         "profileImg": "assets/images/chat_user_3.png",
         "nickname": "pom_pom_pulin"
       },
-      "recentContent": "밥먹자"
+      // "recentContent": "밥먹자"
     },
     {
       "chatRoomId": "4",
@@ -48,7 +48,7 @@ final chatListString = {
       "chatRoomId": "5",
       "opponentUser": {
         "userId": "55",
-        "profileImg": "assets/images/chat_user_5.png",
+        // "profileImg": "",
         "nickname": "kogimyung_"
       },
       "recentContent": "졸려..."

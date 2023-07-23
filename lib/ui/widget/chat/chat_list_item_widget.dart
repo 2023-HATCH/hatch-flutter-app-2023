@@ -17,7 +17,9 @@ class ChatListItemWidget extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: Image.asset(
-                chat.opponentUser.profileImg!,
+                (chat.opponentUser.profileImg == null)
+                    ? 'assets/images/charactor_popo_default.png'
+                    : chat.opponentUser.profileImg!,
                 width: 40,
                 height: 40,
                 fit: BoxFit.contain,
