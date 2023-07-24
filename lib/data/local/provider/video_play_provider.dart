@@ -56,6 +56,17 @@ class VideoPlayProvider with ChangeNotifier {
     '최애의 완소 퍼펙트 반장❤️ #최애의아이',
   ];
 
+  List<String> tags = [
+    '원어스',
+    '최애의아이',
+    'dancechallenge',
+    'K-pop',
+    '나이트댄서',
+    '띵띵땅땅',
+    '완소 퍼펙트 반장',
+    '토카토카',
+  ];
+
   int currentIndex = 0;
 
   void initializeVideoPlayerFutures() {

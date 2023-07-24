@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/screen/video_someone_screen.dart';
@@ -82,6 +83,15 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    _videoPlayProvider.playVideo();
+    _tabController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -136,13 +146,25 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
   }
 }
 
-class SearchTextField extends StatelessWidget {
-  const SearchTextField({
-    super.key,
-    required TextEditingController textController,
-  }) : _textController = textController;
+class SearchTextField extends StatefulWidget {
+  const SearchTextField(
+      {super.key, required TextEditingController textController})
+      : _textController = textController;
 
   final TextEditingController _textController;
+
+  @override
+  State<StatefulWidget> createState() => _SearchTextFieldState();
+}
+
+class _SearchTextFieldState extends State<SearchTextField> {
+  late VideoPlayProvider _videoPlayProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,22 +191,55 @@ class SearchTextField extends StatelessWidget {
                   ),
                   const Padding(padding: EdgeInsets.only(left: 8)),
                   Expanded(
-                    child: TextField(
-                      controller: _textController,
-                      cursorColor: AppColor.blackColor,
-                      decoration: InputDecoration(
-                        hintText: _textController.text.length > 12
-                            ? '${_textController.text.substring(0, 12)}...'
-                            : '검색',
-                        hintStyle:
-                            const TextStyle(color: Colors.grey, fontSize: 14),
-                        labelStyle:
-                            const TextStyle(color: Colors.grey, fontSize: 14),
+                      child: TypeAheadField(
+                    textFieldConfiguration: TextFieldConfiguration(
+                      controller: widget._textController,
+                      decoration: const InputDecoration(
+                        hintText: '검색',
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        labelStyle: TextStyle(color: Colors.grey, fontSize: 14),
                         border: InputBorder.none,
                       ),
-                      onChanged: (text) {},
                     ),
-                  ),
+                    suggestionsCallback: (pattern) async {
+                      return _videoPlayProvider.tags.where((item) =>
+                          item.toLowerCase().contains(pattern.toLowerCase()));
+                    },
+                    itemBuilder: (context, suggestion) {
+                      return ListTile(
+                        title: Text(
+                          suggestion,
+                          style: TextStyle(
+                            color: AppColor.grayColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                      );
+                    },
+                    onSuggestionSelected: (suggestion) {
+                      widget._textController.text = suggestion;
+
+                      // 검색 처리 api 호출
+                    },
+                    noItemsFoundBuilder: (context) {
+                      return GestureDetector(
+                        child: ListTile(
+                          leading: const Icon(Icons.search),
+                          title: Text(
+                            widget._textController.text,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          // 검색 처리 api 호출
+                          FocusScope.of(context).unfocus();
+                        },
+                      );
+                    },
+                  )),
                   const Padding(padding: EdgeInsets.only(left: 14)),
                 ],
               ),
