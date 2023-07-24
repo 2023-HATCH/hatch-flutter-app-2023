@@ -169,11 +169,11 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                             ),
                           ),
                           bottomSheet: SizedBox(
-                            height: 110,
+                            height: 90,
                             child: Column(
                               children: [
                                 Container(
-                                  height: 45,
+                                  height: 25,
                                   color: Colors.white,
                                   child: Row(
                                     mainAxisAlignment:
@@ -203,7 +203,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                           child: Text(
                                             emojiList[i],
                                             style:
-                                                const TextStyle(fontSize: 24),
+                                                const TextStyle(fontSize: 20),
                                           ),
                                         ),
                                     ],
