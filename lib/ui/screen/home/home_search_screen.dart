@@ -16,6 +16,7 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
     with SingleTickerProviderStateMixin {
   late VideoPlayProvider _videoPlayProvider;
   late TabController _tabController;
+  final TextEditingController _textController = TextEditingController();
 
   List<String> followingProfileList = [
     'assets/images/chat_user_1.png',
@@ -100,28 +101,96 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
           },
         ),
         elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: Colors.black,
-          unselectedLabelColor: AppColor.grayColor3,
-          indicatorColor: AppColor.purpleColor,
-          tabs: const [
-            Tab(text: '계정'),
-            Tab(text: '태그'),
-          ],
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          FollowListViewWidget(
-            tabNum: 0,
-            isfollows: followerList,
-            profiles: followerProfileList,
-            nicknames: followerNicknameList,
-            introduces: followerIntroduceList,
+          SearchTextField(textController: _textController),
+          TabBar(
+            controller: _tabController,
+            labelColor: Colors.black,
+            unselectedLabelColor: AppColor.grayColor3,
+            indicatorColor: AppColor.purpleColor,
+            tabs: const [
+              Tab(text: '계정'),
+              Tab(text: '태그'),
+            ],
           ),
-          VideoGridView(),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                FollowListViewWidget(
+                  tabNum: 0,
+                  isfollows: followerList,
+                  profiles: followerProfileList,
+                  nicknames: followerNicknameList,
+                  introduces: followerIntroduceList,
+                ),
+                VideoGridView(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SearchTextField extends StatelessWidget {
+  const SearchTextField({
+    super.key,
+    required TextEditingController textController,
+  }) : _textController = textController;
+
+  final TextEditingController _textController;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40,
+      child: Row(
+        children: <Widget>[
+          const Padding(padding: EdgeInsets.only(left: 18)),
+          Expanded(
+            child: Container(
+              height: 30,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColor.grayColor4,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(padding: EdgeInsets.only(left: 14)),
+                  SvgPicture.asset(
+                    'assets/icons/ic_home_search.svg',
+                    color: Colors.grey,
+                    width: 14,
+                  ),
+                  const Padding(padding: EdgeInsets.only(left: 8)),
+                  Expanded(
+                    child: TextField(
+                      controller: _textController,
+                      cursorColor: AppColor.blackColor,
+                      decoration: InputDecoration(
+                        hintText: _textController.text.length > 12
+                            ? '${_textController.text.substring(0, 12)}...'
+                            : '검색',
+                        hintStyle:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
+                        labelStyle:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (text) {},
+                    ),
+                  ),
+                  const Padding(padding: EdgeInsets.only(left: 14)),
+                ],
+              ),
+            ),
+          ),
+          const Padding(padding: EdgeInsets.only(left: 18)),
         ],
       ),
     );
@@ -227,6 +296,7 @@ class VideoGridView extends StatelessWidget {
     "profile_video_3",
     "profile_video_5",
   ];
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
