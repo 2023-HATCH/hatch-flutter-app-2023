@@ -125,7 +125,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
-  int _rightSenderCount = 0;
+  bool _isNextSenderRight = false;
   bool _isMessageFillOut = false;
 
   @override
@@ -155,7 +155,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     if (_messageList.isNotEmpty) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          0,
           duration: const Duration(milliseconds: 50),
           curve: Curves.easeOut,
         );
@@ -165,7 +165,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     return Scaffold(
       appBar: _buildAppBar(context),
       backgroundColor: AppColor.purpleColor3,
-      resizeToAvoidBottomInset: true,
       body: Column(
         children: [
           Container(
@@ -181,24 +180,33 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   Widget _buildChatsArea() {
     return Expanded(
-      child: ListView.builder(
-        reverse: true,
-        shrinkWrap: true,
-        padding: EdgeInsets.zero,
-        controller: _scrollController,
-        itemCount: _messageList.length,
-        itemBuilder: (BuildContext context, int index) {
-          if (_messageList[index].sender.nickname == "pochako") {
-            _rightSenderCount = _rightSenderCount + 1;
-          } else {
-            _rightSenderCount = 0;
-          }
-          return _messageList[index].sender.nickname != "pochako"
-              ? ChatDetailRightBubbleWidget(chatDetail: _messageList[index])
-              : ChatDetailLeftBubbleWidget(
-                  chatDetail: _messageList[index],
-                  profileVisiblity: _rightSenderCount == 1);
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
         },
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ListView.builder(
+            reverse: true,
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            controller: _scrollController,
+            itemCount: _messageList.length,
+            itemBuilder: (BuildContext context, int index) {
+              if (index < _messageList.length - 1 &&
+                  _messageList[index + 1].sender.nickname != "pochako") {
+                _isNextSenderRight = true;
+              } else {
+                _isNextSenderRight = false;
+              }
+              return _messageList[index].sender.nickname != "pochako"
+                  ? ChatDetailRightBubbleWidget(chatDetail: _messageList[index])
+                  : ChatDetailLeftBubbleWidget(
+                      chatDetail: _messageList[index],
+                      profileVisiblity: _isNextSenderRight);
+            },
+          ),
+        ),
       ),
     );
   }
