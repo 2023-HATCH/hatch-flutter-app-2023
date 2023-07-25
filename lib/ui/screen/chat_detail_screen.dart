@@ -124,6 +124,7 @@ class ChatDetailScreen extends StatefulWidget {
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
+  int rightSenderCount = 0;
 
   @override
   void initState() {
@@ -168,23 +169,24 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             height: 3,
           ),
           Expanded(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(0, 0, 0, 7),
-              padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                controller: _scrollController,
-                itemCount: _messageList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return _messageList[index].sender.nickname != "pochako"
-                      ? ChatDetailRightBubbleWidget(
-                          chatDetail: _messageList[index],
-                        )
-                      : ChatDetailLeftBubbleWidget(
-                          chatDetail: _messageList[index]);
-                },
-              ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              controller: _scrollController,
+              itemCount: _messageList.length,
+              itemBuilder: (BuildContext context, int index) {
+                if (_messageList[index].sender.nickname == "pochako") {
+                  rightSenderCount = rightSenderCount + 1;
+                } else {
+                  rightSenderCount = 0;
+                }
+                return _messageList[index].sender.nickname != "pochako"
+                    ? ChatDetailRightBubbleWidget(
+                        chatDetail: _messageList[index])
+                    : ChatDetailLeftBubbleWidget(
+                        chatDetail: _messageList[index],
+                        profileVisiblity: rightSenderCount == 1);
+              },
             ),
           ),
         ],

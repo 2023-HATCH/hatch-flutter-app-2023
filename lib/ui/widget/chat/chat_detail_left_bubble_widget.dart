@@ -4,18 +4,21 @@ import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
 
 class ChatDetailLeftBubbleWidget extends StatelessWidget {
   final ChatDetailListItem chatDetail;
+  final bool profileVisiblity;
 
-  const ChatDetailLeftBubbleWidget({super.key, required this.chatDetail});
+  const ChatDetailLeftBubbleWidget(
+      {super.key, required this.chatDetail, required this.profileVisiblity});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 7, 24, 7),
+      padding: EdgeInsets.fromLTRB(
+          16, profileVisiblity ? 7 : 3, 24, profileVisiblity ? 3 : 7),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          buildUserProfileAndBubble(),
+          buildUserProfileAndBubble(profileVisiblity),
           const SizedBox(width: 8),
           buildTimeStamp(),
         ],
@@ -23,30 +26,36 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
     );
   }
 
-  Widget buildUserProfileAndBubble() {
+  Widget buildUserProfileAndBubble(bool profileVisiblity) {
     return Flexible(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: Image.asset(
-              (chatDetail.sender.profileImg == null)
-                  ? 'assets/images/charactor_popo_default.png'
-                  : chatDetail.sender.profileImg!,
-              width: 50,
-              height: 50,
-              fit: BoxFit.contain,
-            ),
-          ),
+          profileVisiblity
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Image.asset(
+                    (chatDetail.sender.profileImg == null)
+                        ? 'assets/images/charactor_popo_default.png'
+                        : chatDetail.sender.profileImg!,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.contain,
+                  ),
+                )
+              : const SizedBox(
+                  width: 50,
+                ),
           const SizedBox(
             width: 14,
           ),
           Flexible(
             child: Padding(
-              padding: const EdgeInsets.only(top: 8),
+              padding: EdgeInsets.only(
+                top: profileVisiblity ? 8 : 0.0,
+              ),
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
