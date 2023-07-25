@@ -129,7 +129,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 SliverAppBar(
                   pinned: true,
                   backgroundColor: Colors.white,
-                  //foregroundColor: Colors.black87,
                   toolbarHeight: 0,
                   bottom: TabBar(
                     controller: _tabController,
@@ -152,19 +151,18 @@ class _ProfileScreenState extends State<ProfileScreen>
                     indicator: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: AppColor.purpleColor, // 선택된 탭의 줄 색상
-                          width: 3.0, // 선택된 탭의 줄 두께
+                          color: AppColor.purpleColor,
+                          width: 3.0,
                         ),
                       ),
                     ),
                     onTap: (index) {
                       debugPrint("Selected Tab: $index");
-                      setState(
-                          () {}); // Rebuild the widget when tab is selected
+                      setState(() {});
                     },
                   ),
                 ),
-                if (_tabController.index == 0) // Check if Tab 2 is selected
+                if (_tabController.index == 0)
                   SliverGrid(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
