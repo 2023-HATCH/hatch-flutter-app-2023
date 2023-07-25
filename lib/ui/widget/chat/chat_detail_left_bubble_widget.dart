@@ -15,7 +15,7 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          buildUserProfileAndContent(),
+          buildUserProfileAndBubble(),
           const SizedBox(width: 8),
           buildTimeStamp(),
         ],
@@ -23,7 +23,7 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
     );
   }
 
-  Widget buildUserProfileAndContent() {
+  Widget buildUserProfileAndBubble() {
     return Flexible(
       child: Row(
         mainAxisSize: MainAxisSize.min,

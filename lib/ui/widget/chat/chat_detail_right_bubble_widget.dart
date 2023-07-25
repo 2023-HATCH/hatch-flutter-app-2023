@@ -13,26 +13,58 @@ class ChatDetailRightBubbleWidget extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 7, 24, 7),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColor.yellowColor3,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Text(
-                chatDetail.content,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
+          buildTimeStamp(),
+          const SizedBox(width: 8),
+          buildBubble(),
         ],
       ),
     );
+  }
+
+  Flexible buildBubble() {
+    return Flexible(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColor.yellowColor3,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Text(
+          chatDetail.content,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.black,
+          ),
+          textAlign: TextAlign.left,
+        ),
+      ),
+    );
+  }
+
+  Widget buildTimeStamp() {
+    return Flexible(
+      fit: FlexFit.tight,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Text(
+          refomatTimeStamp(chatDetail.createdAt),
+          style: TextStyle(
+              fontSize: 10,
+              color: AppColor.blackColor,
+              fontWeight: FontWeight.w300),
+          textAlign: TextAlign.end,
+        ),
+      ),
+    );
+  }
+
+  String refomatTimeStamp(String timeStamp) {
+    var temp = timeStamp.split(' ');
+    temp = temp[1].split(':');
+    var ampm = int.parse(temp[0]) < 12 ? "오전" : "오후";
+    var hour = (ampm == "오후") ? int.parse(temp[0].toString()) - 12 : temp[0];
+    return "$ampm $hour:${temp[1]}";
   }
 }
