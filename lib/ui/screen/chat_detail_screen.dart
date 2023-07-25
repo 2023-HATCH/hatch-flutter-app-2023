@@ -124,7 +124,7 @@ class ChatDetailScreen extends StatefulWidget {
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
-  int rightSenderCount = 0;
+  int _rightSenderCount = 0;
 
   @override
   void initState() {
@@ -176,16 +176,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               itemCount: _messageList.length,
               itemBuilder: (BuildContext context, int index) {
                 if (_messageList[index].sender.nickname == "pochako") {
-                  rightSenderCount = rightSenderCount + 1;
+                  _rightSenderCount = _rightSenderCount + 1;
                 } else {
-                  rightSenderCount = 0;
+                  _rightSenderCount = 0;
                 }
                 return _messageList[index].sender.nickname != "pochako"
                     ? ChatDetailRightBubbleWidget(
                         chatDetail: _messageList[index])
                     : ChatDetailLeftBubbleWidget(
                         chatDetail: _messageList[index],
-                        profileVisiblity: rightSenderCount == 1);
+                        profileVisiblity: _rightSenderCount == 1);
               },
             ),
           ),

@@ -15,15 +15,15 @@ class ChatDetailRightBubbleWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          buildTimeStamp(),
+          _buildTimeStamp(),
           const SizedBox(width: 8),
-          buildBubble(),
+          _buildBubble(),
         ],
       ),
     );
   }
 
-  Flexible buildBubble() {
+  Flexible _buildBubble() {
     return Flexible(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -43,13 +43,13 @@ class ChatDetailRightBubbleWidget extends StatelessWidget {
     );
   }
 
-  Widget buildTimeStamp() {
+  Widget _buildTimeStamp() {
     return Flexible(
       fit: FlexFit.tight,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 4),
         child: Text(
-          refomatTimeStamp(chatDetail.createdAt),
+          _refomatTimeStamp(chatDetail.createdAt),
           style: TextStyle(
               fontSize: 10,
               color: AppColor.blackColor,
@@ -60,7 +60,7 @@ class ChatDetailRightBubbleWidget extends StatelessWidget {
     );
   }
 
-  String refomatTimeStamp(String timeStamp) {
+  String _refomatTimeStamp(String timeStamp) {
     var temp = timeStamp.split(' ');
     temp = temp[1].split(':');
     var ampm = int.parse(temp[0]) < 12 ? "오전" : "오후";

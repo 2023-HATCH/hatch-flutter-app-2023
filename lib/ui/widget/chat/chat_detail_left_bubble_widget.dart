@@ -18,15 +18,15 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          buildUserProfileAndBubble(profileVisiblity),
+          _buildUserProfileAndBubble(profileVisiblity),
           const SizedBox(width: 8),
-          buildTimeStamp(),
+          _buildTimeStamp(),
         ],
       ),
     );
   }
 
-  Widget buildUserProfileAndBubble(bool profileVisiblity) {
+  Widget _buildUserProfileAndBubble(bool profileVisiblity) {
     return Flexible(
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -79,13 +79,13 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
     );
   }
 
-  Widget buildTimeStamp() {
+  Widget _buildTimeStamp() {
     return Flexible(
       fit: FlexFit.tight,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Text(
-          refomatTimeStamp(chatDetail.createdAt),
+          _refomatTimeStamp(chatDetail.createdAt),
           style: TextStyle(
               fontSize: 10,
               color: AppColor.blackColor,
@@ -95,7 +95,7 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
     );
   }
 
-  String refomatTimeStamp(String timeStamp) {
+  String _refomatTimeStamp(String timeStamp) {
     var temp = timeStamp.split(' ');
     temp = temp[1].split(':');
     var ampm = int.parse(temp[0]) < 12 ? "오전" : "오후";
