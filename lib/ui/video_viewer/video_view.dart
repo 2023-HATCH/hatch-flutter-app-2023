@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/data/entity/request/home_videos_request.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/home_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/video_user_info_frame.dart';
 import 'package:pocket_pose/ui/video_viewer/video_right_frame.dart';
 import 'package:pocket_pose/ui/widget/music_spinner_widget.dart';
@@ -7,7 +9,10 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoView extends StatefulWidget {
-  const VideoView({Key? key}) : super(key: key);
+  const VideoView({super.key, required String screenName})
+      : screenName = screenName;
+
+  final String screenName;
 
   @override
   State<VideoView> createState() => _VideoViewState();
@@ -27,6 +32,13 @@ class _VideoViewState extends State<VideoView>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       videoPlayProvider.setVideo();
     });
+
+    if (widget.screenName == 'home') {
+      HomeProvider homeProvider;
+      homeProvider = Provider.of<HomeProvider>(context, listen: false);
+      homeProvider.getVideo(const HomeVideosRequest(page: 0, size: 10));
+    } else if (widget.screenName == 'my') {
+    } else {}
   }
 
   void onPageChanged(int index) {

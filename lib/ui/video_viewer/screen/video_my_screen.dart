@@ -82,7 +82,7 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
       ),
       extendBodyBehindAppBar: true, //body 위에 appbar
       resizeToAvoidBottomInset: false,
-      body: const VideoView(),
+      body: const VideoView(screenName: 'my'),
       bottomSheet: Container(
         height: 65,
         color: Colors.black,
