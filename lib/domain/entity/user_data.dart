@@ -6,11 +6,13 @@ part 'user_data.g.dart';
 class UserData {
   final String uuid;
   final String nickname;
+  final String? profileImg;
   final String? email;
 
-  UserData({
+  const UserData({
     required this.uuid,
     required this.nickname,
+    required this.profileImg,
     required this.email,
   });
 

@@ -1,20 +1,18 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'home_video_list_request.dart';
+part of 'home_videos_request.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-HomeVidepListRequest _$HomeVidepListRequestFromJson(
-        Map<String, dynamic> json) =>
-    HomeVidepListRequest(
+HomeVideosRequest _$HomeVideosRequestFromJson(Map<String, dynamic> json) =>
+    HomeVideosRequest(
       page: json['page'] as int,
       size: json['size'] as int,
     );
 
-Map<String, dynamic> _$HomeVidepListRequestToJson(
-        HomeVidepListRequest instance) =>
+Map<String, dynamic> _$HomeVideosRequestToJson(HomeVideosRequest instance) =>
     <String, dynamic>{
       'page': instance.page,
       'size': instance.size,

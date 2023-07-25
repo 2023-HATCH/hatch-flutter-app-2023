@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/response/signin_signup_response.dart';
-import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/domain/entity/user.dart';
 
 class SignInSignUpRepository {
   String? _extractToken(String? cookies, String tokenName) {
@@ -35,10 +35,11 @@ class SignInSignUpRepository {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("json: $json");
 
-      final user = UserData(
+      final user = User(
         uuid: json['data']['uuid'],
         nickname: json['data']['nickname'],
         email: json['data']['email'],
+        profileImg: json['data']['profileImg'],
       );
 
       final cookies = response.headers['set-cookie'];
