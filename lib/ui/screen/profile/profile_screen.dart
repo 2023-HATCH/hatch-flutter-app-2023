@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/screen/video_someone_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_edit_screen.dart';
 import 'package:pocket_pose/ui/video_viewer/screen/video_my_screen.dart';
@@ -20,7 +20,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
-  late AuthProvider authProvider;
+  late KaKaoLoginProvider _loginProvider;
 
   final List<String> _videoImagePath1 = [
     "profile_video_0",
@@ -75,10 +75,10 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    authProvider = Provider.of<AuthProvider>(context, listen: true);
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: true);
 
     return FutureBuilder<bool>(
-      future: authProvider.checkAccessToken(),
+      future: _loginProvider.checkAccessToken(),
       builder: (context, snapshot) {
         if (snapshot.data == true) {
           return Scaffold(

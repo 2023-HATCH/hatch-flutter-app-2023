@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
-import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/home/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
@@ -20,7 +20,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late VideoPlayProvider _videoPlayProvider;
-  late AuthProvider _authProvider;
+  late KaKaoLoginProvider _loginProvider;
 
   int _bottomNavIndex = 0;
 
@@ -32,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
     _videoPlayProvider.initializeVideoPlayerFutures();
-    _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
 
     super.initState();
   }
@@ -50,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
       _videoPlayProvider.pauseVideo();
 
       // ignore: unrelated_type_equality_checks
-      if (await _authProvider.checkAccessToken() == false) {
+      if (await _loginProvider.checkAccessToken() == false) {
         _showModalBottomSheet(); //토큰이 존재하지 않는 경우
       }
     } else {

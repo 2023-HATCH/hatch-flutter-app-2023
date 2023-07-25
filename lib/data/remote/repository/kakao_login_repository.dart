@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/response/signin_signup_response.dart';
-import 'package:pocket_pose/domain/entity/user.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 
-class SignInSignUpRepository {
+class KaKaoLoginRepository {
   String? _extractToken(String? cookies, String tokenName) {
     if (cookies == null) return null;
     final pattern = '$tokenName=';
@@ -35,7 +35,7 @@ class SignInSignUpRepository {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("json: $json");
 
-      final user = User(
+      final user = UserData(
         uuid: json['data']['uuid'],
         nickname: json['data']['nickname'],
         email: json['data']['email'],

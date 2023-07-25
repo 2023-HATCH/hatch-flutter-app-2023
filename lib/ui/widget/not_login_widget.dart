@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:provider/provider.dart';
 
 class NotLoginWidget extends StatefulWidget {
@@ -11,11 +11,11 @@ class NotLoginWidget extends StatefulWidget {
 }
 
 class _NotLoginWidgetState extends State<NotLoginWidget> {
-  late AuthProvider authProvider;
+  late KaKaoLoginProvider _loginProvider;
 
   @override
   Widget build(BuildContext context) {
-    authProvider = Provider.of<AuthProvider>(context);
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context);
 
     return Center(
       child: Column(
@@ -38,7 +38,7 @@ class _NotLoginWidgetState extends State<NotLoginWidget> {
                 minimumSize: const Size(140, 40),
               ),
               onPressed: () {
-                authProvider.kakaoSignIn();
+                _loginProvider.signIn();
               },
               child: const Text(
                 "로그인",
