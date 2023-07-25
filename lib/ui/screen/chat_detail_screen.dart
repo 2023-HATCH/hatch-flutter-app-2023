@@ -17,7 +17,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "pochako"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "뭐해!!!",
@@ -26,7 +26,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "pochako"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "낼 같이 공부할래?",
@@ -35,7 +35,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "pochako"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "응?",
@@ -44,7 +44,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "min0"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "공부하자",
@@ -53,16 +53,16 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "pochako"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
-      "content": "공부하자공부하자공부하자공부하자공부하자공부하자",
+      "content": "공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자",
       "sender": {
         "userId": "22",
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "pochako"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "뭐 뭐야",
@@ -71,7 +71,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "min0"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어",
@@ -80,7 +80,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "min0"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "그래",
@@ -89,7 +89,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "min0"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "아싸",
@@ -98,7 +98,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "pochako"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
     {
       "content": "낼 덕다 ㄱ",
@@ -107,7 +107,7 @@ final chatDetailListString = {
         "profileImg": "assets/images/chat_user_2.png",
         "nickname": "pochako"
       },
-      "createdAt": "2023-07-23T11:58:20.551705"
+      "createdAt": "2023-07-23 11:58:20.551705"
     },
   ]
 };
