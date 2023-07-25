@@ -124,7 +124,9 @@ class ChatDetailScreen extends StatefulWidget {
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _textController = TextEditingController();
   int _rightSenderCount = 0;
+  bool _isMessageFillOut = false;
 
   @override
   void initState() {
@@ -133,6 +135,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     setState(() {
       var chatDetailJson =
           ChatDetailListResponse.fromJson(chatDetailListString);
+      chatDetailJson.messeges = chatDetailJson.messeges.reversed.toList();
       for (var element in chatDetailJson.messeges) {
         _messageList.add(element);
       }
@@ -162,35 +165,115 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     return Scaffold(
       appBar: _buildAppBar(context),
       backgroundColor: AppColor.purpleColor3,
+      resizeToAvoidBottomInset: true,
       body: Column(
         children: [
           Container(
             color: AppColor.purpleColor,
             height: 3,
           ),
-          Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              controller: _scrollController,
-              itemCount: _messageList.length,
-              itemBuilder: (BuildContext context, int index) {
-                if (_messageList[index].sender.nickname == "pochako") {
-                  _rightSenderCount = _rightSenderCount + 1;
-                } else {
-                  _rightSenderCount = 0;
-                }
-                return _messageList[index].sender.nickname != "pochako"
-                    ? ChatDetailRightBubbleWidget(
-                        chatDetail: _messageList[index])
-                    : ChatDetailLeftBubbleWidget(
-                        chatDetail: _messageList[index],
-                        profileVisiblity: _rightSenderCount == 1);
-              },
-            ),
-          ),
+          _buildChatsArea(),
+          _buildChatTextField(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildChatsArea() {
+    return Expanded(
+      child: ListView.builder(
+        reverse: true,
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        controller: _scrollController,
+        itemCount: _messageList.length,
+        itemBuilder: (BuildContext context, int index) {
+          if (_messageList[index].sender.nickname == "pochako") {
+            _rightSenderCount = _rightSenderCount + 1;
+          } else {
+            _rightSenderCount = 0;
+          }
+          return _messageList[index].sender.nickname != "pochako"
+              ? ChatDetailRightBubbleWidget(chatDetail: _messageList[index])
+              : ChatDetailLeftBubbleWidget(
+                  chatDetail: _messageList[index],
+                  profileVisiblity: _rightSenderCount == 1);
+        },
+      ),
+    );
+  }
+
+  Widget _buildChatTextField(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        width: double.infinity,
+                        padding: const EdgeInsets.fromLTRB(14, 0, 0, 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: AppColor.grayColor4,
+                            width: 1,
+                          ),
+                        ),
+                        child: TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              _isMessageFillOut = value.isNotEmpty;
+                            });
+                          },
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 14),
+                          controller: _textController,
+                          cursorColor: AppColor.grayColor4,
+                          decoration: InputDecoration(
+                            hintText: '메시지 보내기...',
+                            hintStyle: TextStyle(
+                                color: AppColor.grayColor4,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w300),
+                            labelStyle: TextStyle(color: AppColor.grayColor4),
+                            border: InputBorder.none,
+                            suffixIcon: TextButton(
+                                onPressed: () {
+                                  _textController.clear();
+                                  setState(() {
+                                    _isMessageFillOut = false;
+                                  });
+                                },
+                                child: Text(
+                                  '보내기',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: _isMessageFillOut
+                                          ? AppColor.blueColor5
+                                          : AppColor.blueColor4),
+                                )),
+                          ),
+                          textInputAction: TextInputAction.next,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
