@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
+import 'package:provider/provider.dart';
 
 class VideoMyScreen extends StatefulWidget {
   VideoMyScreen({Key? key, required this.index}) : super(key: key);
@@ -15,12 +17,21 @@ class VideoMyScreen extends StatefulWidget {
 }
 
 class _VideoMyScreenState extends State<VideoMyScreen> {
+  late VideoPlayProvider _videoPlayProvider;
   final TextEditingController _textController = TextEditingController();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+  }
+
+  @override
   void dispose() {
-    _textController.dispose();
     super.dispose();
+    _textController.dispose();
+    _videoPlayProvider.pauseVideo();
   }
 
   @override
@@ -70,7 +81,7 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
         ],
       ),
       extendBodyBehindAppBar: true, //body 위에 appbar
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: const VideoView(),
       bottomSheet: Container(
         height: 65,

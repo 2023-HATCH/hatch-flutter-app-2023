@@ -20,15 +20,21 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
   final TextEditingController _textController = TextEditingController();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+  }
+
+  @override
   void dispose() {
-    _textController.dispose();
     super.dispose();
+    _textController.dispose();
+    _videoPlayProvider.pauseVideo();
   }
 
   @override
   Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-
     return Scaffold(
         appBar: AppBar(
           //centerTitle: true, //Title text 가운데 정렬
@@ -48,7 +54,7 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
           ),
         ),
         extendBodyBehindAppBar: true, //body 위에 appbar
-        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: false,
         body: const VideoView(),
         bottomSheet: Container(
           height: 65,
