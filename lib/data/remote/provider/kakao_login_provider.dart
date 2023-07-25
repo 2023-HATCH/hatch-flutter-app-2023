@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:pocket_pose/data/entity/response/signin_signup_response.dart';
+import 'package:pocket_pose/data/entity/response/kakao_login_response.dart';
 import 'package:pocket_pose/data/remote/repository/kakao_login_repository.dart';
 
 const _storageKey = 'kakaoAccessToken';
@@ -11,10 +11,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
   final _storage = const FlutterSecureStorage();
   String? _accessToken;
   String? _refreshToken;
-  SignInSignUpResponse? _response;
+  KaKaoLoginResponse? _response;
 
   String? get accessToken => _accessToken;
-  SignInSignUpResponse? get response => _response;
+  KaKaoLoginResponse? get response => _response;
 
   // 카카오 로그인, 로그아웃
   void signIn() async {
