@@ -11,6 +11,7 @@ class AppUrl {
 
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";
+  static const stageTalkUrl = "$_stageUrl/talks/messages";
 
   // 스켈레톤 정확도 확인
   static const skeletonAccuracyUrl = "$_aiBaseUrl/api/similarity/test";
