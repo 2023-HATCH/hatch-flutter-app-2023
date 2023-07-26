@@ -5,12 +5,14 @@ class AppUrl {
   static const _aiBaseUrl = "http://43.200.133.86:5000";
 
   static const _stageUrl = "$_apiBaseUrl/stages";
+  static const _talkUrl = "$_apiBaseUrl/talks";
 
   // 로그인 & 회원가입
   static const signInSignUpUrl = "$_apiBaseUrl/auth/login?type=kakao";
 
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";
+  static const stageTalkUrl = "$_talkUrl/messages";
 
   // 스켈레톤 정확도 확인
   static const skeletonAccuracyUrl = "$_aiBaseUrl/api/similarity/test";
