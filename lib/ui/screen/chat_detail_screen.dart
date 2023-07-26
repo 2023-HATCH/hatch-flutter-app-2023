@@ -196,6 +196,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               if (index < _messageList.length - 1 &&
                   _messageList[index + 1].sender.nickname != "pochako") {
                 _isNextSenderRight = true;
+              } else if (index == _messageList.length - 1) {
+                _isNextSenderRight = true;
               } else {
                 _isNextSenderRight = false;
               }
