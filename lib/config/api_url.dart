@@ -6,6 +6,7 @@ class AppUrl {
 
   static const _stageUrl = "$_apiBaseUrl/stages";
   static const _talkUrl = "$_apiBaseUrl/talks";
+  static const videoUrl = "$_apiBaseUrl/videos";
 
   // 로그인 & 회원가입
   static const signInSignUpUrl = "$_apiBaseUrl/auth/login?type=kakao";

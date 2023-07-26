@@ -21,14 +21,12 @@ class StageTalkProviderImpl implements StageTalkProvider {
 
     var dio = Dio();
     try {
-      print("mmmm response: mmmmm");
       dio.options.headers = {
         "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
       };
       dio.options.contentType = "application/json";
       var response = await dio.get(
           '${AppUrl.stageTalkUrl}?page=${request.page}&size=${request.size}');
-      print("mmmm response: ${response.data['data']}");
 
       return BaseResponse<StageTalkMessageResponse>.fromJson(response.data,
           StageTalkMessageResponse.fromJson(response.data['data']));
