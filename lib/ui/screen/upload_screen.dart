@@ -111,12 +111,12 @@ class _UploadScreenState extends State<UploadScreen> {
                       child: Container(
                         height: 40,
                         width: double.infinity,
-                        padding: const EdgeInsets.only(left: 14),
+                        padding: const EdgeInsets.fromLTRB(14, 0, 0, 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: Colors.white,
-                            width: 2.5,
+                            width: 1,
                           ),
                         ),
                         child: TextField(
