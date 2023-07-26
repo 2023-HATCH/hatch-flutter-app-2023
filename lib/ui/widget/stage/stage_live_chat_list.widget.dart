@@ -1,65 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:pocket_pose/data/entity/response/stage_talk_message_response.dart';
+import 'package:pocket_pose/data/entity/request/stage_talk_message_request.dart';
+import 'package:pocket_pose/data/remote/provider/stage_talk_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/ui/widget/stage/talk_list_item_widget.dart';
-
-final talkListString = {
-  "page": 0,
-  "size": 5,
-  "messeges": [
-    {
-      "messageId": "1",
-      "content": "야~~",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "messageId": "2",
-      "content": "우와~~",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "messageId": "3",
-      "content": "야~~",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "messageId": "4",
-      "content": "멋지다아~~",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "messageId": "5",
-      "content": "굿~~",
-      "sender": {
-        "userId": "22",
-        // "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-  ]
-};
 
 class StageLiveChatListWidget extends StatefulWidget {
   const StageLiveChatListWidget({super.key});
@@ -72,17 +16,19 @@ class StageLiveChatListWidget extends StatefulWidget {
 class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
   List<StageTalkListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
+  final _provider = StageTalkProviderImpl();
 
   @override
   void initState() {
     super.initState();
+    getTalkMessage();
+  }
 
-    //이전 채팅 목록 가져오기
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        var talkListJson = StageTalkMessageResponse.fromJson(talkListString);
-        _messageList = talkListJson.messeges;
-      });
+  void getTalkMessage() async {
+    var result = await _provider
+        .getTalkMessages(StageTalkMessageRequest(page: 0, size: 3));
+    setState(() {
+      _messageList = result.data.messages ?? [];
     });
   }
 

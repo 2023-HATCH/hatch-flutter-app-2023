@@ -11,8 +11,8 @@ StageTalkMessageResponse _$StageTalkMessageResponseFromJson(
     StageTalkMessageResponse(
       page: json['page'] as int,
       size: json['size'] as int,
-      messeges: (json['messeges'] as List<dynamic>)
-          .map((e) => StageTalkListItem.fromJson(e as Map<String, dynamic>))
+      messages: (json['messages'] as List<dynamic>?)
+          ?.map((e) => StageTalkListItem.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -21,5 +21,5 @@ Map<String, dynamic> _$StageTalkMessageResponseToJson(
     <String, dynamic>{
       'page': instance.page,
       'size': instance.size,
-      'messeges': instance.messeges,
+      'messages': instance.messages,
     };
