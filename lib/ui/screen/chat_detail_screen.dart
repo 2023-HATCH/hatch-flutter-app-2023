@@ -258,6 +258,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             labelStyle: TextStyle(color: AppColor.grayColor4),
                             border: InputBorder.none,
                             suffixIcon: TextButton(
+                                style: TextButton.styleFrom(
+                                    splashFactory: NoSplash.splashFactory),
                                 onPressed: () {
                                   _textController.clear();
                                   setState(() {

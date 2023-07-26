@@ -69,7 +69,7 @@ class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
               begin: Alignment.center,
               end: Alignment.topCenter,
               colors: [Colors.white, Colors.white.withOpacity(0.02)],
-              stops: const [0.8, 1],
+              stops: const [0.2, 1],
             ).createShader(bounds);
           },
           child: ListView.separated(
