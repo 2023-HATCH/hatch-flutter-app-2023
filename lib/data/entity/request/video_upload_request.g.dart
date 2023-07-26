@@ -6,14 +6,16 @@ part of 'video_upload_request.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-VideoUploadResuest _$VideoUploadResuestFromJson(Map<String, dynamic> json) =>
-    VideoUploadResuest(
+VideoUploadRequest _$VideoUploadRequestFromJson(Map<String, dynamic> json) =>
+    VideoUploadRequest(
       title: json['title'] as String,
       tags: json['tags'] as String,
+      videoPath: json['videoPath'] as String,
     );
 
-Map<String, dynamic> _$VideoUploadResuestToJson(VideoUploadResuest instance) =>
+Map<String, dynamic> _$VideoUploadRequestToJson(VideoUploadRequest instance) =>
     <String, dynamic>{
       'title': instance.title,
       'tags': instance.tags,
+      'videoPath': instance.videoPath,
     };
