@@ -1,5 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:pocket_pose/data/entity/response/stage_talk_message_response.dart';
+import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
+import 'package:pocket_pose/ui/widget/stage/talk_list_item_widget.dart';
+
+final talkListString = {
+  "page": 0,
+  "size": 5,
+  "messeges": [
+    {
+      "messageId": "1",
+      "content": "야~~",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23 11:58:20.551705"
+    },
+    {
+      "messageId": "2",
+      "content": "우와~~",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23 11:58:20.551705"
+    },
+    {
+      "messageId": "3",
+      "content": "야~~",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23 11:58:20.551705"
+    },
+    {
+      "messageId": "4",
+      "content": "멋지다아~~",
+      "sender": {
+        "userId": "22",
+        "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23 11:58:20.551705"
+    },
+    {
+      "messageId": "5",
+      "content": "굿~~",
+      "sender": {
+        "userId": "22",
+        // "profileImg": "assets/images/chat_user_2.png",
+        "nickname": "pochako"
+      },
+      "createdAt": "2023-07-23 11:58:20.551705"
+    },
+  ]
+};
 
 class StageLiveChatListWidget extends StatefulWidget {
   const StageLiveChatListWidget({super.key});
@@ -10,7 +70,7 @@ class StageLiveChatListWidget extends StatefulWidget {
 }
 
 class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
-  final List<String> _messageList = [];
+  List<StageTalkListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -20,7 +80,8 @@ class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
     //이전 채팅 목록 가져오기
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _messageList.addAll(['a', 'b', 'c', 'd', 'e', 'f', 'g', '1', '2', '3']);
+        var talkListJson = StageTalkMessageResponse.fromJson(talkListString);
+        _messageList = talkListJson.messeges;
       });
     });
   }
@@ -48,7 +109,7 @@ class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
     return _buildStageChatList(_messageList);
   }
 
-  SingleChildScrollView _buildStageChatList(List<String> entries) {
+  SingleChildScrollView _buildStageChatList(List<StageTalkListItem> entries) {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
@@ -80,37 +141,7 @@ class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
                 return const SizedBox(height: 12);
               },
               itemBuilder: (BuildContext context, int index) {
-                return Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: Image.asset(
-                        'assets/images/home_profile_1.jpg',
-                        width: 35,
-                        height: 35,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 12,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'nickname ${entries[index]}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          'content ${entries[index]}',
-                          style: const TextStyle(color: Colors.white),
-                        )
-                      ],
-                    )
-                  ],
-                );
+                return TalkListItemWidget(talk: entries[index]);
               }),
         ),
       ),
