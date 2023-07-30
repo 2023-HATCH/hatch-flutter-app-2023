@@ -29,9 +29,25 @@ class VideoUserInfoFrame extends StatelessWidget {
                   },
                   child: Row(children: <Widget>[
                     ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Image.asset(_videoPlayProvider.profiles[index],
-                            width: 35)),
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image.network(
+                        _videoPlayProvider.profiles[index],
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.error),
+                        fit: BoxFit.fill,
+                        width: 35,
+                        height: 35,
+                      ),
+                    ),
+
+                    // Image.asset(_videoPlayProvider.profiles[index],
+                    //     width: 35)),
                     const Padding(padding: EdgeInsets.only(left: 8)),
                     Text(
                       _videoPlayProvider.nicknames[index],

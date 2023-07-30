@@ -7,24 +7,24 @@ part 'video_data.g.dart';
 class VideoData {
   final String uuid;
   final String title;
-  final String tags;
+  final String tag;
   final UserData user;
-  final String url;
+  final String videoUrl;
   final int likeCount;
   final int commentCount;
   final int length;
-  final DateTime createdTime;
+  final DateTime createdAt;
 
   const VideoData({
     required this.uuid,
     required this.title,
-    required this.tags,
+    required this.tag,
     required this.user,
-    required this.url,
+    required this.videoUrl,
     required this.likeCount,
     required this.commentCount,
     required this.length,
-    required this.createdTime,
+    required this.createdAt,
   });
 
   factory VideoData.fromJson(Map<String, dynamic> json) =>

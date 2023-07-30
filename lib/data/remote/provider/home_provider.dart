@@ -8,11 +8,15 @@ class HomeProvider extends ChangeNotifier {
 
   HomeVideosResponse? get response => _response;
 
-  Future<void> getVideo(HomeVideosRequest homeVideosRequest) async {
+  Future<void> getVideos(HomeVideosRequest homeVideosRequest) async {
     try {
       final repositoryResponse =
           await HomeRepository().getVideos(homeVideosRequest);
       _response = repositoryResponse;
+
+      debugPrint('새 비디오 repositoryResponse $repositoryResponse');
+      debugPrint(
+          '새 비디오 repositoryResponse ${repositoryResponse.videoList.first.tag}');
 
       notifyListeners();
     } catch (e) {

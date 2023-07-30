@@ -20,18 +20,21 @@ class HomeRepository {
     };
 
     final response = await http.get(url, headers: headers);
-    debugPrint("response: ${response.body}");
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("홈 영상 조회 성공! json: $json");
+      debugPrint("홈 비디오 조회 성공! json: $json");
 
-      final List<dynamic> videoListJson = json['videoList'];
+      final List<dynamic> videoListJson = json['data']['videoList'];
+      debugPrint("홈 비디오 조회 성공! videoListJson: $videoListJson");
+
       final List<VideoData> videoList = videoListJson
           .map((videoJson) => VideoData.fromJson(videoJson))
           .toList();
 
-      final bool isLast = json['isLast'];
+      debugPrint("홈 비디오 조회 성공! videoList: $videoList");
+
+      final bool isLast = json['data']['isLast'];
 
       return HomeVideosResponse(
         videoList: videoList,

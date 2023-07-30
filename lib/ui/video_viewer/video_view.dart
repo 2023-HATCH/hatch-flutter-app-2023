@@ -25,26 +25,59 @@ class _VideoViewState extends State<VideoView>
 
   late VideoPlayProvider videoPlayProvider;
 
+  int _currentPage = -1;
+  final int _pageSize = 2;
+
   @override
   void initState() {
     super.initState();
     videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.screenName == 'home') {
+        _loadMoreVideos(); // 최초에도 비디오 로드
+      } else if (widget.screenName == 'my') {
+      } else {}
       videoPlayProvider.setVideo();
     });
+  }
 
-    if (widget.screenName == 'home') {
-      HomeProvider homeProvider;
-      homeProvider = Provider.of<HomeProvider>(context, listen: false);
-      homeProvider.getVideo(const HomeVideosRequest(page: 0, size: 10));
-    } else if (widget.screenName == 'my') {
-    } else {}
+  Future<void> _loadMoreVideos() async {
+    try {
+      final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+      final nextPage = _currentPage + 1;
+      homeProvider
+          .getVideos(HomeVideosRequest(page: nextPage, size: _pageSize))
+          .then((value) {
+        final newVideos = homeProvider.response?.videoList;
+        debugPrint('새 비디오들: ${newVideos!.length.toString()}');
+
+        if (newVideos.isNotEmpty) {
+          setState(() {
+            videoPlayProvider.addVideos(newVideos);
+            _currentPage = nextPage;
+          });
+        }
+      });
+    } catch (e) {
+      // Handle error if needed
+    } finally {}
   }
 
   void onPageChanged(int index) {
     setState(() {
       videoPlayProvider.pauseVideo();
       videoPlayProvider.currentIndex = index;
+      if (videoPlayProvider.currentIndex >= _pageSize) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          // if (widget.screenName == 'home') {
+          //   _loadMoreVideos();
+          //   debugPrint('비디오 링크 길이: ${videoPlayProvider.videoLinks.length}');
+          // } else if (widget.screenName == 'my') {
+          // } else {}
+          videoPlayProvider.setVideo();
+        });
+      }
       videoPlayProvider.setVideo();
     });
   }
@@ -52,54 +85,58 @@ class _VideoViewState extends State<VideoView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Stack(children: <Widget>[
-      PageView.builder(
-        controller: PageController(
-          initialPage: videoPlayProvider.currentIndex, // 시작 페이지
+    return Stack(
+      children: <Widget>[
+        PageView.builder(
+          controller: videoPlayProvider.pageController,
+          scrollDirection: Axis.vertical,
+          allowImplicitScrolling: true,
+          itemCount: 200, // itemCount를 변경하도록 수정
+          itemBuilder: (context, index) {
+            if (index < videoPlayProvider.videoLinks.length) {
+              // 현재 비디오 인덱스 안에 있는 경우
+              return FutureBuilder(
+                future: videoPlayProvider.videoPlayerFutures[index],
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done ||
+                      (snapshot.connectionState == ConnectionState.waiting &&
+                          videoPlayProvider.loading)) {
+                    // 비디오가 준비된 경우
+                    videoPlayProvider.loading = true;
+                    return buildVideoPlayer(index); // 비디오 플레이어 생성
+                  } else {
+                    return const MusicSpinner(); // 비디오 로딩 중
+                  }
+                },
+              );
+            } else {
+              // 더미 공간으로, 무한 스크롤을 위한 추가 공간
+              return Container();
+            }
+          },
+          onPageChanged: onPageChanged,
         ),
-        scrollDirection: Axis.vertical,
-        allowImplicitScrolling: true,
-        itemCount: videoPlayProvider.videoLinks.length,
-        itemBuilder: (context, index) {
-          return FutureBuilder(
-            future: videoPlayProvider.videoPlayerFutures[index],
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done ||
-                  (snapshot.connectionState == ConnectionState.waiting &&
-                      videoPlayProvider.loading)) {
-                // 데이터가 수신되었을 때
-                videoPlayProvider.loading = true;
+      ],
+    );
+  }
 
-                return Stack(children: <Widget>[
-                  GestureDetector(
-                    // 비디오 클릭 시 영상 정지/재생
-                    onTap: () {
-                      if (videoPlayProvider
-                          .controllers[index].value.isPlaying) {
-                        videoPlayProvider.pauseVideo();
-                      } else {
-                        // 만약 영상 일시 중지 상태였다면, 재생.
-                        videoPlayProvider.playVideo();
-                      }
-                    },
-                    child: VideoPlayer(videoPlayProvider.controllers[index]),
-                  ),
-                  // like, chat, share, progress
-                  VideoRightFrame(
-                    index: index,
-                  ),
-                  // profile, nicname, content
-                  VideoUserInfoFrame(index: index),
-                ]);
-              } else {
-                // 만약 VideoPlayerController가 여전히 초기화 중이라면, 포포 로딩 스피너를 보여줌.
-                return const MusicSpinner();
-              }
-            },
-          );
-        },
-        onPageChanged: onPageChanged,
-      ),
-    ]);
+  Widget buildVideoPlayer(int index) {
+    return Stack(
+      children: <Widget>[
+        GestureDetector(
+          onTap: () {
+            // 비디오 클릭 시 영상 정지/재생
+            if (videoPlayProvider.controllers[index].value.isPlaying) {
+              videoPlayProvider.pauseVideo();
+            } else {
+              videoPlayProvider.playVideo();
+            }
+          },
+          child: VideoPlayer(videoPlayProvider.controllers[index]),
+        ),
+        VideoRightFrame(index: index),
+        VideoUserInfoFrame(index: index),
+      ],
+    );
   }
 }

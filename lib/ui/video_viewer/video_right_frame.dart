@@ -41,7 +41,7 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 2)),
                   Text(
-                    _videoPlayProvider.chats[widget.index],
+                    '${_videoPlayProvider.chats[widget.index]}',
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ],
