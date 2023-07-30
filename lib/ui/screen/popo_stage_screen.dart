@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
+import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
@@ -20,7 +22,15 @@ import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
-enum StageStage { waitState, catchState, playState, resultState }
+enum StageType {
+  WAIT, // only front
+  CATCH_START,
+  CATCH_END,
+  PLAY_START,
+  MVP_START,
+  USER_COUNT,
+  STAGE_ROUTINE_STOP
+}
 
 class PoPoStageScreen extends StatefulWidget {
   const PoPoStageScreen({super.key, required this.getIndex()});
@@ -34,7 +44,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   final int _userCount = 1;
   late VideoPlayProvider _videoPlayProvider;
   final StageProvider _stageProvider = StageProviderImpl();
-  StageStage _stageStage = StageStage.waitState;
+  StageType _stageType = StageType.WAIT;
   StompClient? stompClient;
 
   @override
@@ -57,7 +67,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               appBar: buildAppBar(context),
               body: Stack(
                 children: [
-                  _buildStageView(_stageStage),
+                  _buildStageView(_stageType),
                   const Positioned(
                     bottom: 68,
                     left: 0,
@@ -118,8 +128,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         destination: AppUrl.subscribeStageUrl,
         callback: (StompFrame frame) {
           if (frame.body != null) {
-            print("mmm socket 구독!!! ${frame.body}");
-            setState(() {});
+            var socketResponse =
+                BaseSocketResponse.fromJson(jsonDecode(frame.body.toString()));
+            setStageType(socketResponse.type);
+            print("mmm socket base: ${socketResponse.type}");
           }
         });
   }
@@ -175,15 +187,15 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  void setStageState(StageStage newStageStage) {
+  void setStageType(StageType newStageType) {
     if (mounted) {
       setState(() {
-        _stageStage = newStageStage;
+        _stageType = newStageType;
       });
     }
   }
 
-  bool getIsResultState() => _stageStage == StageStage.resultState;
+  bool getIsResultState() => _stageType == StageType.MVP_START;
 
   Container _buildUserCountWidget() {
     return Container(
@@ -305,20 +317,17 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         });
   }
 
-  Widget _buildStageView(StageStage state) {
-    switch (state) {
-      case StageStage.waitState:
-        return (_userCount < 3)
-            ? const PoPoWaitView()
-            : PoPoCatchView(setStageState: setStageState);
-      case StageStage.catchState:
-        return PoPoCatchView(setStageState: setStageState);
-      case StageStage.playState:
-        return PoPoPlayView(
-            setStageState: setStageState, isResultState: getIsResultState());
-      case StageStage.resultState:
-        return PoPoResultView(
-            setStageState: setStageState, isResultState: getIsResultState());
+  Widget _buildStageView(StageType type) {
+    switch (type) {
+      case StageType.STAGE_ROUTINE_STOP:
+      case StageType.WAIT:
+        return const PoPoWaitView();
+      case StageType.CATCH_START:
+        return const PoPoCatchView();
+      case StageType.PLAY_START:
+        return PoPoPlayView(isResultState: getIsResultState());
+      case StageType.MVP_START:
+        return PoPoResultView(isResultState: getIsResultState());
       default:
         return const PoPoWaitView();
     }
