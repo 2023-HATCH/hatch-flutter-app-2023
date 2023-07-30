@@ -12,12 +12,12 @@ class BaseResponse<T> {
       required this.message,
       required this.data});
 
-  factory BaseResponse.fromJson(Map<String, dynamic> json, BaseObject target) {
+  factory BaseResponse.fromJson(Map<String, dynamic> json, BaseObject? target) {
     return BaseResponse(
       timeStamp: json['timeStamp'],
       code: json['code'],
       message: json['message'],
-      data: target.fromJson(json['data']),
+      data: target?.fromJson(json['data']),
     );
   }
 }

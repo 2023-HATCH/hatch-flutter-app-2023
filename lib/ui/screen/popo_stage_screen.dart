@@ -7,6 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
+import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
+import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
@@ -41,7 +43,8 @@ class PoPoStageScreen extends StatefulWidget {
 }
 
 class _PoPoStageScreenState extends State<PoPoStageScreen> {
-  final int _userCount = 1;
+  int _userCount = 1;
+  bool _isEnter = false;
   late VideoPlayProvider _videoPlayProvider;
   final StageProvider _stageProvider = StageProviderImpl();
   StageType _stageType = StageType.WAIT;
@@ -102,6 +105,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       _videoPlayProvider.playVideo();
     }
     stompClient?.deactivate();
+    if (_isEnter) {
+      _stageProvider.getStageExit();
+      _isEnter = false;
+    }
 
     super.dispose();
   }
@@ -119,19 +126,28 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       },
       stompConnectHeaders: {'x-access-token': token},
       webSocketConnectHeaders: {'x-access-token': token},
+      onDebugMessage: (p0) => print("mmm socket: $p0"),
     ));
     stompClient!.activate();
   }
 
   void _onConnect(StompFrame frame, String token) {
+    // 입장 요청
+    if (!_isEnter) {
+      _stageProvider
+          .getStageEnter(StageEnterRequest(page: 0, size: 10))
+          .then((value) => _userCount = value.data.userCount);
+      _isEnter = true;
+    }
+    // 연결 되면 구독
     stompClient?.subscribe(
         destination: AppUrl.subscribeStageUrl,
         callback: (StompFrame frame) {
           if (frame.body != null) {
-            var socketResponse =
-                BaseSocketResponse.fromJson(jsonDecode(frame.body.toString()));
-            setStageType(socketResponse.type);
-            print("mmm socket base: ${socketResponse.type}");
+            // stage 상태 변경
+            var socketResponse = BaseSocketResponse.fromJson(
+                jsonDecode(frame.body.toString()), null);
+            setStageType(socketResponse, frame);
           }
         });
   }
@@ -187,11 +203,24 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  void setStageType(StageType newStageType) {
-    if (mounted) {
-      setState(() {
-        _stageType = newStageType;
-      });
+  void setStageType(BaseSocketResponse response, StompFrame frame) {
+    switch (response.type) {
+      case StageType.USER_COUNT:
+        var socketResponse = BaseSocketResponse<UserCountResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            UserCountResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        setState(() {
+          _userCount = socketResponse.data!.userCount;
+        });
+
+        break;
+      default:
+        if (mounted) {
+          setState(() {
+            _stageType = response.type;
+          });
+        }
     }
   }
 
