@@ -42,7 +42,7 @@ class PoPoStageScreen extends StatefulWidget {
 }
 
 class _PoPoStageScreenState extends State<PoPoStageScreen> {
-  final int _userCount = 1;
+  int _userCount = 1;
   bool _isEnter = false;
   late VideoPlayProvider _videoPlayProvider;
   final StageProvider _stageProvider = StageProviderImpl();
@@ -104,7 +104,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       _videoPlayProvider.playVideo();
     }
     stompClient?.deactivate();
-    _stageProvider.getStageExit();
+    if (_isEnter) {
+      _stageProvider.getStageExit();
+      _isEnter = false;
+    }
 
     super.dispose();
   }
@@ -122,22 +125,24 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       },
       stompConnectHeaders: {'x-access-token': token},
       webSocketConnectHeaders: {'x-access-token': token},
+      onDebugMessage: (p0) => print("mmm socket: $p0"),
     ));
     stompClient!.activate();
   }
 
   void _onConnect(StompFrame frame, String token) {
+    // 입장 요청
+    if (!_isEnter) {
+      _stageProvider
+          .getStageEnter(StageEnterRequest(page: 0, size: 10))
+          .then((value) => _userCount = value.data.userCount);
+      _isEnter = true;
+    }
     // 연결 되면 구독
     stompClient?.subscribe(
         destination: AppUrl.subscribeStageUrl,
         callback: (StompFrame frame) {
           if (frame.body != null) {
-            // 입장 요청
-            if (!_isEnter) {
-              _stageProvider
-                  .getStageEnter(StageEnterRequest(page: 0, size: 10));
-              _isEnter = true;
-            }
             // stage 상태 변경
             var socketResponse =
                 BaseSocketResponse.fromJson(jsonDecode(frame.body.toString()));
