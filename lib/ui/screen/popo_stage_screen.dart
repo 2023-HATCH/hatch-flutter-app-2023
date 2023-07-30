@@ -199,84 +199,85 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           return BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
             child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                side: const BorderSide(
-                  color: Colors.white,
-                  width: 1.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: const BorderSide(
+                    color: Colors.white,
+                    width: 1.0,
+                  ),
                 ),
-              ),
-              backgroundColor: Colors.white.withOpacity(0.3),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: Container()),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Text(
-                      '참여자 목록',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                backgroundColor: Colors.white.withOpacity(0.3),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(child: Container()),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 20),
+                      child: Text(
+                        '참여자 목록',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
                         color: Colors.white,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  Expanded(child: Container()),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Icon(
-                      Icons.close,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              content: SizedBox(
-                width: 265,
-                height: 365,
-                child: GridView.builder(
-                  itemCount: userList.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: (userList.elementAt(index).profileImg == null)
-                              ? Image.asset(
-                                  'assets/images/charactor_popo_default.png',
-                                  width: 58,
-                                  height: 58,
-                                )
-                              : Image.network(
-                                  userList.elementAt(index).profileImg!,
-                                  fit: BoxFit.cover,
-                                  width: 58,
-                                  height: 58,
-                                ),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          userList.elementAt(index).nickname,
-                          style: const TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                  ],
                 ),
-              ),
-            ),
+                content: SizedBox(
+                  width: 265,
+                  height: 365,
+                  child: GridView.builder(
+                    itemCount: userList.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child:
+                                (userList.elementAt(index).profileImg == null)
+                                    ? Image.asset(
+                                        'assets/images/charactor_popo_default.png',
+                                        width: 58,
+                                        height: 58,
+                                      )
+                                    : Image.network(
+                                        userList.elementAt(index).profileImg!,
+                                        fit: BoxFit.cover,
+                                        width: 58,
+                                        height: 58,
+                                      ),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Text(
+                            userList.elementAt(index).nickname,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                )),
           );
         });
   }

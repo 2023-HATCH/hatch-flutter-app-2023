@@ -25,8 +25,6 @@ class StageProviderImpl implements StageProvider {
       dio.options.contentType = "application/json";
       var response = await dio.get(AppUrl.stageUserListUrl);
 
-      print('mmm resp: ${response.data}');
-
       return BaseResponse<StageUserListResponse>.fromJson(
           response.data, StageUserListResponse.fromJson(response.data['data']));
     } catch (e) {
