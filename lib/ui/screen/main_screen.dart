@@ -30,8 +30,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-    _videoPlayProvider.initializeVideoPlayerFutures();
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
 
     super.initState();

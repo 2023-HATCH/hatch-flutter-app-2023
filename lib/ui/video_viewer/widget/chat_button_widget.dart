@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:provider/provider.dart';
 
 class ChatButtonWidget extends StatefulWidget {
@@ -80,6 +82,8 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    UserData user = _videoPlayProvider.videoList[widget.index].user;
+    VideoData video = _videoPlayProvider.videoList[widget.index];
 
     return InkWell(
         onTap: () => {
@@ -110,7 +114,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                             foregroundColor: Colors.black,
                             centerTitle: true,
                             title: Text(
-                              '댓글 ${_videoPlayProvider.chats[widget.index]}개',
+                              '댓글 ${video.commentCount}개',
                               style: const TextStyle(fontSize: 14),
                             ),
                           ),
@@ -217,13 +221,17 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                       const Padding(
                                           padding: EdgeInsets.only(left: 18)),
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(50),
-                                        child: Image.asset(
-                                          _videoPlayProvider
-                                              .profiles[widget.index],
-                                          width: 40,
-                                        ),
-                                      ),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          child: user.profileImg != null
+                                              ? Image.asset(
+                                                  user.profileImg!,
+                                                  width: 40,
+                                                )
+                                              : Image.asset(
+                                                  'assets/images/app_logo.png', //추후에 포포 기본 이미지로 변경
+                                                  width: 40,
+                                                )),
                                       const Padding(
                                           padding: EdgeInsets.only(left: 18)),
                                       Expanded(
@@ -248,7 +256,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                                   cursorColor: Colors.white,
                                                   decoration: InputDecoration(
                                                     hintText:
-                                                        '${_videoPlayProvider.nicknames[widget.index]}(으)로 댓글 달기...',
+                                                        '${user.nickname}(으)로 댓글 달기...',
                                                     hintStyle: const TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 14),

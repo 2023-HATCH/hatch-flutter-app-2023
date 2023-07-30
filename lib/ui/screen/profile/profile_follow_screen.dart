@@ -90,7 +90,7 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _videoPlayProvider.nicknames[widget.index],
+          _videoPlayProvider.videoList[widget.index].user.nickname,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,

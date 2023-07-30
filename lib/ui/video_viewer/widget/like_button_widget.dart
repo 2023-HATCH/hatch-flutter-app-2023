@@ -22,7 +22,7 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
 
     return LikeButton(
       size: 25,
-      likeCount: _videoPlayProvider.likes[widget.index],
+      likeCount: _videoPlayProvider.videoList[widget.index].likeCount,
       countPostion: CountPostion.bottom,
       countDecoration: (count, likeCount) {
         return Text(
