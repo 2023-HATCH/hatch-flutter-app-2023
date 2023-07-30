@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
-import 'package:pocket_pose/data/entity/response/stage_user_list_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
+import 'package:pocket_pose/domain/provider/stage_provider.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
@@ -12,77 +14,6 @@ import 'package:pocket_pose/ui/view/popo_wait_view.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_list.widget.dart';
 import 'package:provider/provider.dart';
-
-final userListItem = {
-  "list": [
-    {
-      "userId": "1",
-      "profileImg": "assets/images/home_profile_1.jpg",
-      "nickname": "나비"
-    },
-    {
-      "userId": "2",
-      "profileImg": "assets/images/home_profile_2.jpg",
-      "nickname": "고양이"
-    },
-    {
-      "userId": "3",
-      "profileImg": "assets/images/home_profile_3.jpg",
-      "nickname": "네코"
-    },
-    {
-      "userId": "4",
-      "profileImg": "assets/images/home_profile_4.jpg",
-      "nickname": "냥코"
-    },
-    {
-      "userId": "5",
-      "profileImg": "assets/images/home_profile_5.jpg",
-      "nickname": "멍멍이"
-    },
-    {
-      "userId": "6",
-      "profileImg": "assets/images/home_profile_1.jpg",
-      "nickname": "강아지"
-    },
-    {
-      "userId": "7",
-      "profileImg": "assets/images/home_profile_2.jpg",
-      "nickname": "개"
-    },
-    {
-      "userId": "8",
-      "profileImg": "assets/images/home_profile_3.jpg",
-      "nickname": "포챠코"
-    },
-    {
-      "userId": "9",
-      "profileImg": "assets/images/home_profile_4.jpg",
-      "nickname": "왕왕이"
-    },
-    {
-      "userId": "10",
-      "profileImg": "assets/images/home_profile_5.jpg",
-      "nickname": "컹컹이"
-    },
-    {
-      "userId": "11",
-      "profileImg": "assets/images/home_profile_1.jpg",
-      "nickname": "왈왈이"
-    },
-    {
-      "userId": "12",
-      "profileImg": "assets/images/home_profile_2.jpg",
-      "nickname": "바둑이"
-    },
-    {
-      "userId": "13",
-      "profileImg": "assets/images/home_profile_3.jpg",
-      "nickname": "마리"
-    },
-  ]
-};
-StageUserListResponse? userList;
 
 enum StageStage { waitState, catchState, playState, resultState }
 
@@ -99,6 +30,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _count = 1;
   late Timer _timer;
   late VideoPlayProvider _videoPlayProvider;
+  final StageProvider _stageProvider = StageProviderImpl();
   StageStage _stageStage = StageStage.waitState;
 
   @override
@@ -233,8 +165,11 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     return Container(
       margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
       child: OutlinedButton.icon(
-        onPressed: () {
-          _showUserListDialog();
+        onPressed: () async {
+          var response = await _stageProvider.getUserList();
+          print("mmm rrrr: ${response.data}");
+
+          _showUserListDialog(response.data.list ?? []);
         },
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
@@ -256,9 +191,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  Future<dynamic> _showUserListDialog() {
-    userList = StageUserListResponse.fromJson(userListItem);
-
+  Future<dynamic> _showUserListDialog(List<StageUserListItem> userList) {
     return showDialog(
         context: context,
         barrierColor: Colors.transparent,
@@ -275,7 +208,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               ),
               backgroundColor: Colors.white.withOpacity(0.3),
               title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Expanded(child: Container()),
                   const Padding(
                     padding: EdgeInsets.only(left: 20),
                     child: Text(
@@ -288,6 +223,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
+                  Expanded(child: Container()),
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pop();
@@ -304,7 +240,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 width: 265,
                 height: 365,
                 child: GridView.builder(
-                  itemCount: userList!.list!.length,
+                  itemCount: userList.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                   ),
@@ -313,18 +249,24 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(50),
-                          child: Image.asset(
-                            userList!.list!.elementAt(index).profileImg!,
-                            width: 58,
-                            height: 58,
-                            fit: BoxFit.cover,
-                          ),
+                          child: (userList.elementAt(index).profileImg == null)
+                              ? Image.asset(
+                                  'assets/images/charactor_popo_default.png',
+                                  width: 58,
+                                  height: 58,
+                                )
+                              : Image.network(
+                                  userList.elementAt(index).profileImg!,
+                                  fit: BoxFit.cover,
+                                  width: 58,
+                                  height: 58,
+                                ),
                         ),
                         const SizedBox(
                           height: 4,
                         ),
                         Text(
-                          userList!.list!.elementAt(index).nickname,
+                          userList.elementAt(index).nickname,
                           style: const TextStyle(
                             fontSize: 12,
                           ),

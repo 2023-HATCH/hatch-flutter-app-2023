@@ -12,13 +12,18 @@ class TalkListItemWidget extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(50),
-          child: Image.asset(
-            (talk.sender.profileImg == null)
-                ? 'assets/images/charactor_popo_default.png'
-                : talk.sender.profileImg!,
-            width: 35,
-            height: 35,
-          ),
+          child: (talk.sender.profileImg == null)
+              ? Image.asset(
+                  'assets/images/charactor_popo_default.png',
+                  width: 35,
+                  height: 35,
+                )
+              : Image.network(
+                  talk.sender.profileImg!,
+                  fit: BoxFit.cover,
+                  width: 35,
+                  height: 35,
+                ),
         ),
         const SizedBox(
           width: 12,

@@ -4,7 +4,7 @@ class AppUrl {
   // 인공지능 서버
   static const _aiBaseUrl = "http://43.200.133.86:5000";
 
-  static const _stageUrl = "$_apiBaseUrl/stages";
+  static const _stageUrl = "$_apiBaseUrl/stage";
   static const _talkUrl = "$_apiBaseUrl/talks";
   static const videoUrl = "$_apiBaseUrl/videos";
 
@@ -13,6 +13,7 @@ class AppUrl {
 
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";
+  static const stageUserListUrl = "$_stageUrl/users";
   static const stageTalkUrl = "$_talkUrl/messages";
 
   // 스켈레톤 정확도 확인

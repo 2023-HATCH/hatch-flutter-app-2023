@@ -9,7 +9,7 @@ part of 'stage_user_list_response.dart';
 StageUserListResponse _$StageUserListResponseFromJson(
         Map<String, dynamic> json) =>
     StageUserListResponse(
-      list: (json['list'] as List<dynamic>?)
+      (json['list'] as List<dynamic>?)
           ?.map((e) => StageUserListItem.fromJson(e as Map<String, dynamic>))
           .toList(),
     );

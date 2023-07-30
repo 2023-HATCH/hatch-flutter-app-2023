@@ -8,9 +8,9 @@ part of 'stage_user_list_item.dart';
 
 StageUserListItem _$StageUserListItemFromJson(Map<String, dynamic> json) =>
     StageUserListItem(
-      userId: json['userId'] as String,
-      nickname: json['nickname'] as String,
-      profileImg: json['profileImg'] as String?,
+      json['userId'] as String,
+      json['nickname'] as String,
+      json['profileImg'] as String?,
     );
 
 Map<String, dynamic> _$StageUserListItemToJson(StageUserListItem instance) =>
