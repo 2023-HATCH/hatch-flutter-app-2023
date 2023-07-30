@@ -17,6 +17,7 @@ class AppUrl {
   static const stageAccuracyUrl = "$_stageUrl/similarity";
   static const stageUserListUrl = "$_stageUrl/users";
   static const stageEnterUrl = "$_stageUrl/enter";
+  static const stageExitUrl = "$_stageUrl/exit"; // 임시 url
   static const stageTalkUrl = "$_talkUrl/messages";
 
   // 스켈레톤 정확도 확인

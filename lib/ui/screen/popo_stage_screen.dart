@@ -104,6 +104,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       _videoPlayProvider.playVideo();
     }
     stompClient?.deactivate();
+    _stageProvider.getStageExit();
 
     super.dispose();
   }
