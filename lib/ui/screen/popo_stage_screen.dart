@@ -100,41 +100,25 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
     String token = await storage.read(key: storageKey) ?? "";
-    print("mmm key: $token");
 
     stompClient = StompClient(
-      config: StompConfig(
-        url: AppUrl.webSocketUrl,
-        onConnect: (frame) {
-          _onConnect(frame, token);
-        },
-        stompConnectHeaders: {'x-access-token': token},
-        webSocketConnectHeaders: {'x-access-token': token},
-        onWebSocketError: (e) => print("mmm: $e"),
-        onStompError: (d) => print('mmm error stomp ${d.body}'),
-        onDisconnect: (f) => print('mmm 포포 퇴장'),
-      ),
-    );
-    stompClient?.activate();
+        config: StompConfig(
+      url: AppUrl.webSocketUrl,
+      onConnect: (frame) {
+        _onConnect(frame, token);
+      },
+      stompConnectHeaders: {'x-access-token': token},
+      webSocketConnectHeaders: {'x-access-token': token},
+    ));
+    stompClient!.activate();
   }
 
   void _onConnect(StompFrame frame, String token) {
-    print("mmm 포포 입장");
-    print("mmm ${frame.headers}");
-    print("mmm ${frame.binaryBody}");
-    print("mmm ${frame.body}");
-    print("mmm ${frame.command}");
-    print("mmm ${frame.hashCode}");
-
-    stompClient!.subscribe(
-        destination: '/topic/stage',
-        callback: (_) => {print("mmm print...tq")});
     stompClient?.subscribe(
-        destination: '/topic/stage', //AppUrl.subscribeStageUrl,
+        destination: AppUrl.subscribeStageUrl,
         callback: (StompFrame frame) {
-          print("mmm sbbbbb");
           if (frame.body != null) {
-            print("mmm suv");
+            print("mmm socket 구독!!! ${frame.body}");
             setState(() {});
           }
         });
@@ -207,7 +191,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       child: OutlinedButton.icon(
         onPressed: () async {
           var response = await _stageProvider.getUserList();
-          print("mmm rrrr: ${response.data}");
 
           _showUserListDialog(response.data.list ?? []);
         },
