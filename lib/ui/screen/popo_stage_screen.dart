@@ -8,6 +8,7 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
+import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
@@ -144,9 +145,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         callback: (StompFrame frame) {
           if (frame.body != null) {
             // stage 상태 변경
-            var socketResponse =
-                BaseSocketResponse.fromJson(jsonDecode(frame.body.toString()));
-            setStageType(socketResponse.type);
+            var socketResponse = BaseSocketResponse.fromJson(
+                jsonDecode(frame.body.toString()), null);
+            setStageType(socketResponse, frame);
           }
         });
   }
@@ -202,11 +203,24 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  void setStageType(StageType newStageType) {
-    if (mounted) {
-      setState(() {
-        _stageType = newStageType;
-      });
+  void setStageType(BaseSocketResponse response, StompFrame frame) {
+    switch (response.type) {
+      case StageType.USER_COUNT:
+        var socketResponse = BaseSocketResponse<UserCountResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            UserCountResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        setState(() {
+          _userCount = socketResponse.data!.userCount;
+        });
+
+        break;
+      default:
+        if (mounted) {
+          setState(() {
+            _stageType = response.type;
+          });
+        }
     }
   }
 
