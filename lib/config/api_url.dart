@@ -16,6 +16,7 @@ class AppUrl {
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";
   static const stageUserListUrl = "$_stageUrl/users";
+  static const stageEnterUrl = "$_stageUrl/enter";
   static const stageTalkUrl = "$_talkUrl/messages";
 
   // 스켈레톤 정확도 확인
