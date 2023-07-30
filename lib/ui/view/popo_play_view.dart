@@ -7,17 +7,13 @@ import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
-import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
 enum StagePlayScore { bad, good, great, excellent, perfect }
 
 // ml_kit_skeleton_custom_view
 class PoPoPlayView extends StatefulWidget {
-  const PoPoPlayView(
-      {Key? key, required this.setStageState, required this.isResultState})
-      : super(key: key);
-  final Function setStageState;
+  const PoPoPlayView({Key? key, required this.isResultState}) : super(key: key);
   final bool isResultState;
 
   @override
@@ -229,8 +225,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
                     textColor: Colors.white,
                     fontSize: 16.0,
                   ))
-              .then((_) => _inputLists.clear())
-              .then((_) => widget.setStageState(StageStage.resultState));
+              .then((_) => _inputLists.clear());
         }
       });
     }

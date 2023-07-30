@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stomp_dart_client/stomp.dart';
 
 class StageLiveChatBarWidget extends StatefulWidget {
-  const StageLiveChatBarWidget({super.key});
+  const StageLiveChatBarWidget({super.key, required this.stompClient});
+  final StompClient? stompClient;
 
   @override
   State<StageLiveChatBarWidget> createState() => _StageLiveChatBarWidgetState();
@@ -42,6 +44,12 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
   @override
   Widget build(BuildContext context) {
     return _buildInputArea(context);
+  }
+
+  _sendMessage() {
+    // widget.stompClient?.send(
+    //     destination: '/app/talks/messages',
+    //     body: json.encode({"content": "test"}));
   }
 
   Widget _buildInputArea(BuildContext context) {
@@ -88,6 +96,7 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                       border: InputBorder.none,
                     ),
                     textInputAction: TextInputAction.next,
+                    onSubmitted: _sendMessage(),
                   ),
                 ),
               ),

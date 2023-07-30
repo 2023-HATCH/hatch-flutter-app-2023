@@ -3,15 +3,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
-import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
 // ml_kit_skeleton_custom_view
 class PoPoResultView extends StatefulWidget {
-  const PoPoResultView(
-      {Key? key, required this.setStageState, required this.isResultState})
+  const PoPoResultView({Key? key, required this.isResultState})
       : super(key: key);
-  final Function setStageState;
   final bool isResultState;
 
   @override
@@ -177,7 +174,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
         // 노래 끝나면 대기 화면으로 이동
         if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
           _inputLists.clear();
-          widget.setStageState(StageStage.waitState);
         }
       });
     }

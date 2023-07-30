@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
+import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
@@ -14,8 +18,19 @@ import 'package:pocket_pose/ui/view/popo_wait_view.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_list.widget.dart';
 import 'package:provider/provider.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
 
-enum StageStage { waitState, catchState, playState, resultState }
+enum StageType {
+  WAIT, // only front
+  CATCH_START,
+  CATCH_END,
+  PLAY_START,
+  MVP_START,
+  USER_COUNT,
+  STAGE_ROUTINE_STOP
+}
 
 class PoPoStageScreen extends StatefulWidget {
   const PoPoStageScreen({super.key, required this.getIndex()});
@@ -26,12 +41,11 @@ class PoPoStageScreen extends StatefulWidget {
 }
 
 class _PoPoStageScreenState extends State<PoPoStageScreen> {
-  int _userCount = 1;
-  int _count = 1;
-  late Timer _timer;
+  final int _userCount = 1;
   late VideoPlayProvider _videoPlayProvider;
   final StageProvider _stageProvider = StageProviderImpl();
-  StageStage _stageStage = StageStage.waitState;
+  StageType _stageType = StageType.WAIT;
+  StompClient? stompClient;
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +67,18 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               appBar: buildAppBar(context),
               body: Stack(
                 children: [
-                  _buildStageView(_stageStage),
+                  _buildStageView(_stageType),
                   const Positioned(
                     bottom: 68,
                     left: 0,
                     right: 0,
                     child: StageLiveChatListWidget(),
                   ),
-                  const Positioned(
+                  Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: StageLiveChatBarWidget(),
+                    child: StageLiveChatBarWidget(stompClient: stompClient),
                   ),
                 ],
               ),
@@ -76,8 +90,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void initState() {
     super.initState();
-
-    _startTimer();
+    if (stompClient == null) {
+      _connectWebSocket();
+    }
   }
 
   @override
@@ -86,8 +101,52 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (widget.getIndex() == 0) {
       _videoPlayProvider.playVideo();
     }
+    stompClient?.deactivate();
+
     super.dispose();
   }
+
+  void _connectWebSocket() async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    stompClient = StompClient(
+        config: StompConfig(
+      url: AppUrl.webSocketUrl,
+      onConnect: (frame) {
+        _onConnect(frame, token);
+      },
+      stompConnectHeaders: {'x-access-token': token},
+      webSocketConnectHeaders: {'x-access-token': token},
+    ));
+    stompClient!.activate();
+  }
+
+  void _onConnect(StompFrame frame, String token) {
+    stompClient?.subscribe(
+        destination: AppUrl.subscribeStageUrl,
+        callback: (StompFrame frame) {
+          if (frame.body != null) {
+            var socketResponse =
+                BaseSocketResponse.fromJson(jsonDecode(frame.body.toString()));
+            setStageType(socketResponse.type);
+            print("mmm socket base: ${socketResponse.type}");
+          }
+        });
+  }
+
+  // void sendMessage() {
+  //   // setState(() {
+  //   if (stompClient != null) {
+  //     stompClient!.isActive
+  //         ? stompClient?.send(
+  //             destination: '/app/talks/messages',
+  //             body: json.encode({"content": "test"}))
+  //         : print("mmm error??");
+  //   }
+  //   // });
+  // }
 
   BoxDecoration buildBackgroundImage() {
     return BoxDecoration(
@@ -128,38 +187,15 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        if (_userCount >= 5) {
-          _stopTimer();
-
-          setState(() {
-            _stageStage = StageStage.catchState;
-          });
-        } else {
-          setState(() {
-            _count++;
-            _userCount = _count;
-          });
-        }
-      }
-    });
-  }
-
-  void _stopTimer() {
-    _timer.cancel();
-  }
-
-  void setStageState(StageStage newStageStage) {
+  void setStageType(StageType newStageType) {
     if (mounted) {
       setState(() {
-        _stageStage = newStageStage;
+        _stageType = newStageType;
       });
     }
   }
 
-  bool getIsResultState() => _stageStage == StageStage.resultState;
+  bool getIsResultState() => _stageType == StageType.MVP_START;
 
   Container _buildUserCountWidget() {
     return Container(
@@ -167,7 +203,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       child: OutlinedButton.icon(
         onPressed: () async {
           var response = await _stageProvider.getUserList();
-          print("mmm rrrr: ${response.data}");
 
           _showUserListDialog(response.data.list ?? []);
         },
@@ -282,20 +317,17 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         });
   }
 
-  Widget _buildStageView(StageStage state) {
-    switch (state) {
-      case StageStage.waitState:
-        return (_userCount < 3)
-            ? const PoPoWaitView()
-            : PoPoCatchView(setStageState: setStageState);
-      case StageStage.catchState:
-        return PoPoCatchView(setStageState: setStageState);
-      case StageStage.playState:
-        return PoPoPlayView(
-            setStageState: setStageState, isResultState: getIsResultState());
-      case StageStage.resultState:
-        return PoPoResultView(
-            setStageState: setStageState, isResultState: getIsResultState());
+  Widget _buildStageView(StageType type) {
+    switch (type) {
+      case StageType.STAGE_ROUTINE_STOP:
+      case StageType.WAIT:
+        return const PoPoWaitView();
+      case StageType.CATCH_START:
+        return const PoPoCatchView();
+      case StageType.PLAY_START:
+        return PoPoPlayView(isResultState: getIsResultState());
+      case StageType.MVP_START:
+        return PoPoResultView(isResultState: getIsResultState());
       default:
         return const PoPoWaitView();
     }
