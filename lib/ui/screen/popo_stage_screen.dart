@@ -1,10 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
-import 'package:pocket_pose/data/entity/response/stage_user_list_response.dart';
+import 'package:pocket_pose/data/entity/base_socket_response.dart';
+import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
+import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
+import 'package:pocket_pose/domain/provider/stage_provider.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
@@ -12,79 +20,19 @@ import 'package:pocket_pose/ui/view/popo_wait_view.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_list.widget.dart';
 import 'package:provider/provider.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
 
-final userListItem = {
-  "list": [
-    {
-      "userId": "1",
-      "profileImg": "assets/images/home_profile_1.jpg",
-      "nickname": "나비"
-    },
-    {
-      "userId": "2",
-      "profileImg": "assets/images/home_profile_2.jpg",
-      "nickname": "고양이"
-    },
-    {
-      "userId": "3",
-      "profileImg": "assets/images/home_profile_3.jpg",
-      "nickname": "네코"
-    },
-    {
-      "userId": "4",
-      "profileImg": "assets/images/home_profile_4.jpg",
-      "nickname": "냥코"
-    },
-    {
-      "userId": "5",
-      "profileImg": "assets/images/home_profile_5.jpg",
-      "nickname": "멍멍이"
-    },
-    {
-      "userId": "6",
-      "profileImg": "assets/images/home_profile_1.jpg",
-      "nickname": "강아지"
-    },
-    {
-      "userId": "7",
-      "profileImg": "assets/images/home_profile_2.jpg",
-      "nickname": "개"
-    },
-    {
-      "userId": "8",
-      "profileImg": "assets/images/home_profile_3.jpg",
-      "nickname": "포챠코"
-    },
-    {
-      "userId": "9",
-      "profileImg": "assets/images/home_profile_4.jpg",
-      "nickname": "왕왕이"
-    },
-    {
-      "userId": "10",
-      "profileImg": "assets/images/home_profile_5.jpg",
-      "nickname": "컹컹이"
-    },
-    {
-      "userId": "11",
-      "profileImg": "assets/images/home_profile_1.jpg",
-      "nickname": "왈왈이"
-    },
-    {
-      "userId": "12",
-      "profileImg": "assets/images/home_profile_2.jpg",
-      "nickname": "바둑이"
-    },
-    {
-      "userId": "13",
-      "profileImg": "assets/images/home_profile_3.jpg",
-      "nickname": "마리"
-    },
-  ]
-};
-StageUserListResponse? userList;
-
-enum StageStage { waitState, catchState, playState, resultState }
+enum StageType {
+  WAIT, // only front
+  CATCH_START,
+  CATCH_END,
+  PLAY_START,
+  MVP_START,
+  USER_COUNT,
+  STAGE_ROUTINE_STOP
+}
 
 class PoPoStageScreen extends StatefulWidget {
   const PoPoStageScreen({super.key, required this.getIndex()});
@@ -96,10 +44,11 @@ class PoPoStageScreen extends StatefulWidget {
 
 class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _userCount = 1;
-  int _count = 1;
-  late Timer _timer;
+  bool _isEnter = false;
   late VideoPlayProvider _videoPlayProvider;
-  StageStage _stageStage = StageStage.waitState;
+  final StageProvider _stageProvider = StageProviderImpl();
+  StageType _stageType = StageType.WAIT;
+  StompClient? stompClient;
 
   @override
   Widget build(BuildContext context) {
@@ -121,18 +70,18 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               appBar: buildAppBar(context),
               body: Stack(
                 children: [
-                  _buildStageView(_stageStage),
+                  _buildStageView(_stageType),
                   const Positioned(
                     bottom: 68,
                     left: 0,
                     right: 0,
                     child: StageLiveChatListWidget(),
                   ),
-                  const Positioned(
+                  Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: StageLiveChatBarWidget(),
+                    child: StageLiveChatBarWidget(stompClient: stompClient),
                   ),
                 ],
               ),
@@ -144,8 +93,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void initState() {
     super.initState();
-
-    _startTimer();
+    if (stompClient == null) {
+      _connectWebSocket();
+    }
   }
 
   @override
@@ -154,8 +104,65 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (widget.getIndex() == 0) {
       _videoPlayProvider.playVideo();
     }
+    stompClient?.deactivate();
+    if (_isEnter) {
+      _stageProvider.getStageExit();
+      _isEnter = false;
+    }
+
     super.dispose();
   }
+
+  void _connectWebSocket() async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    stompClient = StompClient(
+        config: StompConfig(
+      url: AppUrl.webSocketUrl,
+      onConnect: (frame) {
+        _onConnect(frame, token);
+      },
+      stompConnectHeaders: {'x-access-token': token},
+      webSocketConnectHeaders: {'x-access-token': token},
+      onDebugMessage: (p0) => print("mmm socket: $p0"),
+    ));
+    stompClient!.activate();
+  }
+
+  void _onConnect(StompFrame frame, String token) {
+    // 입장 요청
+    if (!_isEnter) {
+      _stageProvider
+          .getStageEnter(StageEnterRequest(page: 0, size: 10))
+          .then((value) => _userCount = value.data.userCount);
+      _isEnter = true;
+    }
+    // 연결 되면 구독
+    stompClient?.subscribe(
+        destination: AppUrl.subscribeStageUrl,
+        callback: (StompFrame frame) {
+          if (frame.body != null) {
+            // stage 상태 변경
+            var socketResponse = BaseSocketResponse.fromJson(
+                jsonDecode(frame.body.toString()), null);
+            setStageType(socketResponse, frame);
+          }
+        });
+  }
+
+  // void sendMessage() {
+  //   // setState(() {
+  //   if (stompClient != null) {
+  //     stompClient!.isActive
+  //         ? stompClient?.send(
+  //             destination: '/app/talks/messages',
+  //             body: json.encode({"content": "test"}))
+  //         : print("mmm error??");
+  //   }
+  //   // });
+  // }
 
   BoxDecoration buildBackgroundImage() {
     return BoxDecoration(
@@ -196,45 +203,37 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        if (_userCount >= 5) {
-          _stopTimer();
+  void setStageType(BaseSocketResponse response, StompFrame frame) {
+    switch (response.type) {
+      case StageType.USER_COUNT:
+        var socketResponse = BaseSocketResponse<UserCountResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            UserCountResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        setState(() {
+          _userCount = socketResponse.data!.userCount;
+        });
 
+        break;
+      default:
+        if (mounted) {
           setState(() {
-            _stageStage = StageStage.catchState;
-          });
-        } else {
-          setState(() {
-            _count++;
-            _userCount = _count;
+            _stageType = response.type;
           });
         }
-      }
-    });
-  }
-
-  void _stopTimer() {
-    _timer.cancel();
-  }
-
-  void setStageState(StageStage newStageStage) {
-    if (mounted) {
-      setState(() {
-        _stageStage = newStageStage;
-      });
     }
   }
 
-  bool getIsResultState() => _stageStage == StageStage.resultState;
+  bool getIsResultState() => _stageType == StageType.MVP_START;
 
   Container _buildUserCountWidget() {
     return Container(
       margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
       child: OutlinedButton.icon(
-        onPressed: () {
-          _showUserListDialog();
+        onPressed: () async {
+          var response = await _stageProvider.getUserList();
+
+          _showUserListDialog(response.data.list ?? []);
         },
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
@@ -256,9 +255,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  Future<dynamic> _showUserListDialog() {
-    userList = StageUserListResponse.fromJson(userListItem);
-
+  Future<dynamic> _showUserListDialog(List<StageUserListItem> userList) {
     return showDialog(
         context: context,
         barrierColor: Colors.transparent,
@@ -266,93 +263,100 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           return BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
             child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                side: const BorderSide(
-                  color: Colors.white,
-                  width: 1.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: const BorderSide(
+                    color: Colors.white,
+                    width: 1.0,
+                  ),
                 ),
-              ),
-              backgroundColor: Colors.white.withOpacity(0.3),
-              title: Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Text(
-                      '참여자 목록',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                backgroundColor: Colors.white.withOpacity(0.3),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(child: Container()),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 20),
+                      child: Text(
+                        '참여자 목록',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
                         color: Colors.white,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Icon(
-                      Icons.close,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              content: SizedBox(
-                width: 265,
-                height: 365,
-                child: GridView.builder(
-                  itemCount: userList!.list!.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.asset(
-                            userList!.list!.elementAt(index).profileImg!,
-                            width: 58,
-                            height: 58,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          userList!.list!.elementAt(index).nickname,
-                          style: const TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                  ],
                 ),
-              ),
-            ),
+                content: SizedBox(
+                  width: 265,
+                  height: 365,
+                  child: GridView.builder(
+                    itemCount: userList.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child:
+                                (userList.elementAt(index).profileImg == null)
+                                    ? Image.asset(
+                                        'assets/images/charactor_popo_default.png',
+                                        width: 58,
+                                        height: 58,
+                                      )
+                                    : Image.network(
+                                        userList.elementAt(index).profileImg!,
+                                        fit: BoxFit.cover,
+                                        width: 58,
+                                        height: 58,
+                                      ),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Text(
+                            userList.elementAt(index).nickname,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                )),
           );
         });
   }
 
-  Widget _buildStageView(StageStage state) {
-    switch (state) {
-      case StageStage.waitState:
-        return (_userCount < 3)
-            ? const PoPoWaitView()
-            : PoPoCatchView(setStageState: setStageState);
-      case StageStage.catchState:
-        return PoPoCatchView(setStageState: setStageState);
-      case StageStage.playState:
-        return PoPoPlayView(
-            setStageState: setStageState, isResultState: getIsResultState());
-      case StageStage.resultState:
-        return PoPoResultView(
-            setStageState: setStageState, isResultState: getIsResultState());
+  Widget _buildStageView(StageType type) {
+    switch (type) {
+      case StageType.STAGE_ROUTINE_STOP:
+      case StageType.WAIT:
+        return const PoPoWaitView();
+      case StageType.CATCH_START:
+        return const PoPoCatchView();
+      case StageType.PLAY_START:
+        return PoPoPlayView(isResultState: getIsResultState());
+      case StageType.MVP_START:
+        return PoPoResultView(isResultState: getIsResultState());
       default:
         return const PoPoWaitView();
     }

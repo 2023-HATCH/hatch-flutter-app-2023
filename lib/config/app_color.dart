@@ -5,6 +5,7 @@ class AppColor {
   static Color mainPurpleColor = const Color(0xFF565CEA);
   static Color purpleColor = const Color(0xFFB259F8);
   static Color purpleColor2 = const Color(0xFFBD00FF);
+  static Color purpleColor3 = const Color(0xFFBFC1F4);
   static Color blackColor = const Color(0xFF414B5A);
   static Color grayColor = const Color(0xFF3F3F3F);
   static Color grayColor1 = const Color(0xFFE7EBF0);
@@ -21,6 +22,7 @@ class AppColor {
   static Color greenColor = const Color(0xFF00FF19);
   static Color yellowColor = const Color(0xFFEFE372);
   static Color yellowColor2 = const Color(0xFFFAFF00);
+  static Color yellowColor3 = const Color(0xFFF3ECA6);
   static Color mintNeonColor = const Color.fromARGB(255, 104, 250, 241);
   static Color yellowNeonColor = const Color(0xFFEDF156);
   static Color greenNeonColor = const Color(0xFF41EF49);

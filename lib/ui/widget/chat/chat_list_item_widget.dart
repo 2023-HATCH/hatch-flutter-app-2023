@@ -55,7 +55,7 @@ class ChatListItemWidget extends StatelessWidget {
                     child: Text(
                       chat.recentContent == null ? "" : chat.recentContent!,
                       style:
-                          TextStyle(fontSize: 12, color: AppColor.grayColor4),
+                          TextStyle(fontSize: 12, color: AppColor.grayColor5),
                       maxLines: 1,
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.ellipsis,

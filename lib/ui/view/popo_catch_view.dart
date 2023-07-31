@@ -4,14 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:semicircle_indicator/semicircle_indicator.dart';
 import 'dart:math' as math;
 
 class PoPoCatchView extends StatefulWidget {
-  const PoPoCatchView({Key? key, required this.setStageState})
-      : super(key: key);
-  final Function setStageState;
+  const PoPoCatchView({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _PoPoCatchViewState();
@@ -119,7 +116,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
       if (_milliseconds >= 3000) {
         _stopTimer();
         Fluttertoast.showToast(msg: '캐치 성공!');
-        widget.setStageState(StageStage.playState);
       } else {
         if (mounted) {
           setState(() {

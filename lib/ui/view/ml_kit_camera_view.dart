@@ -97,22 +97,22 @@ class _CameraViewState extends State<CameraView> {
     }
 
     // AudioPlayer 초기화
-    AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectMode);
-    AudioPlayerUtil().setCameraController(_controller);
+    // AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectMode);
+    // AudioPlayerUtil().setCameraController(_controller);
 
     // 결과 상태인 경우
     if (widget.isResultState) {
-      AudioPlayerUtil().play(
-          "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3",
-          widget.setIsSkeletonDetectMode);
+      // AudioPlayerUtil().play(
+      //     "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3",
+      //     widget.setIsSkeletonDetectMode);
     }
     // 플레이 상태인 경우
     else {
       // 카운트다운 시작 후 노래 재생
-      setState(() {
-        _countdownVisibility = true;
-      });
-      _startTimer();
+      // setState(() {
+      //   _countdownVisibility = true;
+      // });
+      // _startTimer();
     }
   }
 
@@ -146,7 +146,7 @@ class _CameraViewState extends State<CameraView> {
   @override
   void dispose() {
     if (widget.isResultState) {
-      AudioPlayerUtil().stop();
+      // AudioPlayerUtil().stop();
     }
     super.dispose();
   }

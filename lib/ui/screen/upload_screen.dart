@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/entity/request/video_upload_request.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/video_upload_provider_impl.dart';
 import 'package:pocket_pose/ui/widget/upload/custom_tag_text_field_controller.dart';
 import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
 import 'package:provider/provider.dart';
@@ -21,8 +24,10 @@ class _UploadScreenState extends State<UploadScreen> {
   VideoPlayerController? _videoPlayerController;
   late VideoPlayProvider _videoPlayProvider;
   late CustomTagTextFieldController _tagController;
+  final _provider = VideoUploadProviderImpl();
   bool _isTitleFillOut = false;
   bool _isTagsFillOut = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -51,6 +56,22 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
+  void postVideo(VideoUploadRequest request) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    FocusScope.of(context).unfocus();
+
+    await _provider.postVideoUpload(request).then((value) {
+      if (value.code == 'VIDEO-2001') {
+        Fluttertoast.showToast(msg: '영상이 성공적으로 업로드 되었습니다.');
+        _isLoading = false;
+        Navigator.pop(context);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +92,26 @@ class _UploadScreenState extends State<UploadScreen> {
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom),
               child: _buildVideoInfoArea(),
+            ),
+            Visibility(
+              visible: _isLoading,
+              child: const ModalBarrier(
+                color: Colors.black54,
+                dismissible: false,
+              ),
+            ),
+            Visibility(
+              visible: _isLoading,
+              child: const Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                right: 0,
+                child: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: Center(child: CircularProgressIndicator())),
+              ),
             ),
           ],
         ),
@@ -111,12 +152,12 @@ class _UploadScreenState extends State<UploadScreen> {
                       child: Container(
                         height: 40,
                         width: double.infinity,
-                        padding: const EdgeInsets.only(left: 14),
+                        padding: const EdgeInsets.fromLTRB(14, 0, 0, 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: Colors.white,
-                            width: 2.5,
+                            width: 1,
                           ),
                         ),
                         child: TextField(
@@ -198,8 +239,19 @@ class _UploadScreenState extends State<UploadScreen> {
       actions: [
         TextButton(
           onPressed: () {
-            // var title = _titleTextController.value.text;
-            // var tags = _tagController.getTags;
+            if (_isTitleFillOut && _isTagsFillOut) {
+              var title = _titleTextController.value.text;
+              var tags = _tagController.getTags!;
+              var tagsString = tags.map((tag) => '%23$tag').toList().join(' ');
+              if (_isLoading == false) {
+                postVideo(VideoUploadRequest(
+                    title: title,
+                    tags: tagsString,
+                    videoPath: widget.uploadFile.path));
+              } else {
+                Fluttertoast.showToast(msg: '영상을 업로드 중입니다.');
+              }
+            }
           },
           child: Text(
             "업로드",
