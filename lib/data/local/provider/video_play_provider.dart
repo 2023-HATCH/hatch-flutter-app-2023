@@ -5,6 +5,9 @@ import 'package:video_player/video_player.dart';
 class VideoPlayProvider with ChangeNotifier {
   late List<VideoPlayerController> controllers;
   late List<Future<void>> videoPlayerFutures;
+  late PageController pageController = PageController(
+    initialPage: currentIndex,
+  );
 
   late bool loading = false;
   List<VideoData> videoList = [];

@@ -26,8 +26,6 @@ class _VideoViewState extends State<VideoView>
 
   late VideoPlayProvider _videoPlayProvider;
 
-  late PageController pageController;
-
   @override
   void initState() {
     super.initState();
@@ -101,7 +99,7 @@ class _VideoViewState extends State<VideoView>
       if (_videoPlayProvider.isLast) {
         if (_videoPlayProvider.videoList.length == index) {
           // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
-          pageController.jumpToPage(0);
+          _videoPlayProvider.pageController.jumpToPage(0);
           _videoPlayProvider.currentIndex = 0;
         } else {
           _videoPlayProvider.currentIndex = index;
@@ -143,9 +141,7 @@ class _VideoViewState extends State<VideoView>
       child: Stack(
         children: <Widget>[
           PageView.builder(
-            controller: pageController = PageController(
-              initialPage: _videoPlayProvider.currentIndex,
-            ),
+            controller: _videoPlayProvider.pageController,
             scrollDirection: Axis.vertical,
             allowImplicitScrolling: true,
             itemCount: 200, // itemCount를 변경하도록 수정
