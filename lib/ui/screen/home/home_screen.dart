@@ -5,9 +5,14 @@ import 'package:pocket_pose/ui/screen/chat_list_screen.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/widget/home/upload_button_widget.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +34,9 @@ class HomeScreen extends StatelessWidget {
                   );
                 },
                 child: SvgPicture.asset('assets/icons/ic_home_chat_list.svg')),
-            UploadButtonWidget(context: context),
+            UploadButtonWidget(
+              context: context,
+            ),
             GestureDetector(
               child: Container(
                   margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),

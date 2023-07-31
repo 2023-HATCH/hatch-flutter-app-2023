@@ -34,7 +34,7 @@ class _VideoViewState extends State<VideoView>
 
     if (_videoPlayProvider.videoList.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _loadVideos();
+        _loadFirstVideos();
       });
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -43,7 +43,7 @@ class _VideoViewState extends State<VideoView>
     }
   }
 
-  Future<void> _loadVideos() async {
+  Future<void> _loadFirstVideos() async {
     try {
       final homeProvider = Provider.of<HomeProvider>(context, listen: false);
       homeProvider
@@ -81,12 +81,10 @@ class _VideoViewState extends State<VideoView>
             debugPrint('response.isLast: ${response.isLast}');
             if (response.isLast) {
               _videoPlayProvider.isLast = true;
-
-              return;
             }
-
             _videoPlayProvider.addVideos(response.videoList);
             _videoPlayProvider.currentPage++;
+            return;
           });
         }
       });
@@ -156,12 +154,14 @@ class _VideoViewState extends State<VideoView>
                     _videoPlayProvider.loading = true;
                     return buildVideoPlayer(index); // 비디오 플레이어 생성
                   } else {
+                    _videoPlayProvider.loading = false;
                     return const MusicSpinner(); // 비디오 로딩 중
                   }
                 },
               );
             } else {
               // 더미 공간으로, 무한 스크롤을 위한 추가 공간
+              _videoPlayProvider.loading = false;
               return const MusicSpinner(); // 비디오 로딩 중
             }
           },

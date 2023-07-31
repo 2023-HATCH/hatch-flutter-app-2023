@@ -73,6 +73,15 @@ class VideoPlayProvider with ChangeNotifier {
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
+  void resetVideo() {
+    controllers = [];
+    videoPlayerFutures = [];
+    videoList = [];
+    currentIndex = 0;
+    currentPage = 0;
+    isLast = false;
+  }
+
   void setVideo() {
     // Check if currentIndex is within bounds of controllers list
     if (currentIndex >= 0 && currentIndex < controllers.length) {
