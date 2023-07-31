@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/home_videos_request.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/home_provider.dart';
@@ -131,43 +132,52 @@ class _VideoViewState extends State<VideoView>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Stack(
-      children: <Widget>[
-        PageView.builder(
-          controller: pageController = PageController(
-            initialPage: _videoPlayProvider.currentIndex,
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() {
+          _videoPlayProvider.resetVideo();
+          _loadFirstVideos();
+        });
+      },
+      color: AppColor.purpleColor,
+      child: Stack(
+        children: <Widget>[
+          PageView.builder(
+            controller: pageController = PageController(
+              initialPage: _videoPlayProvider.currentIndex,
+            ),
+            scrollDirection: Axis.vertical,
+            allowImplicitScrolling: true,
+            itemCount: 200, // itemCount를 변경하도록 수정
+            itemBuilder: (context, index) {
+              if (index < _videoPlayProvider.videoList.length) {
+                // 현재 비디오 인덱스 안에 있는 경우
+                return FutureBuilder(
+                  future: _videoPlayProvider
+                      .videoPlayerFutures[_videoPlayProvider.currentIndex],
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done ||
+                        (snapshot.connectionState == ConnectionState.waiting &&
+                            _videoPlayProvider.loading)) {
+                      // 비디오가 준비된 경우
+                      _videoPlayProvider.loading = true;
+                      return buildVideoPlayer(index); // 비디오 플레이어 생성
+                    } else {
+                      _videoPlayProvider.loading = false;
+                      return const MusicSpinner(); // 비디오 로딩 중
+                    }
+                  },
+                );
+              } else {
+                // 더미 공간으로, 무한 스크롤을 위한 추가 공간
+                _videoPlayProvider.loading = false;
+                return const MusicSpinner(); // 비디오 로딩 중
+              }
+            },
+            onPageChanged: onPageChanged,
           ),
-          scrollDirection: Axis.vertical,
-          allowImplicitScrolling: true,
-          itemCount: 200, // itemCount를 변경하도록 수정
-          itemBuilder: (context, index) {
-            if (index < _videoPlayProvider.videoList.length) {
-              // 현재 비디오 인덱스 안에 있는 경우
-              return FutureBuilder(
-                future: _videoPlayProvider
-                    .videoPlayerFutures[_videoPlayProvider.currentIndex],
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done ||
-                      (snapshot.connectionState == ConnectionState.waiting &&
-                          _videoPlayProvider.loading)) {
-                    // 비디오가 준비된 경우
-                    _videoPlayProvider.loading = true;
-                    return buildVideoPlayer(index); // 비디오 플레이어 생성
-                  } else {
-                    _videoPlayProvider.loading = false;
-                    return const MusicSpinner(); // 비디오 로딩 중
-                  }
-                },
-              );
-            } else {
-              // 더미 공간으로, 무한 스크롤을 위한 추가 공간
-              _videoPlayProvider.loading = false;
-              return const MusicSpinner(); // 비디오 로딩 중
-            }
-          },
-          onPageChanged: onPageChanged,
-        ),
-      ],
+        ],
+      ),
     );
   }
 
