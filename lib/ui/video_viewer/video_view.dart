@@ -25,14 +25,22 @@ class _VideoViewState extends State<VideoView>
 
   late VideoPlayProvider _videoPlayProvider;
 
+  late PageController pageController;
+
   @override
   void initState() {
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadVideos();
-    });
+    if (_videoPlayProvider.videoList.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadVideos();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _videoPlayProvider.setVideo();
+      });
+    }
   }
 
   Future<void> _loadVideos() async {
@@ -66,11 +74,18 @@ class _VideoViewState extends State<VideoView>
               page: _videoPlayProvider.currentPage,
               size: _videoPlayProvider.PAGESIZE))
           .then((value) {
-        final newVideos = homeProvider.response?.videoList;
+        final response = homeProvider.response;
 
-        if (newVideos != null && newVideos.isNotEmpty) {
+        if (response != null && response.videoList.isNotEmpty) {
           setState(() {
-            _videoPlayProvider.addVideos(newVideos);
+            debugPrint('response.isLast: ${response.isLast}');
+            if (response.isLast) {
+              _videoPlayProvider.isLast = true;
+
+              return;
+            }
+
+            _videoPlayProvider.addVideos(response.videoList);
             _videoPlayProvider.currentPage++;
           });
         }
@@ -83,25 +98,47 @@ class _VideoViewState extends State<VideoView>
   void onPageChanged(int index) {
     setState(() {
       _videoPlayProvider.pauseVideo();
-      _videoPlayProvider.currentIndex = index;
 
-      if (_videoPlayProvider.currentIndex >=
-          _videoPlayProvider.videoList.length) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _loadMoreVideos();
-        });
+      if (_videoPlayProvider.isLast) {
+        if (_videoPlayProvider.videoList.length == index) {
+          // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
+          pageController.jumpToPage(0);
+          _videoPlayProvider.currentIndex = 0;
+        } else {
+          _videoPlayProvider.currentIndex = index;
+        }
+      } else {
+        _videoPlayProvider.currentIndex = index;
+        if (_videoPlayProvider.videoList.length -
+                _videoPlayProvider.currentIndex <=
+            _videoPlayProvider.PAGESIZE) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _loadMoreVideos();
+          });
+        }
       }
+
       _videoPlayProvider.setVideo();
     });
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _videoPlayProvider.pauseVideo();
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
+
     return Stack(
       children: <Widget>[
         PageView.builder(
-          //controller: videoPlayProvider.pageController,
+          controller: pageController = PageController(
+            initialPage: _videoPlayProvider.currentIndex,
+          ),
           scrollDirection: Axis.vertical,
           allowImplicitScrolling: true,
           itemCount: 200, // itemCount를 변경하도록 수정
@@ -109,7 +146,8 @@ class _VideoViewState extends State<VideoView>
             if (index < _videoPlayProvider.videoList.length) {
               // 현재 비디오 인덱스 안에 있는 경우
               return FutureBuilder(
-                future: _videoPlayProvider.videoPlayerFutures[index],
+                future: _videoPlayProvider
+                    .videoPlayerFutures[_videoPlayProvider.currentIndex],
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done ||
                       (snapshot.connectionState == ConnectionState.waiting &&
@@ -124,7 +162,7 @@ class _VideoViewState extends State<VideoView>
               );
             } else {
               // 더미 공간으로, 무한 스크롤을 위한 추가 공간
-              return Container();
+              return const MusicSpinner(); // 비디오 로딩 중
             }
           },
           onPageChanged: onPageChanged,

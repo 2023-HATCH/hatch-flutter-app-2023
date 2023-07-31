@@ -3,7 +3,6 @@ import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayProvider with ChangeNotifier {
-  final PageController pageController = PageController();
   late List<VideoPlayerController> controllers;
   late List<Future<void>> videoPlayerFutures;
 
@@ -12,9 +11,10 @@ class VideoPlayProvider with ChangeNotifier {
 
   int currentIndex = 0;
   int currentPage = 0;
-  final PAGESIZE = 1;
 
-  int maxPageSize = 500;
+  final int PAGESIZE = 3;
+
+  bool isLast = false;
 
   List<String> tags = [
     '원어스',

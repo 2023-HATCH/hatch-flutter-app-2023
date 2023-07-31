@@ -79,6 +79,7 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
   void initState() {
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _videoPlayProvider.pauseVideo();
     _tabController = TabController(length: 2, vsync: this);
   }
 
