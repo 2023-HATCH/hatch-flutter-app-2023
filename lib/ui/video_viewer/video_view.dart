@@ -43,6 +43,7 @@ class _VideoViewState extends State<VideoView>
   }
 
   Future<void> _loadFirstVideos() async {
+    debugPrint('호출1!!');
     try {
       final homeProvider = Provider.of<HomeProvider>(context, listen: false);
       homeProvider
@@ -55,16 +56,17 @@ class _VideoViewState extends State<VideoView>
         if (newVideos != null && newVideos.isNotEmpty) {
           setState(() {
             _videoPlayProvider.initializeVideos(newVideos);
-            _videoPlayProvider.currentPage++;
           });
         }
       });
+      _videoPlayProvider.currentPage++;
     } catch (e) {
       debugPrint('홈 영상 list 조회 api 호출 실패');
     } finally {}
   }
 
   Future<void> _loadMoreVideos() async {
+    debugPrint('호출2!!');
     try {
       final homeProvider = Provider.of<HomeProvider>(context, listen: false);
 
@@ -83,7 +85,6 @@ class _VideoViewState extends State<VideoView>
             }
             _videoPlayProvider.addVideos(response.videoList);
             _videoPlayProvider.currentPage++;
-            return;
           });
         }
       });
@@ -108,7 +109,7 @@ class _VideoViewState extends State<VideoView>
         _videoPlayProvider.currentIndex = index;
         if (_videoPlayProvider.videoList.length -
                 _videoPlayProvider.currentIndex <=
-            _videoPlayProvider.PAGESIZE) {
+            _videoPlayProvider.PAGESIZE * 2) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _loadMoreVideos();
           });
@@ -165,9 +166,12 @@ class _VideoViewState extends State<VideoView>
                   },
                 );
               } else {
-                // 더미 공간으로, 무한 스크롤을 위한 추가 공간
                 _videoPlayProvider.loading = false;
-                return const MusicSpinner(); // 비디오 로딩 중
+                if (_videoPlayProvider.currentIndex <= 0) {
+                  return const MusicSpinner(); // 비디오 로딩 중
+                } else {
+                  return buildVideoPlayer(0);
+                }
               }
             },
             onPageChanged: onPageChanged,

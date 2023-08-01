@@ -14,13 +14,9 @@ class HomeProvider extends ChangeNotifier {
           await HomeRepository().getVideos(homeVideosRequest);
       _response = repositoryResponse;
 
-      debugPrint('새 비디오 repositoryResponse $repositoryResponse');
-      debugPrint(
-          '새 비디오 repositoryResponse ${repositoryResponse.videoList.first.tag}');
-
       notifyListeners();
     } catch (e) {
-      debugPrint('Error logging in: $e');
+      debugPrint('HomeVideosResponse getVideos 에러: $e');
     }
   }
 }

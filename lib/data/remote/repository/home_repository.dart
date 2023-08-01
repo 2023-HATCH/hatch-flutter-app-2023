@@ -35,6 +35,7 @@ class HomeRepository {
       debugPrint("홈 비디오 조회 성공! videoList: $videoList");
 
       final bool isLast = json['data']['isLast'];
+      debugPrint("홈 비디오 조회 성공! isLast: $isLast");
 
       return HomeVideosResponse(
         videoList: videoList,
