@@ -7,6 +7,7 @@ import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class VideoMyScreen extends StatefulWidget {
   VideoMyScreen({Key? key, required this.index}) : super(key: key);
 
@@ -22,7 +23,6 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
   }
@@ -38,7 +38,6 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //centerTitle: true, //Title text 가운데 정렬
         title: const Text(
           "PoPo",
           style: TextStyle(fontWeight: FontWeight.bold),

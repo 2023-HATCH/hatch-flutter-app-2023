@@ -7,6 +7,7 @@ import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/chat_button_widget.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class VideoSomeoneScreen extends StatefulWidget {
   VideoSomeoneScreen({Key? key, required this.index}) : super(key: key);
 
@@ -22,7 +23,6 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
   }

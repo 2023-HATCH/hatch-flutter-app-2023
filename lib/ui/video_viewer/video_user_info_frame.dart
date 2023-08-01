@@ -7,6 +7,7 @@ import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class VideoUserInfoFrame extends StatelessWidget {
   VideoUserInfoFrame({super.key, required this.index});
 

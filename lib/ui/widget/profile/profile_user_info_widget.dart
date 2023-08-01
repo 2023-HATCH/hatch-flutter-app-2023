@@ -6,6 +6,7 @@ import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_follow_screen.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ProfileUserInfoWidget extends StatelessWidget {
   ProfileUserInfoWidget({
     super.key,

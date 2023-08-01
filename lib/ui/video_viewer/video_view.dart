@@ -31,9 +31,7 @@ class _VideoViewState extends State<VideoView>
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
 
-    debugPrint('호출 initState');
     if (_videoPlayProvider.videoList.isEmpty) {
-      debugPrint('호출 _loadFirstVideos');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadFirstVideos();
       });
@@ -45,7 +43,6 @@ class _VideoViewState extends State<VideoView>
   }
 
   Future<void> _loadFirstVideos() async {
-    debugPrint('호출1!!');
     try {
       final homeProvider = Provider.of<HomeProvider>(context, listen: false);
       homeProvider
@@ -68,7 +65,6 @@ class _VideoViewState extends State<VideoView>
   }
 
   Future<void> _loadMoreVideos() async {
-    debugPrint('호출2!!');
     try {
       final homeProvider = Provider.of<HomeProvider>(context, listen: false);
 
@@ -81,7 +77,6 @@ class _VideoViewState extends State<VideoView>
 
         if (response != null && response.videoList.isNotEmpty) {
           setState(() {
-            debugPrint('response.isLast: ${response.isLast}');
             if (response.isLast) {
               _videoPlayProvider.isLast = true;
             }
@@ -147,7 +142,7 @@ class _VideoViewState extends State<VideoView>
                 PageController(initialPage: _videoPlayProvider.currentIndex),
             scrollDirection: Axis.vertical,
             allowImplicitScrolling: true,
-            itemCount: 200, // itemCount를 변경하도록 수정
+            itemCount: 200,
             itemBuilder: (context, index) {
               if (index < _videoPlayProvider.videoList.length) {
                 // 현재 비디오 인덱스 안에 있는 경우

@@ -240,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       childCount: _videoImagePath1.length,
                     ),
                   ),
-                if (_tabController.index == 1) // Check if Tab 2 is selected
+                if (_tabController.index == 1)
                   SliverGrid(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,

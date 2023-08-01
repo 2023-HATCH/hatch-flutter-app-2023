@@ -85,7 +85,6 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
 
     _videoPlayProvider.playVideo();
@@ -253,6 +252,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
   }
 }
 
+// ignore: must_be_immutable
 class FollowListViewWidget extends StatefulWidget {
   FollowListViewWidget({
     Key? key,

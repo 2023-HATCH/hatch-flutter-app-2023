@@ -19,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
   }
@@ -28,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          //centerTitle: true, //Title text 가운데 정렬
           title: GestureDetector(
             child: const Text(
               "PoPo",
@@ -37,8 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               _videoPlayProvider.pageController.animateToPage(
                 0,
-                duration: const Duration(milliseconds: 500), // 애니메이션 지속 시간
-                curve: Curves.ease, // 애니메이션 커브 설정
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.ease,
               );
             },
           ),

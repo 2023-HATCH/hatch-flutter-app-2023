@@ -4,6 +4,7 @@ import 'package:like_button/like_button.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class LikeButtonWidget extends StatefulWidget {
   LikeButtonWidget({super.key, required this.index});
 
