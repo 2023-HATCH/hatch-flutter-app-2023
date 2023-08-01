@@ -8,6 +8,7 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
+import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
@@ -31,7 +32,8 @@ enum StageType {
   PLAY_START,
   MVP_START,
   USER_COUNT,
-  STAGE_ROUTINE_STOP
+  STAGE_ROUTINE_STOP,
+  TALK_MESSAGE
 }
 
 class PoPoStageScreen extends StatefulWidget {
@@ -81,7 +83,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: StageLiveChatBarWidget(stompClient: stompClient),
+                    child: StageLiveChatBarWidget(sendMessage: sendMessage),
                   ),
                 ],
               ),
@@ -152,17 +154,18 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         });
   }
 
-  // void sendMessage() {
-  //   // setState(() {
-  //   if (stompClient != null) {
-  //     stompClient!.isActive
-  //         ? stompClient?.send(
-  //             destination: '/app/talks/messages',
-  //             body: json.encode({"content": "test"}))
-  //         : print("mmm error??");
-  //   }
-  //   // });
-  // }
+  void sendMessage(String message) async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    if (stompClient != null) {
+      stompClient?.send(
+          destination: '/app/talks/messages',
+          headers: {'x-access-token': token},
+          body: json.encode({"content": message}));
+    }
+  }
 
   BoxDecoration buildBackgroundImage() {
     return BoxDecoration(
@@ -214,6 +217,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           _userCount = socketResponse.data!.userCount;
         });
 
+        break;
+      case StageType.TALK_MESSAGE:
+        var socketResponse = BaseSocketResponse<TalkMessageResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            TalkMessageResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        print("mmm: ${socketResponse.data?.content}");
         break;
       default:
         if (mounted) {
