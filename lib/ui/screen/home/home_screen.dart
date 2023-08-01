@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/ui/screen/chat/chat_list_screen.dart';
 import 'package:pocket_pose/ui/screen/home/home_search_screen.dart';
-import 'package:pocket_pose/ui/screen/chat_list_screen.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/widget/home/upload_button_widget.dart';
 
