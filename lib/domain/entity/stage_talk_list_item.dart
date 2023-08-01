@@ -7,11 +7,11 @@ part 'stage_talk_list_item.g.dart';
 class StageTalkListItem {
   late String messageId;
   late String content;
-  late String createdAt;
+  String? createdAt = "";
   late ChatUserListItem sender;
 
   StageTalkListItem(
-      {required this.content, required this.sender, required this.createdAt});
+      {required this.content, required this.sender, this.createdAt});
 
   factory StageTalkListItem.fromJson(Map<String, dynamic> json) =>
       _$StageTalkListItemFromJson(json);

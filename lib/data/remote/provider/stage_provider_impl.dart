@@ -8,9 +8,24 @@ import 'package:pocket_pose/data/entity/base_response.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/entity/response/stage_enter_response.dart';
 import 'package:pocket_pose/data/entity/response/stage_user_list_response.dart';
+import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/provider/stage_provider.dart';
 
-class StageProviderImpl implements StageProvider {
+class StageProviderImpl extends ChangeNotifier implements StageProvider {
+  final List<StageTalkListItem> _talkList = [];
+
+  List<StageTalkListItem> get talkList => _talkList;
+
+  void addTalkList(List<StageTalkListItem> list) {
+    _talkList.addAll(list);
+    notifyListeners();
+  }
+
+  void addTalk(StageTalkListItem talk) {
+    _talkList.insert(0, talk);
+    notifyListeners();
+  }
+
   @override
   Future<BaseResponse<StageUserListResponse>> getUserList() async {
     const storage = FlutterSecureStorage();
@@ -53,8 +68,12 @@ class StageProviderImpl implements StageProvider {
       var response = await dio.get(
           '${AppUrl.stageEnterUrl}?page=${request.page}&size=${request.size}');
 
-      return BaseResponse<StageEnterResponse>.fromJson(
+      var responseJson = BaseResponse<StageEnterResponse>.fromJson(
           response.data, StageEnterResponse.fromJson(response.data['data']));
+
+      addTalkList(responseJson.data.talkMessageData.messages ?? []);
+
+      return responseJson;
     } catch (e) {
       debugPrint("mmm StageProviderImpl catch: ${e.toString()}");
     }
