@@ -8,17 +8,19 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
+import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
-import 'package:pocket_pose/domain/provider/stage_provider.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
 import 'package:pocket_pose/ui/view/popo_wait_view.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
-import 'package:pocket_pose/ui/widget/stage/stage_live_chat_list.widget.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
+import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
@@ -31,7 +33,8 @@ enum StageType {
   PLAY_START,
   MVP_START,
   USER_COUNT,
-  STAGE_ROUTINE_STOP
+  STAGE_ROUTINE_STOP,
+  TALK_MESSAGE
 }
 
 class PoPoStageScreen extends StatefulWidget {
@@ -46,14 +49,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _userCount = 1;
   bool _isEnter = false;
   late VideoPlayProvider _videoPlayProvider;
-  final StageProvider _stageProvider = StageProviderImpl();
+  late StageProviderImpl _stageProvider;
   StageType _stageType = StageType.WAIT;
-  StompClient? stompClient;
+  StompClient? _stompClient;
 
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -62,12 +65,12 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         resizeToAvoidBottomInset: false,
         body: Container(
             // 플레이, 결과 상태에 따라 배경화면 변경
-            decoration: buildBackgroundImage(),
+            decoration: _buildBackgroundImage(),
             child: Scaffold(
               resizeToAvoidBottomInset: false,
               extendBodyBehindAppBar: true,
               backgroundColor: Colors.transparent,
-              appBar: buildAppBar(context),
+              appBar: _buildAppBar(context),
               body: Stack(
                 children: [
                   _buildStageView(_stageType),
@@ -75,13 +78,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                     bottom: 68,
                     left: 0,
                     right: 0,
-                    child: StageLiveChatListWidget(),
+                    child: StageLiveTalkListWidget(),
                   ),
                   Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: StageLiveChatBarWidget(stompClient: stompClient),
+                    child: StageLiveChatBarWidget(sendMessage: _sendMessage),
                   ),
                 ],
               ),
@@ -93,7 +96,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void initState() {
     super.initState();
-    if (stompClient == null) {
+    if (_stompClient == null) {
       _connectWebSocket();
     }
   }
@@ -104,7 +107,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (widget.getIndex() == 0) {
       _videoPlayProvider.playVideo();
     }
-    stompClient?.deactivate();
+    _stompClient?.deactivate();
     if (_isEnter) {
       _stageProvider.getStageExit();
       _isEnter = false;
@@ -118,7 +121,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     const storageKey = 'kakaoAccessToken';
     String token = await storage.read(key: storageKey) ?? "";
 
-    stompClient = StompClient(
+    _stompClient = StompClient(
         config: StompConfig(
       url: AppUrl.webSocketUrl,
       onConnect: (frame) {
@@ -128,7 +131,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       webSocketConnectHeaders: {'x-access-token': token},
       onDebugMessage: (p0) => print("mmm socket: $p0"),
     ));
-    stompClient!.activate();
+    _stompClient!.activate();
   }
 
   void _onConnect(StompFrame frame, String token) {
@@ -140,42 +143,43 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       _isEnter = true;
     }
     // 연결 되면 구독
-    stompClient?.subscribe(
+    _stompClient?.subscribe(
         destination: AppUrl.subscribeStageUrl,
         callback: (StompFrame frame) {
           if (frame.body != null) {
             // stage 상태 변경
             var socketResponse = BaseSocketResponse.fromJson(
                 jsonDecode(frame.body.toString()), null);
-            setStageType(socketResponse, frame);
+            _setStageType(socketResponse, frame);
           }
         });
   }
 
-  // void sendMessage() {
-  //   // setState(() {
-  //   if (stompClient != null) {
-  //     stompClient!.isActive
-  //         ? stompClient?.send(
-  //             destination: '/app/talks/messages',
-  //             body: json.encode({"content": "test"}))
-  //         : print("mmm error??");
-  //   }
-  //   // });
-  // }
+  void _sendMessage(String message) async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
 
-  BoxDecoration buildBackgroundImage() {
+    if (_stompClient != null) {
+      _stompClient?.send(
+          destination: '/app/talks/messages',
+          headers: {'x-access-token': token},
+          body: json.encode({"content": message}));
+    }
+  }
+
+  BoxDecoration _buildBackgroundImage() {
     return BoxDecoration(
       image: DecorationImage(
         fit: BoxFit.cover,
-        image: AssetImage((getIsResultState())
+        image: AssetImage((_getIsResultState())
             ? 'assets/images/bg_popo_result.png'
             : 'assets/images/bg_popo_comm.png'),
       ),
     );
   }
 
-  AppBar buildAppBar(BuildContext context) {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       centerTitle: true,
       title: const Text(
@@ -203,7 +207,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  void setStageType(BaseSocketResponse response, StompFrame frame) {
+  void _setStageType(BaseSocketResponse response, StompFrame frame) {
     switch (response.type) {
       case StageType.USER_COUNT:
         var socketResponse = BaseSocketResponse<UserCountResponse>.fromJson(
@@ -215,6 +219,17 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         });
 
         break;
+      case StageType.TALK_MESSAGE:
+        var socketResponse = BaseSocketResponse<TalkMessageResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            TalkMessageResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+
+        var talk = StageTalkListItem(
+            content: socketResponse.data!.content,
+            sender: socketResponse.data!.sender);
+        _stageProvider.addTalk(talk);
+        break;
       default:
         if (mounted) {
           setState(() {
@@ -224,7 +239,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     }
   }
 
-  bool getIsResultState() => _stageType == StageType.MVP_START;
+  bool _getIsResultState() => _stageType == StageType.MVP_START;
 
   Container _buildUserCountWidget() {
     return Container(
@@ -310,35 +325,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                       crossAxisCount: 3,
                     ),
                     itemBuilder: (BuildContext context, int index) {
-                      return Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child:
-                                (userList.elementAt(index).profileImg == null)
-                                    ? Image.asset(
-                                        'assets/images/charactor_popo_default.png',
-                                        width: 58,
-                                        height: 58,
-                                      )
-                                    : Image.network(
-                                        userList.elementAt(index).profileImg!,
-                                        fit: BoxFit.cover,
-                                        width: 58,
-                                        height: 58,
-                                      ),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Text(
-                            userList.elementAt(index).nickname,
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      );
+                      return UserListItemWidget(user: userList[index]);
                     },
                   ),
                 )),
@@ -354,9 +341,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       case StageType.CATCH_START:
         return const PoPoCatchView();
       case StageType.PLAY_START:
-        return PoPoPlayView(isResultState: getIsResultState());
+        return PoPoPlayView(isResultState: _getIsResultState());
       case StageType.MVP_START:
-        return PoPoResultView(isResultState: getIsResultState());
+        return PoPoResultView(isResultState: _getIsResultState());
       default:
         return const PoPoWaitView();
     }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/domain/entity/chat_list_item.dart';
-import 'package:pocket_pose/ui/screen/chat_detail_screen.dart';
+import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 
 class ChatListItemWidget extends StatelessWidget {
   final ChatListItem chat;

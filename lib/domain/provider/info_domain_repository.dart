@@ -1,1 +1,0 @@
-// repository의 interface역할을 하는 abstract class를 정의합니다.

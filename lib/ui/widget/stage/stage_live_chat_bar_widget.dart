@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stomp_dart_client/stomp.dart';
 
 class StageLiveChatBarWidget extends StatefulWidget {
-  const StageLiveChatBarWidget({super.key, required this.stompClient});
-  final StompClient? stompClient;
+  const StageLiveChatBarWidget({super.key, required this.sendMessage});
+  final Function sendMessage;
 
   @override
   State<StageLiveChatBarWidget> createState() => _StageLiveChatBarWidgetState();
@@ -46,12 +45,6 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
     return _buildInputArea(context);
   }
 
-  _sendMessage() {
-    // widget.stompClient?.send(
-    //     destination: '/app/talks/messages',
-    //     body: json.encode({"content": "test"}));
-  }
-
   Widget _buildInputArea(BuildContext context) {
     return Stack(
       children: [
@@ -74,7 +67,7 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                 padding: const EdgeInsets.all(14),
                 child: Container(
                   height: 40,
-                  padding: const EdgeInsets.only(left: 14),
+                  padding: const EdgeInsets.fromLTRB(14, 0, 0, 2),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(36),
@@ -96,7 +89,11 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                       border: InputBorder.none,
                     ),
                     textInputAction: TextInputAction.next,
-                    onSubmitted: _sendMessage(),
+                    onSubmitted: (value) {
+                      widget.sendMessage(value);
+                      _textController.clear();
+                      //_textController.clear();
+                    },
                   ),
                 ),
               ),
