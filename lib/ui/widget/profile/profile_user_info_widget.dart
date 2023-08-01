@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_follow_screen.dart';
@@ -48,15 +49,22 @@ class ProfileUserInfoWidget extends StatelessWidget {
             height: 100,
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
-                child: user.profileImg != null
-                    ? Image.asset(
-                        user.profileImg!,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        'assets/images/app_logo.png', //추후에 포포 기본 이미지로 변경
-                        fit: BoxFit.cover,
-                      )),
+                child: Image.network(
+                  user.profileImg!,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: AppColor.purpleColor,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                    'assets/images/charactor_popo_default.png',
+                    fit: BoxFit.cover,
+                  ),
+                  fit: BoxFit.cover,
+                )),
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
