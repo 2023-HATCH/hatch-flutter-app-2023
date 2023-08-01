@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:provider/provider.dart';
 
 class LoginModalContent extends StatefulWidget {
@@ -11,11 +11,11 @@ class LoginModalContent extends StatefulWidget {
 }
 
 class _LoginModalContentState extends State<LoginModalContent> {
-  late AuthProvider authProvider;
+  late KaKaoLoginProvider _loginProvider;
 
   @override
   Widget build(BuildContext context) {
-    authProvider = Provider.of<AuthProvider>(context);
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context);
 
     return Column(
       children: [
@@ -64,7 +64,7 @@ class _LoginModalContentState extends State<LoginModalContent> {
             _loginButton(
               'kakao_login',
               () {
-                authProvider.kakaoSignIn();
+                _loginProvider.signIn();
                 Navigator.pop(context);
               },
             ),

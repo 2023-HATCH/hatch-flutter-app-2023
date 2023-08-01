@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_follow_screen.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ProfileUserInfoWidget extends StatelessWidget {
   ProfileUserInfoWidget({
     super.key,
@@ -33,6 +36,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context);
+    UserData user = _videoPlayProvider.videoList[index].user;
 
     return SizedBox(
       //color: Colors.yellow,
@@ -45,17 +49,28 @@ class ProfileUserInfoWidget extends StatelessWidget {
             width: 100,
             height: 100,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: Image.asset(
-                _videoPlayProvider.profiles[index],
-                fit: BoxFit.cover,
-              ),
-            ),
+                borderRadius: BorderRadius.circular(50),
+                child: Image.network(
+                  user.profileImg!,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: AppColor.purpleColor,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                    'assets/images/charactor_popo_default.png',
+                    fit: BoxFit.cover,
+                  ),
+                  fit: BoxFit.cover,
+                )),
           ),
           Container(
             margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
             child: Text(
-              _videoPlayProvider.nicknames[index],
+              user.nickname,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),

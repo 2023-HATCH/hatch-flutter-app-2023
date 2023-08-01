@@ -5,6 +5,7 @@ import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ProfileFollowScreen extends StatefulWidget {
   ProfileFollowScreen({Key? key, required this.tapNum, required this.index})
       : super(key: key);
@@ -90,7 +91,7 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _videoPlayProvider.nicknames[widget.index],
+          _videoPlayProvider.videoList[widget.index].user.nickname,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
@@ -137,6 +138,7 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
   }
 }
 
+// ignore: must_be_immutable
 class FollowListViewWidget extends StatefulWidget {
   FollowListViewWidget({
     Key? key,

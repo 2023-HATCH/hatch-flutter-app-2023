@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
-import 'package:pocket_pose/data/entity/response/signin_signup_response.dart';
+import 'package:pocket_pose/data/entity/response/kakao_login_response.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 
-class SignInSignUpRepository {
+class KaKaoLoginRepository {
   String? _extractToken(String? cookies, String tokenName) {
     if (cookies == null) return null;
     final pattern = '$tokenName=';
@@ -19,7 +19,7 @@ class SignInSignUpRepository {
     return cookies.substring(tokenStartIndex + pattern.length, tokenEndIndex);
   }
 
-  Future<SignInSignUpResponse> login(String kakaoAccessToken) async {
+  Future<KaKaoLoginResponse> login(String kakaoAccessToken) async {
     final url = Uri.parse(AppUrl.signInSignUpUrl);
     final headers = {
       'Content-Type': 'application/json;charset=UTF-8',
@@ -39,13 +39,14 @@ class SignInSignUpRepository {
         uuid: json['data']['uuid'],
         nickname: json['data']['nickname'],
         email: json['data']['email'],
+        profileImg: json['data']['profileImg'],
       );
 
       final cookies = response.headers['set-cookie'];
       final accessToken = _extractToken(cookies, 'x-access-token');
       final refreshToken = _extractToken(cookies, 'x-refresh-token');
 
-      return SignInSignUpResponse(
+      return KaKaoLoginResponse(
         accessToken: accessToken!,
         refreshToken: refreshToken!,
         user: user,

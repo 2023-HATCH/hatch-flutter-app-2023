@@ -6,6 +6,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/video_upload_request.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_upload_provider_impl.dart';
+import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/upload/custom_tag_text_field_controller.dart';
 import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class _UploadScreenState extends State<UploadScreen> {
   final TextEditingController _titleTextController = TextEditingController();
   VideoPlayerController? _videoPlayerController;
   late VideoPlayProvider _videoPlayProvider;
+
   late CustomTagTextFieldController _tagController;
   final _provider = VideoUploadProviderImpl();
   bool _isTitleFillOut = false;
@@ -32,6 +34,7 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   void initState() {
     _videoPlayProvider = Provider.of(context, listen: false);
+
     _videoPlayProvider.pauseVideo();
     _tagController = CustomTagTextFieldController(setIsTagsFillPutState);
     _initVideoPlayer();
@@ -67,7 +70,13 @@ class _UploadScreenState extends State<UploadScreen> {
       if (value.code == 'VIDEO-2001') {
         Fluttertoast.showToast(msg: '영상이 성공적으로 업로드 되었습니다.');
         _isLoading = false;
-        Navigator.pop(context);
+        _videoPlayProvider.resetVideo();
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+          (route) => false,
+        );
       }
     });
   }

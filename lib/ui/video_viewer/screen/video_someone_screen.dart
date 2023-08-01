@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/chat_button_widget.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class VideoSomeoneScreen extends StatefulWidget {
   VideoSomeoneScreen({Key? key, required this.index}) : super(key: key);
 
@@ -21,7 +23,6 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
   }
@@ -35,6 +36,8 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserData user = _videoPlayProvider.videoList[widget.index].user;
+
     return Scaffold(
         appBar: AppBar(
           //centerTitle: true, //Title text 가운데 정렬
@@ -55,7 +58,7 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
         ),
         extendBodyBehindAppBar: true, //body 위에 appbar
         resizeToAvoidBottomInset: false,
-        body: const VideoView(),
+        body: const VideoView(screenName: 'someone'),
         bottomSheet: Container(
           height: 65,
           color: Colors.white,
@@ -63,12 +66,16 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
             children: <Widget>[
               const Padding(padding: EdgeInsets.only(left: 18)),
               ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: Image.asset(
-                  _videoPlayProvider.profiles[widget.index],
-                  width: 40,
-                ),
-              ),
+                  borderRadius: BorderRadius.circular(50),
+                  child: user.profileImg != null
+                      ? Image.asset(
+                          user.profileImg!,
+                          width: 40,
+                        )
+                      : Image.asset(
+                          'assets/images/app_logo.png', //추후에 포포 기본 이미지로 변경
+                          width: 40,
+                        )),
               const Padding(padding: EdgeInsets.only(left: 18)),
               Expanded(
                 child: ChatButtonWidget(

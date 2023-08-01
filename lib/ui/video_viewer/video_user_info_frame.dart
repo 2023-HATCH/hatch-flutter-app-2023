@@ -1,9 +1,13 @@
 // ignore: must_be_immutable
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class VideoUserInfoFrame extends StatelessWidget {
   VideoUserInfoFrame({super.key, required this.index});
 
@@ -13,6 +17,8 @@ class VideoUserInfoFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    UserData user = _videoPlayProvider.videoList[index].user;
+    VideoData video = _videoPlayProvider.videoList[index];
 
     return Positioned(
         bottom: 110,
@@ -30,22 +36,49 @@ class VideoUserInfoFrame extends StatelessWidget {
                   child: Row(children: <Widget>[
                     ClipRRect(
                         borderRadius: BorderRadius.circular(50),
-                        child: Image.asset(_videoPlayProvider.profiles[index],
-                            width: 35)),
+                        child: Image.network(
+                          user.profileImg!,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                color: AppColor.purpleColor,
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
+                            'assets/images/charactor_popo_default.png',
+                            fit: BoxFit.cover,
+                            width: 35,
+                            height: 35,
+                          ),
+                          fit: BoxFit.cover,
+                          width: 35,
+                          height: 35,
+                        )),
                     const Padding(padding: EdgeInsets.only(left: 8)),
                     Text(
-                      _videoPlayProvider.nicknames[index],
+                      user.nickname,
                       style: const TextStyle(color: Colors.white),
                     ),
                   ]),
                 ),
                 const Padding(padding: EdgeInsets.only(bottom: 8)),
-                Text(
-                  _videoPlayProvider.contents[index],
+                RichText(
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.white),
+                    children: [
+                      TextSpan(
+                        text: '${video.title}  ',
+                      ),
+                      TextSpan(
+                        text: video.tag,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                 ),
               ]),

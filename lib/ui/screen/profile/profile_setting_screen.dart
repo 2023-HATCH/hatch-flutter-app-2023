@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +15,7 @@ class ProfileSettingScreen extends StatefulWidget {
 }
 
 class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
-  late AuthProvider authProvider;
+  late KaKaoLoginProvider _loginProvider;
 
   @override
   void initState() {
@@ -24,7 +24,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    authProvider = Provider.of<AuthProvider>(context);
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -101,7 +101,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                       Fluttertoast.showToast(
                         msg: '성공적으로 로그아웃 되었습니다.',
                       );
-                      authProvider.kakaoSignOut();
+                      _loginProvider.signOut();
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(

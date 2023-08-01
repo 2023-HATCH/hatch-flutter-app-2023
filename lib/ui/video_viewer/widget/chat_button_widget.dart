@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ChatButtonWidget extends StatefulWidget {
   ChatButtonWidget({super.key, required this.index, required this.childWidget});
 
@@ -80,6 +83,8 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    UserData user = _videoPlayProvider.videoList[widget.index].user;
+    VideoData video = _videoPlayProvider.videoList[widget.index];
 
     return InkWell(
         onTap: () => {
@@ -110,7 +115,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                             foregroundColor: Colors.black,
                             centerTitle: true,
                             title: Text(
-                              '댓글 ${_videoPlayProvider.chats[widget.index]}개',
+                              '댓글 ${video.commentCount}개',
                               style: const TextStyle(fontSize: 14),
                             ),
                           ),
@@ -217,15 +222,36 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                       const Padding(
                                           padding: EdgeInsets.only(left: 18)),
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(50),
-                                        child: Image.asset(
-                                          _videoPlayProvider
-                                              .profiles[widget.index],
-                                          width: 40,
-                                        ),
-                                      ),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          child: Image.network(
+                                            user.profileImg!,
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              }
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: AppColor.purpleColor,
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    Image.asset(
+                                              'assets/images/charactor_popo_default.png',
+                                              fit: BoxFit.cover,
+                                              width: 40,
+                                              height: 40,
+                                            ),
+                                            fit: BoxFit.cover,
+                                            width: 40,
+                                            height: 40,
+                                          )),
                                       const Padding(
-                                          padding: EdgeInsets.only(left: 18)),
+                                          padding: EdgeInsets.only(left: 12)),
                                       Expanded(
                                         child: Container(
                                           height: 36,
@@ -248,7 +274,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                                   cursorColor: Colors.white,
                                                   decoration: InputDecoration(
                                                     hintText:
-                                                        '${_videoPlayProvider.nicknames[widget.index]}(으)로 댓글 달기...',
+                                                        '${user.nickname}(으)로 댓글 달기...',
                                                     hintStyle: const TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 14),
@@ -267,7 +293,11 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                               TextButton(
                                                 onPressed: _textController
                                                         .text.isNotEmpty
-                                                    ? () => {}
+                                                    ? () {
+                                                        _textController.clear();
+                                                        FocusScope.of(context)
+                                                            .unfocus();
+                                                      }
                                                     : null,
                                                 child: Text(
                                                   '게시',

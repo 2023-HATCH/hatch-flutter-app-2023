@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
-import 'package:pocket_pose/data/remote/provider/auth_provider.dart';
+
+import 'package:pocket_pose/data/remote/provider/home_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/screen/on_boarding_screen.dart';
 import 'package:provider/provider.dart';
@@ -23,8 +27,11 @@ Future<void> main() async {
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => VideoPlayProvider()),
-    ChangeNotifierProvider(create: (_) => AuthProvider()),
+
+    ChangeNotifierProvider(create: (_) => KaKaoLoginProvider()),
+    ChangeNotifierProvider(create: (_) => HomeProvider()),
     ChangeNotifierProvider(create: (_) => StageProviderImpl()),
+
   ], child: MyApp(showOnBoarding: showOnBoarding)));
 }
 
