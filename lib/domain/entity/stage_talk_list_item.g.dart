@@ -10,7 +10,7 @@ StageTalkListItem _$StageTalkListItemFromJson(Map<String, dynamic> json) =>
     StageTalkListItem(
       content: json['content'] as String,
       sender: ChatUserListItem.fromJson(json['sender'] as Map<String, dynamic>),
-      createdAt: json['createdAt'] as String,
+      createdAt: json['createdAt'] as String?,
     )..messageId = json['messageId'] as String;
 
 Map<String, dynamic> _$StageTalkListItemToJson(StageTalkListItem instance) =>

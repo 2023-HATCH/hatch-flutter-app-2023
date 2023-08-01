@@ -21,6 +21,11 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
     notifyListeners();
   }
 
+  void addTalk(StageTalkListItem talk) {
+    _talkList.insert(0, talk);
+    notifyListeners();
+  }
+
   @override
   Future<BaseResponse<StageUserListResponse>> getUserList() async {
     const storage = FlutterSecureStorage();

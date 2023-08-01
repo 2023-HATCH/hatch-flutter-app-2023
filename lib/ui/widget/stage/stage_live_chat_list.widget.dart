@@ -59,6 +59,8 @@ class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
             ).createShader(bounds);
           },
           child: ListView.separated(
+              reverse: true,
+              shrinkWrap: true,
               controller: _scrollController,
               padding: const EdgeInsets.all(14),
               itemCount: entries.length,

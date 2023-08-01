@@ -12,6 +12,7 @@ import 'package:pocket_pose/data/entity/socket_response/talk_message_response.da
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
@@ -223,7 +224,11 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             jsonDecode(frame.body.toString()),
             TalkMessageResponse.fromJson(
                 jsonDecode(frame.body.toString())['data']));
-        print("mmm: ${socketResponse.data?.content}");
+
+        var talk = StageTalkListItem(
+            content: socketResponse.data!.content,
+            sender: socketResponse.data!.sender);
+        _stageProvider.addTalk(talk);
         break;
       default:
         if (mounted) {
