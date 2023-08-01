@@ -13,7 +13,6 @@ import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
-import 'package:pocket_pose/domain/provider/stage_provider.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
@@ -48,13 +47,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   int _userCount = 1;
   bool _isEnter = false;
   late VideoPlayProvider _videoPlayProvider;
-  final StageProvider _stageProvider = StageProviderImpl();
+  late StageProviderImpl _stageProvider;
   StageType _stageType = StageType.WAIT;
   StompClient? stompClient;
 
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
 
     return GestureDetector(
       onTap: () {
