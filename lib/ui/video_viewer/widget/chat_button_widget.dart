@@ -223,17 +223,34 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                       ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(50),
-                                          child: user.profileImg != null
-                                              ? Image.asset(
-                                                  user.profileImg!,
-                                                  width: 40,
-                                                )
-                                              : Image.asset(
-                                                  'assets/images/app_logo.png', //추후에 포포 기본 이미지로 변경
-                                                  width: 40,
-                                                )),
+                                          child: Image.network(
+                                            user.profileImg!,
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              }
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: AppColor.purpleColor,
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    Image.asset(
+                                              'assets/images/charactor_popo_default.png',
+                                              fit: BoxFit.cover,
+                                              width: 40,
+                                              height: 40,
+                                            ),
+                                            fit: BoxFit.cover,
+                                            width: 40,
+                                            height: 40,
+                                          )),
                                       const Padding(
-                                          padding: EdgeInsets.only(left: 18)),
+                                          padding: EdgeInsets.only(left: 12)),
                                       Expanded(
                                         child: Container(
                                           height: 36,
@@ -275,7 +292,11 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                               TextButton(
                                                 onPressed: _textController
                                                         .text.isNotEmpty
-                                                    ? () => {}
+                                                    ? () {
+                                                        _textController.clear();
+                                                        FocusScope.of(context)
+                                                            .unfocus();
+                                                      }
                                                     : null,
                                                 child: Text(
                                                   '게시',
