@@ -31,7 +31,9 @@ class _VideoViewState extends State<VideoView>
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
 
+    debugPrint('호출 initState');
     if (_videoPlayProvider.videoList.isEmpty) {
+      debugPrint('호출 _loadFirstVideos');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadFirstVideos();
       });
@@ -122,7 +124,6 @@ class _VideoViewState extends State<VideoView>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _videoPlayProvider.pauseVideo();
   }
@@ -142,7 +143,8 @@ class _VideoViewState extends State<VideoView>
       child: Stack(
         children: <Widget>[
           PageView.builder(
-            controller: _videoPlayProvider.pageController,
+            controller: _videoPlayProvider.pageController =
+                PageController(initialPage: _videoPlayProvider.currentIndex),
             scrollDirection: Axis.vertical,
             allowImplicitScrolling: true,
             itemCount: 200, // itemCount를 변경하도록 수정

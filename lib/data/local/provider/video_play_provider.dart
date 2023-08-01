@@ -5,9 +5,7 @@ import 'package:video_player/video_player.dart';
 class VideoPlayProvider with ChangeNotifier {
   late List<VideoPlayerController> controllers;
   late List<Future<void>> videoPlayerFutures;
-  late PageController pageController = PageController(
-    initialPage: currentIndex,
-  );
+  late PageController pageController;
 
   late bool loading = false;
   List<VideoData> videoList = [];
@@ -119,6 +117,9 @@ class VideoPlayProvider with ChangeNotifier {
     for (final controller in controllers) {
       controller.dispose();
     }
+
+    pageController.dispose();
+
     super.dispose();
   }
 }

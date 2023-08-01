@@ -55,7 +55,9 @@ class _MainScreenState extends State<MainScreen> {
         _showModalBottomSheet(); //토큰이 존재하지 않는 경우
       }
     } else {
-      _videoPlayProvider.playVideo();
+      debugPrint('현재 index!!!!: ${_videoPlayProvider.currentIndex}');
+
+      _videoPlayProvider.setVideo();
     }
   }
 
