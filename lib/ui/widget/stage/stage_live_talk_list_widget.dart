@@ -4,15 +4,15 @@ import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/ui/widget/stage/talk_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
-class StageLiveChatListWidget extends StatefulWidget {
-  const StageLiveChatListWidget({super.key});
+class StageLiveTalkListWidget extends StatefulWidget {
+  const StageLiveTalkListWidget({super.key});
 
   @override
-  State<StageLiveChatListWidget> createState() =>
-      _StageLiveChatListWidgetState();
+  State<StageLiveTalkListWidget> createState() =>
+      _StageLiveTalkListWidgetState();
 }
 
-class _StageLiveChatListWidgetState extends State<StageLiveChatListWidget> {
+class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
   final ScrollController _scrollController = ScrollController();
   late StageProviderImpl _provider;
 
