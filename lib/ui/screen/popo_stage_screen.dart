@@ -56,39 +56,41 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Container(
-            // 플레이, 결과 상태에 따라 배경화면 변경
-            decoration: buildBackgroundImage(),
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              extendBodyBehindAppBar: true,
-              backgroundColor: Colors.transparent,
-              appBar: buildAppBar(context),
-              body: Stack(
-                children: [
-                  _buildStageView(_stageType),
-                  const Positioned(
-                    bottom: 68,
-                    left: 0,
-                    right: 0,
-                    child: StageLiveChatListWidget(),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: StageLiveChatBarWidget(sendMessage: sendMessage),
-                  ),
-                ],
-              ),
-            )),
+    return ChangeNotifierProvider(
+      create: (_) => _stageProvider,
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Container(
+              // 플레이, 결과 상태에 따라 배경화면 변경
+              decoration: buildBackgroundImage(),
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                extendBodyBehindAppBar: true,
+                backgroundColor: Colors.transparent,
+                appBar: buildAppBar(context),
+                body: Stack(
+                  children: [
+                    _buildStageView(_stageType),
+                    const Positioned(
+                      bottom: 68,
+                      left: 0,
+                      right: 0,
+                      child: StageLiveChatListWidget(),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: StageLiveChatBarWidget(sendMessage: sendMessage),
+                    ),
+                  ],
+                ),
+              )),
+        ),
       ),
     );
   }
