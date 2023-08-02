@@ -13,8 +13,16 @@ import 'package:pocket_pose/domain/provider/stage_provider.dart';
 
 class StageProviderImpl extends ChangeNotifier implements StageProvider {
   final List<StageTalkListItem> _talkList = [];
+  bool _isClicked = false;
 
   List<StageTalkListItem> get talkList => _talkList;
+
+  bool get isClicked => _isClicked;
+  setIsClicked(bool value) => _isClicked = value;
+
+  void toggleIsLeft() {
+    if (isClicked) notifyListeners();
+  }
 
   void addTalkList(List<StageTalkListItem> list) {
     _talkList.addAll(list);

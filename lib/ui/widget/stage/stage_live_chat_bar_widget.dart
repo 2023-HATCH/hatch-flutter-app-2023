@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:provider/provider.dart';
 
 class StageLiveChatBarWidget extends StatefulWidget {
-  const StageLiveChatBarWidget({super.key, required this.sendMessage});
+  const StageLiveChatBarWidget(
+      {super.key, required this.sendMessage, required this.sendReaction});
   final Function sendMessage;
+  final Function sendReaction;
 
   @override
   State<StageLiveChatBarWidget> createState() => _StageLiveChatBarWidgetState();
@@ -14,11 +18,13 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
   final TextEditingController _textController = TextEditingController();
   final FocusNode _inputFieldFocusNode = FocusNode();
   bool _isFireIconVisible = true;
+  bool _isLeft = true;
 
   List<Widget> selectWidgets = [];
   final List<AnimationController> _animationControllers = [];
   final List<Animation<Offset>> _animations = [];
-  bool isLeft = true;
+
+  late StageProviderImpl _provider;
 
   @override
   void initState() {
@@ -42,10 +48,18 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
 
   @override
   Widget build(BuildContext context) {
+    _provider = Provider.of<StageProviderImpl>(context, listen: true);
+
+    if (_provider.isClicked) {
+      _provider.setIsClicked(false);
+      _handleIconClick();
+    }
+
     return _buildInputArea(context);
   }
 
   Widget _buildInputArea(BuildContext context) {
+    // _handleIconClick();
     return Stack(
       children: [
         _buildLiveChatBar(context),
@@ -92,7 +106,6 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                     onSubmitted: (value) {
                       widget.sendMessage(value);
                       _textController.clear();
-                      //_textController.clear();
                     },
                   ),
                 ),
@@ -106,7 +119,7 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                 child: InkWell(
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
-                  onTap: _handleIconClick,
+                  onTap: () => widget.sendReaction(), //_handleIconClick,
                   child: SvgPicture.asset(
                       'assets/icons/ic_popo_fire_unselect.svg'),
                 ),
@@ -117,11 +130,10 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
               width: _isFireIconVisible ? 14 : 0,
               child: Visibility(
                 visible: _isFireIconVisible,
-                child: InkWell(
+                child: const InkWell(
                     highlightColor: Colors.transparent,
                     splashColor: Colors.transparent,
-                    onTap: _handleIconClick,
-                    child: const SizedBox(
+                    child: SizedBox(
                       width: 14,
                     )),
               ),
@@ -134,7 +146,7 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
 
   void _handleIconClick() {
     setState(() {
-      isLeft = !isLeft;
+      _isLeft = !_isLeft;
 
       final animationController = AnimationController(
         duration: const Duration(milliseconds: 4000),
@@ -143,7 +155,7 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
 
       const beginOffset = Offset(0.0, 0.0);
       final middleOffset =
-          isLeft ? const Offset(-8.0, -100.0) : const Offset(8.0, -100.0);
+          _isLeft ? const Offset(-8.0, -100.0) : const Offset(8.0, -100.0);
       const endOffset = Offset(0.0, -200.0);
 
       final animation = TweenSequence([

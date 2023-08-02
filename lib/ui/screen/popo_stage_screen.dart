@@ -34,7 +34,8 @@ enum StageType {
   MVP_START,
   USER_COUNT,
   STAGE_ROUTINE_STOP,
-  TALK_MESSAGE
+  TALK_MESSAGE,
+  TALK_REACTION
 }
 
 class PoPoStageScreen extends StatefulWidget {
@@ -84,7 +85,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: StageLiveChatBarWidget(sendMessage: _sendMessage),
+                    child: StageLiveChatBarWidget(
+                        sendMessage: _sendMessage, sendReaction: _sendReaction),
                   ),
                 ],
               ),
@@ -168,6 +170,19 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     }
   }
 
+  void _sendReaction() async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    if (_stompClient != null) {
+      _stompClient?.send(
+        destination: '/app/talks/reactions',
+        headers: {'x-access-token': token},
+      );
+    }
+  }
+
   BoxDecoration _buildBackgroundImage() {
     return BoxDecoration(
       image: DecorationImage(
@@ -229,6 +244,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             content: socketResponse.data!.content,
             sender: socketResponse.data!.sender);
         _stageProvider.addTalk(talk);
+        break;
+      case StageType.TALK_REACTION:
+        _stageProvider.setIsClicked(true);
+        _stageProvider.toggleIsLeft();
         break;
       default:
         if (mounted) {
