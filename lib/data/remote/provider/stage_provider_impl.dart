@@ -9,13 +9,16 @@ import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/entity/response/stage_enter_response.dart';
 import 'package:pocket_pose/data/entity/response/stage_user_list_response.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
+import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
 import 'package:pocket_pose/domain/provider/stage_provider.dart';
 
 class StageProviderImpl extends ChangeNotifier implements StageProvider {
   final List<StageTalkListItem> _talkList = [];
+  final List<StageUserListItem> _userList = [];
   bool _isClicked = false;
 
   List<StageTalkListItem> get talkList => _talkList;
+  List<StageUserListItem> get userList => _userList;
 
   bool get isClicked => _isClicked;
   setIsClicked(bool value) => _isClicked = value;
@@ -49,9 +52,13 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
       };
       dio.options.contentType = "application/json";
       var response = await dio.get(AppUrl.stageUserListUrl);
-
-      return BaseResponse<StageUserListResponse>.fromJson(
+      var responseJson = BaseResponse<StageUserListResponse>.fromJson(
           response.data, StageUserListResponse.fromJson(response.data['data']));
+      _userList.clear();
+      _userList.addAll(responseJson.data.list ?? []);
+
+      notifyListeners();
+      return responseJson;
     } catch (e) {
       debugPrint("mmm StageProviderImpl catch: ${e.toString()}");
     }
