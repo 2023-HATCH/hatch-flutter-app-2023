@@ -27,5 +27,7 @@ class AppUrl {
   static const skeletonAccuracyUrl = "$_aiBaseUrl/api/similarity/test";
 
   // web socket
-  static const subscribeStageUrl = "/topic/stage";
+  static const socketSubscribeStageUrl = "/topic/stage";
+  static const socketTalkUrl = "/app/talks/messages";
+  static const socketReactionUrl = "/app/talks/reactions";
 }
