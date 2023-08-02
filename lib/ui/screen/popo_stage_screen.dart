@@ -58,6 +58,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -231,6 +232,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 jsonDecode(frame.body.toString())['data']));
         setState(() {
           _userCount = socketResponse.data!.userCount;
+          _stageProvider.getUserList();
         });
 
         break;
@@ -265,9 +267,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
       child: OutlinedButton.icon(
         onPressed: () async {
-          var response = await _stageProvider.getUserList();
-
-          _showUserListDialog(response.data.list ?? []);
+          await _stageProvider.getUserList();
+          _showUserListDialog(_stageProvider.userList);
         },
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
@@ -291,65 +292,67 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   Future<dynamic> _showUserListDialog(List<StageUserListItem> userList) {
     return showDialog(
-        context: context,
-        barrierColor: Colors.transparent,
-        builder: (BuildContext context) {
-          return BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  side: const BorderSide(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              side: const BorderSide(
+                color: Colors.white,
+                width: 1.0,
+              ),
+            ),
+            backgroundColor: Colors.white.withOpacity(0.3),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(child: Container()),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
+                  child: Text(
+                    '참여자 목록',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Expanded(child: Container()),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Icon(
+                    Icons.close,
+                    size: 20,
                     color: Colors.white,
-                    width: 1.0,
                   ),
                 ),
-                backgroundColor: Colors.white.withOpacity(0.3),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(child: Container()),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20),
-                      child: Text(
-                        '참여자 목록',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Expanded(child: Container()),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Icon(
-                        Icons.close,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+              ],
+            ),
+            content: SizedBox(
+              width: 265,
+              height: 365,
+              child: GridView.builder(
+                itemCount: context.watch<StageProviderImpl>().userList.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
                 ),
-                content: SizedBox(
-                  width: 265,
-                  height: 365,
-                  child: GridView.builder(
-                    itemCount: userList.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      return UserListItemWidget(user: userList[index]);
-                    },
-                  ),
-                )),
-          );
-        });
+                itemBuilder: (BuildContext context, int index) {
+                  return UserListItemWidget(
+                      user: context.watch<StageProviderImpl>().userList[index]);
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildStageView(StageType type) {
