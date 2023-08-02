@@ -30,7 +30,12 @@ class VideoPlayProvider with ChangeNotifier {
 
   void addVideos(List<VideoData> newVideoList) {
     int num = videoList.length;
+
     videoList.addAll(newVideoList);
+
+    for (final video in videoList) {
+      debugPrint(video.videoUrl);
+    }
 
     // Add VideoPlayer Controller
     controllers.addAll(List<VideoPlayerController>.generate(
@@ -68,8 +73,6 @@ class VideoPlayProvider with ChangeNotifier {
   }
 
   void resetVideoPlayer() {
-    dispose();
-
     controllers = [];
     videoPlayerFutures = [];
     videoList = [];
@@ -82,12 +85,12 @@ class VideoPlayProvider with ChangeNotifier {
 
   @override
   void dispose() {
+    super.dispose();
+
     for (final controller in controllers) {
       controller.dispose();
     }
 
     pageController.dispose();
-
-    super.dispose();
   }
 }
