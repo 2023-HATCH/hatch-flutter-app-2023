@@ -59,7 +59,6 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
   }
 
   Widget _buildInputArea(BuildContext context) {
-    // _handleIconClick();
     return Stack(
       children: [
         _buildLiveChatBar(context),
