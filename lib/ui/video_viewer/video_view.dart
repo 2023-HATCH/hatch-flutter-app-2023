@@ -31,37 +31,13 @@ class _VideoViewState extends State<VideoView>
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
 
-    if (_videoPlayProvider.videoList.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _loadFirstVideos();
-      });
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _videoPlayProvider.setVideo();
-      });
-    }
-  }
-
-  Future<void> _loadFirstVideos() async {
-    try {
-      final homeProvider = Provider.of<HomeProvider>(context, listen: false);
-      homeProvider
-          .getVideos(HomeVideosRequest(
-              page: _videoPlayProvider.currentPage,
-              size: _videoPlayProvider.PAGESIZE))
-          .then((value) {
-        final newVideos = homeProvider.response?.videoList;
-
-        if (newVideos != null && newVideos.isNotEmpty) {
-          setState(() {
-            _videoPlayProvider.initializeVideos(newVideos);
-          });
-        }
-      });
-      _videoPlayProvider.currentPage++;
-    } catch (e) {
-      debugPrint('홈 영상 list 조회 api 호출 실패');
-    } finally {}
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_videoPlayProvider.videoList.isEmpty) {
+        _loadMoreVideos();
+      } else {
+        _videoPlayProvider.playVideo();
+      }
+    });
   }
 
   Future<void> _loadMoreVideos() async {
@@ -75,18 +51,23 @@ class _VideoViewState extends State<VideoView>
           .then((value) {
         final response = homeProvider.response;
 
-        if (response != null && response.videoList.isNotEmpty) {
+        if (response != null) {
           setState(() {
             if (response.isLast) {
               _videoPlayProvider.isLast = true;
+              return;
             }
-            _videoPlayProvider.addVideos(response.videoList);
-            _videoPlayProvider.currentPage++;
+
+            if (response.videoList.isNotEmpty) {
+              _videoPlayProvider.currentPage++;
+              _videoPlayProvider.addVideos(response.videoList);
+            }
           });
         }
       });
     } catch (e) {
       // Handle error if needed
+      debugPrint('moon video_view.dart error: $e');
     } finally {}
   }
 
@@ -94,7 +75,17 @@ class _VideoViewState extends State<VideoView>
     setState(() {
       _videoPlayProvider.pauseVideo();
 
-      if (_videoPlayProvider.isLast) {
+      if (!_videoPlayProvider.isLast) {
+        _videoPlayProvider.currentIndex = index;
+
+        if (_videoPlayProvider.videoList.length -
+                _videoPlayProvider.currentIndex <=
+            _videoPlayProvider.PAGESIZE - 1) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _loadMoreVideos();
+          });
+        }
+      } else {
         if (_videoPlayProvider.videoList.length == index) {
           // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
           _videoPlayProvider.pageController.jumpToPage(0);
@@ -102,18 +93,9 @@ class _VideoViewState extends State<VideoView>
         } else {
           _videoPlayProvider.currentIndex = index;
         }
-      } else {
-        _videoPlayProvider.currentIndex = index;
-        if (_videoPlayProvider.videoList.length -
-                _videoPlayProvider.currentIndex <=
-            _videoPlayProvider.PAGESIZE * 2) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _loadMoreVideos();
-          });
-        }
       }
 
-      _videoPlayProvider.setVideo();
+      _videoPlayProvider.playVideo();
     });
   }
 
@@ -130,8 +112,8 @@ class _VideoViewState extends State<VideoView>
     return RefreshIndicator(
       onRefresh: () async {
         setState(() {
-          _videoPlayProvider.resetVideo();
-          _loadFirstVideos();
+          _videoPlayProvider.resetVideoPlayer();
+          _loadMoreVideos();
         });
       },
       color: AppColor.purpleColor,
@@ -167,7 +149,7 @@ class _VideoViewState extends State<VideoView>
                 if (_videoPlayProvider.currentIndex <= 0) {
                   return const MusicSpinner(); // 비디오 로딩 중
                 } else {
-                  return buildVideoPlayer(0);
+                  return Container(color: Colors.black);
                 }
               }
             },
