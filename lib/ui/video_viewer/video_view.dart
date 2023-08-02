@@ -139,7 +139,6 @@ class _VideoViewState extends State<VideoView>
                       _videoPlayProvider.loading = true;
                       return buildVideoPlayer(index); // 비디오 플레이어 생성
                     } else {
-                      _videoPlayProvider.loading = false;
                       return const MusicSpinner(); // 비디오 로딩 중
                     }
                   },
