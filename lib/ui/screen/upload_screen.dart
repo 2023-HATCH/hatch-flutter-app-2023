@@ -70,7 +70,7 @@ class _UploadScreenState extends State<UploadScreen> {
       if (value.code == 'VIDEO-2001') {
         Fluttertoast.showToast(msg: '영상이 성공적으로 업로드 되었습니다.');
         _isLoading = false;
-        _videoPlayProvider.resetVideo();
+        _videoPlayProvider.resetVideoPlayer();
 
         Navigator.pushAndRemoveUntil(
           context,
