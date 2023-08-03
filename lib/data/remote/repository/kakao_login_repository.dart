@@ -36,7 +36,7 @@ class KaKaoLoginRepository {
       debugPrint("json: $json");
 
       final user = UserData(
-        uuid: json['data']['uuid'],
+        userId: json['data']['userId'],
         nickname: json['data']['nickname'],
         email: json['data']['email'],
         profileImg: json['data']['profileImg'],
