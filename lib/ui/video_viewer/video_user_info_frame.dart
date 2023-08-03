@@ -37,7 +37,8 @@ class VideoUserInfoFrame extends StatelessWidget {
                     ClipRRect(
                         borderRadius: BorderRadius.circular(50),
                         child: Image.network(
-                          user.profileImg!,
+                          user.profileImg ??
+                              'assets/images/charactor_popo_default.png',
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
                             return Center(
