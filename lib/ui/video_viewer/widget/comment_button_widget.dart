@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -22,7 +22,7 @@ class CommentButtonWidget extends StatefulWidget {
 
 class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   final TextEditingController _textController = TextEditingController();
-  late VideoPlayProvider _videoPlayProvider;
+  late KaKaoLoginProvider _loginProvider;
 
   List<String> userimgs = [
     'assets/images/chat_user_1.png',
@@ -73,6 +73,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   List<Widget> textWidgets = [];
 
+  late String _profileImg;
+  late String _hintText;
+
   Future<void> _loadCommentList() async {
     try {
       final commentProvider =
@@ -91,9 +94,23 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
     } finally {}
   }
 
+  void initUser() async {
+    if (await _loginProvider.checkAccessToken()) {
+      // 로그인
+      _profileImg = _profileImg ?? 'assets/images/charactor_popo_default.png';
+      _hintText = '{user.nickname}(으)로 댓글 달기...';
+    } else {
+      // 비로그인
+      _profileImg = 'assets/images/charactor_popo_default.png';
+      _hintText = '따듯한 말 한마디 남겨 주세요 💛';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+    initUser();
   }
 
   @override
@@ -104,8 +121,6 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-
     return InkWell(
         onTap: () => {
               _loadCommentList(),
@@ -207,24 +222,34 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                     children: [
                                       for (int i = 0; i < emojiList.length; i++)
                                         InkWell(
-                                          onTap: () {
-                                            int cursorPosition =
-                                                _textController.text.length;
-                                            String text = _textController.text;
-                                            String newText =
-                                                text + emojiList[i];
-                                            _textController.value =
-                                                TextEditingValue(
-                                              text: newText,
-                                              selection:
-                                                  TextSelection.collapsed(
-                                                      offset: cursorPosition +
-                                                          emojiList[i].length),
-                                            );
+                                          onTap: () async {
+                                            if (await _loginProvider
+                                                    .checkAccessToken() ==
+                                                false) {
+                                              Navigator.pop(context);
+                                              _loginProvider
+                                                  .showLoginBottomSheet();
+                                            } else {
+                                              int cursorPosition =
+                                                  _textController.text.length;
+                                              String text =
+                                                  _textController.text;
+                                              String newText =
+                                                  text + emojiList[i];
+                                              _textController.value =
+                                                  TextEditingValue(
+                                                text: newText,
+                                                selection:
+                                                    TextSelection.collapsed(
+                                                        offset: cursorPosition +
+                                                            emojiList[i]
+                                                                .length),
+                                              );
 
-                                            bottomState(() {
-                                              setState(() {});
-                                            });
+                                              bottomState(() {
+                                                setState(() {});
+                                              });
+                                            }
                                           },
                                           child: Text(
                                             emojiList[i],
@@ -246,7 +271,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                           borderRadius:
                                               BorderRadius.circular(50),
                                           child: Image.network(
-                                            'user.profileImg!',
+                                            _profileImg,
                                             loadingBuilder: (context, child,
                                                 loadingProgress) {
                                               if (loadingProgress == null) {
@@ -293,18 +318,32 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                 child: TextField(
                                                   controller: _textController,
                                                   cursorColor: Colors.white,
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    hintText:
-                                                        '{user.nickname}(으)로 댓글 달기...',
-                                                    hintStyle: TextStyle(
+                                                  decoration: InputDecoration(
+                                                    hintText: _hintText,
+                                                    hintStyle: const TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 14),
-                                                    labelStyle: TextStyle(
+                                                    labelStyle: const TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 14),
                                                     border: InputBorder.none,
                                                   ),
+                                                  onTap: () async {
+                                                    bottomState(() {
+                                                      setState(() async {
+                                                        if (await _loginProvider
+                                                                .checkAccessToken() ==
+                                                            false) {
+                                                          FocusScope.of(context)
+                                                              .unfocus();
+                                                          Navigator.pop(
+                                                              context);
+                                                          _loginProvider
+                                                              .showLoginBottomSheet();
+                                                        }
+                                                      });
+                                                    });
+                                                  },
                                                   onChanged: (text) {
                                                     bottomState(() {
                                                       setState(() {});
@@ -313,14 +352,28 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                 ),
                                               ),
                                               TextButton(
-                                                onPressed: _textController
-                                                        .text.isNotEmpty
-                                                    ? () {
-                                                        _textController.clear();
-                                                        FocusScope.of(context)
-                                                            .unfocus();
-                                                      }
-                                                    : null,
+                                                onPressed: () async {
+                                                  setState(() async {
+                                                    if (await _loginProvider
+                                                            .checkAccessToken() ==
+                                                        false) {
+                                                      Navigator.pop(context);
+                                                      _loginProvider
+                                                          .showLoginBottomSheet();
+                                                    } else {
+                                                      _textController
+                                                              .text.isNotEmpty
+                                                          ? () {
+                                                              _textController
+                                                                  .clear();
+                                                              FocusScope.of(
+                                                                      context)
+                                                                  .unfocus();
+                                                            }
+                                                          : null;
+                                                    }
+                                                  });
+                                                },
                                                 child: Text(
                                                   '게시',
                                                   style: TextStyle(
