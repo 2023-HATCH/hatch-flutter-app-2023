@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/chat_button_widget.dart';
+import 'package:pocket_pose/ui/video_viewer/widget/comment_button_widget.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/like_button_widget.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/share_button_widget.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +21,7 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    final video = _videoPlayProvider.videoList[widget.index];
 
     return Positioned(
       right: 12,
@@ -32,8 +33,9 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
           children: <Widget>[
             LikeButtonWidget(index: widget.index),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
-            ChatButtonWidget(
-              index: widget.index,
+            CommentButtonWidget(
+              videoId: video.uuid,
+              commentCount: video.commentCount,
               childWidget: Column(
                 children: <Widget>[
                   SvgPicture.asset(
@@ -41,7 +43,7 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 2)),
                   Text(
-                    '${_videoPlayProvider.videoList[widget.index].commentCount}',
+                    '${video.commentCount}',
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ],

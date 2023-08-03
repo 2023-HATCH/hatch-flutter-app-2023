@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
-import 'package:pocket_pose/domain/entity/user_data.dart';
-import 'package:pocket_pose/domain/entity/video_data.dart';
+import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class ChatButtonWidget extends StatefulWidget {
-  ChatButtonWidget({super.key, required this.index, required this.childWidget});
+class CommentButtonWidget extends StatefulWidget {
+  CommentButtonWidget(
+      {super.key,
+      required this.videoId,
+      required this.commentCount,
+      required this.childWidget});
 
-  int index;
+  String videoId;
+  int commentCount;
   Widget childWidget;
 
   @override
-  State<ChatButtonWidget> createState() => _ChatButtonWidgetState();
+  State<CommentButtonWidget> createState() => _CommentButtonWidgetState();
 }
 
-class _ChatButtonWidgetState extends State<ChatButtonWidget> {
+class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   final TextEditingController _textController = TextEditingController();
   late VideoPlayProvider _videoPlayProvider;
 
@@ -69,6 +73,24 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
 
   List<Widget> textWidgets = [];
 
+  Future<void> _loadCommentList() async {
+    try {
+      final commentProvider =
+          Provider.of<CommentProvider>(context, listen: false);
+      commentProvider.getComments(widget.videoId).then((value) {
+        final comments = commentProvider.response?.commentList;
+
+        if (comments != null && comments.isNotEmpty) {
+          setState(() {
+            comments;
+          });
+        }
+      });
+    } catch (e) {
+      debugPrint('댓글 목록 조회 api 호출 실패');
+    } finally {}
+  }
+
   @override
   void initState() {
     super.initState();
@@ -83,11 +105,10 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-    UserData user = _videoPlayProvider.videoList[widget.index].user;
-    VideoData video = _videoPlayProvider.videoList[widget.index];
 
     return InkWell(
         onTap: () => {
+              _loadCommentList(),
               showModalBottomSheet(
                 context: context,
                 shape: const RoundedRectangleBorder(
@@ -115,7 +136,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                             foregroundColor: Colors.black,
                             centerTitle: true,
                             title: Text(
-                              '댓글 ${video.commentCount}개',
+                              '댓글 ${widget.commentCount}개',
                               style: const TextStyle(fontSize: 14),
                             ),
                           ),
@@ -225,7 +246,7 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                           borderRadius:
                                               BorderRadius.circular(50),
                                           child: Image.network(
-                                            user.profileImg!,
+                                            'user.profileImg!',
                                             loadingBuilder: (context, child,
                                                 loadingProgress) {
                                               if (loadingProgress == null) {
@@ -272,13 +293,14 @@ class _ChatButtonWidgetState extends State<ChatButtonWidget> {
                                                 child: TextField(
                                                   controller: _textController,
                                                   cursorColor: Colors.white,
-                                                  decoration: InputDecoration(
+                                                  decoration:
+                                                      const InputDecoration(
                                                     hintText:
-                                                        '${user.nickname}(으)로 댓글 달기...',
-                                                    hintStyle: const TextStyle(
+                                                        '{user.nickname}(으)로 댓글 달기...',
+                                                    hintStyle: TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 14),
-                                                    labelStyle: const TextStyle(
+                                                    labelStyle: TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 14),
                                                     border: InputBorder.none,

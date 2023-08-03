@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 
 import 'package:pocket_pose/data/remote/provider/home_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
@@ -31,6 +32,7 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (_) => KaKaoLoginProvider()),
     ChangeNotifierProvider(create: (_) => HomeProvider()),
     ChangeNotifierProvider(create: (_) => LikeProvider()),
+    ChangeNotifierProvider(create: (_) => CommentProvider()),
     ChangeNotifierProvider(create: (_) => StageProviderImpl()),
   ], child: MyApp(showOnBoarding: showOnBoarding)));
 }

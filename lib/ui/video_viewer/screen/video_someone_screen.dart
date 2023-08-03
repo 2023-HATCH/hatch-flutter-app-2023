@@ -4,7 +4,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/chat_button_widget.dart';
+import 'package:pocket_pose/ui/video_viewer/widget/comment_button_widget.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -37,6 +37,7 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
   @override
   Widget build(BuildContext context) {
     UserData user = _videoPlayProvider.videoList[widget.index].user;
+    final video = _videoPlayProvider.videoList[widget.index];
 
     return Scaffold(
         appBar: AppBar(
@@ -78,8 +79,9 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
                         )),
               const Padding(padding: EdgeInsets.only(left: 18)),
               Expanded(
-                child: ChatButtonWidget(
-                  index: widget.index,
+                child: CommentButtonWidget(
+                  videoId: video.uuid,
+                  commentCount: video.commentCount,
                   childWidget: Container(
                     height: 36,
                     decoration: BoxDecoration(

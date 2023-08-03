@@ -19,6 +19,9 @@ class AppUrl {
   // 좋아요
   static const likeUrl = "$_apiBaseUrl/likes";
 
+  // 댓글
+  static const commentUrl = "$_apiBaseUrl/comments";
+
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";
   static const stageUserListUrl = "$_stageUrl/users";
