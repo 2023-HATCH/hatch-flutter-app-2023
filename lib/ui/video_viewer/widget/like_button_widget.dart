@@ -45,11 +45,13 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
           if (await loginProvider.checkAccessToken()) {
             if (!isLiked) {
               likeProvider.postLike(video.uuid);
+            } else {
+              likeProvider.deleteLike(video.uuid);
             }
             return !isLiked;
           } else {
             loginProvider.showLoginBottomSheet();
-            return likeProvider.isSuccess ?? false;
+            return likeProvider.isPostSuccess ?? false;
           }
         },
         likeBuilder: (isLiked) {
