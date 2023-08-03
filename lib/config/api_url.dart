@@ -16,6 +16,9 @@ class AppUrl {
   // 홈
   static const homeVideosUrl = "$_apiBaseUrl/videos";
 
+  // 좋아요
+  static const likeUrl = "$_apiBaseUrl/likes";
+
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";
   static const stageUserListUrl = "$_stageUrl/users";
