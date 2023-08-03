@@ -7,13 +7,17 @@ import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
-enum StagePlayScore { bad, good, great, excellent, perfect }
+enum StagePlayScore { bad, good, great, excellent, perfect, none }
 
 // ml_kit_skeleton_custom_view
 class PoPoPlayView extends StatefulWidget {
-  const PoPoPlayView({Key? key, required this.isResultState}) : super(key: key);
+  final List<StagePlayerListItem> players;
+  const PoPoPlayView(
+      {Key? key, required this.isResultState, required this.players})
+      : super(key: key);
   final bool isResultState;
 
   @override
@@ -49,12 +53,36 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              getProfile('assets/images/home_profile_1.jpg', 'okoi2202',
-                  StagePlayScore.good),
-              getProfile('assets/images/home_profile_2.jpg', 'ONEUS',
-                  StagePlayScore.bad),
-              getProfile('assets/images/home_profile_3.jpg', 'joyseoworld',
-                  StagePlayScore.excellent),
+              if (widget.players.length > 1)
+                getProfile(widget.players[1].profileImg,
+                    widget.players[1].nickname, StagePlayScore.good)
+              else
+                Visibility(
+                    visible: false,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: getProfile(null, "", StagePlayScore.none)),
+              if (widget.players.isNotEmpty)
+                getProfile(widget.players[0].profileImg,
+                    widget.players[0].nickname, StagePlayScore.bad)
+              else
+                Visibility(
+                    visible: false,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: getProfile(null, "", StagePlayScore.none)),
+              if (widget.players.length > 2)
+                getProfile(widget.players[2].profileImg,
+                    widget.players[2].nickname, StagePlayScore.excellent)
+              else
+                Visibility(
+                    visible: false,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: getProfile(null, "", StagePlayScore.none)),
             ],
           ),
         ),
@@ -85,16 +113,24 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     super.dispose();
   }
 
-  Column getProfile(String profileImg, String nickName, StagePlayScore score) {
+  Column getProfile(String? profileImg, String nickName, StagePlayScore score) {
     return Column(
       children: [
         ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: Image.asset(
-              profileImg,
-              width: 50,
-              height: 50,
-            )),
+          borderRadius: BorderRadius.circular(50),
+          child: (profileImg == null)
+              ? Image.asset(
+                  'assets/images/charactor_popo_default.png',
+                  width: 50,
+                  height: 50,
+                )
+              : Image.network(
+                  profileImg,
+                  fit: BoxFit.cover,
+                  width: 50,
+                  height: 50,
+                ),
+        ),
         const SizedBox(
           height: 8,
         ),
@@ -133,6 +169,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       case StagePlayScore.perfect:
         scoreText = "Perfect";
         scoreNeonColor = AppColor.yellowColor2;
+        break;
+      case StagePlayScore.none:
+        scoreText = "";
         break;
     }
 

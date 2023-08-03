@@ -137,6 +137,7 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
       return;
     } catch (e) {
       debugPrint("mmm StageProviderImpl catch: ${e.toString()}");
+      if (e.toString().contains("500")) return;
     }
     throw UnimplementedError();
   }
