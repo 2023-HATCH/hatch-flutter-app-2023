@@ -13,18 +13,6 @@ import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
-enum StageType {
-  WAIT, // only front
-  CATCH_START,
-  CATCH_END,
-  PLAY_START,
-  MVP_START,
-  USER_COUNT,
-  STAGE_ROUTINE_STOP,
-  TALK_MESSAGE,
-  TALK_REACTION
-}
-
 class PoPoStageScreen extends StatefulWidget {
   const PoPoStageScreen({super.key, required this.getIndex()});
   final Function getIndex;
@@ -34,7 +22,6 @@ class PoPoStageScreen extends StatefulWidget {
 }
 
 class _PoPoStageScreenState extends State<PoPoStageScreen> {
-  // final int _userCount = 1;
   bool _isEnter = false;
   late VideoPlayProvider _videoPlayProvider;
   late StageProviderImpl _stageProvider;
@@ -47,40 +34,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
 
-    if (!_isEnter) {
-      _isEnter = true;
-      _socketStageProvider.connectWebSocket();
-      if (_socketStageProvider.isConnect) {
-        _stageProvider
-            .getStageEnter(StageEnterRequest(page: 0, size: 10))
-            .then((value) =>
-                _socketStageProvider.setUserCount(value.data.userCount))
-            .then((_) => _socketStageProvider.onSubscribe());
-      }
-    }
-
-    // 실시간 사용자 숫자
-    if (_socketStageProvider.isUserCountChange) {
-      _socketStageProvider.setIsUserCountChange(false);
-      _stageProvider.getUserList();
-    }
-
-    // 실시간 채팅
-    if (_socketStageProvider.isTalk) {
-      _socketStageProvider.setIsTalk(false);
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _stageProvider.addTalk(_socketStageProvider.talk!);
-      });
-    }
-
-    // 실시간 반응
-    if (_socketStageProvider.isReaction) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _socketStageProvider.setIsReaction(false);
-        _stageProvider.setIsClicked(true);
-        _stageProvider.toggleIsLeft();
-      });
-    }
+    // 입장
+    _popoStageEnter();
+    // 소켓 반응 처리
+    _onSocketResponse();
 
     return GestureDetector(
       onTap: () {
@@ -130,8 +87,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (widget.getIndex() == 0) {
       _videoPlayProvider.playVideo();
     }
-    _socketStageProvider.deactivateWebSocket();
+
     if (_isEnter) {
+      _socketStageProvider.deactivateWebSocket();
       _stageProvider.getStageExit();
       _isEnter = false;
     }
@@ -139,14 +97,52 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     super.dispose();
   }
 
+  void _popoStageEnter() {
+    if (!_isEnter) {
+      _isEnter = true;
+      _socketStageProvider.connectWebSocket();
+      if (_socketStageProvider.isConnect) {
+        _stageProvider
+            .getStageEnter(StageEnterRequest(page: 0, size: 10))
+            .then((value) =>
+                _socketStageProvider.setUserCount(value.data.userCount))
+            .then((_) => _socketStageProvider.onSubscribe());
+      }
+    }
+  }
+
+  void _onSocketResponse() {
+    // 실시간 사용자 숫자
+    if (_socketStageProvider.isUserCountChange) {
+      _socketStageProvider.setIsUserCountChange(false);
+      _stageProvider.getUserList();
+    }
+
+    // 실시간 채팅
+    if (_socketStageProvider.isTalk) {
+      _socketStageProvider.setIsTalk(false);
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _stageProvider.addTalk(_socketStageProvider.talk!);
+      });
+    }
+
+    // 실시간 반응
+    if (_socketStageProvider.isReaction) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _socketStageProvider.setIsReaction(false);
+        _stageProvider.setIsClicked(true);
+        _stageProvider.toggleIsLeft();
+      });
+    }
+  }
+
   BoxDecoration _buildBackgroundImage() {
     return BoxDecoration(
       image: DecorationImage(
         fit: BoxFit.cover,
-        image: AssetImage(
-            (_socketStageProvider.stageType == StageType.MVP_START)
-                ? 'assets/images/bg_popo_result.png'
-                : 'assets/images/bg_popo_comm.png'),
+        image: AssetImage((_socketStageProvider.IsMVPStart)
+            ? 'assets/images/bg_popo_result.png'
+            : 'assets/images/bg_popo_comm.png'),
       ),
     );
   }

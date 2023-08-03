@@ -10,7 +10,6 @@ import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
-import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
 import 'package:pocket_pose/ui/view/popo_result_view.dart';
@@ -18,6 +17,18 @@ import 'package:pocket_pose/ui/view/popo_wait_view.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
+
+enum StageType {
+  WAIT, // only front
+  CATCH_START,
+  CATCH_END,
+  PLAY_START,
+  MVP_START,
+  USER_COUNT,
+  STAGE_ROUTINE_STOP,
+  TALK_MESSAGE,
+  TALK_REACTION
+}
 
 class SocketStageProviderImpl extends ChangeNotifier
     implements SocketStageProvider {
@@ -43,6 +54,8 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isTalk => _isTalk;
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
+
+  bool get IsMVPStart => stageType == StageType.MVP_START;
 
   setTalk(StageTalkListItem value) {
     _talk = value;
