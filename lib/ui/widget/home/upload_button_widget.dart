@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/ui/screen/upload_screen.dart';
+import 'package:pocket_pose/ui/screen/home/home_upload_screen.dart';
 
 class UploadButtonWidget extends StatefulWidget {
   const UploadButtonWidget({
@@ -39,7 +39,8 @@ class _UploadButtonWidgetState extends State<UploadButtonWidget> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => UploadScreen(uploadFile: videoFile!)),
+                  builder: (context) =>
+                      HomeUploadScreen(uploadFile: videoFile!)),
             );
           } else {
             ScaffoldMessenger.of(widget.context).showSnackBar(
