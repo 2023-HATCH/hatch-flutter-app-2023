@@ -36,10 +36,24 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   CustomPaint? _customPaintRight;
   // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
   SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
-  final bool _isPlayer = true;
+  bool _isPlayer = false;
+  int _playerNum = -1;
   // input Lists
   final List<List<double>> _inputLists = [];
   final _provider = PoPoSkeletonProviderImpl();
+
+  @override
+  void initState() {
+    String myUuid = "03f78118-f1ef-4422-b92a-f74f5a25dfea";
+
+    for (var player in widget.players) {
+      if (player.userId == myUuid) {
+        _isPlayer = true;
+        _playerNum = player.playerNum!;
+      }
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
