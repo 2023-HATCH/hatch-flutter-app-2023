@@ -20,10 +20,12 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    final video = _videoPlayProvider.videoList[widget.index];
 
     return LikeButton(
       size: 25,
-      likeCount: _videoPlayProvider.videoList[widget.index].likeCount,
+      likeCount: video.likeCount,
+      isLiked: video.liked,
       countPostion: CountPostion.bottom,
       countDecoration: (count, likeCount) {
         return Text(
