@@ -21,6 +21,7 @@ class AppUrl {
   static const stageUserListUrl = "$_stageUrl/users";
   static const stageEnterUrl = "$_stageUrl/enter";
   static const stageExitUrl = "$_stageUrl/exit"; // 임시 url
+  static const stageCatchUrl = "$_stageUrl/catch"; // 1인 catch
   static const stageTalkUrl = "$_talkUrl/messages";
 
   // 스켈레톤 정확도 확인

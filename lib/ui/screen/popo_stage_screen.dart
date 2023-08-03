@@ -8,6 +8,7 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
+import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
@@ -250,6 +251,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       case StageType.TALK_REACTION:
         _stageProvider.setIsClicked(true);
         _stageProvider.toggleIsLeft();
+        break;
+      case StageType.CATCH_END:
+        var socketResponse = BaseSocketResponse<CatchEndResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            CatchEndResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        print("mmm catch end: $socketResponse");
+        print("mmm catch end: ${socketResponse.data!.players.length}");
         break;
       default:
         if (mounted) {
