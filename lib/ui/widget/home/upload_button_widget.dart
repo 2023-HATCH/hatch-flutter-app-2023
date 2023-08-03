@@ -50,7 +50,7 @@ class _UploadButtonWidgetState extends State<UploadButtonWidget> {
       );
     }
 
-    return InkWell(
+    return GestureDetector(
       onTap: () => {
         showModalBottomSheet(
           context: context,
@@ -148,9 +148,6 @@ class _UploadButtonWidgetState extends State<UploadButtonWidget> {
           },
         ),
       },
-      borderRadius: const BorderRadius.all(
-        Radius.circular(90.0),
-      ),
       child: Container(
           padding: const EdgeInsets.all(14),
           child: SvgPicture.asset('assets/icons/ic_home_upload.svg')),
