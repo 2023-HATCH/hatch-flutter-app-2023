@@ -4,6 +4,11 @@ import 'package:pocket_pose/data/remote/repository/comment_repository.dart';
 
 class CommentProvider extends ChangeNotifier {
   CommentListResponse? _response;
+  bool? _isPostSuccess;
+  bool? _isDeleteSuccess;
+
+  bool? get isPostSuccess => _isPostSuccess;
+  bool? get isDeleteSuccess => _isDeleteSuccess;
 
   CommentListResponse? get response => _response;
 
@@ -15,6 +20,16 @@ class CommentProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('CommentRepository getComments 에러: $e');
+    }
+  }
+
+  Future<void> postComment(String videoId, String content) async {
+    try {
+      _isPostSuccess = await CommentRepository().postComment(videoId, content);
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('LikeRepository postLike 에러: $e');
     }
   }
 }

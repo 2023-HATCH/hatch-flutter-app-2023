@@ -73,15 +73,14 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   List<Widget> textWidgets = [];
 
-  late String _profileImg;
-  late String _hintText;
+  String _profileImg = 'assets/images/charactor_popo_default.png';
+  String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
+  late CommentProvider _commentProvider;
 
   Future<void> _loadCommentList() async {
     try {
-      final commentProvider =
-          Provider.of<CommentProvider>(context, listen: false);
-      commentProvider.getComments(widget.videoId).then((value) {
-        final comments = commentProvider.response?.commentList;
+      _commentProvider.getComments(widget.videoId).then((value) {
+        final comments = _commentProvider.response?.commentList;
 
         if (comments != null && comments.isNotEmpty) {
           setState(() {
@@ -99,10 +98,6 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
       // 로그인
       _profileImg = _profileImg ?? 'assets/images/charactor_popo_default.png';
       _hintText = '{user.nickname}(으)로 댓글 달기...';
-    } else {
-      // 비로그인
-      _profileImg = 'assets/images/charactor_popo_default.png';
-      _hintText = '따듯한 말 한마디 남겨 주세요 💛';
     }
   }
 
@@ -110,7 +105,6 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   void initState() {
     super.initState();
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
-    initUser();
   }
 
   @override
@@ -121,6 +115,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
+    initUser();
+
+    _commentProvider = Provider.of<CommentProvider>(context, listen: false);
     return InkWell(
         onTap: () => {
               _loadCommentList(),
@@ -271,7 +268,8 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                           borderRadius:
                                               BorderRadius.circular(50),
                                           child: Image.network(
-                                            _profileImg,
+                                            _profileImg ??
+                                                'assets/images/charactor_popo_default.png',
                                             loadingBuilder: (context, child,
                                                 loadingProgress) {
                                               if (loadingProgress == null) {
@@ -364,11 +362,25 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                       _textController
                                                               .text.isNotEmpty
                                                           ? () {
-                                                              _textController
-                                                                  .clear();
-                                                              FocusScope.of(
-                                                                      context)
-                                                                  .unfocus();
+                                                              // 댓글 작성
+                                                              _commentProvider
+                                                                  .postComment(
+                                                                      widget
+                                                                          .videoId,
+                                                                      _textController
+                                                                          .text)
+                                                                  .then(
+                                                                (value) {
+                                                                  // 댓글 목록 새로고침
+                                                                  _loadCommentList();
+                                                                  // 댓글 입력창 초기화
+                                                                  _textController
+                                                                      .clear();
+                                                                  FocusScope.of(
+                                                                          context)
+                                                                      .unfocus();
+                                                                },
+                                                              );
                                                             }
                                                           : null;
                                                     }

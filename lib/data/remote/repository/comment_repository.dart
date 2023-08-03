@@ -37,4 +37,33 @@ class CommentRepository {
       throw Exception('댓글 목록 조회 실패');
     }
   }
+
+  Future<bool> postComment(String videoId, String content) async {
+    final url = Uri.parse('${AppUrl.commentUrl}/$videoId');
+
+    final accessToken = await _storage.read(key: _accessTokenKey);
+    final refreshToken = await _storage.read(key: _refreshTokenKey);
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json;charset=UTF-8',
+      if (accessToken != null && refreshToken != null)
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+    };
+
+    final Map<String, dynamic> body = {
+      'content': content,
+    };
+
+    final response =
+        await http.post(url, headers: headers, body: jsonEncode(body));
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    if (response.statusCode == 200) {
+      debugPrint("댓글 등록 성공! json: $json");
+      return true;
+    } else {
+      debugPrint('댓글 등록 실패 json $json');
+      return false;
+    }
+  }
 }
