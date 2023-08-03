@@ -140,7 +140,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     return BoxDecoration(
       image: DecorationImage(
         fit: BoxFit.cover,
-        image: AssetImage((_socketStageProvider.IsMVPStart)
+        image: AssetImage((_socketStageProvider.isMVPStart)
             ? 'assets/images/bg_popo_result.png'
             : 'assets/images/bg_popo_comm.png'),
       ),

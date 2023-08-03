@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
+import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
@@ -55,7 +56,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
 
-  bool get IsMVPStart => stageType == StageType.MVP_START;
+  bool get isMVPStart => stageType == StageType.MVP_START;
 
   setTalk(StageTalkListItem value) {
     _talk = value;
@@ -87,6 +88,7 @@ class SocketStageProviderImpl extends ChangeNotifier
     if (value) notifyListeners();
   }
 
+  @override
   void connectWebSocket() async {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
@@ -106,10 +108,12 @@ class SocketStageProviderImpl extends ChangeNotifier
     _stompClient!.activate();
   }
 
+  @override
   void deactivateWebSocket() {
     _stompClient?.deactivate();
   }
 
+  @override
   void onSubscribe() {
     _stompClient?.subscribe(
         destination: AppUrl.socketSubscribeStageUrl,
@@ -124,6 +128,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         });
   }
 
+  @override
   void sendMessage(String message) async {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
@@ -137,6 +142,7 @@ class SocketStageProviderImpl extends ChangeNotifier
     }
   }
 
+  @override
   void sendReaction() async {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
@@ -148,6 +154,11 @@ class SocketStageProviderImpl extends ChangeNotifier
         headers: {'x-access-token': token},
       );
     }
+  }
+
+  @override
+  void sendSkeleton(SendSkeletonRequest request) {
+    // TODO: implement sendSkeleton
   }
 
   void _setStageType(BaseSocketResponse response, StompFrame frame) {
