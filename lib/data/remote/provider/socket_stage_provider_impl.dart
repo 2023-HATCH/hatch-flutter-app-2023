@@ -6,9 +6,11 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
+import 'package:pocket_pose/data/entity/socket_response/send_skeleton_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
+import 'package:pocket_pose/domain/entity/stage_skeleton.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
@@ -28,7 +30,8 @@ enum StageType {
   USER_COUNT,
   STAGE_ROUTINE_STOP,
   TALK_MESSAGE,
-  TALK_REACTION
+  TALK_REACTION,
+  PLAY_SKELETON
 }
 
 class SocketStageProviderImpl extends ChangeNotifier
@@ -38,6 +41,9 @@ class SocketStageProviderImpl extends ChangeNotifier
   int _userCount = 0;
   final List<StagePlayerListItem> _players = [];
   StageTalkListItem? _talk;
+  StageSkeleton? player0;
+  StageSkeleton? player1;
+  StageSkeleton? player2;
 
   StageType _stageType = StageType.WAIT;
   bool _isConnect = false;
@@ -45,6 +51,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isTalk = false;
   bool _isReaction = false;
   bool _isUserCountChange = false;
+  bool _isPlaySkeletonChange = false;
 
   int get userCount => _userCount;
   StageTalkListItem? get talk => _talk;
@@ -55,6 +62,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isTalk => _isTalk;
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
+  bool get isPlaySkeletonChange => _isPlaySkeletonChange;
 
   bool get isMVPStart => stageType == StageType.MVP_START;
 
@@ -75,6 +83,11 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsUserCountChange(bool value) {
     _isUserCountChange = value;
+    if (value) notifyListeners();
+  }
+
+  setIsPlaySkeletonChange(bool value) {
+    _isPlaySkeletonChange = value;
     if (value) notifyListeners();
   }
 
@@ -157,8 +170,17 @@ class SocketStageProviderImpl extends ChangeNotifier
   }
 
   @override
-  void sendSkeleton(SendSkeletonRequest request) {
-    // TODO: implement sendSkeleton
+  void sendSkeleton(SendSkeletonRequest request) async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    if (_stompClient != null) {
+      _stompClient?.send(
+          destination: AppUrl.socketSkeletonUrl,
+          headers: {'x-access-token': token},
+          body: json.encode(request));
+    }
   }
 
   void _setStageType(BaseSocketResponse response, StompFrame frame) {
@@ -184,7 +206,6 @@ class SocketStageProviderImpl extends ChangeNotifier
 
         setTalk(talk);
         setIsTalk(true);
-        notifyListeners();
         break;
       case StageType.TALK_REACTION:
         setIsReaction(true);
@@ -196,6 +217,24 @@ class SocketStageProviderImpl extends ChangeNotifier
                 jsonDecode(frame.body.toString())['data']));
         _players.clear();
         _players.addAll(socketResponse.data?.players ?? []);
+        break;
+      case StageType.PLAY_SKELETON:
+        var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            SendSkeletonResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        switch (socketResponse.data?.playerNum) {
+          case 0:
+            player0 = socketResponse.data?.skeleton;
+            break;
+          case 1:
+            player1 = socketResponse.data?.skeleton;
+            break;
+          case 2:
+            player2 = socketResponse.data?.skeleton;
+            break;
+        }
+        setIsPlaySkeletonChange(true);
         break;
       default:
         _stageType = response.type;

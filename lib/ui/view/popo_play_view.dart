@@ -6,9 +6,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
-import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
+import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
+import 'package:pocket_pose/domain/entity/stage_skeleton.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
+import 'package:provider/provider.dart';
 
 enum StagePlayScore { bad, good, great, excellent, perfect, none }
 
@@ -35,12 +38,13 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   CustomPaint? _customPaintMid;
   CustomPaint? _customPaintRight;
   // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
-  SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
+  final SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
   bool _isPlayer = false;
   int _playerNum = -1;
   // input Lists
   final List<List<double>> _inputLists = [];
-  final _provider = PoPoSkeletonProviderImpl();
+  // final _provider = PoPoSkeletonProviderImpl();
+  late SocketStageProviderImpl _socketStageProvider;
 
   @override
   void initState() {
@@ -52,11 +56,31 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         _playerNum = player.playerNum!;
       }
     }
+
+    if (_isPlayer) {
+      Fluttertoast.showToast(
+        msg: "캐치 성공!",
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: true);
+
+    if (_socketStageProvider.isPlaySkeletonChange) {
+      _socketStageProvider.setIsPlaySkeletonChange(false);
+      _paintSkeleton();
+    }
+
     // 카메라뷰 보이기
     return Stack(
       children: [
@@ -109,9 +133,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           customPaintRight: _customPaintRight,
           // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
           onImage: (inputImage) {
-            // user이거나 노래가 종료된 거 아닌 이상 항상 스켈레톤 추출
-            if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
-                _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
+            // 플레이어만 스켈레톤 추출
+            if (_isPlayer) {
               processImage(inputImage);
             }
           },
@@ -214,6 +237,13 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     // poseDetector에서 추출된 포즈 가져오기
     List<Pose> poses = await _poseDetector.processImage(inputImage);
 
+    // 소켓에 스켈레톤 전송
+    for (final pose in poses) {
+      _socketStageProvider.sendSkeleton(SendSkeletonRequest(
+          playerNum: _playerNum,
+          skeleton: _poseMapToSocketSkeleton(pose.landmarks)));
+    }
+
     // 사용자가 춤 추기 시작할 때 스켈레톤 배열에 저장
     if (_skeletonDetectMode == SkeletonDetectMode.musicStartMode) {
       for (final pose in poses) {
@@ -222,65 +252,98 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     }
 
     // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
-    if (inputImage.inputImageData?.size != null &&
-        inputImage.inputImageData?.imageRotation != null) {
-      // 여기만 2개만 수정 ! PosePainter -> CustomPosePainter
-      final painterLeft = CustomPosePainter(
-          poses,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          AppColor.yellowNeonColor);
-      final painterMid = CustomPosePainter(
-          poses,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          AppColor.mintNeonColor);
-      final painterRignt = CustomPosePainter(
-          poses,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          AppColor.greenNeonColor);
-      _customPaintLeft = CustomPaint(painter: painterLeft);
-      _customPaintMid = CustomPaint(painter: painterMid);
-      _customPaintRight = CustomPaint(painter: painterRignt);
-    } else {
-      // 추출된 포즈 없음
-      _customPaintLeft = null;
-      _customPaintMid = null;
-      _customPaintRight = null;
-    }
+    // if (inputImage.inputImageData?.size != null &&
+    //     inputImage.inputImageData?.imageRotation != null) {
+    //   final painterLeft = CustomPosePainter(
+    //       poses,
+    //       inputImage.inputImageData!.size,
+    //       inputImage.inputImageData!.imageRotation,
+    //       AppColor.yellowNeonColor);
+    //   final painterMid = CustomPosePainter(
+    //       poses,
+    //       inputImage.inputImageData!.size,
+    //       inputImage.inputImageData!.imageRotation,
+    //       AppColor.mintNeonColor);
+    //   final painterRignt = CustomPosePainter(
+    //       poses,
+    //       inputImage.inputImageData!.size,
+    //       inputImage.inputImageData!.imageRotation,
+    //       AppColor.greenNeonColor);
+    //   _customPaintLeft = CustomPaint(painter: painterLeft);
+    //   _customPaintMid = CustomPaint(painter: painterMid);
+    //   _customPaintRight = CustomPaint(painter: painterRignt);
+    // } else {
+    //   // 추출된 포즈 없음
+    //   _customPaintLeft = null;
+    //   _customPaintMid = null;
+    //   _customPaintRight = null;
+    // }
     _isBusy = false;
     if (mounted) {
       setState(() {});
     }
   }
 
+  void _paintSkeleton() {
+    // final painterLeft = CustomPosePainter(
+    // poses,
+    // inputImage.inputImageData!.size,
+    // inputImage.inputImageData!.imageRotation,
+    // AppColor.yellowNeonColor);
+    var poses0 = _stageSkeletonToListPose(_socketStageProvider.player0!) ?? [];
+    final painterMid = CustomPosePainter(poses0, const Size(1280.0, 720.0),
+        InputImageRotation.rotation270deg, AppColor.mintNeonColor);
+    // final painterRignt = CustomPosePainter(
+    //     poses,
+    //     inputImage.inputImageData!.size,
+    //     inputImage.inputImageData!.imageRotation,
+    //     AppColor.greenNeonColor);
+    // _customPaintLeft = CustomPaint(painter: painterLeft);
+    _customPaintMid = CustomPaint(painter: painterMid);
+    // _customPaintRight = CustomPaint(painter: painterRignt);
+
+    // final painterLeft = CustomPosePainter(
+    //     poses,
+    //     inputImage.inputImageData!.size,
+    //     inputImage.inputImageData!.imageRotation,
+    //     AppColor.yellowNeonColor);
+    // final painterMid = CustomPosePainter(poses, inputImage.inputImageData!.size,
+    //     inputImage.inputImageData!.imageRotation, AppColor.mintNeonColor);
+    // final painterRignt = CustomPosePainter(
+    //     poses,
+    //     inputImage.inputImageData!.size,
+    //     inputImage.inputImageData!.imageRotation,
+    //     AppColor.greenNeonColor);
+    // _customPaintLeft = CustomPaint(painter: painterLeft);
+    // _customPaintMid = CustomPaint(painter: painterMid);
+    // _customPaintRight = CustomPaint(painter: painterRignt);
+  }
+
   void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
     if (_isPlayer && mounted) {
-      setState(() {
-        _skeletonDetectMode = mode;
+      // setState(() {
+      //   _skeletonDetectMode = mode;
 
-        // 노래 끝나면 스켈레톤 서버에 보내기
-        if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
-          // 스켈레톤 파일로 저장: 실행 안 되도록 설정
-          if (1 > 2) {
-            skeletonToFile(_inputLists);
-          }
+      //   // 노래 끝나면 스켈레톤 서버에 보내기
+      //   if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
+      //     // 스켈레톤 파일로 저장: 실행 안 되도록 설정
+      //     if (1 > 2) {
+      //       skeletonToFile(_inputLists);
+      //     }
 
-          // // ai 서버 오류로 잠시 주석처리
-          _provider
-              .postSkeletonList(_inputLists)
-              .then((value) => Fluttertoast.showToast(
-                    msg: value.toString(),
-                    toastLength: Toast.LENGTH_SHORT,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  ))
-              .then((_) => _inputLists.clear());
-        }
-      });
+      //     _provider
+      //         .postSkeletonList(_inputLists)
+      //         .then((value) => Fluttertoast.showToast(
+      //               msg: value.toString(),
+      //               toastLength: Toast.LENGTH_SHORT,
+      //               timeInSecForIosWeb: 1,
+      //               backgroundColor: Colors.black,
+      //               textColor: Colors.white,
+      //               fontSize: 16.0,
+      //             ))
+      //         .then((_) => _inputLists.clear());
+      //   }
+      // });
     }
   }
 
@@ -313,6 +376,126 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       entry[PoseLandmarkType.leftAnkle]!.x,
       entry[PoseLandmarkType.leftAnkle]!.y
     ];
+  }
+
+  List<Pose>? _stageSkeletonToListPose(StageSkeleton? skeleton) {
+    if (skeleton == null) {
+      return null;
+    } else {
+      return [
+        Pose(landmarks: {
+          PoseLandmarkType.nose: PoseLandmark(
+              type: PoseLandmarkType.nose,
+              x: skeleton.noseX,
+              y: skeleton.noseY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.rightShoulder: PoseLandmark(
+              type: PoseLandmarkType.rightShoulder,
+              x: skeleton.rightShoulderX,
+              y: skeleton.rightShoulderY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.rightElbow: PoseLandmark(
+              type: PoseLandmarkType.rightElbow,
+              x: skeleton.rightElbowX,
+              y: skeleton.rightElbowY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.rightWrist: PoseLandmark(
+              type: PoseLandmarkType.rightWrist,
+              x: skeleton.rightWristX,
+              y: skeleton.rightWristY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.leftShoulder: PoseLandmark(
+              type: PoseLandmarkType.leftShoulder,
+              x: skeleton.leftShoulderX,
+              y: skeleton.leftShoulderY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.leftElbow: PoseLandmark(
+              type: PoseLandmarkType.leftElbow,
+              x: skeleton.leftElbowX,
+              y: skeleton.leftElbowY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.leftWrist: PoseLandmark(
+              type: PoseLandmarkType.leftWrist,
+              x: skeleton.leftWristX,
+              y: skeleton.leftWristY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.rightHip: PoseLandmark(
+              type: PoseLandmarkType.rightHip,
+              x: skeleton.rightHipX,
+              y: skeleton.rightHipY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.rightKnee: PoseLandmark(
+              type: PoseLandmarkType.rightKnee,
+              x: skeleton.rightKneeX,
+              y: skeleton.rightKneeY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.rightAnkle: PoseLandmark(
+              type: PoseLandmarkType.rightAnkle,
+              x: skeleton.rightAnkleX,
+              y: skeleton.rightAnkleY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.leftHip: PoseLandmark(
+              type: PoseLandmarkType.leftHip,
+              x: skeleton.leftHipX,
+              y: skeleton.leftHipY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.leftKnee: PoseLandmark(
+              type: PoseLandmarkType.leftKnee,
+              x: skeleton.leftKneeX,
+              y: skeleton.leftKneeY,
+              z: 1,
+              likelihood: 1),
+          PoseLandmarkType.leftAnkle: PoseLandmark(
+              type: PoseLandmarkType.leftAnkle,
+              x: skeleton.leftAnkleX,
+              y: skeleton.leftAnkleY,
+              z: 1,
+              likelihood: 1),
+        })
+      ];
+    }
+  }
+
+  StageSkeleton _poseMapToSocketSkeleton(
+      Map<PoseLandmarkType, PoseLandmark> entry) {
+    return StageSkeleton(
+        noseX: entry[PoseLandmarkType.nose]!.x,
+        noseY: entry[PoseLandmarkType.nose]!.y,
+        rightShoulderX: entry[PoseLandmarkType.rightShoulder]!.x,
+        rightShoulderY: entry[PoseLandmarkType.rightShoulder]!.y,
+        rightElbowX: entry[PoseLandmarkType.rightElbow]!.x,
+        rightElbowY: entry[PoseLandmarkType.rightElbow]!.y,
+        rightWristX: entry[PoseLandmarkType.rightWrist]!.x,
+        rightWristY: entry[PoseLandmarkType.rightWrist]!.y,
+        leftShoulderX: entry[PoseLandmarkType.leftShoulder]!.x,
+        leftShoulderY: entry[PoseLandmarkType.leftShoulder]!.y,
+        leftElbowX: entry[PoseLandmarkType.leftElbow]!.x,
+        leftElbowY: entry[PoseLandmarkType.leftElbow]!.y,
+        leftWristX: entry[PoseLandmarkType.leftWrist]!.x,
+        leftWristY: entry[PoseLandmarkType.leftWrist]!.y,
+        rightHipX: entry[PoseLandmarkType.rightHip]!.x,
+        rightHipY: entry[PoseLandmarkType.rightHip]!.y,
+        rightKneeX: entry[PoseLandmarkType.rightKnee]!.x,
+        rightKneeY: entry[PoseLandmarkType.rightKnee]!.y,
+        rightAnkleX: entry[PoseLandmarkType.rightAnkle]!.x,
+        rightAnkleY: entry[PoseLandmarkType.rightAnkle]!.y,
+        leftHipX: entry[PoseLandmarkType.leftHip]!.x,
+        leftHipY: entry[PoseLandmarkType.leftHip]!.y,
+        leftKneeX: entry[PoseLandmarkType.leftKnee]!.x,
+        leftKneeY: entry[PoseLandmarkType.leftKnee]!.y,
+        leftAnkleX: entry[PoseLandmarkType.leftAnkle]!.x,
+        leftAnkleY: entry[PoseLandmarkType.leftAnkle]!.y);
   }
 
   Future<void> skeletonToFile(List<List<double>> inputLists) async {
