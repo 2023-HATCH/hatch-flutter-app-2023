@@ -8,10 +8,12 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
+import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
@@ -53,6 +55,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late StageProviderImpl _stageProvider;
   StageType _stageType = StageType.WAIT;
   StompClient? _stompClient;
+  final List<StagePlayerListItem> _players = [];
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +254,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         _stageProvider.setIsClicked(true);
         _stageProvider.toggleIsLeft();
         break;
+      case StageType.CATCH_END:
+        var socketResponse = BaseSocketResponse<CatchEndResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            CatchEndResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        _players.clear();
+        _players.addAll(socketResponse.data?.players ?? []);
+        break;
       default:
         if (mounted) {
           setState(() {
@@ -363,7 +374,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       case StageType.CATCH_START:
         return const PoPoCatchView();
       case StageType.PLAY_START:
-        return PoPoPlayView(isResultState: _getIsResultState());
+        return PoPoPlayView(
+            isResultState: _getIsResultState(), players: _players);
       case StageType.MVP_START:
         return PoPoResultView(isResultState: _getIsResultState());
       default:

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:provider/provider.dart';
 import 'package:semicircle_indicator/semicircle_indicator.dart';
 import 'dart:math' as math;
 
@@ -22,8 +24,12 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
 
+  late StageProviderImpl _stageProvider;
+
   @override
   Widget build(BuildContext context) {
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,7 +80,9 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
         strokeWidth: 2,
         backgroundColor: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            _stageProvider.getStageCatch();
+          },
           borderRadius: const BorderRadius.all(
             Radius.circular(20.0),
           ),
