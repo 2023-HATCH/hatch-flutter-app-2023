@@ -145,6 +145,9 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     // poseDetector에서 추출된 포즈 가져오기
     List<Pose> poses = await _poseDetector.processImage(inputImage);
 
+    // var test = StageSkeletonTest.fromJson(poses);
+    // print("mmm result test : $test");
+
     for (final pose in poses) {
       _inputLists.add(_poseMapToInputList(pose.landmarks));
     }

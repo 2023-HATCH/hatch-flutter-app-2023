@@ -291,8 +291,11 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     // inputImage.inputImageData!.imageRotation,
     // AppColor.yellowNeonColor);
     var poses0 = _stageSkeletonToListPose(_socketStageProvider.player0!) ?? [];
-    final painterMid = CustomPosePainter(poses0, const Size(1280.0, 720.0),
-        InputImageRotation.rotation270deg, AppColor.mintNeonColor);
+    CustomPosePainter painterMid = CustomPosePainter(
+        poses0,
+        const Size(1280.0, 720.0),
+        InputImageRotation.rotation270deg,
+        AppColor.mintNeonColor);
     // final painterRignt = CustomPosePainter(
     //     poses,
     //     inputImage.inputImageData!.size,
@@ -300,22 +303,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     //     AppColor.greenNeonColor);
     // _customPaintLeft = CustomPaint(painter: painterLeft);
     _customPaintMid = CustomPaint(painter: painterMid);
-    // _customPaintRight = CustomPaint(painter: painterRignt);
-
-    // final painterLeft = CustomPosePainter(
-    //     poses,
-    //     inputImage.inputImageData!.size,
-    //     inputImage.inputImageData!.imageRotation,
-    //     AppColor.yellowNeonColor);
-    // final painterMid = CustomPosePainter(poses, inputImage.inputImageData!.size,
-    //     inputImage.inputImageData!.imageRotation, AppColor.mintNeonColor);
-    // final painterRignt = CustomPosePainter(
-    //     poses,
-    //     inputImage.inputImageData!.size,
-    //     inputImage.inputImageData!.imageRotation,
-    //     AppColor.greenNeonColor);
-    // _customPaintLeft = CustomPaint(painter: painterLeft);
-    // _customPaintMid = CustomPaint(painter: painterMid);
     // _customPaintRight = CustomPaint(painter: painterRignt);
   }
 
@@ -347,6 +334,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     }
   }
 
+  // 파일화를 위한 배열 저장
   List<double> _poseMapToInputList(Map<PoseLandmarkType, PoseLandmark> entry) {
     return [
       entry[PoseLandmarkType.nose]!.x,
@@ -378,6 +366,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     ];
   }
 
+  // 응답받은 스켈레톤을 출력하기 위한 형태로 변환
   List<Pose>? _stageSkeletonToListPose(StageSkeleton? skeleton) {
     if (skeleton == null) {
       return null;
@@ -388,114 +377,129 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
               type: PoseLandmarkType.nose,
               x: skeleton.noseX,
               y: skeleton.noseY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.noseZ,
+              likelihood: 0.9),
           PoseLandmarkType.rightShoulder: PoseLandmark(
               type: PoseLandmarkType.rightShoulder,
               x: skeleton.rightShoulderX,
               y: skeleton.rightShoulderY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.rightShoulderZ,
+              likelihood: 0.9),
           PoseLandmarkType.rightElbow: PoseLandmark(
               type: PoseLandmarkType.rightElbow,
               x: skeleton.rightElbowX,
               y: skeleton.rightElbowY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.rightElbowZ,
+              likelihood: 0.9),
           PoseLandmarkType.rightWrist: PoseLandmark(
               type: PoseLandmarkType.rightWrist,
               x: skeleton.rightWristX,
               y: skeleton.rightWristY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.rightWristZ,
+              likelihood: 0.9),
           PoseLandmarkType.leftShoulder: PoseLandmark(
               type: PoseLandmarkType.leftShoulder,
               x: skeleton.leftShoulderX,
               y: skeleton.leftShoulderY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.leftShoulderZ,
+              likelihood: 0.9),
           PoseLandmarkType.leftElbow: PoseLandmark(
               type: PoseLandmarkType.leftElbow,
               x: skeleton.leftElbowX,
               y: skeleton.leftElbowY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.leftElbowZ,
+              likelihood: 0.9),
           PoseLandmarkType.leftWrist: PoseLandmark(
               type: PoseLandmarkType.leftWrist,
               x: skeleton.leftWristX,
               y: skeleton.leftWristY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.leftWristZ,
+              likelihood: 0.9),
           PoseLandmarkType.rightHip: PoseLandmark(
               type: PoseLandmarkType.rightHip,
               x: skeleton.rightHipX,
               y: skeleton.rightHipY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.rightHipZ,
+              likelihood: 0.9),
           PoseLandmarkType.rightKnee: PoseLandmark(
               type: PoseLandmarkType.rightKnee,
               x: skeleton.rightKneeX,
               y: skeleton.rightKneeY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.rightKneeZ,
+              likelihood: 0.9),
           PoseLandmarkType.rightAnkle: PoseLandmark(
               type: PoseLandmarkType.rightAnkle,
               x: skeleton.rightAnkleX,
               y: skeleton.rightAnkleY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.rightAnkleZ,
+              likelihood: 0.9),
           PoseLandmarkType.leftHip: PoseLandmark(
               type: PoseLandmarkType.leftHip,
               x: skeleton.leftHipX,
               y: skeleton.leftHipY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.leftHipZ,
+              likelihood: 0.9),
           PoseLandmarkType.leftKnee: PoseLandmark(
               type: PoseLandmarkType.leftKnee,
               x: skeleton.leftKneeX,
               y: skeleton.leftKneeY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.leftKneeZ,
+              likelihood: 0.9),
           PoseLandmarkType.leftAnkle: PoseLandmark(
               type: PoseLandmarkType.leftAnkle,
               x: skeleton.leftAnkleX,
               y: skeleton.leftAnkleY,
-              z: 1,
-              likelihood: 1),
+              z: skeleton.leftAnkleZ,
+              likelihood: 0.9),
         })
       ];
     }
   }
 
+  // 서버에 전송하기 위한 스켈레톤 배열
   StageSkeleton _poseMapToSocketSkeleton(
       Map<PoseLandmarkType, PoseLandmark> entry) {
     return StageSkeleton(
-        noseX: entry[PoseLandmarkType.nose]!.x,
-        noseY: entry[PoseLandmarkType.nose]!.y,
-        rightShoulderX: entry[PoseLandmarkType.rightShoulder]!.x,
-        rightShoulderY: entry[PoseLandmarkType.rightShoulder]!.y,
-        rightElbowX: entry[PoseLandmarkType.rightElbow]!.x,
-        rightElbowY: entry[PoseLandmarkType.rightElbow]!.y,
-        rightWristX: entry[PoseLandmarkType.rightWrist]!.x,
-        rightWristY: entry[PoseLandmarkType.rightWrist]!.y,
-        leftShoulderX: entry[PoseLandmarkType.leftShoulder]!.x,
-        leftShoulderY: entry[PoseLandmarkType.leftShoulder]!.y,
-        leftElbowX: entry[PoseLandmarkType.leftElbow]!.x,
-        leftElbowY: entry[PoseLandmarkType.leftElbow]!.y,
-        leftWristX: entry[PoseLandmarkType.leftWrist]!.x,
-        leftWristY: entry[PoseLandmarkType.leftWrist]!.y,
-        rightHipX: entry[PoseLandmarkType.rightHip]!.x,
-        rightHipY: entry[PoseLandmarkType.rightHip]!.y,
-        rightKneeX: entry[PoseLandmarkType.rightKnee]!.x,
-        rightKneeY: entry[PoseLandmarkType.rightKnee]!.y,
-        rightAnkleX: entry[PoseLandmarkType.rightAnkle]!.x,
-        rightAnkleY: entry[PoseLandmarkType.rightAnkle]!.y,
-        leftHipX: entry[PoseLandmarkType.leftHip]!.x,
-        leftHipY: entry[PoseLandmarkType.leftHip]!.y,
-        leftKneeX: entry[PoseLandmarkType.leftKnee]!.x,
-        leftKneeY: entry[PoseLandmarkType.leftKnee]!.y,
-        leftAnkleX: entry[PoseLandmarkType.leftAnkle]!.x,
-        leftAnkleY: entry[PoseLandmarkType.leftAnkle]!.y);
+      noseX: entry[PoseLandmarkType.nose]!.x,
+      noseY: entry[PoseLandmarkType.nose]!.y,
+      noseZ: entry[PoseLandmarkType.nose]!.z,
+      rightShoulderX: entry[PoseLandmarkType.rightShoulder]!.x,
+      rightShoulderY: entry[PoseLandmarkType.rightShoulder]!.y,
+      rightShoulderZ: entry[PoseLandmarkType.rightShoulder]!.z,
+      rightElbowX: entry[PoseLandmarkType.rightElbow]!.x,
+      rightElbowY: entry[PoseLandmarkType.rightElbow]!.y,
+      rightElbowZ: entry[PoseLandmarkType.rightElbow]!.z,
+      rightWristX: entry[PoseLandmarkType.rightWrist]!.x,
+      rightWristY: entry[PoseLandmarkType.rightWrist]!.y,
+      rightWristZ: entry[PoseLandmarkType.rightWrist]!.z,
+      leftShoulderX: entry[PoseLandmarkType.leftShoulder]!.x,
+      leftShoulderY: entry[PoseLandmarkType.leftShoulder]!.y,
+      leftShoulderZ: entry[PoseLandmarkType.leftShoulder]!.z,
+      leftElbowX: entry[PoseLandmarkType.leftElbow]!.x,
+      leftElbowY: entry[PoseLandmarkType.leftElbow]!.y,
+      leftElbowZ: entry[PoseLandmarkType.leftElbow]!.z,
+      leftWristX: entry[PoseLandmarkType.leftWrist]!.x,
+      leftWristY: entry[PoseLandmarkType.leftWrist]!.y,
+      leftWristZ: entry[PoseLandmarkType.leftWrist]!.z,
+      rightHipX: entry[PoseLandmarkType.rightHip]!.x,
+      rightHipY: entry[PoseLandmarkType.rightHip]!.y,
+      rightHipZ: entry[PoseLandmarkType.rightHip]!.z,
+      rightKneeX: entry[PoseLandmarkType.rightKnee]!.x,
+      rightKneeY: entry[PoseLandmarkType.rightKnee]!.y,
+      rightKneeZ: entry[PoseLandmarkType.rightKnee]!.z,
+      rightAnkleX: entry[PoseLandmarkType.rightAnkle]!.x,
+      rightAnkleY: entry[PoseLandmarkType.rightAnkle]!.y,
+      rightAnkleZ: entry[PoseLandmarkType.rightAnkle]!.z,
+      leftHipX: entry[PoseLandmarkType.leftHip]!.x,
+      leftHipY: entry[PoseLandmarkType.leftHip]!.y,
+      leftHipZ: entry[PoseLandmarkType.leftHip]!.z,
+      leftKneeX: entry[PoseLandmarkType.leftKnee]!.x,
+      leftKneeY: entry[PoseLandmarkType.leftKnee]!.y,
+      leftKneeZ: entry[PoseLandmarkType.leftKnee]!.z,
+      leftAnkleX: entry[PoseLandmarkType.leftAnkle]!.x,
+      leftAnkleY: entry[PoseLandmarkType.leftAnkle]!.y,
+      leftAnkleZ: entry[PoseLandmarkType.leftAnkle]!.z,
+    );
   }
 
   Future<void> skeletonToFile(List<List<double>> inputLists) async {

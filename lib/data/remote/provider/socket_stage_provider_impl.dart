@@ -175,7 +175,7 @@ class SocketStageProviderImpl extends ChangeNotifier
     const storageKey = 'kakaoAccessToken';
     String token = await storage.read(key: storageKey) ?? "";
 
-    if (_stompClient != null) {
+    if (_stompClient != null && (_stompClient?.isActive ?? false)) {
       _stompClient?.send(
           destination: AppUrl.socketSkeletonUrl,
           headers: {'x-access-token': token},
