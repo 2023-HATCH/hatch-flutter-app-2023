@@ -39,7 +39,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
       Provider.of<VideoPlayProvider>(context, listen: false);
   bool _isInit = false;
   late UserData user;
-
+  bool _isNotEmptyComment = false;
   String _profileImg = 'assets/images/charactor_popo_default.png';
   String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
 
@@ -59,13 +59,17 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
       _commentProvider.getComments(widget.videoId).then((value) {
         final newCommentList = _commentProvider.response?.commentList;
 
-        if (newCommentList != null && newCommentList.isNotEmpty) {
-          bottomState(() {
-            setState(() {
-              _commentList = newCommentList.reversed.toList();
-            });
+        bottomState(() {
+          setState(() {
+            _commentList = newCommentList?.reversed.toList();
+
+            // commentCount api 완성되면 삭제
+            _isNotEmptyComment =
+                _commentList != null || _commentList!.isNotEmpty;
+            // commentCount api 완성되면 주석 해제
+            // _isNotEmptyComment =_videoPlayProvider.videoList[widget.index].commentCount > 0;
           });
-        }
+        });
       });
     } catch (e) {
       debugPrint('댓글 목록 조회 api 호출 실패');
@@ -95,6 +99,11 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
       setState(() {
         _commentList = newCommentList?.reversed.toList();
+
+        // commentCount api 완성되면 삭제
+        _isNotEmptyComment = _commentList != null || _commentList!.isNotEmpty;
+        // commentCount api 완성되면 주석 해제
+        // _isNotEmptyComment =_videoPlayProvider.videoList[widget.index].commentCount > 0;
       });
     });
   }
@@ -147,147 +156,140 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                           ),
                           resizeToAvoidBottomInset: true,
                           body: Padding(
-                              padding: const EdgeInsets.only(bottom: 95),
-                              child: _commentList != null ||
-                                      _commentList!.isEmpty
-                                  ? ListView.builder(
-                                      controller: _scrollController,
-                                      itemCount: _commentList?.length,
-                                      itemBuilder: (context, index) {
-                                        return Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      18, 4, 0, 12),
-                                              child: Row(
+                            padding: const EdgeInsets.only(bottom: 95),
+                            child: Visibility(
+                                visible: _isNotEmptyComment,
+                                replacement:
+                                    const Center(child: Text('등록된 댓글이 없습니다.')),
+                                child: ListView.builder(
+                                  controller: _scrollController,
+                                  itemCount: _commentList?.length,
+                                  itemBuilder: (context, index) {
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              18, 4, 0, 12),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                  child: Image.network(
+                                                    _commentList?[index]
+                                                            .user
+                                                            .profileImg ??
+                                                        'assets/images/charactor_popo_default.png',
+                                                    loadingBuilder: (context,
+                                                        child,
+                                                        loadingProgress) {
+                                                      if (loadingProgress ==
+                                                          null) {
+                                                        return child;
+                                                      }
+                                                      return Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          color: AppColor
+                                                              .purpleColor,
+                                                        ),
+                                                      );
+                                                    },
+                                                    errorBuilder: (context,
+                                                            error,
+                                                            stackTrace) =>
+                                                        Image.asset(
+                                                      'assets/images/charactor_popo_default.png',
+                                                      fit: BoxFit.cover,
+                                                      width: 35,
+                                                      height: 35,
+                                                    ),
+                                                    fit: BoxFit.cover,
+                                                    width: 35,
+                                                    height: 35,
+                                                  )),
+                                              const Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 8)),
+                                              Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50),
-                                                      child: Image.network(
-                                                        _commentList?[index]
-                                                                .user
-                                                                .profileImg ??
-                                                            'assets/images/charactor_popo_default.png',
-                                                        loadingBuilder: (context,
-                                                            child,
-                                                            loadingProgress) {
-                                                          if (loadingProgress ==
-                                                              null) {
-                                                            return child;
-                                                          }
-                                                          return Center(
-                                                            child:
-                                                                CircularProgressIndicator(
-                                                              color: AppColor
-                                                                  .purpleColor,
-                                                            ),
-                                                          );
-                                                        },
-                                                        errorBuilder: (context,
-                                                                error,
-                                                                stackTrace) =>
-                                                            Image.asset(
-                                                          'assets/images/charactor_popo_default.png',
-                                                          fit: BoxFit.cover,
-                                                          width: 35,
-                                                          height: 35,
-                                                        ),
-                                                        fit: BoxFit.cover,
-                                                        width: 35,
-                                                        height: 35,
-                                                      )),
+                                                  Text(
+                                                    _commentList?[index]
+                                                            .user
+                                                            .nickname ??
+                                                        '',
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
                                                   const Padding(
                                                       padding: EdgeInsets.only(
-                                                          left: 8)),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        _commentList?[index]
-                                                                .user
-                                                                .nickname ??
-                                                            '',
-                                                        style: const TextStyle(
-                                                            fontSize: 12),
-                                                      ),
-                                                      const Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  bottom: 8)),
-                                                      Text(
-                                                        _commentList?[index]
-                                                                .content ??
-                                                            '',
-                                                        style: const TextStyle(
-                                                            fontSize: 14),
-                                                      ),
-                                                      const Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  bottom: 4)),
-                                                      Text(
-                                                        '${_commentList?[index].createdAt.year}-${_commentList?[index].createdAt.month}-${_commentList?[index].createdAt.day} ${_commentList?[index].createdAt.hour}:${_commentList?[index].createdAt.minute}',
-                                                        style: TextStyle(
-                                                            fontSize: 10,
-                                                            color: AppColor
-                                                                .grayColor2),
-                                                      ),
-                                                    ],
+                                                          bottom: 8)),
+                                                  Text(
+                                                    _commentList?[index]
+                                                            .content ??
+                                                        '',
+                                                    style: const TextStyle(
+                                                        fontSize: 14),
+                                                  ),
+                                                  const Padding(
+                                                      padding: EdgeInsets.only(
+                                                          bottom: 4)),
+                                                  Text(
+                                                    '${_commentList?[index].createdAt.year}-${_commentList?[index].createdAt.month}-${_commentList?[index].createdAt.day} ${_commentList?[index].createdAt.hour}:${_commentList?[index].createdAt.minute}',
+                                                    style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: AppColor
+                                                            .grayColor2),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 4, 18, 12),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  _commentProvider
-                                                      .deleteComment(
-                                                          _commentList?[index]
-                                                                  .uuid ??
-                                                              '')
-                                                      .then((value) {
-                                                    _loadCommentList(
-                                                        bottomState);
-                                                    Fluttertoast.showToast(
-                                                        msg: '댓글이 삭제되었습니다.');
-                                                    bottomState(() {
-                                                      setState(() {
-                                                        _videoPlayProvider
-                                                            .videoList[
-                                                                widget.index]
-                                                            .commentCount--;
-                                                      });
-                                                    });
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 4, 18, 12),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              _commentProvider
+                                                  .deleteComment(
+                                                      _commentList?[index]
+                                                              .uuid ??
+                                                          '')
+                                                  .then((value) {
+                                                _loadCommentList(bottomState);
+                                                Fluttertoast.showToast(
+                                                    msg: '댓글이 삭제되었습니다.');
+                                                bottomState(() {
+                                                  setState(() {
+                                                    _videoPlayProvider
+                                                        .videoList[widget.index]
+                                                        .commentCount--;
                                                   });
-                                                },
-                                                child: Text(
-                                                  '삭제',
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      color:
-                                                          AppColor.grayColor2),
-                                                ),
-                                              ),
+                                                });
+                                              });
+                                            },
+                                            child: Text(
+                                              '삭제',
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: AppColor.grayColor2),
                                             ),
-                                          ],
-                                        );
-                                      },
-                                    )
-                                  : const Center(child: Text('등록된 댓글이 없습니다.'))),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                )),
+                          ),
                           bottomSheet: SizedBox(
                             height: 95,
                             child: Column(
