@@ -34,6 +34,10 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
             LikeButtonWidget(index: widget.index),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
             CommentButtonWidget(
+              index: widget.index,
+              onRefresh: () {
+                setState(() {});
+              },
               videoId: video.uuid,
               commentCount: video.commentCount,
               childWidget: Column(

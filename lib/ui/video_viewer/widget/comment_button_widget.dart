@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/comment_data.dart';
@@ -9,10 +10,14 @@ import 'package:provider/provider.dart';
 class CommentButtonWidget extends StatefulWidget {
   CommentButtonWidget(
       {super.key,
+      required this.index,
+      required this.onRefresh,
       required this.videoId,
       required this.commentCount,
       required this.childWidget});
 
+  int index;
+  VoidCallback onRefresh;
   String videoId;
   int commentCount;
   Widget childWidget;
@@ -28,6 +33,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
       Provider.of<CommentProvider>(context, listen: false);
   late List<CommentData>? _commentList;
   final ScrollController _scrollController = ScrollController();
+  late final VideoPlayProvider _videoPlayProvider =
+      Provider.of<VideoPlayProvider>(context, listen: false);
+  bool _isInit = false;
 
   String _profileImg = 'assets/images/charactor_popo_default.png';
   String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
@@ -77,7 +85,14 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   void initState() {
     super.initState();
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
-    _commentList = _commentProvider.response?.commentList;
+
+    _commentProvider.getComments(widget.videoId).then((value) {
+      final newCommentList = _commentProvider.response?.commentList;
+
+      setState(() {
+        _commentList = newCommentList?.reversed.toList();
+      });
+    });
   }
 
   @override
@@ -102,8 +117,11 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                 builder: (BuildContext context) {
                   return StatefulBuilder(
                       builder: (BuildContext context, StateSetter bottomState) {
-                    _initUser(bottomState);
-                    _loadCommentList(bottomState);
+                    if (!_isInit) {
+                      _initUser(bottomState);
+                      _isInit = true;
+                    }
+
                     return SizedBox(
                       height: 500,
                       child: ClipRRect(
@@ -119,14 +137,15 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                             foregroundColor: Colors.black,
                             centerTitle: true,
                             title: Text(
-                              '댓글 ${widget.commentCount}개',
+                              '댓글 ${_videoPlayProvider.videoList[widget.index].commentCount}개',
                               style: const TextStyle(fontSize: 14),
                             ),
                           ),
                           resizeToAvoidBottomInset: true,
                           body: Padding(
                               padding: const EdgeInsets.only(bottom: 95),
-                              child: _commentList != null
+                              child: _commentList != null ||
+                                      _commentList!.isEmpty
                                   ? ListView.builder(
                                       controller: _scrollController,
                                       itemCount: _commentList?.length,
@@ -370,6 +389,16 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                         _textController.clear();
                                                         FocusScope.of(context)
                                                             .unfocus();
+
+                                                        bottomState(() {
+                                                          setState(() {
+                                                            _videoPlayProvider
+                                                                .videoList[
+                                                                    widget
+                                                                        .index]
+                                                                .commentCount++;
+                                                          });
+                                                        });
                                                       });
                                                     }
                                                     _scrollController.animateTo(
@@ -401,6 +430,15 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                               .clear();
                                                           FocusScope.of(context)
                                                               .unfocus();
+                                                          bottomState(() {
+                                                            setState(() {
+                                                              _videoPlayProvider
+                                                                  .videoList[
+                                                                      widget
+                                                                          .index]
+                                                                  .commentCount++;
+                                                            });
+                                                          });
                                                         });
                                                         _scrollController.animateTo(
                                                             0,
@@ -439,7 +477,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     );
                   });
                 },
-              ),
+              ).then((value) => {widget.onRefresh()})
             },
         child: widget.childWidget);
   }

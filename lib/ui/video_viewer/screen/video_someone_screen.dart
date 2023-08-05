@@ -80,6 +80,10 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
               const Padding(padding: EdgeInsets.only(left: 18)),
               Expanded(
                 child: CommentButtonWidget(
+                  index: widget.index,
+                  onRefresh: () {
+                    setState(() {});
+                  },
                   videoId: video.uuid,
                   commentCount: video.commentCount,
                   childWidget: Container(
