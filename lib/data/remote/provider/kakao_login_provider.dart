@@ -4,6 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocket_pose/data/entity/response/kakao_login_response.dart';
 import 'package:pocket_pose/data/remote/repository/kakao_login_repository.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/main.dart';
+import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
 
 const _storage = FlutterSecureStorage();
@@ -39,6 +41,11 @@ class KaKaoLoginProvider extends ChangeNotifier {
       debugPrint('카카오톡 로그인 성공! accessToken: ${token.accessToken}');
 
       _login(token.accessToken);
+
+      MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const MainScreen()),
+        (route) => false,
+      );
     } catch (error) {
       debugPrint('카카오톡으로 로그인 실패: $error');
     }
@@ -124,7 +131,9 @@ class KaKaoLoginProvider extends ChangeNotifier {
           top: Radius.circular(30.0),
         ),
       ),
-      builder: (BuildContext context) {
+      builder: (
+        BuildContext context,
+      ) {
         return const LoginModalContent();
       },
     );

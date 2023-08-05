@@ -39,6 +39,8 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   final bool showOnBoarding;
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   const MyApp({super.key, required this.showOnBoarding});
 
@@ -49,6 +51,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(fontFamily: 'GmarketSans'),
       themeMode: ThemeMode.system,
       home: showOnBoarding ? const OnBoardingScreen() : const MainScreen(),
+      navigatorKey: navigatorKey,
     );
   }
 }
