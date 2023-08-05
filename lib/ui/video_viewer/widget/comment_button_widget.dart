@@ -117,7 +117,19 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () => {
+        onTap: () async => {
+              if (_isInit)
+                {
+                  if (await _loginProvider.checkAccessToken())
+                    {
+                      user = await _loginProvider.getUser(),
+                      setState(() {
+                        _profileImg = user.profileImg ??
+                            'assets/images/charactor_popo_default.png';
+                        _hintText = '${user.nickname}(으)로 댓글 달기...';
+                      }),
+                    }
+                },
               showModalBottomSheet(
                 context: context,
                 shape: const RoundedRectangleBorder(
