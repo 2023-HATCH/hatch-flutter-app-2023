@@ -44,9 +44,6 @@ class LikeRepository {
     final accessToken = await _storage.read(key: _accessTokenKey);
     final refreshToken = await _storage.read(key: _refreshTokenKey);
 
-    // debugPrint('좋아요 엑세스토큰 $accessToken');
-    // debugPrint('좋아요 리프레시토큰 $refreshToken');
-
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',
       if (accessToken != null && refreshToken != null)

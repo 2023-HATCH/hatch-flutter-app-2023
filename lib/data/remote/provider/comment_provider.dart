@@ -32,4 +32,14 @@ class CommentProvider extends ChangeNotifier {
       debugPrint('CommentRepository postComment 에러: $e');
     }
   }
+
+  Future<void> deleteComment(String commentId) async {
+    try {
+      _isDeleteSuccess = await CommentRepository().deleteComment(commentId);
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('CommentRepository deleteComment 에러: $e');
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
@@ -251,11 +252,35 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                               padding:
                                                   const EdgeInsets.fromLTRB(
                                                       0, 4, 18, 12),
-                                              child: Text(
-                                                '삭제',
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: AppColor.grayColor2),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  _commentProvider
+                                                      .deleteComment(
+                                                          _commentList?[index]
+                                                                  .uuid ??
+                                                              '')
+                                                      .then((value) {
+                                                    _loadCommentList(
+                                                        bottomState);
+                                                    Fluttertoast.showToast(
+                                                        msg: '댓글이 삭제되었습니다.');
+                                                    bottomState(() {
+                                                      setState(() {
+                                                        _videoPlayProvider
+                                                            .videoList[
+                                                                widget.index]
+                                                            .commentCount--;
+                                                      });
+                                                    });
+                                                  });
+                                                },
+                                                child: Text(
+                                                  '삭제',
+                                                  style: TextStyle(
+                                                      fontSize: 10,
+                                                      color:
+                                                          AppColor.grayColor2),
+                                                ),
                                               ),
                                             ),
                                           ],

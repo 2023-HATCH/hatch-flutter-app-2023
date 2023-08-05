@@ -66,4 +66,28 @@ class CommentRepository {
       return false;
     }
   }
+
+  Future<bool> deleteComment(String commentId) async {
+    final url = Uri.parse('${AppUrl.commentUrl}/$commentId');
+
+    final accessToken = await _storage.read(key: _accessTokenKey);
+    final refreshToken = await _storage.read(key: _refreshTokenKey);
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json;charset=UTF-8',
+      if (accessToken != null && refreshToken != null)
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+    };
+
+    final response = await http.delete(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    if (response.statusCode == 200) {
+      debugPrint("댓글 삭제 성공! json: $json");
+      return true;
+    } else {
+      debugPrint('댓글 삭제 실패 json $json');
+      return false;
+    }
+  }
 }
