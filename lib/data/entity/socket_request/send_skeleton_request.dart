@@ -1,20 +1,40 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:pocket_pose/domain/entity/stage_skeleton.dart';
+import 'dart:convert';
 
-part 'send_skeleton_request.g.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
+
+// part 'send_skeleton_request.g.dart';
 
 @JsonSerializable()
 class SendSkeletonRequest {
-  int playerNum;
-  StageSkeleton? skeleton;
+  final int playerNum;
+  final int frameNum;
+  final Map<String, StageSkeletonPoseLandmark> skeleton;
 
   SendSkeletonRequest({
     required this.playerNum,
-    this.skeleton,
+    required this.frameNum,
+    required this.skeleton,
   });
 
-  factory SendSkeletonRequest.fromJson(Map<String, dynamic> json) =>
-      _$SendSkeletonRequestFromJson(json);
+  factory SendSkeletonRequest.fromRawJson(String str) =>
+      SendSkeletonRequest.fromJson(json.decode(str));
 
-  Map<String, dynamic> toJson() => _$SendSkeletonRequestToJson(this);
+  String toRawJson() => json.encode(toJson());
+
+  factory SendSkeletonRequest.fromJson(Map<String, dynamic> json) =>
+      SendSkeletonRequest(
+        playerNum: json["playerNum"],
+        frameNum: json["frameNum"],
+        skeleton: Map.from(json["skeleton"]).map((k, v) =>
+            MapEntry<String, StageSkeletonPoseLandmark>(
+                k, StageSkeletonPoseLandmark.fromJson(v))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "playerNum": playerNum,
+        "frameNum": frameNum,
+        "skeleton": Map.from(skeleton)
+            .map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
+      };
 }

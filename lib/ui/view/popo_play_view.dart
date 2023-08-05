@@ -9,7 +9,7 @@ import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
-import 'package:pocket_pose/domain/entity/stage_skeleton.dart';
+import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 import 'package:provider/provider.dart';
 
@@ -41,9 +41,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   final SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
   bool _isPlayer = false;
   int _playerNum = -1;
+  int _frameNum = 0;
   // input Lists
   final List<List<double>> _inputLists = [];
-  // final _provider = PoPoSkeletonProviderImpl();
   late SocketStageProviderImpl _socketStageProvider;
 
   @override
@@ -78,6 +78,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
     if (_socketStageProvider.isPlaySkeletonChange) {
       _socketStageProvider.setIsPlaySkeletonChange(false);
+      print("mmm 호출,,,:");
       _paintSkeleton();
     }
 
@@ -239,10 +240,24 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
     // 소켓에 스켈레톤 전송
     for (final pose in poses) {
-      _socketStageProvider.sendSkeleton(SendSkeletonRequest(
-          playerNum: _playerNum,
-          skeleton: _poseMapToSocketSkeleton(pose.landmarks)));
+      Map<String, StageSkeletonPoseLandmark> resultMap = {};
+
+      pose.landmarks.forEach((key, value) {
+        var poseLandmark = StageSkeletonPoseLandmark(
+            type: value.type.index.toString(),
+            x: value.x,
+            y: value.y,
+            z: value.z,
+            likelihood: value.likelihood);
+
+        resultMap[key.index.toString()] = poseLandmark;
+      });
+
+      var resuest = SendSkeletonRequest(
+          playerNum: _playerNum, frameNum: _frameNum, skeleton: resultMap);
+      _socketStageProvider.sendSkeleton(resuest);
     }
+    _frameNum++;
 
     // 사용자가 춤 추기 시작할 때 스켈레톤 배열에 저장
     if (_skeletonDetectMode == SkeletonDetectMode.musicStartMode) {
@@ -290,9 +305,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     // inputImage.inputImageData!.size,
     // inputImage.inputImageData!.imageRotation,
     // AppColor.yellowNeonColor);
-    var poses0 = _stageSkeletonToListPose(_socketStageProvider.player0!) ?? [];
     CustomPosePainter painterMid = CustomPosePainter(
-        poses0,
+        [Pose(landmarks: _socketStageProvider.player0 ?? {})],
         const Size(1280.0, 720.0),
         InputImageRotation.rotation270deg,
         AppColor.mintNeonColor);
@@ -364,142 +378,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       entry[PoseLandmarkType.leftAnkle]!.x,
       entry[PoseLandmarkType.leftAnkle]!.y
     ];
-  }
-
-  // 응답받은 스켈레톤을 출력하기 위한 형태로 변환
-  List<Pose>? _stageSkeletonToListPose(StageSkeleton? skeleton) {
-    if (skeleton == null) {
-      return null;
-    } else {
-      return [
-        Pose(landmarks: {
-          PoseLandmarkType.nose: PoseLandmark(
-              type: PoseLandmarkType.nose,
-              x: skeleton.noseX,
-              y: skeleton.noseY,
-              z: skeleton.noseZ,
-              likelihood: 0.9),
-          PoseLandmarkType.rightShoulder: PoseLandmark(
-              type: PoseLandmarkType.rightShoulder,
-              x: skeleton.rightShoulderX,
-              y: skeleton.rightShoulderY,
-              z: skeleton.rightShoulderZ,
-              likelihood: 0.9),
-          PoseLandmarkType.rightElbow: PoseLandmark(
-              type: PoseLandmarkType.rightElbow,
-              x: skeleton.rightElbowX,
-              y: skeleton.rightElbowY,
-              z: skeleton.rightElbowZ,
-              likelihood: 0.9),
-          PoseLandmarkType.rightWrist: PoseLandmark(
-              type: PoseLandmarkType.rightWrist,
-              x: skeleton.rightWristX,
-              y: skeleton.rightWristY,
-              z: skeleton.rightWristZ,
-              likelihood: 0.9),
-          PoseLandmarkType.leftShoulder: PoseLandmark(
-              type: PoseLandmarkType.leftShoulder,
-              x: skeleton.leftShoulderX,
-              y: skeleton.leftShoulderY,
-              z: skeleton.leftShoulderZ,
-              likelihood: 0.9),
-          PoseLandmarkType.leftElbow: PoseLandmark(
-              type: PoseLandmarkType.leftElbow,
-              x: skeleton.leftElbowX,
-              y: skeleton.leftElbowY,
-              z: skeleton.leftElbowZ,
-              likelihood: 0.9),
-          PoseLandmarkType.leftWrist: PoseLandmark(
-              type: PoseLandmarkType.leftWrist,
-              x: skeleton.leftWristX,
-              y: skeleton.leftWristY,
-              z: skeleton.leftWristZ,
-              likelihood: 0.9),
-          PoseLandmarkType.rightHip: PoseLandmark(
-              type: PoseLandmarkType.rightHip,
-              x: skeleton.rightHipX,
-              y: skeleton.rightHipY,
-              z: skeleton.rightHipZ,
-              likelihood: 0.9),
-          PoseLandmarkType.rightKnee: PoseLandmark(
-              type: PoseLandmarkType.rightKnee,
-              x: skeleton.rightKneeX,
-              y: skeleton.rightKneeY,
-              z: skeleton.rightKneeZ,
-              likelihood: 0.9),
-          PoseLandmarkType.rightAnkle: PoseLandmark(
-              type: PoseLandmarkType.rightAnkle,
-              x: skeleton.rightAnkleX,
-              y: skeleton.rightAnkleY,
-              z: skeleton.rightAnkleZ,
-              likelihood: 0.9),
-          PoseLandmarkType.leftHip: PoseLandmark(
-              type: PoseLandmarkType.leftHip,
-              x: skeleton.leftHipX,
-              y: skeleton.leftHipY,
-              z: skeleton.leftHipZ,
-              likelihood: 0.9),
-          PoseLandmarkType.leftKnee: PoseLandmark(
-              type: PoseLandmarkType.leftKnee,
-              x: skeleton.leftKneeX,
-              y: skeleton.leftKneeY,
-              z: skeleton.leftKneeZ,
-              likelihood: 0.9),
-          PoseLandmarkType.leftAnkle: PoseLandmark(
-              type: PoseLandmarkType.leftAnkle,
-              x: skeleton.leftAnkleX,
-              y: skeleton.leftAnkleY,
-              z: skeleton.leftAnkleZ,
-              likelihood: 0.9),
-        })
-      ];
-    }
-  }
-
-  // 서버에 전송하기 위한 스켈레톤 배열
-  StageSkeleton _poseMapToSocketSkeleton(
-      Map<PoseLandmarkType, PoseLandmark> entry) {
-    return StageSkeleton(
-      noseX: entry[PoseLandmarkType.nose]!.x,
-      noseY: entry[PoseLandmarkType.nose]!.y,
-      noseZ: entry[PoseLandmarkType.nose]!.z,
-      rightShoulderX: entry[PoseLandmarkType.rightShoulder]!.x,
-      rightShoulderY: entry[PoseLandmarkType.rightShoulder]!.y,
-      rightShoulderZ: entry[PoseLandmarkType.rightShoulder]!.z,
-      rightElbowX: entry[PoseLandmarkType.rightElbow]!.x,
-      rightElbowY: entry[PoseLandmarkType.rightElbow]!.y,
-      rightElbowZ: entry[PoseLandmarkType.rightElbow]!.z,
-      rightWristX: entry[PoseLandmarkType.rightWrist]!.x,
-      rightWristY: entry[PoseLandmarkType.rightWrist]!.y,
-      rightWristZ: entry[PoseLandmarkType.rightWrist]!.z,
-      leftShoulderX: entry[PoseLandmarkType.leftShoulder]!.x,
-      leftShoulderY: entry[PoseLandmarkType.leftShoulder]!.y,
-      leftShoulderZ: entry[PoseLandmarkType.leftShoulder]!.z,
-      leftElbowX: entry[PoseLandmarkType.leftElbow]!.x,
-      leftElbowY: entry[PoseLandmarkType.leftElbow]!.y,
-      leftElbowZ: entry[PoseLandmarkType.leftElbow]!.z,
-      leftWristX: entry[PoseLandmarkType.leftWrist]!.x,
-      leftWristY: entry[PoseLandmarkType.leftWrist]!.y,
-      leftWristZ: entry[PoseLandmarkType.leftWrist]!.z,
-      rightHipX: entry[PoseLandmarkType.rightHip]!.x,
-      rightHipY: entry[PoseLandmarkType.rightHip]!.y,
-      rightHipZ: entry[PoseLandmarkType.rightHip]!.z,
-      rightKneeX: entry[PoseLandmarkType.rightKnee]!.x,
-      rightKneeY: entry[PoseLandmarkType.rightKnee]!.y,
-      rightKneeZ: entry[PoseLandmarkType.rightKnee]!.z,
-      rightAnkleX: entry[PoseLandmarkType.rightAnkle]!.x,
-      rightAnkleY: entry[PoseLandmarkType.rightAnkle]!.y,
-      rightAnkleZ: entry[PoseLandmarkType.rightAnkle]!.z,
-      leftHipX: entry[PoseLandmarkType.leftHip]!.x,
-      leftHipY: entry[PoseLandmarkType.leftHip]!.y,
-      leftHipZ: entry[PoseLandmarkType.leftHip]!.z,
-      leftKneeX: entry[PoseLandmarkType.leftKnee]!.x,
-      leftKneeY: entry[PoseLandmarkType.leftKnee]!.y,
-      leftKneeZ: entry[PoseLandmarkType.leftKnee]!.z,
-      leftAnkleX: entry[PoseLandmarkType.leftAnkle]!.x,
-      leftAnkleY: entry[PoseLandmarkType.leftAnkle]!.y,
-      leftAnkleZ: entry[PoseLandmarkType.leftAnkle]!.z,
-    );
   }
 
   Future<void> skeletonToFile(List<List<double>> inputLists) async {

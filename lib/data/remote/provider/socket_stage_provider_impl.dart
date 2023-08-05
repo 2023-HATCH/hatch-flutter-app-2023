@@ -2,15 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
-import 'package:pocket_pose/data/entity/socket_response/send_skeleton_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
-import 'package:pocket_pose/domain/entity/stage_skeleton.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
@@ -41,9 +40,9 @@ class SocketStageProviderImpl extends ChangeNotifier
   int _userCount = 0;
   final List<StagePlayerListItem> _players = [];
   StageTalkListItem? _talk;
-  StageSkeleton? player0;
-  StageSkeleton? player1;
-  StageSkeleton? player2;
+  Map<PoseLandmarkType, PoseLandmark>? player0;
+  Map<PoseLandmarkType, PoseLandmark>? player1;
+  Map<PoseLandmarkType, PoseLandmark>? player2;
 
   StageType _stageType = StageType.WAIT;
   bool _isConnect = false;
@@ -219,22 +218,23 @@ class SocketStageProviderImpl extends ChangeNotifier
         _players.addAll(socketResponse.data?.players ?? []);
         break;
       case StageType.PLAY_SKELETON:
-        var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
-            jsonDecode(frame.body.toString()),
-            SendSkeletonResponse.fromJson(
-                jsonDecode(frame.body.toString())['data']));
-        switch (socketResponse.data?.playerNum) {
-          case 0:
-            player0 = socketResponse.data?.skeleton;
-            break;
-          case 1:
-            player1 = socketResponse.data?.skeleton;
-            break;
-          case 2:
-            player2 = socketResponse.data?.skeleton;
-            break;
-        }
-        setIsPlaySkeletonChange(true);
+        print("mmm 답이왔어요");
+        // var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
+        //     jsonDecode(frame.body.toString()),
+        //     SendSkeletonResponse.fromJson(
+        //         jsonDecode(frame.body.toString())['data']));
+        // switch (socketResponse.data?.playerNum) {
+        //   case 0:
+        //     player0 = socketResponse.data?.skeleton;
+        //     break;
+        //   case 1:
+        //     player1 = socketResponse.data?.skeleton;
+        //     break;
+        //   case 2:
+        //     player2 = socketResponse.data?.skeleton;
+        //     break;
+        // }
+        // setIsPlaySkeletonChange(true);
         break;
       default:
         _stageType = response.type;
