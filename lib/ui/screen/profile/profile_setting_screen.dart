@@ -99,6 +99,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                     },
                     onConfirm: () {
                       _loginProvider.signOut();
+                      _videoProvider.resetVideoPlayer();
                     },
                   );
                 })
