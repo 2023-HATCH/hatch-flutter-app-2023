@@ -4,6 +4,7 @@ import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/comment_data.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -36,6 +37,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   late final VideoPlayProvider _videoPlayProvider =
       Provider.of<VideoPlayProvider>(context, listen: false);
   bool _isInit = false;
+  late UserData user;
 
   String _profileImg = 'assets/images/charactor_popo_default.png';
   String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
@@ -71,7 +73,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   void _initUser(StateSetter bottomState) async {
     if (await _loginProvider.checkAccessToken()) {
-      final user = await _loginProvider.getUser();
+      user = await _loginProvider.getUser();
       bottomState(() {
         setState(() {
           _profileImg =
@@ -152,85 +154,109 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                       itemCount: _commentList?.length,
                                       itemBuilder: (context, index) {
                                         return Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            const Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 18)),
-                                            ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                                child: Image.network(
-                                                  _commentList?[index]
-                                                          .user
-                                                          .profileImg ??
-                                                      'assets/images/charactor_popo_default.png',
-                                                  loadingBuilder: (context,
-                                                      child, loadingProgress) {
-                                                    if (loadingProgress ==
-                                                        null) {
-                                                      return child;
-                                                    }
-                                                    return Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        color: AppColor
-                                                            .purpleColor,
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      18, 4, 0, 12),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50),
+                                                      child: Image.network(
+                                                        _commentList?[index]
+                                                                .user
+                                                                .profileImg ??
+                                                            'assets/images/charactor_popo_default.png',
+                                                        loadingBuilder: (context,
+                                                            child,
+                                                            loadingProgress) {
+                                                          if (loadingProgress ==
+                                                              null) {
+                                                            return child;
+                                                          }
+                                                          return Center(
+                                                            child:
+                                                                CircularProgressIndicator(
+                                                              color: AppColor
+                                                                  .purpleColor,
+                                                            ),
+                                                          );
+                                                        },
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Image.asset(
+                                                          'assets/images/charactor_popo_default.png',
+                                                          fit: BoxFit.cover,
+                                                          width: 35,
+                                                          height: 35,
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                        width: 35,
+                                                        height: 35,
+                                                      )),
+                                                  const Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 8)),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        _commentList?[index]
+                                                                .user
+                                                                .nickname ??
+                                                            '',
+                                                        style: const TextStyle(
+                                                            fontSize: 12),
                                                       ),
-                                                    );
-                                                  },
-                                                  errorBuilder: (context, error,
-                                                          stackTrace) =>
-                                                      Image.asset(
-                                                    'assets/images/charactor_popo_default.png',
-                                                    fit: BoxFit.cover,
-                                                    width: 35,
-                                                    height: 35,
+                                                      const Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  bottom: 8)),
+                                                      Text(
+                                                        _commentList?[index]
+                                                                .content ??
+                                                            '',
+                                                        style: const TextStyle(
+                                                            fontSize: 14),
+                                                      ),
+                                                      const Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  bottom: 4)),
+                                                      Text(
+                                                        '${_commentList?[index].createdAt.year}-${_commentList?[index].createdAt.month}-${_commentList?[index].createdAt.day} ${_commentList?[index].createdAt.hour}:${_commentList?[index].createdAt.minute}',
+                                                        style: TextStyle(
+                                                            fontSize: 10,
+                                                            color: AppColor
+                                                                .grayColor2),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  fit: BoxFit.cover,
-                                                  width: 35,
-                                                  height: 35,
-                                                )),
-                                            const Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 8)),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  _commentList?[index]
-                                                          .user
-                                                          .nickname ??
-                                                      '',
-                                                  style: const TextStyle(
-                                                      fontSize: 12),
-                                                ),
-                                                const Padding(
-                                                    padding: EdgeInsets.only(
-                                                        bottom: 8)),
-                                                Text(
-                                                  _commentList?[index]
-                                                          .content ??
-                                                      '',
-                                                  style: const TextStyle(
-                                                      fontSize: 14),
-                                                ),
-                                                const Padding(
-                                                    padding: EdgeInsets.only(
-                                                        bottom: 4)),
-                                                Text(
-                                                  '${_commentList?[index].createdAt.year}-${_commentList?[index].createdAt.month}-${_commentList?[index].createdAt.day} ${_commentList?[index].createdAt.hour}:${_commentList?[index].createdAt.minute}',
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      color:
-                                                          AppColor.grayColor2),
-                                                ),
-                                                const Padding(
-                                                    padding: EdgeInsets.only(
-                                                        bottom: 20)),
-                                              ],
+                                                ],
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 4, 18, 12),
+                                              child: Text(
+                                                '삭제',
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: AppColor.grayColor2),
+                                              ),
                                             ),
                                           ],
                                         );
