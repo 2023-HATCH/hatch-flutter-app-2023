@@ -76,6 +76,11 @@ class SocketStageProviderImpl extends ChangeNotifier
     notifyListeners();
   }
 
+  setIsConnect(bool value) {
+    _isConnect = value;
+    notifyListeners();
+  }
+
   setIsSubscribe(bool value) {
     _isSubscribe = value;
     notifyListeners();

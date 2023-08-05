@@ -101,17 +101,21 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (!_isEnter) {
       _isEnter = true;
       _socketStageProvider.connectWebSocket();
-      if (_socketStageProvider.isConnect) {
+    }
+  }
+
+  void _onSocketResponse() {
+    if (_socketStageProvider.isConnect) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _socketStageProvider.setIsConnect(false);
         _stageProvider
             .getStageEnter(StageEnterRequest(page: 0, size: 10))
             .then((value) =>
                 _socketStageProvider.setUserCount(value.data.userCount))
             .then((_) => _socketStageProvider.onSubscribe());
-      }
+      });
     }
-  }
 
-  void _onSocketResponse() {
     // 실시간 사용자 숫자
     if (_socketStageProvider.isUserCountChange) {
       _socketStageProvider.setIsUserCountChange(false);
@@ -121,14 +125,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     // 실시간 채팅
     if (_socketStageProvider.isTalk) {
       _socketStageProvider.setIsTalk(false);
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _stageProvider.addTalk(_socketStageProvider.talk!);
       });
     }
 
     // 실시간 반응
     if (_socketStageProvider.isReaction) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _socketStageProvider.setIsReaction(false);
         _stageProvider.setIsClicked(true);
         _stageProvider.toggleIsLeft();
