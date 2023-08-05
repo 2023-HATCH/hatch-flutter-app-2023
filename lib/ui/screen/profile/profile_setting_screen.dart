@@ -104,7 +104,6 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                         msg: '성공적으로 로그아웃 되었습니다.',
                       );
                       _loginProvider.signOut();
-                      _videoProvider.resetVideo();
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(

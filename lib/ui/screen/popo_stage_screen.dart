@@ -8,10 +8,12 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
+import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
@@ -34,7 +36,8 @@ enum StageType {
   MVP_START,
   USER_COUNT,
   STAGE_ROUTINE_STOP,
-  TALK_MESSAGE
+  TALK_MESSAGE,
+  TALK_REACTION
 }
 
 class PoPoStageScreen extends StatefulWidget {
@@ -52,11 +55,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late StageProviderImpl _stageProvider;
   StageType _stageType = StageType.WAIT;
   StompClient? _stompClient;
+  final List<StagePlayerListItem> _players = [];
 
   @override
   Widget build(BuildContext context) {
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -84,7 +89,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: StageLiveChatBarWidget(sendMessage: _sendMessage),
+                    child: StageLiveChatBarWidget(
+                        sendMessage: _sendMessage, sendReaction: _sendReaction),
                   ),
                 ],
               ),
@@ -144,7 +150,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     }
     // 연결 되면 구독
     _stompClient?.subscribe(
-        destination: AppUrl.subscribeStageUrl,
+        destination: AppUrl.socketSubscribeStageUrl,
         callback: (StompFrame frame) {
           if (frame.body != null) {
             // stage 상태 변경
@@ -162,9 +168,22 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
     if (_stompClient != null) {
       _stompClient?.send(
-          destination: '/app/talks/messages',
+          destination: AppUrl.socketTalkUrl,
           headers: {'x-access-token': token},
           body: json.encode({"content": message}));
+    }
+  }
+
+  void _sendReaction() async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    if (_stompClient != null) {
+      _stompClient?.send(
+        destination: AppUrl.socketReactionUrl,
+        headers: {'x-access-token': token},
+      );
     }
   }
 
@@ -216,6 +235,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 jsonDecode(frame.body.toString())['data']));
         setState(() {
           _userCount = socketResponse.data!.userCount;
+          _stageProvider.getUserList();
         });
 
         break;
@@ -229,6 +249,18 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             content: socketResponse.data!.content,
             sender: socketResponse.data!.sender);
         _stageProvider.addTalk(talk);
+        break;
+      case StageType.TALK_REACTION:
+        _stageProvider.setIsClicked(true);
+        _stageProvider.toggleIsLeft();
+        break;
+      case StageType.CATCH_END:
+        var socketResponse = BaseSocketResponse<CatchEndResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            CatchEndResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        _players.clear();
+        _players.addAll(socketResponse.data?.players ?? []);
         break;
       default:
         if (mounted) {
@@ -246,9 +278,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
       child: OutlinedButton.icon(
         onPressed: () async {
-          var response = await _stageProvider.getUserList();
-
-          _showUserListDialog(response.data.list ?? []);
+          await _stageProvider.getUserList();
+          _showUserListDialog(_stageProvider.userList);
         },
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
@@ -272,65 +303,67 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   Future<dynamic> _showUserListDialog(List<StageUserListItem> userList) {
     return showDialog(
-        context: context,
-        barrierColor: Colors.transparent,
-        builder: (BuildContext context) {
-          return BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  side: const BorderSide(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              side: const BorderSide(
+                color: Colors.white,
+                width: 1.0,
+              ),
+            ),
+            backgroundColor: Colors.white.withOpacity(0.3),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(child: Container()),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
+                  child: Text(
+                    '참여자 목록',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Expanded(child: Container()),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Icon(
+                    Icons.close,
+                    size: 20,
                     color: Colors.white,
-                    width: 1.0,
                   ),
                 ),
-                backgroundColor: Colors.white.withOpacity(0.3),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(child: Container()),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20),
-                      child: Text(
-                        '참여자 목록',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Expanded(child: Container()),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Icon(
-                        Icons.close,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+              ],
+            ),
+            content: SizedBox(
+              width: 265,
+              height: 365,
+              child: GridView.builder(
+                itemCount: context.watch<StageProviderImpl>().userList.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
                 ),
-                content: SizedBox(
-                  width: 265,
-                  height: 365,
-                  child: GridView.builder(
-                    itemCount: userList.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      return UserListItemWidget(user: userList[index]);
-                    },
-                  ),
-                )),
-          );
-        });
+                itemBuilder: (BuildContext context, int index) {
+                  return UserListItemWidget(
+                      user: context.watch<StageProviderImpl>().userList[index]);
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildStageView(StageType type) {
@@ -341,7 +374,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       case StageType.CATCH_START:
         return const PoPoCatchView();
       case StageType.PLAY_START:
-        return PoPoPlayView(isResultState: _getIsResultState());
+        return PoPoPlayView(
+            isResultState: _getIsResultState(), players: _players);
       case StageType.MVP_START:
         return PoPoResultView(isResultState: _getIsResultState());
       default:

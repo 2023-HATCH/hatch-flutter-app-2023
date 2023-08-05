@@ -55,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
         _loginProvider.showLoginBottomSheet();
       }
     } else {
-      _videoPlayProvider.setVideo();
+      _videoPlayProvider.playVideo();
     }
   }
 
