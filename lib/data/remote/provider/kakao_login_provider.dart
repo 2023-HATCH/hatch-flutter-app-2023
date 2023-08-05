@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocket_pose/data/entity/response/kakao_login_response.dart';
@@ -46,6 +47,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
         MaterialPageRoute(builder: (context) => const MainScreen()),
         (route) => false,
       );
+
+      Fluttertoast.showToast(
+        msg: '성공적으로 로그인 되었습니다.',
+      );
     } catch (error) {
       debugPrint('카카오톡으로 로그인 실패: $error');
     }
@@ -54,6 +59,14 @@ class KaKaoLoginProvider extends ChangeNotifier {
   void signOut() async {
     debugPrint('카카오톡 로그아웃');
     removeAccessToken();
+
+    MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const MainScreen()),
+      (route) => false,
+    );
+    Fluttertoast.showToast(
+      msg: '성공적으로 로그아웃 되었습니다.',
+    );
   }
 
   Future<void> _login(String kakaoAccessToken) async {
