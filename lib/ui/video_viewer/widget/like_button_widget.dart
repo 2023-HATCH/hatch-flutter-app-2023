@@ -43,10 +43,13 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
         },
         onTap: (isLiked) async {
           if (await loginProvider.checkAccessToken()) {
+            video.liked = !isLiked;
             if (!isLiked) {
               likeProvider.postLike(video.uuid);
+              video.likeCount++;
             } else {
               likeProvider.deleteLike(video.uuid);
+              video.likeCount--;
             }
             return !isLiked;
           } else {

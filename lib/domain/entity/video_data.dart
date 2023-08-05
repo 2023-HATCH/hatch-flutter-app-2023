@@ -14,7 +14,7 @@ class VideoData {
   late int commentCount;
   final int length;
   final DateTime createdAt;
-  final bool liked;
+  late bool liked;
 
   VideoData({
     required this.uuid,
