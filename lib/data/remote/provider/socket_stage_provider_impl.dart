@@ -7,6 +7,7 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
+import 'package:pocket_pose/data/entity/socket_response/send_skeleton_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
@@ -218,23 +219,32 @@ class SocketStageProviderImpl extends ChangeNotifier
         _players.addAll(socketResponse.data?.players ?? []);
         break;
       case StageType.PLAY_SKELETON:
-        print("mmm 답이왔어요");
-        // var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
-        //     jsonDecode(frame.body.toString()),
-        //     SendSkeletonResponse.fromJson(
-        //         jsonDecode(frame.body.toString())['data']));
-        // switch (socketResponse.data?.playerNum) {
-        //   case 0:
-        //     player0 = socketResponse.data?.skeleton;
-        //     break;
-        //   case 1:
-        //     player1 = socketResponse.data?.skeleton;
-        //     break;
-        //   case 2:
-        //     player2 = socketResponse.data?.skeleton;
-        //     break;
-        // }
-        // setIsPlaySkeletonChange(true);
+        var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            SendSkeletonResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        Map<PoseLandmarkType, PoseLandmark> temp = {};
+        socketResponse.data?.skeleton.forEach((key, value) {
+          temp[PoseLandmarkType.values[int.parse(key)]] = PoseLandmark(
+              type: PoseLandmarkType.values[int.parse(value.type)],
+              x: value.x,
+              y: value.y,
+              z: value.z,
+              likelihood: value.likelihood);
+        });
+
+        switch (socketResponse.data?.playerNum) {
+          case 0:
+            player0 = temp;
+            break;
+          case 1:
+            player1 = temp;
+            break;
+          case 2:
+            player2 = temp;
+            break;
+        }
+        setIsPlaySkeletonChange(true);
         break;
       default:
         _stageType = response.type;
