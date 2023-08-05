@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:provider/provider.dart';
 
 class NotLoginWidget extends StatefulWidget {
@@ -39,6 +40,10 @@ class _NotLoginWidgetState extends State<NotLoginWidget> {
               ),
               onPressed: () {
                 _loginProvider.signIn();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                );
               },
               child: const Text(
                 "로그인",

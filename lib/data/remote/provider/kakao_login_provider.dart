@@ -20,7 +20,6 @@ const _userEmailKey = 'userEmail';
 class KaKaoLoginProvider extends ChangeNotifier {
   String? _accessToken;
   String? _refreshToken;
-  UserData? _user;
   KaKaoLoginResponse? _response;
 
   String get accessTokenKey => _accessTokenKey;
@@ -42,11 +41,6 @@ class KaKaoLoginProvider extends ChangeNotifier {
       debugPrint('카카오톡 로그인 성공! accessToken: ${token.accessToken}');
 
       _login(token.accessToken);
-
-      MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-        (route) => false,
-      );
 
       Fluttertoast.showToast(
         msg: '성공적으로 로그인 되었습니다.',
