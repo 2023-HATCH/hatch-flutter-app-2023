@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+import 'package:pocket_pose/domain/entity/comment_data.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -23,42 +24,13 @@ class CommentButtonWidget extends StatefulWidget {
 class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   final TextEditingController _textController = TextEditingController();
   late KaKaoLoginProvider _loginProvider;
+  late final CommentProvider _commentProvider =
+      Provider.of<CommentProvider>(context, listen: false);
+  late List<CommentData>? _commentList;
+  final ScrollController _scrollController = ScrollController();
 
-  List<String> userimgs = [
-    'assets/images/chat_user_1.png',
-    'assets/images/chat_user_2.png',
-    'assets/images/chat_user_3.png',
-    'assets/images/chat_user_4.png',
-    'assets/images/chat_user_5.png',
-    'assets/images/chat_user_6.png',
-  ];
-
-  List<String> users = [
-    'hello_kiti',
-    'pochako',
-    'pom_pom_pulin',
-    'kelo_kelo_kelopi',
-    'kogimyung_',
-    'teogsido_saem'
-  ];
-
-  List<String> chats = [
-    '어디 가면 볼 수 있나요?',
-    '너무 아름다워요..',
-    '태연 팬 아닌데 이건 레전드',
-    '어떻게 노래도 잘하고 춤도 잘춰 ㅜ',
-    '코디 열일하네',
-    '예뻐요오',
-  ];
-
-  List<String> dates = [
-    '2023-04-07',
-    '2023-04-08',
-    '2023-04-09',
-    '2023-04-10',
-    '2023-04-11',
-    '2023-04-12',
-  ];
+  String _profileImg = 'assets/images/charactor_popo_default.png';
+  String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
 
   List<String> emojiList = [
     '⭐',
@@ -71,20 +43,16 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
     '💕',
   ];
 
-  List<Widget> textWidgets = [];
-
-  String _profileImg = 'assets/images/charactor_popo_default.png';
-  String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
-  late CommentProvider _commentProvider;
-
-  Future<void> _loadCommentList() async {
+  Future<void> _loadCommentList(StateSetter bottomState) async {
     try {
       _commentProvider.getComments(widget.videoId).then((value) {
-        final comments = _commentProvider.response?.commentList;
+        final newCommentList = _commentProvider.response?.commentList;
 
-        if (comments != null && comments.isNotEmpty) {
-          setState(() {
-            comments;
+        if (newCommentList != null && newCommentList.isNotEmpty) {
+          bottomState(() {
+            setState(() {
+              _commentList = newCommentList.reversed.toList();
+            });
           });
         }
       });
@@ -93,10 +61,15 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
     } finally {}
   }
 
-  void _initUser() async {
+  void _initUser(StateSetter bottomState) async {
     if (await _loginProvider.checkAccessToken()) {
-      _profileImg = _profileImg ?? 'assets/images/charactor_popo_default.png';
-      _hintText = '{user.nickname}(으)로 댓글 달기...';
+      bottomState(() {
+        setState(() {
+          _profileImg =
+              _profileImg ?? 'assets/images/charactor_popo_default.png';
+          _hintText = '{user.nickname}(으)로 댓글 달기...';
+        });
+      });
     }
   }
 
@@ -104,6 +77,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   void initState() {
     super.initState();
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+    _commentList = _commentProvider.response?.commentList;
   }
 
   @override
@@ -114,11 +88,8 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _commentProvider = Provider.of<CommentProvider>(context, listen: false);
     return InkWell(
         onTap: () => {
-              _initUser(),
-              _loadCommentList(),
               showModalBottomSheet(
                 context: context,
                 shape: const RoundedRectangleBorder(
@@ -131,6 +102,8 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                 builder: (BuildContext context) {
                   return StatefulBuilder(
                       builder: (BuildContext context, StateSetter bottomState) {
+                    _initUser(bottomState);
+                    _loadCommentList(bottomState);
                     return SizedBox(
                       height: 500,
                       child: ClipRRect(
@@ -152,9 +125,10 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                           ),
                           resizeToAvoidBottomInset: true,
                           body: Padding(
-                            padding: const EdgeInsets.only(bottom: 110),
+                            padding: const EdgeInsets.only(bottom: 95),
                             child: ListView.builder(
-                              itemCount: users.length,
+                              controller: _scrollController,
+                              itemCount: _commentList?.length,
                               itemBuilder: (context, index) {
                                 return Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,12 +136,35 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                     const Padding(
                                         padding: EdgeInsets.only(left: 18)),
                                     ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
-                                      child: Image.asset(
-                                        userimgs[index],
-                                        width: 35,
-                                      ),
-                                    ),
+                                        borderRadius: BorderRadius.circular(50),
+                                        child: Image.network(
+                                          _commentList?[index]
+                                                  .user
+                                                  .profileImg ??
+                                              'assets/images/charactor_popo_default.png',
+                                          loadingBuilder: (context, child,
+                                              loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                color: AppColor.purpleColor,
+                                              ),
+                                            );
+                                          },
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Image.asset(
+                                            'assets/images/charactor_popo_default.png',
+                                            fit: BoxFit.cover,
+                                            width: 35,
+                                            height: 35,
+                                          ),
+                                          fit: BoxFit.cover,
+                                          width: 35,
+                                          height: 35,
+                                        )),
                                     const Padding(
                                         padding: EdgeInsets.only(left: 8)),
                                     Column(
@@ -175,21 +172,22 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          users[index],
+                                          _commentList?[index].user.nickname ??
+                                              '',
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         const Padding(
                                             padding:
                                                 EdgeInsets.only(bottom: 8)),
                                         Text(
-                                          chats[index],
+                                          _commentList?[index].content ?? '',
                                           style: const TextStyle(fontSize: 14),
                                         ),
                                         const Padding(
                                             padding:
                                                 EdgeInsets.only(bottom: 4)),
                                         Text(
-                                          dates[index],
+                                          '${_commentList?[index].createdAt.year}-${_commentList?[index].createdAt.month}-${_commentList?[index].createdAt.day} ${_commentList?[index].createdAt.hour}:${_commentList?[index].createdAt.minute}',
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: AppColor.grayColor2),
@@ -205,15 +203,16 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                             ),
                           ),
                           bottomSheet: SizedBox(
-                            height: 90,
+                            height: 95,
                             child: Column(
                               children: [
                                 Container(
-                                  height: 25,
+                                  height: 30,
                                   color: Colors.white,
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       for (int i = 0; i < emojiList.length; i++)
                                         InkWell(
@@ -351,12 +350,21 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                                   .text)
                                                           .then((value) {
                                                         // 댓글 목록 새로고침
-                                                        _loadCommentList();
+                                                        _loadCommentList(
+                                                            bottomState);
                                                         _textController.clear();
                                                         FocusScope.of(context)
                                                             .unfocus();
                                                       });
                                                     }
+                                                    _scrollController.animateTo(
+                                                        0,
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        curve:
+                                                            Curves.easeInOut);
                                                   },
                                                 ),
                                               ),
@@ -372,12 +380,21 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                                     .text)
                                                             .then((value) {
                                                           // 댓글 목록 새로고침
-                                                          _loadCommentList();
+                                                          _loadCommentList(
+                                                              bottomState);
                                                           _textController
                                                               .clear();
                                                           FocusScope.of(context)
                                                               .unfocus();
                                                         });
+                                                        _scrollController.animateTo(
+                                                            0,
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                            curve: Curves
+                                                                .easeInOut);
                                                       }
                                                     : null,
                                                 child: Text(
