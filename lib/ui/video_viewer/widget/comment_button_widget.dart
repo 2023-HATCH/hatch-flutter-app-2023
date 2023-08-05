@@ -71,11 +71,12 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   void _initUser(StateSetter bottomState) async {
     if (await _loginProvider.checkAccessToken()) {
+      final user = await _loginProvider.getUser();
       bottomState(() {
         setState(() {
           _profileImg =
-              _profileImg ?? 'assets/images/charactor_popo_default.png';
-          _hintText = '{user.nickname}(으)로 댓글 달기...';
+              user.profileImg ?? 'assets/images/charactor_popo_default.png';
+          _hintText = '${user.nickname}(으)로 댓글 달기...';
         });
       });
     }

@@ -3,15 +3,21 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocket_pose/data/entity/response/kakao_login_response.dart';
 import 'package:pocket_pose/data/remote/repository/kakao_login_repository.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
 
 const _storage = FlutterSecureStorage();
 const _accessTokenKey = 'kakaoAccessToken';
 const _refreshTokenKey = 'kakaoRefreshToken';
+const _userUserIdKey = 'userUserId';
+const _userNicknameKey = 'userNickname';
+const _userProfileImgKey = 'userProfileImg';
+const _userEmailKey = 'userEmail';
 
 class KaKaoLoginProvider extends ChangeNotifier {
   String? _accessToken;
   String? _refreshToken;
+  UserData? _user;
   KaKaoLoginResponse? _response;
 
   String get accessTokenKey => _accessTokenKey;
@@ -51,7 +57,7 @@ class KaKaoLoginProvider extends ChangeNotifier {
 
       storeAccessToken(
           repositoryResponse.accessToken, repositoryResponse.refreshToken);
-
+      storeUser(repositoryResponse.user);
       notifyListeners();
     } catch (e) {
       debugPrint('Error logging in: $e');
@@ -78,6 +84,28 @@ class KaKaoLoginProvider extends ChangeNotifier {
     _accessToken = accessToken;
     _refreshToken = refreshToken;
     notifyListeners();
+  }
+
+  Future<void> storeUser(UserData user) async {
+    await _storage.write(key: _userUserIdKey, value: user.userId);
+    await _storage.write(key: _userNicknameKey, value: user.nickname);
+    await _storage.write(key: _userProfileImgKey, value: user.profileImg);
+    await _storage.write(key: _userEmailKey, value: user.email);
+
+    notifyListeners();
+  }
+
+  Future<UserData> getUser() async {
+    final userId = await _storage.read(key: _userUserIdKey);
+    final nickname = await _storage.read(key: _userNicknameKey);
+    final profileImg = await _storage.read(key: _userProfileImgKey);
+    final email = await _storage.read(key: _userEmailKey);
+
+    return UserData(
+        userId: userId ?? '',
+        nickname: nickname ?? '',
+        profileImg: profileImg ?? '',
+        email: email ?? '');
   }
 
   Future<void> removeAccessToken() async {
