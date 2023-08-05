@@ -29,7 +29,7 @@ class CommentProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('LikeRepository postLike 에러: $e');
+      debugPrint('CommentRepository postComment 에러: $e');
     }
   }
 }

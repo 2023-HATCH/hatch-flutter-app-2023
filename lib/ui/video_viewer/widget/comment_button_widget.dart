@@ -93,9 +93,8 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
     } finally {}
   }
 
-  void initUser() async {
+  void _initUser() async {
     if (await _loginProvider.checkAccessToken()) {
-      // 로그인
       _profileImg = _profileImg ?? 'assets/images/charactor_popo_default.png';
       _hintText = '{user.nickname}(으)로 댓글 달기...';
     }
@@ -115,11 +114,10 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    initUser();
-
     _commentProvider = Provider.of<CommentProvider>(context, listen: false);
     return InkWell(
         onTap: () => {
+              _initUser(),
               _loadCommentList(),
               showModalBottomSheet(
                 context: context,
@@ -327,65 +325,61 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                     border: InputBorder.none,
                                                   ),
                                                   onTap: () async {
-                                                    bottomState(() {
-                                                      setState(() async {
-                                                        if (await _loginProvider
-                                                                .checkAccessToken() ==
-                                                            false) {
-                                                          FocusScope.of(context)
-                                                              .unfocus();
-                                                          Navigator.pop(
-                                                              context);
-                                                          _loginProvider
-                                                              .showLoginBottomSheet();
-                                                        }
-                                                      });
-                                                    });
+                                                    if (await _loginProvider
+                                                            .checkAccessToken() ==
+                                                        false) {
+                                                      FocusScope.of(context)
+                                                          .unfocus();
+                                                      Navigator.pop(context);
+                                                      _loginProvider
+                                                          .showLoginBottomSheet();
+                                                    }
                                                   },
                                                   onChanged: (text) {
                                                     bottomState(() {
                                                       setState(() {});
                                                     });
                                                   },
+                                                  onEditingComplete: () {
+                                                    if (_textController
+                                                        .text.isNotEmpty) {
+                                                      // 댓글 등록 api 호출
+                                                      _commentProvider
+                                                          .postComment(
+                                                              widget.videoId,
+                                                              _textController
+                                                                  .text)
+                                                          .then((value) {
+                                                        // 댓글 목록 새로고침
+                                                        _loadCommentList();
+                                                        _textController.clear();
+                                                        FocusScope.of(context)
+                                                            .unfocus();
+                                                      });
+                                                    }
+                                                  },
                                                 ),
                                               ),
                                               TextButton(
-                                                onPressed: () async {
-                                                  setState(() async {
-                                                    if (await _loginProvider
-                                                            .checkAccessToken() ==
-                                                        false) {
-                                                      Navigator.pop(context);
-                                                      _loginProvider
-                                                          .showLoginBottomSheet();
-                                                    } else {
-                                                      _textController
-                                                              .text.isNotEmpty
-                                                          ? () {
-                                                              // 댓글 작성
-                                                              _commentProvider
-                                                                  .postComment(
-                                                                      widget
-                                                                          .videoId,
-                                                                      _textController
-                                                                          .text)
-                                                                  .then(
-                                                                (value) {
-                                                                  // 댓글 목록 새로고침
-                                                                  _loadCommentList();
-                                                                  // 댓글 입력창 초기화
-                                                                  _textController
-                                                                      .clear();
-                                                                  FocusScope.of(
-                                                                          context)
-                                                                      .unfocus();
-                                                                },
-                                                              );
-                                                            }
-                                                          : null;
-                                                    }
-                                                  });
-                                                },
+                                                onPressed: _textController
+                                                        .text.isNotEmpty
+                                                    ? () {
+                                                        // 댓글 등록 api 호출
+                                                        _commentProvider
+                                                            .postComment(
+                                                                widget.videoId,
+                                                                _textController
+                                                                    .text)
+                                                            .then((value) {
+                                                          // 댓글 목록 새로고침
+                                                          _loadCommentList();
+                                                          _textController
+                                                              .clear();
+                                                          FocusScope.of(context)
+                                                              .unfocus();
+                                                        });
+                                                      }
+                                                    : null,
                                                 child: Text(
                                                   '게시',
                                                   style: TextStyle(
