@@ -78,7 +78,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
     if (_socketStageProvider.isPlaySkeletonChange) {
       _socketStageProvider.setIsPlaySkeletonChange(false);
-      print("mmm 호출,,,:");
       _paintSkeleton();
     }
 
@@ -104,7 +103,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
                     child: getProfile(null, "", StagePlayScore.none)),
               if (widget.players.isNotEmpty)
                 getProfile(widget.players[0].profileImg,
-                    widget.players[0].nickname, StagePlayScore.bad)
+                    widget.players[0].nickname, StagePlayScore.perfect)
               else
                 Visibility(
                     visible: false,
@@ -266,33 +265,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       }
     }
 
-    // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
-    // if (inputImage.inputImageData?.size != null &&
-    //     inputImage.inputImageData?.imageRotation != null) {
-    //   final painterLeft = CustomPosePainter(
-    //       poses,
-    //       inputImage.inputImageData!.size,
-    //       inputImage.inputImageData!.imageRotation,
-    //       AppColor.yellowNeonColor);
-    //   final painterMid = CustomPosePainter(
-    //       poses,
-    //       inputImage.inputImageData!.size,
-    //       inputImage.inputImageData!.imageRotation,
-    //       AppColor.mintNeonColor);
-    //   final painterRignt = CustomPosePainter(
-    //       poses,
-    //       inputImage.inputImageData!.size,
-    //       inputImage.inputImageData!.imageRotation,
-    //       AppColor.greenNeonColor);
-    //   _customPaintLeft = CustomPaint(painter: painterLeft);
-    //   _customPaintMid = CustomPaint(painter: painterMid);
-    //   _customPaintRight = CustomPaint(painter: painterRignt);
-    // } else {
-    //   // 추출된 포즈 없음
-    //   _customPaintLeft = null;
-    //   _customPaintMid = null;
-    //   _customPaintRight = null;
-    // }
     _isBusy = false;
     if (mounted) {
       setState(() {});
@@ -300,24 +272,32 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   }
 
   void _paintSkeleton() {
-    // final painterLeft = CustomPosePainter(
-    // poses,
-    // inputImage.inputImageData!.size,
-    // inputImage.inputImageData!.imageRotation,
-    // AppColor.yellowNeonColor);
-    CustomPosePainter painterMid = CustomPosePainter(
-        [Pose(landmarks: _socketStageProvider.player0 ?? {})],
-        const Size(1280.0, 720.0),
-        InputImageRotation.rotation270deg,
-        AppColor.mintNeonColor);
-    // final painterRignt = CustomPosePainter(
-    //     poses,
-    //     inputImage.inputImageData!.size,
-    //     inputImage.inputImageData!.imageRotation,
-    //     AppColor.greenNeonColor);
-    // _customPaintLeft = CustomPaint(painter: painterLeft);
-    _customPaintMid = CustomPaint(painter: painterMid);
-    // _customPaintRight = CustomPaint(painter: painterRignt);
+    if (_socketStageProvider.player1 != null) {
+      CustomPosePainter painterLeft = CustomPosePainter(
+          [Pose(landmarks: _socketStageProvider.player1 ?? {})],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.yellowNeonColor);
+      _customPaintLeft = CustomPaint(painter: painterLeft);
+    }
+
+    if (_socketStageProvider.player0 != null) {
+      CustomPosePainter painterMid = CustomPosePainter(
+          [Pose(landmarks: _socketStageProvider.player0 ?? {})],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.mintNeonColor);
+      _customPaintMid = CustomPaint(painter: painterMid);
+    }
+
+    if (_socketStageProvider.player2 != null) {
+      CustomPosePainter painterRignt = CustomPosePainter(
+          [Pose(landmarks: _socketStageProvider.player2 ?? {})],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.greenNeonColor);
+      _customPaintRight = CustomPaint(painter: painterRignt);
+    }
   }
 
   void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {

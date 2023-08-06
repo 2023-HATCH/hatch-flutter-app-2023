@@ -194,9 +194,9 @@ class _CameraViewState extends State<CameraView> {
     return Row(
       children: [
         Expanded(
-            flex: 3,
+            flex: 4,
             child: (widget.customPaintLeft != null)
-                ? SizedBox(height: 150, child: widget.customPaintLeft!)
+                ? SizedBox(height: 200, child: widget.customPaintLeft!)
                 : Container()),
         Expanded(
             flex: 4,
