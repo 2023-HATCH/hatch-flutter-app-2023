@@ -42,21 +42,20 @@ class KaKaoLoginProvider extends ChangeNotifier {
 
       debugPrint('카카오톡 로그인 성공! accessToken: ${token.accessToken}');
 
-      _login(token.accessToken);
+      _login(token.accessToken).then((value) {
+        Fluttertoast.showToast(
+          msg: '성공적으로 로그인 되었습니다.',
+        );
+        final videoPlayProvider =
+            Provider.of<VideoPlayProvider>(mainContext, listen: false);
 
-      Fluttertoast.showToast(
-        msg: '성공적으로 로그인 되었습니다.',
-      );
+        videoPlayProvider.resetVideoPlayer();
 
-      MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-        (route) => false,
-      );
-
-      final videoPlayProvider =
-          Provider.of<VideoPlayProvider>(mainContext, listen: false);
-
-      videoPlayProvider.resetVideoPlayer();
+        MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+          (route) => false,
+        );
+      });
     } catch (error) {
       debugPrint('카카오톡으로 로그인 실패: $error');
     }
