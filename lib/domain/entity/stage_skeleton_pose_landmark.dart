@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 @JsonSerializable()
 class StageSkeletonPoseLandmark {
-  final String type;
+  final int type;
   final double x;
   final double y;
   final double z;
@@ -25,7 +25,7 @@ class StageSkeletonPoseLandmark {
 
   factory StageSkeletonPoseLandmark.fromJson(Map<String, dynamic> json) =>
       StageSkeletonPoseLandmark(
-        type: json["type"],
+        type: json["type"]?.toInt(),
         x: json["x"]?.toDouble(),
         y: json["y"]?.toDouble(),
         z: json["z"]?.toDouble(),

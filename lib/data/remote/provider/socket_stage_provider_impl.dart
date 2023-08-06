@@ -231,7 +231,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         Map<PoseLandmarkType, PoseLandmark> temp = {};
         socketResponse.data?.skeleton.forEach((key, value) {
           temp[PoseLandmarkType.values[int.parse(key)]] = PoseLandmark(
-              type: PoseLandmarkType.values[int.parse(value.type)],
+              type: PoseLandmarkType.values[value.type],
               x: value.x,
               y: value.y,
               z: value.z,

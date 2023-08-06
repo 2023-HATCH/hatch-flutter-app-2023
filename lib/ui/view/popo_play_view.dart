@@ -244,7 +244,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
       pose.landmarks.forEach((key, value) {
         var poseLandmark = StageSkeletonPoseLandmark(
-            type: value.type.index.toString(),
+            type: value.type.index,
             x: value.x,
             y: value.y,
             z: value.z,
