@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.transparent, //appBar 투명색
           elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
           actions: [
-            InkWell(
+            GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,

@@ -1,21 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_data.dart';
+part of 'stage_player_list_item.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserData _$UserDataFromJson(Map<String, dynamic> json) => UserData(
-      uuid: json['uuid'] as String,
+StagePlayerListItem _$StagePlayerListItemFromJson(Map<String, dynamic> json) =>
+    StagePlayerListItem(
+      playerNum: json['playerNum'] as int?,
+      userId: json['userId'] as String,
       nickname: json['nickname'] as String,
       profileImg: json['profileImg'] as String?,
-      email: json['email'] as String?,
     );
 
-Map<String, dynamic> _$UserDataToJson(UserData instance) => <String, dynamic>{
-      'uuid': instance.uuid,
+Map<String, dynamic> _$StagePlayerListItemToJson(
+        StagePlayerListItem instance) =>
+    <String, dynamic>{
+      'playerNum': instance.playerNum,
+      'userId': instance.userId,
       'nickname': instance.nickname,
       'profileImg': instance.profileImg,
-      'email': instance.email,
     };

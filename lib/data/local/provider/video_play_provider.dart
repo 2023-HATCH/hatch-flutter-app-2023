@@ -3,8 +3,8 @@ import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayProvider with ChangeNotifier {
-  late List<VideoPlayerController> controllers;
-  late List<Future<void>> videoPlayerFutures;
+  late List<VideoPlayerController> controllers = [];
+  late List<Future<void>> videoPlayerFutures = [];
   late PageController pageController;
 
   late bool loading = false;
@@ -28,68 +28,37 @@ class VideoPlayProvider with ChangeNotifier {
     '토카토카',
   ];
 
-  void initializeVideos(List<VideoData> newVideoList) {
-    videoList.addAll(newVideoList);
-
-    // VideoPlayerController 생성
-    controllers = List<VideoPlayerController>.generate(
-      PAGESIZE,
-      (index) => VideoPlayerController.network(videoList[index].videoUrl),
-    );
-
-    // VideoPlayerController 생성
-    videoPlayerFutures = List<Future<void>>.generate(
-      PAGESIZE,
-      (index) => controllers[index].initialize(),
-    );
-
-    // setVideo를 controllers가 초기화된 후에 호출
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setVideo();
-      notifyListeners();
-    });
-  }
-
   void addVideos(List<VideoData> newVideoList) {
+    int num = videoList.length;
+
     videoList.addAll(newVideoList);
 
-    loadVideo();
-    notifyListeners();
-  }
+    for (final video in videoList) {
+      debugPrint(video.videoUrl);
+    }
 
-  void loadVideo() {
-    // VideoPlayerController 추가
-    int num = videoList.length - PAGESIZE;
+    // Add VideoPlayer Controller
     controllers.addAll(List<VideoPlayerController>.generate(
       PAGESIZE,
       (index) => VideoPlayerController.network(videoList[num + index].videoUrl),
     ));
 
-    // VideoPlayerController 추가
+    // Initialize VideoPlayer Controller
     videoPlayerFutures.addAll(List<Future<void>>.generate(
-      PAGESIZE,
-      (index) => controllers[num + index].initialize(),
-    ));
+        PAGESIZE, (index) => controllers[num + index].initialize()));
+
+    playVideo();
+    currentPage++;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
-  void resetVideo() {
-    controllers = [];
-    videoPlayerFutures = [];
-    videoList = [];
-    currentIndex = 0;
-    currentPage = 0;
-    isLast = false;
-  }
-
-  void setVideo() {
-    // Check if currentIndex is within bounds of controllers list
+  void playVideo() {
     if (currentIndex >= 0 && currentIndex < controllers.length) {
-      // 비디오 기본 값 설정
-      playVideo(); // 재생되는 상태
       controllers[currentIndex].setLooping(true); // 영상 무한 반복
       controllers[currentIndex].setVolume(1.0); // 볼륨 설정
+
+      controllers[currentIndex].play();
 
       WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
     }
@@ -103,23 +72,25 @@ class VideoPlayProvider with ChangeNotifier {
     }
   }
 
-  void playVideo() {
-    if (currentIndex >= 0 && currentIndex < controllers.length) {
-      controllers[currentIndex].play();
+  void resetVideoPlayer() {
+    controllers = [];
+    videoPlayerFutures = [];
+    videoList = [];
+    currentIndex = 0;
+    currentPage = 0;
+    isLast = false;
 
-      WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
-  // dispose 메서드 추가 (비디오 컨트롤러 정리)
   @override
   void dispose() {
+    super.dispose();
+
     for (final controller in controllers) {
       controller.dispose();
     }
 
     pageController.dispose();
-
-    super.dispose();
   }
 }

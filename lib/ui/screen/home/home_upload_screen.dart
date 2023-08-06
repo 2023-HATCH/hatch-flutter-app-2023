@@ -12,15 +12,15 @@ import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-class UploadScreen extends StatefulWidget {
-  const UploadScreen({super.key, required this.uploadFile});
+class HomeUploadScreen extends StatefulWidget {
+  const HomeUploadScreen({super.key, required this.uploadFile});
   final File uploadFile;
 
   @override
-  State<UploadScreen> createState() => _UploadScreenState();
+  State<HomeUploadScreen> createState() => _HomeUploadScreenState();
 }
 
-class _UploadScreenState extends State<UploadScreen> {
+class _HomeUploadScreenState extends State<HomeUploadScreen> {
   final TextEditingController _titleTextController = TextEditingController();
   VideoPlayerController? _videoPlayerController;
   late VideoPlayProvider _videoPlayProvider;
@@ -70,7 +70,7 @@ class _UploadScreenState extends State<UploadScreen> {
       if (value.code == 'VIDEO-2001') {
         Fluttertoast.showToast(msg: '영상이 성공적으로 업로드 되었습니다.');
         _isLoading = false;
-        _videoPlayProvider.resetVideo();
+        _videoPlayProvider.resetVideoPlayer();
 
         Navigator.pushAndRemoveUntil(
           context,
