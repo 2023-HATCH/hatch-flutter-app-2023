@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_follow_screen.dart';
-import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class ProfileUserInfoWidget extends StatelessWidget {
   ProfileUserInfoWidget({
     super.key,
-    required this.index,
+    required this.user,
   });
 
-  int index;
-
-  late VideoPlayProvider _videoPlayProvider;
+  final UserData user;
 
   List<String> videoLinks = [
     'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-2.mp4',
@@ -35,9 +31,6 @@ class ProfileUserInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context);
-    UserData user = _videoPlayProvider.videoList[index].user;
-
     return SizedBox(
       //color: Colors.yellow,
       height: 300,

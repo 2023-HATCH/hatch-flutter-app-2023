@@ -10,13 +10,14 @@ class VideoData {
   final String tag;
   final UserData user;
   final String videoUrl;
-  final int likeCount;
-  final int commentCount;
+  late int likeCount;
+  late int commentCount;
   final int length;
   final DateTime createdAt;
-  final bool liked;
+  late bool liked;
 
-  const VideoData({
+
+  VideoData({
     required this.uuid,
     required this.title,
     required this.tag,

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
-import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +15,7 @@ class ProfileSettingScreen extends StatefulWidget {
 
 class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
   late KaKaoLoginProvider _loginProvider;
-
+  late VideoPlayProvider _videoProvider;
   @override
   void initState() {
     super.initState();
@@ -25,6 +24,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
   @override
   Widget build(BuildContext context) {
     _loginProvider = Provider.of<KaKaoLoginProvider>(context);
+    _videoProvider = Provider.of<VideoPlayProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -98,16 +98,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                       Navigator.pop(context);
                     },
                     onConfirm: () {
-                      Fluttertoast.showToast(
-                        msg: '성공적으로 로그아웃 되었습니다.',
-                      );
                       _loginProvider.signOut();
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MainScreen()),
-                        (route) => false,
-                      );
                     },
                   );
                 })

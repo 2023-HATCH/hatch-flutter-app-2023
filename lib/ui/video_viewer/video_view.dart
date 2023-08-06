@@ -46,7 +46,7 @@ class _VideoViewState extends State<VideoView>
 
       homeProvider
           .getVideos(HomeVideosRequest(
-              page: _videoPlayProvider.currentPage,
+              page: _videoPlayProvider.currentPage++,
               size: _videoPlayProvider.PAGESIZE))
           .then((value) {
         final response = homeProvider.response;
@@ -59,7 +59,6 @@ class _VideoViewState extends State<VideoView>
             }
 
             if (response.videoList.isNotEmpty) {
-              _videoPlayProvider.currentPage++;
               _videoPlayProvider.addVideos(response.videoList);
             }
           });
@@ -126,29 +125,36 @@ class _VideoViewState extends State<VideoView>
             allowImplicitScrolling: true,
             itemCount: 200,
             itemBuilder: (context, index) {
-              if (index < _videoPlayProvider.videoList.length) {
-                // 현재 비디오 인덱스 안에 있는 경우
-                return FutureBuilder(
-                  future: _videoPlayProvider
-                      .videoPlayerFutures[_videoPlayProvider.currentIndex],
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done ||
-                        (snapshot.connectionState == ConnectionState.waiting &&
-                            _videoPlayProvider.loading)) {
-                      // 비디오가 준비된 경우
-                      _videoPlayProvider.loading = true;
-                      return buildVideoPlayer(index); // 비디오 플레이어 생성
-                    } else {
-                      return const MusicSpinner(); // 비디오 로딩 중
-                    }
-                  },
-                );
-              } else {
+              if (_videoPlayProvider.videoList.isEmpty) {
+                _loadMoreVideos();
                 _videoPlayProvider.loading = false;
-                if (_videoPlayProvider.currentIndex <= 0) {
-                  return const MusicSpinner(); // 비디오 로딩 중
+                return const MusicSpinner(); // 비디오 로딩 중
+              } else {
+                if (index < _videoPlayProvider.videoList.length) {
+                  // 현재 비디오 인덱스 안에 있는 경우
+                  return FutureBuilder(
+                    future: _videoPlayProvider
+                        .videoPlayerFutures[_videoPlayProvider.currentIndex],
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done ||
+                          (snapshot.connectionState ==
+                                  ConnectionState.waiting &&
+                              _videoPlayProvider.loading)) {
+                        // 비디오가 준비된 경우
+                        _videoPlayProvider.loading = true;
+                        return buildVideoPlayer(index); // 비디오 플레이어 생성
+                      } else {
+                        return const MusicSpinner(); // 비디오 로딩 중
+                      }
+                    },
+                  );
                 } else {
-                  return Container(color: Colors.black);
+                  _videoPlayProvider.loading = false;
+                  if (_videoPlayProvider.currentIndex <= 0) {
+                    return const MusicSpinner(); // 비디오 로딩 중
+                  } else {
+                    return Container(color: Colors.black);
+                  }
                 }
               }
             },
