@@ -10,6 +10,8 @@ import 'package:pocket_pose/main.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
+
 
 const _storage = FlutterSecureStorage();
 const _accessTokenKey = 'kakaoAccessToken';
@@ -155,9 +157,8 @@ class KaKaoLoginProvider extends ChangeNotifier {
           top: Radius.circular(30.0),
         ),
       ),
-      builder: (
-        BuildContext context,
-      ) {
+      builder: (BuildContext context) {
+
         return const LoginModalContent();
       },
     );

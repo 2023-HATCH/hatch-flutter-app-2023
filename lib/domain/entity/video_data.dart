@@ -16,6 +16,7 @@ class VideoData {
   final DateTime createdAt;
   late bool liked;
 
+
   VideoData({
     required this.uuid,
     required this.title,
