@@ -54,7 +54,8 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
             return !isLiked;
           } else {
             loginProvider.showLoginBottomSheet();
-            return likeProvider.isPostSuccess ?? false;
+
+            return isLiked;
           }
         },
         likeBuilder: (isLiked) {

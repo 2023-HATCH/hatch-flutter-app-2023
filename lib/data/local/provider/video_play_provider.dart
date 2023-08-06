@@ -75,7 +75,7 @@ class VideoPlayProvider with ChangeNotifier {
     videoPlayerFutures = [];
     videoList = [];
     currentIndex = 0;
-    currentPage = 0;
+    currentPage = -1;
     isLast = false;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
