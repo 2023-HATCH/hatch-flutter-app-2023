@@ -48,8 +48,6 @@ class VideoPlayProvider with ChangeNotifier {
         PAGESIZE, (index) => controllers[num + index].initialize()));
 
     playVideo();
-    currentPage++;
-
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 

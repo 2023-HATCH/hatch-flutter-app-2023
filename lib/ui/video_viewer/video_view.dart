@@ -46,7 +46,7 @@ class _VideoViewState extends State<VideoView>
 
       homeProvider
           .getVideos(HomeVideosRequest(
-              page: _videoPlayProvider.currentPage,
+              page: _videoPlayProvider.currentPage++,
               size: _videoPlayProvider.PAGESIZE))
           .then((value) {
         final response = homeProvider.response;
@@ -59,7 +59,6 @@ class _VideoViewState extends State<VideoView>
             }
 
             if (response.videoList.isNotEmpty) {
-              _videoPlayProvider.currentPage++;
               _videoPlayProvider.addVideos(response.videoList);
             }
           });
