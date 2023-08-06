@@ -23,26 +23,21 @@ class HomeRepository {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("홈 비디오 조회 성공! json: $json");
+      debugPrint("홈 비디오 목록 조회 성공! json: $json");
 
       final List<dynamic> videoListJson = json['data']['videoList'];
-      debugPrint("홈 비디오 조회 성공! videoListJson: $videoListJson");
-
       final List<VideoData> videoList = videoListJson
           .map((videoJson) => VideoData.fromJson(videoJson))
           .toList();
 
-      debugPrint("홈 비디오 조회 성공! videoList: $videoList");
-
       final bool isLast = json['data']['isLast'];
-      debugPrint("홈 비디오 조회 성공! isLast: $isLast");
 
       return HomeVideosResponse(
         videoList: videoList,
         isLast: isLast,
       );
     } else {
-      throw Exception('Failed to fetch videos');
+      throw Exception('홈 비디오 목록 조회 실패');
     }
   }
 }

@@ -10,7 +10,6 @@ import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/home/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
-import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
@@ -34,6 +33,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _loginProvider.mainContext = context;
 
     super.initState();
   }
@@ -50,9 +50,9 @@ class _MainScreenState extends State<MainScreen> {
     if (index == 1) {
       _videoPlayProvider.pauseVideo();
 
-      // ignore: unrelated_type_equality_checks
       if (await _loginProvider.checkAccessToken() == false) {
-        _showModalBottomSheet(); //토큰이 존재하지 않는 경우
+        // 사용자 토큰이 없는 경우
+        _loginProvider.showLoginBottomSheet();
       }
     } else {
       _videoPlayProvider.playVideo();
@@ -83,20 +83,6 @@ class _MainScreenState extends State<MainScreen> {
       context,
       MaterialPageRoute(
           builder: (context) => PoPoStageScreen(getIndex: getIndex)),
-    );
-  }
-
-  void _showModalBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30.0),
-        ),
-      ),
-      builder: (BuildContext context) {
-        return const LoginModalContent();
-      },
     );
   }
 

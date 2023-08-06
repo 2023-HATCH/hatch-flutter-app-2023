@@ -16,6 +16,7 @@ VideoData _$VideoDataFromJson(Map<String, dynamic> json) => VideoData(
       commentCount: json['commentCount'] as int,
       length: json['length'] as int,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      liked: json['liked'] as bool,
     );
 
 Map<String, dynamic> _$VideoDataToJson(VideoData instance) => <String, dynamic>{
@@ -28,4 +29,5 @@ Map<String, dynamic> _$VideoDataToJson(VideoData instance) => <String, dynamic>{
       'commentCount': instance.commentCount,
       'length': instance.length,
       'createdAt': instance.createdAt.toIso8601String(),
+      'liked': instance.liked,
     };

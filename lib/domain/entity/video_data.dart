@@ -14,6 +14,7 @@ class VideoData {
   final int commentCount;
   final int length;
   final DateTime createdAt;
+  final bool liked;
 
   const VideoData({
     required this.uuid,
@@ -25,6 +26,7 @@ class VideoData {
     required this.commentCount,
     required this.length,
     required this.createdAt,
+    required this.liked,
   });
 
   factory VideoData.fromJson(Map<String, dynamic> json) =>
