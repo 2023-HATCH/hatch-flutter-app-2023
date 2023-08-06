@@ -18,35 +18,6 @@ class SendSkeletonResponse extends BaseObject {
     required this.skeleton,
   });
 
-  // factory SendSkeletonResponse.fromJson(Map<String, dynamic> json) {
-  //   Map<String, Map<String, dynamic>> skeletonMap = json['skeleton'];
-  //   Map<PoseLandmarkType, PoseLandmark> resultMap = {};
-
-  //   skeletonMap.forEach((key, value) {
-  //     if (value is String) {
-  //       var keyType = PoseLandmarkType.values[int.parse(key)];
-  //       var valueMap = PoseLandmark.fromJson(value);
-  //       resultMap[keyType] = valueMap;
-  //     }
-  //   });
-
-  //   return SendSkeletonResponse(
-  //     userId: json['userId'],
-  //     playerNum: json['playerNum'],
-  //     frameNum: json['frameNum'],
-  //     skeleton: resultMap,
-  //   );
-  // }
-
-  // Map<String, dynamic> toJson() {
-  //   return {
-  //     "userId": userId,
-  //     "playerNum": playerNum,
-  //     "frameNum": frameNum,
-  //     "skeleton": skeleton
-  //   };
-  // }
-
   factory SendSkeletonResponse.fromRawJson(String str) =>
       SendSkeletonResponse.fromJson(json.decode(str));
 
