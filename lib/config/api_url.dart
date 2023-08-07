@@ -8,13 +8,12 @@ class AppUrl {
 
   static const _stageUrl = "$_apiBaseUrl/stage";
   static const _talkUrl = "$_apiBaseUrl/talks";
-  static const videoUrl = "$_apiBaseUrl/videos";
 
   // 로그인 & 회원가입
   static const signInSignUpUrl = "$_apiBaseUrl/auth/login?type=kakao";
 
-  // 홈
-  static const homeVideosUrl = "$_apiBaseUrl/videos";
+  // 비디오
+  static const videoUrl = "$_apiBaseUrl/videos";
 
   // 좋아요
   static const likeUrl = "$_apiBaseUrl/likes";

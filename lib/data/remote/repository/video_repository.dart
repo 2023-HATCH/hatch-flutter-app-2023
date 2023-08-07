@@ -4,21 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
-import 'package:pocket_pose/data/entity/request/home_videos_request.dart';
-import 'package:pocket_pose/data/entity/response/home_videos_response.dart';
+import 'package:pocket_pose/data/entity/request/videos_request.dart';
+import 'package:pocket_pose/data/entity/response/videos_response.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 
 const _storage = FlutterSecureStorage();
 const _accessTokenKey = 'kakaoAccessToken';
 const _refreshTokenKey = 'kakaoRefreshToken';
 
-class HomeRepository {
-  Future<HomeVideosResponse> getVideos(
-      HomeVideosRequest homeVideosRequest) async {
+class VideoRepository {
+  Future<VideosResponse> getVideos(VideosRequest homeVideosRequest) async {
     final accessToken = await _storage.read(key: _accessTokenKey);
     final refreshToken = await _storage.read(key: _refreshTokenKey);
 
-    final url = Uri.parse(AppUrl.homeVideosUrl).replace(queryParameters: {
+    final url = Uri.parse(AppUrl.videoUrl).replace(queryParameters: {
       'page': homeVideosRequest.page.toString(),
       'size': homeVideosRequest.size.toString(),
     });
@@ -42,12 +41,31 @@ class HomeRepository {
 
       final bool isLast = json['data']['isLast'];
 
-      return HomeVideosResponse(
+      return VideosResponse(
         videoList: videoList,
         isLast: isLast,
       );
     } else {
       throw Exception('홈 비디오 목록 조회 실패');
+    }
+  }
+
+  Future<bool> deleteVideo(String videoId) async {
+    final url = Uri.parse('${AppUrl.videoUrl}/$videoId');
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json;charset=UTF-8',
+    };
+
+    final response = await http.delete(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    if (response.statusCode == 200) {
+      debugPrint("영상 삭제 성공! json: $json");
+      return true;
+    } else {
+      debugPrint('영상 삭제 실패 json $json');
+      return false;
     }
   }
 }

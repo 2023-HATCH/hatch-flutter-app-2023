@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
@@ -19,12 +20,15 @@ class VideoMyScreen extends StatefulWidget {
 
 class _VideoMyScreenState extends State<VideoMyScreen> {
   late VideoPlayProvider _videoPlayProvider;
+  late VideoProvider _videoProvider;
+
   final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _videoProvider = Provider.of<VideoProvider>(context, listen: false);
   }
 
   @override
@@ -68,12 +72,15 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
                                 Navigator.pop(context);
                               },
                               onConfirm: () {
-                                //영상 삭제 api 호출
+                                _videoProvider.deleteVideo(_videoPlayProvider
+                                    .videoList[_videoPlayProvider.currentIndex]
+                                    .uuid);
                                 Fluttertoast.showToast(
                                   msg: '영상이 삭제되었습니다.',
                                 );
                                 Navigator.pop(context);
                                 Navigator.pop(context);
+                                //프로필 영상 조회 api 호출
                               });
                         });
                   })),
