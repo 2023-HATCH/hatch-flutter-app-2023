@@ -276,7 +276,11 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                       padding: EdgeInsets.only(
                                                           bottom: 8)),
                                                   SizedBox(
-                                                    width: 300,
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width -
+                                                            120,
                                                     child: Text(
                                                       _commentList?[index]
                                                               .content ??
