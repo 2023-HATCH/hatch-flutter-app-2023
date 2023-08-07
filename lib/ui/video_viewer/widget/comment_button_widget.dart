@@ -38,7 +38,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   late final VideoPlayProvider _videoPlayProvider =
       Provider.of<VideoPlayProvider>(context, listen: false);
   bool _isInit = false;
-  late UserData user;
+  UserData? user;
   bool _isNotEmptyComment = false;
   String _profileImg = 'assets/images/charactor_popo_default.png';
   String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
@@ -78,12 +78,13 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
   void _initUser(StateSetter bottomState) async {
     if (await _loginProvider.checkAccessToken()) {
-      user = await _loginProvider.getUser();
+      final newUser = await _loginProvider.getUser();
       bottomState(() {
         setState(() {
+          user = newUser;
           _profileImg =
-              user.profileImg ?? 'assets/images/charactor_popo_default.png';
-          _hintText = '${user.nickname}(으)로 댓글 달기...';
+              user!.profileImg ?? 'assets/images/charactor_popo_default.png';
+          _hintText = '${user!.nickname}(으)로 댓글 달기...';
         });
       });
     }
@@ -124,9 +125,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     {
                       user = await _loginProvider.getUser(),
                       setState(() {
-                        _profileImg = user.profileImg ??
+                        _profileImg = user!.profileImg ??
                             'assets/images/charactor_popo_default.png';
-                        _hintText = '${user.nickname}(으)로 댓글 달기...';
+                        _hintText = '${user!.nickname}(으)로 댓글 달기...';
                       }),
                     }
                 },
@@ -177,6 +178,33 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                   controller: _scrollController,
                                   itemCount: _commentList?.length,
                                   itemBuilder: (context, index) {
+                                    final year =
+                                        _commentList?[index].createdAt.year;
+                                    final month = _commentList?[index]
+                                        .createdAt
+                                        .month
+                                        .toString()
+                                        .padLeft(2, '0');
+
+                                    final day = _commentList?[index]
+                                        .createdAt
+                                        .day
+                                        .toString()
+                                        .padLeft(2, '0');
+
+                                    final hour = _commentList?[index]
+                                        .createdAt
+                                        .hour
+                                        .toString()
+                                        .padLeft(2, '0');
+                                    final minute = _commentList?[index]
+                                        .createdAt
+                                        .minute
+                                        .toString()
+                                        .padLeft(2, '0');
+                                    final createdAt =
+                                        '$year-$month-$day $hour:$minute';
+
                                     return Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -255,7 +283,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                       padding: EdgeInsets.only(
                                                           bottom: 4)),
                                                   Text(
-                                                    '${_commentList?[index].createdAt.year}-${_commentList?[index].createdAt.month}-${_commentList?[index].createdAt.day} ${_commentList?[index].createdAt.hour}:${_commentList?[index].createdAt.minute}',
+                                                    createdAt,
                                                     style: TextStyle(
                                                         fontSize: 10,
                                                         color: AppColor
@@ -266,34 +294,42 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                             ],
                                           ),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 4, 18, 12),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              _commentProvider
-                                                  .deleteComment(
-                                                      _commentList?[index]
-                                                              .uuid ??
-                                                          '')
-                                                  .then((value) {
-                                                _loadCommentList(bottomState);
-                                                Fluttertoast.showToast(
-                                                    msg: '댓글이 삭제되었습니다.');
-                                                bottomState(() {
-                                                  setState(() {
-                                                    _videoPlayProvider
-                                                        .videoList[widget.index]
-                                                        .commentCount--;
+                                        Visibility(
+                                          visible: user != null &&
+                                              user!.userId ==
+                                                  _commentList?[index]
+                                                      .user
+                                                      .userId,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 4, 18, 12),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                _commentProvider
+                                                    .deleteComment(
+                                                        _commentList?[index]
+                                                                .uuid ??
+                                                            '')
+                                                    .then((value) {
+                                                  _loadCommentList(bottomState);
+                                                  Fluttertoast.showToast(
+                                                      msg: '댓글이 삭제되었습니다.');
+                                                  bottomState(() {
+                                                    setState(() {
+                                                      _videoPlayProvider
+                                                          .videoList[
+                                                              widget.index]
+                                                          .commentCount--;
+                                                    });
                                                   });
                                                 });
-                                              });
-                                            },
-                                            child: Text(
-                                              '삭제',
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: AppColor.grayColor2),
+                                              },
+                                              child: Text(
+                                                '삭제',
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: AppColor.grayColor2),
+                                              ),
                                             ),
                                           ),
                                         ),
