@@ -178,6 +178,33 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                   controller: _scrollController,
                                   itemCount: _commentList?.length,
                                   itemBuilder: (context, index) {
+                                    final year =
+                                        _commentList?[index].createdAt.year;
+                                    final month = _commentList?[index]
+                                        .createdAt
+                                        .month
+                                        .toString()
+                                        .padLeft(2, '0');
+
+                                    final day = _commentList?[index]
+                                        .createdAt
+                                        .day
+                                        .toString()
+                                        .padLeft(2, '0');
+
+                                    final hour = _commentList?[index]
+                                        .createdAt
+                                        .hour
+                                        .toString()
+                                        .padLeft(2, '0');
+                                    final minute = _commentList?[index]
+                                        .createdAt
+                                        .minute
+                                        .toString()
+                                        .padLeft(2, '0');
+                                    final createdAt =
+                                        '$year-$month-$day $hour:$minute';
+
                                     return Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -256,7 +283,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                       padding: EdgeInsets.only(
                                                           bottom: 4)),
                                                   Text(
-                                                    '${_commentList?[index].createdAt.year}-${_commentList?[index].createdAt.month}-${_commentList?[index].createdAt.day} ${_commentList?[index].createdAt.hour}:${_commentList?[index].createdAt.minute}',
+                                                    createdAt,
                                                     style: TextStyle(
                                                         fontSize: 10,
                                                         color: AppColor
