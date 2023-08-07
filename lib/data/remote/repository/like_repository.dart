@@ -1,21 +1,20 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
-
-const _storage = FlutterSecureStorage();
-const _accessTokenKey = 'kakaoAccessToken';
-const _refreshTokenKey = 'kakaoRefreshToken';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 
 class LikeRepository {
+  KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
+
   Future<bool> postLike(String videoId) async {
     final url = Uri.parse('${AppUrl.likeUrl}/$videoId');
 
-    debugPrint('좋아요 Uri videoId ${AppUrl.likeUrl}/$videoId');
-    final accessToken = await _storage.read(key: _accessTokenKey);
-    final refreshToken = await _storage.read(key: _refreshTokenKey);
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',
@@ -38,8 +37,10 @@ class LikeRepository {
   Future<bool> deleteLike(String videoId) async {
     final url = Uri.parse('${AppUrl.likeUrl}/$videoId');
 
-    final accessToken = await _storage.read(key: _accessTokenKey);
-    final refreshToken = await _storage.read(key: _refreshTokenKey);
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',

@@ -1,17 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/response/comment_list_response.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/comment_data.dart';
 
-const _storage = FlutterSecureStorage();
-const _accessTokenKey = 'kakaoAccessToken';
-const _refreshTokenKey = 'kakaoRefreshToken';
-
 class CommentRepository {
+  KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
+
   Future<CommentListResponse> getComments(String videoId) async {
     final url = Uri.parse('${AppUrl.commentUrl}/$videoId');
 
@@ -41,8 +39,10 @@ class CommentRepository {
   Future<bool> postComment(String videoId, String content) async {
     final url = Uri.parse('${AppUrl.commentUrl}/$videoId');
 
-    final accessToken = await _storage.read(key: _accessTokenKey);
-    final refreshToken = await _storage.read(key: _refreshTokenKey);
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',
@@ -70,8 +70,10 @@ class CommentRepository {
   Future<bool> deleteComment(String commentId) async {
     final url = Uri.parse('${AppUrl.commentUrl}/$commentId');
 
-    final accessToken = await _storage.read(key: _accessTokenKey);
-    final refreshToken = await _storage.read(key: _refreshTokenKey);
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',
