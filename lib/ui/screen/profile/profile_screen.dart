@@ -72,9 +72,11 @@ class _ProfileScreenState extends State<ProfileScreen>
   Future<bool> _initUser() async {
     if (await _loginProvider.checkAccessToken()) {
       UserData user = await _loginProvider.getUser();
-      setState(() {
-        _user = user;
-      });
+      if (mounted) {
+        setState(() {
+          _user = user;
+        });
+      }
 
       return true;
     }
