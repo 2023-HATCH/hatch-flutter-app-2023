@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
-import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/main.dart';
 
 enum SkeletonDetectMode {
@@ -109,10 +108,10 @@ class _CameraViewState extends State<CameraView> {
     // 플레이 상태인 경우
     else {
       // 카운트다운 시작 후 노래 재생
-      // setState(() {
-      //   _countdownVisibility = true;
-      // });
-      // _startTimer();
+      setState(() {
+        _countdownVisibility = true;
+      });
+      _startTimer();
     }
   }
 
@@ -126,9 +125,9 @@ class _CameraViewState extends State<CameraView> {
             _countdownVisibility = false;
           });
         }
-        AudioPlayerUtil().play(
-            "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
-            widget.setIsSkeletonDetectMode);
+        // AudioPlayerUtil().play(
+        //     "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
+        //     widget.setIsSkeletonDetectMode);
       } else {
         if (mounted) {
           setState(() {
@@ -195,9 +194,9 @@ class _CameraViewState extends State<CameraView> {
     return Row(
       children: [
         Expanded(
-            flex: 3,
+            flex: 4,
             child: (widget.customPaintLeft != null)
-                ? SizedBox(height: 150, child: widget.customPaintLeft!)
+                ? SizedBox(height: 200, child: widget.customPaintLeft!)
                 : Container()),
         Expanded(
             flex: 4,

@@ -77,8 +77,7 @@ class CommentRepository {
 
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',
-      if (accessToken != null && refreshToken != null)
-        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+      if (refreshToken != null) "cookie": "x-refresh-token=$refreshToken"
     };
 
     final response = await http.delete(url, headers: headers);
@@ -86,6 +85,18 @@ class CommentRepository {
 
     if (response.statusCode == 200) {
       debugPrint("댓글 삭제 성공! json: $json");
+
+      final headers = response.headers;
+      final cookies = response.headers['cookie'];
+      // final accessToken = loginProvider.extractToken(cookies, 'x-access-token');
+      // final refreshToken =
+      //     loginProvider.extractToken(cookies, 'x-refresh-token');
+
+      debugPrint("댓글 목록 headers: $headers");
+      debugPrint("댓글 목록 cookies: $cookies");
+      // debugPrint("댓글 목록 accessToken: $accessToken");
+      // debugPrint("댓글 목록 refreshToken: $refreshToken");
+
       return true;
     } else {
       debugPrint('댓글 삭제 실패 json $json');

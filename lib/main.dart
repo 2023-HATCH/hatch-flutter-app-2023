@@ -5,12 +5,11 @@ import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 
-import 'package:pocket_pose/data/remote/provider/home_provider.dart';
+import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/like_provider.dart';
-
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
-
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/screen/on_boarding_screen.dart';
 import 'package:provider/provider.dart';
@@ -30,10 +29,11 @@ Future<void> main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => VideoPlayProvider()),
     ChangeNotifierProvider(create: (_) => KaKaoLoginProvider()),
-    ChangeNotifierProvider(create: (_) => HomeProvider()),
+    ChangeNotifierProvider(create: (_) => VideoProvider()),
     ChangeNotifierProvider(create: (_) => LikeProvider()),
     ChangeNotifierProvider(create: (_) => CommentProvider()),
     ChangeNotifierProvider(create: (_) => StageProviderImpl()),
+    ChangeNotifierProvider(create: (_) => SocketStageProviderImpl()),
   ], child: MyApp(showOnBoarding: showOnBoarding)));
 }
 

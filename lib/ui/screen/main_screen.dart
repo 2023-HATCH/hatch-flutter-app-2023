@@ -1,9 +1,7 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
@@ -60,21 +58,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onFloatingButtonClicked() async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    String accessToken = await storage.read(key: storageKey) ?? "";
-    if (accessToken != "") {
+    if (await _loginProvider.checkAccessToken()) {
       _videoPlayProvider.pauseVideo();
       _showPoPoStageScreen();
     } else {
-      Fluttertoast.showToast(
-        msg: "로그인 해주세요.",
-        toastLength: Toast.LENGTH_SHORT,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      _loginProvider.showLoginBottomSheet();
     }
   }
 

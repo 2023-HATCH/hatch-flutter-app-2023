@@ -1,5 +1,5 @@
 import 'package:pocket_pose/data/entity/base_object.dart';
-import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 
 class BaseSocketResponse<T> {
   String timeStamp;

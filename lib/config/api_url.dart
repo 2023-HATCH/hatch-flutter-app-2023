@@ -8,13 +8,12 @@ class AppUrl {
 
   static const _stageUrl = "$_apiBaseUrl/stage";
   static const _talkUrl = "$_apiBaseUrl/talks";
-  static const videoUrl = "$_apiBaseUrl/videos";
 
   // 로그인 & 회원가입
   static const signInSignUpUrl = "$_apiBaseUrl/auth/login?type=kakao";
 
-  // 홈
-  static const homeVideosUrl = "$_apiBaseUrl/videos";
+  // 비디오
+  static const videoUrl = "$_apiBaseUrl/videos";
 
   // 좋아요
   static const likeUrl = "$_apiBaseUrl/likes";
@@ -27,7 +26,7 @@ class AppUrl {
   static const stageUserListUrl = "$_stageUrl/users";
   static const stageEnterUrl = "$_stageUrl/enter";
   static const stageExitUrl = "$_stageUrl/exit"; // 임시 url
-  static const stageCatchUrl = "$_stageUrl/catch"; // 1인 catch
+  static const stageCatchUrl = "$_stageUrl/catch";
   static const stageTalkUrl = "$_talkUrl/messages";
 
   // 스켈레톤 정확도 확인
@@ -37,4 +36,5 @@ class AppUrl {
   static const socketSubscribeStageUrl = "/topic/stage";
   static const socketTalkUrl = "/app/talks/messages";
   static const socketReactionUrl = "/app/talks/reactions";
+  static const socketSkeletonUrl = "/app/stage/play/skeleton";
 }

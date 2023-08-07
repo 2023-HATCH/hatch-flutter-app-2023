@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/entity/request/home_videos_request.dart';
+import 'package:pocket_pose/data/entity/request/videos_request.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
-import 'package:pocket_pose/data/remote/provider/home_provider.dart';
+import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/video_user_info_frame.dart';
 import 'package:pocket_pose/ui/video_viewer/video_right_frame.dart';
 import 'package:pocket_pose/ui/widget/music_spinner_widget.dart';
@@ -42,14 +42,14 @@ class _VideoViewState extends State<VideoView>
 
   Future<void> _loadMoreVideos() async {
     try {
-      final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+      final videoProvider = Provider.of<VideoProvider>(context, listen: false);
 
-      homeProvider
-          .getVideos(HomeVideosRequest(
+      videoProvider
+          .getVideos(VideosRequest(
               page: _videoPlayProvider.currentPage++,
               size: _videoPlayProvider.PAGESIZE))
           .then((value) {
-        final response = homeProvider.response;
+        final response = videoProvider.response;
 
         if (response != null) {
           setState(() {

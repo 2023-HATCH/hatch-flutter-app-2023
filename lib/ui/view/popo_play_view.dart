@@ -6,9 +6,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
-import 'package:pocket_pose/data/remote/provider/popo_skeleton_provider_impl.dart';
+import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
+import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
+import 'package:provider/provider.dart';
 
 enum StagePlayScore { bad, good, great, excellent, perfect, none }
 
@@ -16,9 +19,13 @@ enum StagePlayScore { bad, good, great, excellent, perfect, none }
 class PoPoPlayView extends StatefulWidget {
   final List<StagePlayerListItem> players;
   const PoPoPlayView(
-      {Key? key, required this.isResultState, required this.players})
+      {Key? key,
+      required this.isResultState,
+      required this.players,
+      this.userId})
       : super(key: key);
   final bool isResultState;
+  final String? userId;
 
   @override
   State<StatefulWidget> createState() => _PoPoPlayViewState();
@@ -35,14 +42,47 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   CustomPaint? _customPaintMid;
   CustomPaint? _customPaintRight;
   // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
-  SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
-  final bool _isPlayer = true;
+  final SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
+  bool _isPlayer = false;
+  int _playerNum = -1;
+  int _frameNum = 0;
   // input Lists
   final List<List<double>> _inputLists = [];
-  final _provider = PoPoSkeletonProviderImpl();
+  late SocketStageProviderImpl _socketStageProvider;
+
+  @override
+  void initState() {
+    for (var player in widget.players) {
+      if (player.userId == widget.userId) {
+        _isPlayer = true;
+        _playerNum = player.playerNum!;
+      }
+    }
+
+    if (_isPlayer) {
+      Fluttertoast.showToast(
+        msg: "캐치 성공!",
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: true);
+
+    if (_socketStageProvider.isPlaySkeletonChange) {
+      _socketStageProvider.setIsPlaySkeletonChange(false);
+      _paintSkeleton();
+    }
+
     // 카메라뷰 보이기
     return Stack(
       children: [
@@ -65,7 +105,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
                     child: getProfile(null, "", StagePlayScore.none)),
               if (widget.players.isNotEmpty)
                 getProfile(widget.players[0].profileImg,
-                    widget.players[0].nickname, StagePlayScore.bad)
+                    widget.players[0].nickname, StagePlayScore.perfect)
               else
                 Visibility(
                     visible: false,
@@ -95,9 +135,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           customPaintRight: _customPaintRight,
           // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
           onImage: (inputImage) {
-            // user이거나 노래가 종료된 거 아닌 이상 항상 스켈레톤 추출
-            if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
-                _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
+            // 플레이어만 스켈레톤 추출
+            if (_isPlayer) {
               processImage(inputImage);
             }
           },
@@ -200,6 +239,27 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     // poseDetector에서 추출된 포즈 가져오기
     List<Pose> poses = await _poseDetector.processImage(inputImage);
 
+    // 소켓에 스켈레톤 전송
+    for (final pose in poses) {
+      Map<String, StageSkeletonPoseLandmark> resultMap = {};
+
+      pose.landmarks.forEach((key, value) {
+        var poseLandmark = StageSkeletonPoseLandmark(
+            type: value.type.index,
+            x: value.x,
+            y: value.y,
+            z: value.z,
+            likelihood: value.likelihood);
+
+        resultMap[key.index.toString()] = poseLandmark;
+      });
+
+      var resuest = SendSkeletonRequest(
+          playerNum: _playerNum, frameNum: _frameNum, skeleton: resultMap);
+      _socketStageProvider.sendSkeleton(resuest);
+    }
+    _frameNum++;
+
     // 사용자가 춤 추기 시작할 때 스켈레톤 배열에 저장
     if (_skeletonDetectMode == SkeletonDetectMode.musicStartMode) {
       for (final pose in poses) {
@@ -207,69 +267,70 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       }
     }
 
-    // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
-    if (inputImage.inputImageData?.size != null &&
-        inputImage.inputImageData?.imageRotation != null) {
-      // 여기만 2개만 수정 ! PosePainter -> CustomPosePainter
-      final painterLeft = CustomPosePainter(
-          poses,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          AppColor.yellowNeonColor);
-      final painterMid = CustomPosePainter(
-          poses,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          AppColor.mintNeonColor);
-      final painterRignt = CustomPosePainter(
-          poses,
-          inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation,
-          AppColor.greenNeonColor);
-      _customPaintLeft = CustomPaint(painter: painterLeft);
-      _customPaintMid = CustomPaint(painter: painterMid);
-      _customPaintRight = CustomPaint(painter: painterRignt);
-    } else {
-      // 추출된 포즈 없음
-      _customPaintLeft = null;
-      _customPaintMid = null;
-      _customPaintRight = null;
-    }
     _isBusy = false;
     if (mounted) {
       setState(() {});
     }
   }
 
-  void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
-    if (_isPlayer && mounted) {
-      setState(() {
-        _skeletonDetectMode = mode;
+  void _paintSkeleton() {
+    if (_socketStageProvider.player1 != null) {
+      CustomPosePainter painterLeft = CustomPosePainter(
+          [Pose(landmarks: _socketStageProvider.player1 ?? {})],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.yellowNeonColor);
+      _customPaintLeft = CustomPaint(painter: painterLeft);
+    }
 
-        // 노래 끝나면 스켈레톤 서버에 보내기
-        if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
-          // 스켈레톤 파일로 저장: 실행 안 되도록 설정
-          if (1 > 2) {
-            skeletonToFile(_inputLists);
-          }
+    if (_socketStageProvider.player0 != null) {
+      CustomPosePainter painterMid = CustomPosePainter(
+          [Pose(landmarks: _socketStageProvider.player0 ?? {})],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.mintNeonColor);
+      _customPaintMid = CustomPaint(painter: painterMid);
+    }
 
-          // // ai 서버 오류로 잠시 주석처리
-          _provider
-              .postSkeletonList(_inputLists)
-              .then((value) => Fluttertoast.showToast(
-                    msg: value.toString(),
-                    toastLength: Toast.LENGTH_SHORT,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  ))
-              .then((_) => _inputLists.clear());
-        }
-      });
+    if (_socketStageProvider.player2 != null) {
+      CustomPosePainter painterRignt = CustomPosePainter(
+          [Pose(landmarks: _socketStageProvider.player2 ?? {})],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.greenNeonColor);
+      _customPaintRight = CustomPaint(painter: painterRignt);
     }
   }
 
+  void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
+    if (_isPlayer && mounted) {
+      // setState(() {
+      //   _skeletonDetectMode = mode;
+
+      //   // 노래 끝나면 스켈레톤 서버에 보내기
+      //   if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
+      //     // 스켈레톤 파일로 저장: 실행 안 되도록 설정
+      //     if (1 > 2) {
+      //       skeletonToFile(_inputLists);
+      //     }
+
+      //     _provider
+      //         .postSkeletonList(_inputLists)
+      //         .then((value) => Fluttertoast.showToast(
+      //               msg: value.toString(),
+      //               toastLength: Toast.LENGTH_SHORT,
+      //               timeInSecForIosWeb: 1,
+      //               backgroundColor: Colors.black,
+      //               textColor: Colors.white,
+      //               fontSize: 16.0,
+      //             ))
+      //         .then((_) => _inputLists.clear());
+      //   }
+      // });
+    }
+  }
+
+  // 파일화를 위한 배열 저장
   List<double> _poseMapToInputList(Map<PoseLandmarkType, PoseLandmark> entry) {
     return [
       entry[PoseLandmarkType.nose]!.x,

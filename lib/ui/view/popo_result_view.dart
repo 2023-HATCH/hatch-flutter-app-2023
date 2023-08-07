@@ -145,6 +145,9 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     // poseDetector에서 추출된 포즈 가져오기
     List<Pose> poses = await _poseDetector.processImage(inputImage);
 
+    // var test = StageSkeletonTest.fromJson(poses);
+    // print("mmm result test : $test");
+
     for (final pose in poses) {
       _inputLists.add(_poseMapToInputList(pose.landmarks));
     }
@@ -152,7 +155,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
-      // 여기만 2개만 수정 ! PosePainter -> CustomPosePainter
       final painter = CustomPosePainter(poses, inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation, AppColor.mintNeonColor);
       _customPaintMid = CustomPaint(painter: painter);
