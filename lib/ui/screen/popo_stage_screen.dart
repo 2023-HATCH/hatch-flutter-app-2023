@@ -5,9 +5,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
@@ -26,6 +28,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late VideoPlayProvider _videoPlayProvider;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
+  late KaKaoLoginProvider _loginProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +82,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void initState() {
     super.initState();
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+    _setUserId();
   }
 
   @override
@@ -270,5 +275,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         );
       },
     );
+  }
+
+  _setUserId() async {
+    UserData user = await _loginProvider.getUser();
+    _socketStageProvider.setUserId(user.userId);
   }
 }

@@ -19,9 +19,13 @@ enum StagePlayScore { bad, good, great, excellent, perfect, none }
 class PoPoPlayView extends StatefulWidget {
   final List<StagePlayerListItem> players;
   const PoPoPlayView(
-      {Key? key, required this.isResultState, required this.players})
+      {Key? key,
+      required this.isResultState,
+      required this.players,
+      this.userId})
       : super(key: key);
   final bool isResultState;
+  final String? userId;
 
   @override
   State<StatefulWidget> createState() => _PoPoPlayViewState();
@@ -48,10 +52,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
   @override
   void initState() {
-    String myUuid = "03f78118-f1ef-4422-b92a-f74f5a25dfea";
-
     for (var player in widget.players) {
-      if (player.userId == myUuid) {
+      if (player.userId == widget.userId) {
         _isPlayer = true;
         _playerNum = player.playerNum!;
       }

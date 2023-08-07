@@ -36,6 +36,7 @@ enum StageType {
 
 class SocketStageProviderImpl extends ChangeNotifier
     implements SocketStageProvider {
+  String? _userId;
   StompClient? _stompClient;
 
   int _userCount = 0;
@@ -53,6 +54,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isUserCountChange = false;
   bool _isPlaySkeletonChange = false;
 
+  String? get userId => _userId;
   int get userCount => _userCount;
   StageTalkListItem? get talk => _talk;
 
@@ -65,6 +67,10 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
 
   bool get isMVPStart => stageType == StageType.MVP_START;
+
+  setUserId(String id) {
+    _userId = id;
+  }
 
   setTalk(StageTalkListItem value) {
     _talk = value;
@@ -264,9 +270,12 @@ class SocketStageProviderImpl extends ChangeNotifier
       case StageType.CATCH_START:
         return const PoPoCatchView();
       case StageType.PLAY_START:
+        // UserData _user =
         return PoPoPlayView(
-            isResultState: _stageType == StageType.MVP_START,
-            players: _players);
+          isResultState: _stageType == StageType.MVP_START,
+          players: _players,
+          userId: _userId,
+        );
       case StageType.MVP_START:
         return PoPoResultView(isResultState: _stageType == StageType.MVP_START);
       default:
