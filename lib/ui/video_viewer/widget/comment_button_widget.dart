@@ -149,7 +149,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     }
 
                     return SizedBox(
-                      height: 500,
+                      height: 600,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(16.0),
@@ -272,12 +272,18 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                   const Padding(
                                                       padding: EdgeInsets.only(
                                                           bottom: 8)),
-                                                  Text(
-                                                    _commentList?[index]
-                                                            .content ??
-                                                        '',
-                                                    style: const TextStyle(
-                                                        fontSize: 14),
+                                                  SizedBox(
+                                                    width: 300,
+                                                    child: Text(
+                                                      _commentList?[index]
+                                                              .content ??
+                                                          '',
+                                                      style: const TextStyle(
+                                                          fontSize: 14),
+                                                      maxLines: 10,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
                                                   const Padding(
                                                       padding: EdgeInsets.only(
@@ -339,12 +345,23 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                 )),
                           ),
                           bottomSheet: SizedBox(
-                            height: 95,
+                            height: 100,
                             child: Column(
                               children: [
                                 Container(
-                                  height: 30,
-                                  color: Colors.white,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        spreadRadius: 0,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
