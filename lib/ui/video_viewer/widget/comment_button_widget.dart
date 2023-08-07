@@ -42,6 +42,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   bool _isNotEmptyComment = false;
   String _profileImg = 'assets/images/charactor_popo_default.png';
   String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
+  bool isClicked = false;
 
   List<String> emojiList = [
     '⭐',
@@ -149,7 +150,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     }
 
                     return SizedBox(
-                      height: 600,
+                      height: isClicked == false
+                          ? 500
+                          : MediaQuery.of(context).size.height - 100,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(16.0),
@@ -485,6 +488,12 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                       Navigator.pop(context);
                                                       _loginProvider
                                                           .showLoginBottomSheet();
+                                                    } else {
+                                                      bottomState(() {
+                                                        setState(() {
+                                                          isClicked = true;
+                                                        });
+                                                      });
                                                     }
                                                   },
                                                   onChanged: (text) {
@@ -596,7 +605,10 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     );
                   });
                 },
-              ).then((value) => {widget.onRefresh()})
+              ).then((value) {
+                widget.onRefresh();
+                isClicked = false;
+              })
             },
         child: widget.childWidget);
   }
