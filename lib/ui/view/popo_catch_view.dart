@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:provider/provider.dart';
 import 'package:semicircle_indicator/semicircle_indicator.dart';
 import 'dart:math' as math;
 
 class PoPoCatchView extends StatefulWidget {
-  const PoPoCatchView({Key? key}) : super(key: key);
+  final StageType type;
+  const PoPoCatchView({Key? key, required this.type}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _PoPoCatchViewState();
@@ -23,12 +25,26 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   late Timer _timer;
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
-
   late StageProviderImpl _stageProvider;
+  StageType _prevStageType = StageType.CATCH_START;
 
   @override
   Widget build(BuildContext context) {
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
+    if (_prevStageType != widget.type) {
+      _prevStageType = widget.type;
+      _milliseconds = 0;
+      _catchCountDown = 0.0;
+      _startTimer();
+      Fluttertoast.showToast(
+        msg: "캐치를 아무도 안 했어요...😢",
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -123,7 +139,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
       if (_milliseconds >= 3000) {
         _stopTimer();
-        Fluttertoast.showToast(msg: '캐치 성공!');
       } else {
         if (mounted) {
           setState(() {
@@ -136,12 +151,15 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   }
 
   void _stopTimer() {
-    _timer.cancel();
+    if (_timer.isActive) {
+      _timer.cancel();
+    }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _stopTimer();
     super.dispose();
   }
 

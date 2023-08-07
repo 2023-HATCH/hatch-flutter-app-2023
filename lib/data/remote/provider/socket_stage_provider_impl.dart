@@ -24,14 +24,18 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 enum StageType {
   WAIT, // only front
   CATCH_START,
+  CATCH_END_RESTART,
   CATCH_END,
   PLAY_START,
+  PLAY_SKELETON,
+  PLAY_END,
   MVP_START,
+  MVP_SKELETON,
+  MVP_END,
   USER_COUNT,
   STAGE_ROUTINE_STOP,
   TALK_MESSAGE,
   TALK_REACTION,
-  PLAY_SKELETON
 }
 
 class SocketStageProviderImpl extends ChangeNotifier
@@ -268,9 +272,9 @@ class SocketStageProviderImpl extends ChangeNotifier
       case StageType.WAIT:
         return const PoPoWaitView();
       case StageType.CATCH_START:
-        return const PoPoCatchView();
+      case StageType.CATCH_END_RESTART:
+        return PoPoCatchView(type: type);
       case StageType.PLAY_START:
-        // UserData _user =
         return PoPoPlayView(
           isResultState: _stageType == StageType.MVP_START,
           players: _players,
