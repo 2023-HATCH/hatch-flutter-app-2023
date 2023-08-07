@@ -1,26 +1,26 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/request/videos_request.dart';
 import 'package:pocket_pose/data/entity/response/videos_response.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 
-const _storage = FlutterSecureStorage();
-const _accessTokenKey = 'kakaoAccessToken';
-const _refreshTokenKey = 'kakaoRefreshToken';
-
 class VideoRepository {
-  Future<VideosResponse> getVideos(VideosRequest homeVideosRequest) async {
-    final accessToken = await _storage.read(key: _accessTokenKey);
-    final refreshToken = await _storage.read(key: _refreshTokenKey);
+  KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
 
+  Future<VideosResponse> getVideos(VideosRequest homeVideosRequest) async {
     final url = Uri.parse(AppUrl.videoUrl).replace(queryParameters: {
       'page': homeVideosRequest.page.toString(),
       'size': homeVideosRequest.size.toString(),
     });
+
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
     final headers = {
       'Content-Type': 'application/json;charset=UTF-8',

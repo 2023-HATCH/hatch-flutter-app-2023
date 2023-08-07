@@ -77,7 +77,8 @@ class CommentRepository {
 
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',
-      if (refreshToken != null) "cookie": "x-refresh-token=$refreshToken"
+      if (accessToken != null && refreshToken != null)
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
     };
 
     final response = await http.delete(url, headers: headers);
