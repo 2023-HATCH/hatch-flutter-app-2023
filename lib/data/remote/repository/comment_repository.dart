@@ -60,6 +60,9 @@ class CommentRepository {
 
     if (response.statusCode == 200) {
       debugPrint("댓글 등록 성공! json: $json");
+
+      loginProvider.updateToken(response.headers);
+
       return true;
     } else {
       debugPrint('댓글 등록 실패 json $json');
@@ -87,16 +90,7 @@ class CommentRepository {
     if (response.statusCode == 200) {
       debugPrint("댓글 삭제 성공! json: $json");
 
-      final headers = response.headers;
-      final cookies = response.headers['cookie'];
-      // final accessToken = loginProvider.extractToken(cookies, 'x-access-token');
-      // final refreshToken =
-      //     loginProvider.extractToken(cookies, 'x-refresh-token');
-
-      debugPrint("댓글 목록 headers: $headers");
-      debugPrint("댓글 목록 cookies: $cookies");
-      // debugPrint("댓글 목록 accessToken: $accessToken");
-      // debugPrint("댓글 목록 refreshToken: $refreshToken");
+      loginProvider.updateToken(response.headers);
 
       return true;
     } else {

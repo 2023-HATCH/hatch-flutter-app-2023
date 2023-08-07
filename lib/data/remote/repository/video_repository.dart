@@ -41,6 +41,8 @@ class VideoRepository {
 
       final bool isLast = json['data']['isLast'];
 
+      loginProvider.updateToken(response.headers);
+
       return VideosResponse(
         videoList: videoList,
         isLast: isLast,

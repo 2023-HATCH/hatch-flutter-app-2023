@@ -27,6 +27,9 @@ class LikeRepository {
 
     if (response.statusCode == 200) {
       debugPrint("좋아요 등록 성공! json: $json");
+
+      loginProvider.updateToken(response.headers);
+
       return true;
     } else {
       debugPrint('좋아요 등록 실패 json $json');
@@ -53,6 +56,9 @@ class LikeRepository {
 
     if (response.statusCode == 200) {
       debugPrint("좋아요 삭제 성공! json: $json");
+
+      loginProvider.updateToken(response.headers);
+
       return true;
     } else {
       debugPrint('좋아요 삭제 실패 json $json');

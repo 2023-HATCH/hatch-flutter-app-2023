@@ -172,4 +172,19 @@ class KaKaoLoginProvider extends ChangeNotifier {
     }
     return cookies.substring(tokenStartIndex + pattern.length, tokenEndIndex);
   }
+
+  void updateToken(Map<String, String> headers) async {
+    debugPrint('토큰 갱신 시도!');
+    final cookies = headers['set-cookie'];
+
+    if (cookies != null) {
+      final newAaccessToken = extractToken(cookies, 'x-access-token');
+      final newRrefreshToken = extractToken(cookies, 'x-refresh-token');
+
+      if (newAaccessToken != null && newRrefreshToken != null) {
+        storeAccessToken(newAaccessToken, newRrefreshToken);
+        debugPrint('토큰 갱신 성공!');
+      }
+    }
+  }
 }
