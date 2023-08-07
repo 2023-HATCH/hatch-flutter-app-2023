@@ -32,9 +32,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   bool _isBusy = false;
   // 스켈레톤 모양을 그려주는 변수
   CustomPaint? _customPaintMid;
-  // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
-  final SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
-  bool _isPlayer = true;
+  bool _isPlayer = false;
   // 스켈레톤 전송
   int _frameNum = 0;
   late SocketStageProviderImpl _socketStageProvider;
@@ -90,9 +88,8 @@ class _PoPoResultViewState extends State<PoPoResultView> {
           customPaintMid: _customPaintMid,
           // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
           onImage: (inputImage) {
-            // player는 항상 스켈레톤 추출
-            if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
-                _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
+            // 플레이어만 스켈레톤 추출
+            if (_isPlayer) {
               processImage(inputImage);
             }
           },
