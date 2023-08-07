@@ -389,10 +389,10 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                     color: Colors.white,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey.withOpacity(0.3),
-                                        spreadRadius: 0,
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 5),
+                                        color: Colors.grey.withOpacity(1),
+                                        spreadRadius: 0.3,
+                                        blurRadius: 0.3,
+                                        offset: const Offset(0, 0.4),
                                       ),
                                     ],
                                   ),
