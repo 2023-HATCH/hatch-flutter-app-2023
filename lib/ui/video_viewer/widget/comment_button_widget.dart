@@ -149,7 +149,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     }
 
                     return SizedBox(
-                      height: 500,
+                      height: 600,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(16.0),
