@@ -487,7 +487,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                             borderRadius:
                                                 BorderRadius.circular(30),
                                             border: Border.all(
-                                                color: AppColor.grayColor2),
+                                              color: AppColor.grayColor2,
+                                              width: 0.6,
+                                            ),
                                           ),
                                           child: Row(
                                             mainAxisAlignment:
@@ -499,12 +501,14 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                               Expanded(
                                                 child: TextField(
                                                   controller: _textController,
-                                                  cursorColor: Colors.white,
+                                                  cursorColor: Colors.black,
                                                   decoration: InputDecoration(
                                                     hintText: _hintText,
                                                     hintStyle: const TextStyle(
                                                         color: Colors.grey,
-                                                        fontSize: 14),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w300),
                                                     labelStyle: const TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 14),
