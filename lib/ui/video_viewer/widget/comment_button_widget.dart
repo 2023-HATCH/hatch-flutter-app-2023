@@ -345,12 +345,23 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                 )),
                           ),
                           bottomSheet: SizedBox(
-                            height: 95,
+                            height: 100,
                             child: Column(
                               children: [
                                 Container(
-                                  height: 30,
-                                  color: Colors.white,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        spreadRadius: 0,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
