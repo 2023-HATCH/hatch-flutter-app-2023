@@ -5,8 +5,10 @@ import 'package:pocket_pose/data/remote/repository/video_repository.dart';
 
 class VideoProvider extends ChangeNotifier {
   VideosResponse? _response;
+  bool? _isDeleteSuccess;
 
   VideosResponse? get response => _response;
+  bool? get isDeleteSuccess => _isDeleteSuccess;
 
   Future<void> getVideos(VideosRequest homeVideosRequest) async {
     try {
@@ -17,6 +19,16 @@ class VideoProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('HomeVideosResponse getVideos 에러: $e');
+    }
+  }
+
+  Future<void> deleteVideo(String videoId) async {
+    try {
+      _isDeleteSuccess = await VideoRepository().deleteVideo(videoId);
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('VideoRepository deleteVideo 에러: $e');
     }
   }
 }
