@@ -4,20 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/response/kakao_login_response.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 
 class KaKaoLoginRepository {
-  String? _extractToken(String? cookies, String tokenName) {
-    if (cookies == null) return null;
-    final pattern = '$tokenName=';
-    final tokenStartIndex = cookies.indexOf(pattern);
-    if (tokenStartIndex == -1) return null;
-    final tokenEndIndex = cookies.indexOf(';', tokenStartIndex);
-    if (tokenEndIndex == -1) {
-      return cookies.substring(tokenStartIndex + pattern.length);
-    }
-    return cookies.substring(tokenStartIndex + pattern.length, tokenEndIndex);
-  }
+  KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
 
   Future<KaKaoLoginResponse> login(String kakaoAccessToken) async {
     final url = Uri.parse(AppUrl.signInSignUpUrl);
@@ -43,8 +34,9 @@ class KaKaoLoginRepository {
       );
 
       final cookies = response.headers['set-cookie'];
-      final accessToken = _extractToken(cookies, 'x-access-token');
-      final refreshToken = _extractToken(cookies, 'x-refresh-token');
+      final accessToken = loginProvider.extractToken(cookies, 'x-access-token');
+      final refreshToken =
+          loginProvider.extractToken(cookies, 'x-refresh-token');
 
       return KaKaoLoginResponse(
         accessToken: accessToken!,
