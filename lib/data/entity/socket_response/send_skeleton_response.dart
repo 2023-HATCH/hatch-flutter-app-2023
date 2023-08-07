@@ -7,13 +7,13 @@ import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 @JsonSerializable()
 class SendSkeletonResponse extends BaseObject {
   String userId;
-  int playerNum;
+  int? playerNum;
   int frameNum;
   Map<String, StageSkeletonPoseLandmark> skeleton;
 
   SendSkeletonResponse({
     required this.userId,
-    required this.playerNum,
+    this.playerNum,
     required this.frameNum,
     required this.skeleton,
   });

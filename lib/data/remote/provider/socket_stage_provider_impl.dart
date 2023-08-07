@@ -8,10 +8,12 @@ import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/send_skeleton_response.dart';
+import 'package:pocket_pose/data/entity/socket_response/stage_mvp_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
+import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
@@ -45,10 +47,12 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   int _userCount = 0;
   final List<StagePlayerListItem> _players = [];
+  StageUserListItem? _mvp;
   StageTalkListItem? _talk;
   Map<PoseLandmarkType, PoseLandmark>? player0;
   Map<PoseLandmarkType, PoseLandmark>? player1;
   Map<PoseLandmarkType, PoseLandmark>? player2;
+  Map<PoseLandmarkType, PoseLandmark>? mvpSkeleton;
 
   StageType _stageType = StageType.WAIT;
   bool _isConnect = false;
@@ -57,6 +61,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isReaction = false;
   bool _isUserCountChange = false;
   bool _isPlaySkeletonChange = false;
+  bool _isMVPSkeletonChange = false;
 
   String? get userId => _userId;
   int get userCount => _userCount;
@@ -69,6 +74,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
+  bool get isMVPSkeletonChange => _isMVPSkeletonChange;
 
   bool get isMVPStart => stageType == StageType.MVP_START;
 
@@ -103,6 +109,11 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsPlaySkeletonChange(bool value) {
     _isPlaySkeletonChange = value;
+    if (value) notifyListeners();
+  }
+
+  setIsMVPSkeletonChange(bool value) {
+    _isMVPSkeletonChange = value;
     if (value) notifyListeners();
   }
 
@@ -185,14 +196,28 @@ class SocketStageProviderImpl extends ChangeNotifier
   }
 
   @override
-  void sendSkeleton(SendSkeletonRequest request) async {
+  void sendPlaySkeleton(SendSkeletonRequest request) async {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
     String token = await storage.read(key: storageKey) ?? "";
 
     if (_stompClient != null && (_stompClient?.isActive ?? false)) {
       _stompClient?.send(
-          destination: AppUrl.socketSkeletonUrl,
+          destination: AppUrl.socketPlaySkeletonUrl,
+          headers: {'x-access-token': token},
+          body: json.encode(request));
+    }
+  }
+
+  @override
+  void sendMVPSkeleton(SendSkeletonRequest request) async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    if (_stompClient != null && (_stompClient?.isActive ?? false)) {
+      _stompClient?.send(
+          destination: AppUrl.socketMVPSkeletonUrl,
           headers: {'x-access-token': token},
           body: json.encode(request));
     }
@@ -261,6 +286,32 @@ class SocketStageProviderImpl extends ChangeNotifier
         }
         setIsPlaySkeletonChange(true);
         break;
+      case StageType.MVP_START:
+        var socketResponse = BaseSocketResponse<StageMVPResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            StageMVPResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        _mvp = socketResponse.data?.mvpUser;
+        _stageType = response.type;
+        break;
+      case StageType.MVP_SKELETON:
+        var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            SendSkeletonResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        Map<PoseLandmarkType, PoseLandmark> temp = {};
+        socketResponse.data?.skeleton.forEach((key, value) {
+          temp[PoseLandmarkType.values[int.parse(key)]] = PoseLandmark(
+              type: PoseLandmarkType.values[value.type],
+              x: value.x,
+              y: value.y,
+              z: value.z,
+              likelihood: value.likelihood);
+        });
+        mvpSkeleton = temp;
+        setIsMVPSkeletonChange(true);
+        break;
+
       default:
         _stageType = response.type;
     }
@@ -281,7 +332,14 @@ class SocketStageProviderImpl extends ChangeNotifier
           userId: _userId,
         );
       case StageType.MVP_START:
-        return PoPoResultView(isResultState: _stageType == StageType.MVP_START);
+        return (_mvp != null)
+            ? PoPoResultView(
+                isResultState: _stageType == StageType.MVP_START,
+                mvp: _mvp,
+                userId: _userId!)
+            : PoPoResultView(
+                isResultState: _stageType == StageType.MVP_START,
+                userId: _userId!);
       default:
         return const PoPoWaitView();
     }
