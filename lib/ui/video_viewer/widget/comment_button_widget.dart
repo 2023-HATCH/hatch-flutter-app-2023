@@ -359,7 +359,6 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                   height: 35,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(30),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.grey.withOpacity(0.3),
