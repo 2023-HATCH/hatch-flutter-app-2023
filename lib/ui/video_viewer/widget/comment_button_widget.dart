@@ -42,6 +42,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   bool _isNotEmptyComment = false;
   String _profileImg = 'assets/images/charactor_popo_default.png';
   String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
+  bool isClicked = false;
 
   List<String> emojiList = [
     '⭐',
@@ -148,8 +149,12 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                       _isInit = true;
                     }
 
+                    int commentCount =
+                        _videoPlayProvider.videoList[widget.index].commentCount;
                     return SizedBox(
-                      height: 600,
+                      height: isClicked == false
+                          ? 500
+                          : MediaQuery.of(context).size.height - 100,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(16.0),
@@ -157,14 +162,31 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                         ),
                         child: Scaffold(
                           appBar: AppBar(
+                            toolbarHeight: 54,
                             automaticallyImplyLeading: false,
-                            elevation: 0.0,
-                            backgroundColor: Colors.transparent,
+                            elevation: 0.4,
+                            backgroundColor: Colors.white,
                             foregroundColor: Colors.black,
                             centerTitle: true,
-                            title: Text(
-                              '댓글 ${_videoPlayProvider.videoList[widget.index].commentCount}개',
-                              style: const TextStyle(fontSize: 14),
+                            title: Column(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      top: 2, bottom: 15), // 바와 글씨 사이의 간격 조정
+                                  height: 4,
+                                  width: 40, // 바의 너비 설정
+                                  decoration: BoxDecoration(
+                                    color: AppColor.grayColor4,
+                                    borderRadius: BorderRadius.circular(2.5),
+                                  ),
+                                ),
+                                const Text(
+                                  '댓글',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           resizeToAvoidBottomInset: true,
@@ -205,141 +227,154 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                     final createdAt =
                                         '$year-$month-$day $hour:$minute';
 
-                                    return Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              18, 4, 0, 12),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(50),
-                                                  child: Image.network(
-                                                    _commentList?[index]
-                                                            .user
-                                                            .profileImg ??
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                18, 4, 0, 12),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50),
+                                                    child: Image.network(
+                                                      _commentList?[index]
+                                                              .user
+                                                              .profileImg ??
+                                                          'assets/images/charactor_popo_default.png',
+                                                      loadingBuilder: (context,
+                                                          child,
+                                                          loadingProgress) {
+                                                        if (loadingProgress ==
+                                                            null) {
+                                                          return child;
+                                                        }
+                                                        return Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            color: AppColor
+                                                                .purpleColor,
+                                                          ),
+                                                        );
+                                                      },
+                                                      errorBuilder: (context,
+                                                              error,
+                                                              stackTrace) =>
+                                                          Image.asset(
                                                         'assets/images/charactor_popo_default.png',
-                                                    loadingBuilder: (context,
-                                                        child,
-                                                        loadingProgress) {
-                                                      if (loadingProgress ==
-                                                          null) {
-                                                        return child;
-                                                      }
-                                                      return Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          color: AppColor
-                                                              .purpleColor,
-                                                        ),
-                                                      );
-                                                    },
-                                                    errorBuilder: (context,
-                                                            error,
-                                                            stackTrace) =>
-                                                        Image.asset(
-                                                      'assets/images/charactor_popo_default.png',
+                                                        fit: BoxFit.cover,
+                                                        width: 35,
+                                                        height: 35,
+                                                      ),
                                                       fit: BoxFit.cover,
                                                       width: 35,
                                                       height: 35,
-                                                    ),
-                                                    fit: BoxFit.cover,
-                                                    width: 35,
-                                                    height: 35,
-                                                  )),
-                                              const Padding(
-                                                  padding:
-                                                      EdgeInsets.only(left: 8)),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    _commentList?[index]
-                                                            .user
-                                                            .nickname ??
-                                                        '',
-                                                    style: const TextStyle(
-                                                        fontSize: 12),
-                                                  ),
-                                                  const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          bottom: 8)),
-                                                  SizedBox(
-                                                    width: 300,
-                                                    child: Text(
+                                                    )),
+                                                const Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 8)),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
                                                       _commentList?[index]
-                                                              .content ??
+                                                              .user
+                                                              .nickname ??
                                                           '',
                                                       style: const TextStyle(
-                                                          fontSize: 14),
-                                                      maxLines: 10,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                                                          fontSize: 12),
                                                     ),
-                                                  ),
-                                                  const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          bottom: 4)),
-                                                  Text(
-                                                    createdAt,
-                                                    style: TextStyle(
-                                                        fontSize: 10,
-                                                        color: AppColor
-                                                            .grayColor2),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Visibility(
-                                          visible: user != null &&
-                                              user!.userId ==
-                                                  _commentList?[index]
-                                                      .user
-                                                      .userId,
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 4, 18, 12),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                _commentProvider
-                                                    .deleteComment(
+                                                    const Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                bottom: 8)),
+                                                    SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              120,
+                                                      child: Text(
                                                         _commentList?[index]
-                                                                .uuid ??
-                                                            '')
-                                                    .then((value) {
-                                                  _loadCommentList(bottomState);
-                                                  Fluttertoast.showToast(
-                                                      msg: '댓글이 삭제되었습니다.');
-                                                  bottomState(() {
-                                                    setState(() {
-                                                      _videoPlayProvider
-                                                          .videoList[
-                                                              widget.index]
-                                                          .commentCount--;
+                                                                .content ??
+                                                            '',
+                                                        style: const TextStyle(
+                                                            fontSize: 14),
+                                                        maxLines: 50,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    const Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                bottom: 4)),
+                                                    Text(
+                                                      createdAt,
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          color: AppColor
+                                                              .grayColor2),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible: user != null &&
+                                                user!.userId ==
+                                                    _commentList?[index]
+                                                        .user
+                                                        .userId,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 4, 18, 12),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  _commentProvider
+                                                      .deleteComment(
+                                                          _commentList?[index]
+                                                                  .uuid ??
+                                                              '')
+                                                      .then((value) {
+                                                    _loadCommentList(
+                                                        bottomState);
+                                                    Fluttertoast.showToast(
+                                                        msg: '댓글이 삭제되었습니다.');
+                                                    bottomState(() {
+                                                      setState(() {
+                                                        _videoPlayProvider
+                                                            .videoList[
+                                                                widget.index]
+                                                            .commentCount--;
+                                                      });
                                                     });
                                                   });
-                                                });
-                                              },
-                                              child: Text(
-                                                '삭제',
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: AppColor.grayColor2),
+                                                },
+                                                child: Text(
+                                                  '삭제',
+                                                  style: TextStyle(
+                                                      fontSize: 10,
+                                                      color:
+                                                          AppColor.grayColor2),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     );
                                   },
                                 )),
@@ -352,13 +387,12 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                   height: 35,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(30),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey.withOpacity(0.3),
-                                        spreadRadius: 0,
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 5),
+                                        color: Colors.grey.withOpacity(1),
+                                        spreadRadius: 0.3,
+                                        blurRadius: 0.3,
+                                        offset: const Offset(0, 0.4),
                                       ),
                                     ],
                                   ),
@@ -453,7 +487,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                             borderRadius:
                                                 BorderRadius.circular(30),
                                             border: Border.all(
-                                                color: AppColor.grayColor2),
+                                              color: AppColor.grayColor2,
+                                              width: 0.6,
+                                            ),
                                           ),
                                           child: Row(
                                             mainAxisAlignment:
@@ -465,12 +501,14 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                               Expanded(
                                                 child: TextField(
                                                   controller: _textController,
-                                                  cursorColor: Colors.white,
+                                                  cursorColor: Colors.black,
                                                   decoration: InputDecoration(
                                                     hintText: _hintText,
                                                     hintStyle: const TextStyle(
                                                         color: Colors.grey,
-                                                        fontSize: 14),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w300),
                                                     labelStyle: const TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 14),
@@ -485,6 +523,12 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                       Navigator.pop(context);
                                                       _loginProvider
                                                           .showLoginBottomSheet();
+                                                    } else {
+                                                      bottomState(() {
+                                                        setState(() {
+                                                          isClicked = true;
+                                                        });
+                                                      });
                                                     }
                                                   },
                                                   onChanged: (text) {
@@ -596,7 +640,10 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     );
                   });
                 },
-              ).then((value) => {widget.onRefresh()})
+              ).then((value) {
+                widget.onRefresh();
+                isClicked = false;
+              })
             },
         child: widget.childWidget);
   }
