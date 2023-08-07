@@ -272,12 +272,18 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                   const Padding(
                                                       padding: EdgeInsets.only(
                                                           bottom: 8)),
-                                                  Text(
-                                                    _commentList?[index]
-                                                            .content ??
-                                                        '',
-                                                    style: const TextStyle(
-                                                        fontSize: 14),
+                                                  SizedBox(
+                                                    width: 300,
+                                                    child: Text(
+                                                      _commentList?[index]
+                                                              .content ??
+                                                          '',
+                                                      style: const TextStyle(
+                                                          fontSize: 14),
+                                                      maxLines: 10,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
                                                   const Padding(
                                                       padding: EdgeInsets.only(
