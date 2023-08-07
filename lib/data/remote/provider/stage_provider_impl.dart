@@ -110,10 +110,14 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
       };
       dio.options.contentType = "application/json";
       var response = await dio.get(AppUrl.stageExitUrl);
-
-      return BaseResponse.fromJson(response.data, null);
+      var responseJson = BaseResponse.fromJson(response.data, null);
+      return responseJson;
     } catch (e) {
       debugPrint("mmm StageProviderImpl catch: ${e.toString()}");
+      if (e.toString().contains("500")) {
+        return BaseResponse(
+            timeStamp: "", code: "500", message: "", data: null);
+      }
     }
     throw UnimplementedError();
   }

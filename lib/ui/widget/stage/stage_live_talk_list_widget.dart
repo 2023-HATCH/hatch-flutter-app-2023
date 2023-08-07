@@ -31,6 +31,7 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
   @override
   Widget build(BuildContext context) {
     _provider = Provider.of<StageProviderImpl>(context, listen: true);
+
     return _buildStageChatList(_provider.talkList);
   }
 

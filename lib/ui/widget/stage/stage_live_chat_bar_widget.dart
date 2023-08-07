@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:provider/provider.dart';
 
 class StageLiveChatBarWidget extends StatefulWidget {
-  const StageLiveChatBarWidget(
-      {super.key, required this.sendMessage, required this.sendReaction});
-  final Function sendMessage;
-  final Function sendReaction;
+  const StageLiveChatBarWidget({super.key});
 
   @override
   State<StageLiveChatBarWidget> createState() => _StageLiveChatBarWidgetState();
@@ -24,7 +22,8 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
   final List<AnimationController> _animationControllers = [];
   final List<Animation<Offset>> _animations = [];
 
-  late StageProviderImpl _provider;
+  late StageProviderImpl _stageProvider;
+  late SocketStageProviderImpl _socketStageProvider;
 
   @override
   void initState() {
@@ -48,10 +47,12 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
 
   @override
   Widget build(BuildContext context) {
-    _provider = Provider.of<StageProviderImpl>(context, listen: true);
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: true);
 
-    if (_provider.isClicked) {
-      _provider.setIsClicked(false);
+    if (_stageProvider.isClicked) {
+      _stageProvider.setIsClicked(false);
       _handleIconClick();
     }
 
@@ -103,7 +104,7 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                     ),
                     textInputAction: TextInputAction.next,
                     onSubmitted: (value) {
-                      widget.sendMessage(value);
+                      _socketStageProvider.sendMessage(value);
                       _textController.clear();
                     },
                   ),
@@ -118,7 +119,7 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                 child: InkWell(
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
-                  onTap: () => widget.sendReaction(), //_handleIconClick,
+                  onTap: () => _socketStageProvider.sendReaction(),
                   child: SvgPicture.asset(
                       'assets/icons/ic_popo_fire_unselect.svg'),
                 ),
