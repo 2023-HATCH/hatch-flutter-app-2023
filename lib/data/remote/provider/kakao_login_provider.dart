@@ -10,8 +10,6 @@ import 'package:pocket_pose/main.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
-
 
 const _storage = FlutterSecureStorage();
 const _accessTokenKey = 'kakaoAccessToken';
@@ -158,9 +156,35 @@ class KaKaoLoginProvider extends ChangeNotifier {
         ),
       ),
       builder: (BuildContext context) {
-
         return const LoginModalContent();
       },
     );
+  }
+
+  String? extractToken(String? cookies, String tokenName) {
+    if (cookies == null) return null;
+    final pattern = '$tokenName=';
+    final tokenStartIndex = cookies.indexOf(pattern);
+    if (tokenStartIndex == -1) return null;
+    final tokenEndIndex = cookies.indexOf(';', tokenStartIndex);
+    if (tokenEndIndex == -1) {
+      return cookies.substring(tokenStartIndex + pattern.length);
+    }
+    return cookies.substring(tokenStartIndex + pattern.length, tokenEndIndex);
+  }
+
+  void updateToken(Map<String, String> headers) async {
+    debugPrint('토큰 갱신 시도!');
+    final cookies = headers['set-cookie'];
+
+    if (cookies != null) {
+      final newAaccessToken = extractToken(cookies, 'x-access-token');
+      final newRrefreshToken = extractToken(cookies, 'x-refresh-token');
+
+      if (newAaccessToken != null && newRrefreshToken != null) {
+        storeAccessToken(newAaccessToken, newRrefreshToken);
+        debugPrint('토큰 갱신 성공!');
+      }
+    }
   }
 }
