@@ -5,7 +5,7 @@ import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 
-import 'package:pocket_pose/data/remote/provider/home_provider.dart';
+import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/like_provider.dart';
 
@@ -30,7 +30,7 @@ Future<void> main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => VideoPlayProvider()),
     ChangeNotifierProvider(create: (_) => KaKaoLoginProvider()),
-    ChangeNotifierProvider(create: (_) => HomeProvider()),
+    ChangeNotifierProvider(create: (_) => VideoProvider()),
     ChangeNotifierProvider(create: (_) => LikeProvider()),
     ChangeNotifierProvider(create: (_) => CommentProvider()),
     ChangeNotifierProvider(create: (_) => StageProviderImpl()),
