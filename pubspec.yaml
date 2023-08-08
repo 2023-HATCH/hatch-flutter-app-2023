@@ -43,6 +43,7 @@ dependencies:
   shared_preferences: ^2.2.0
   flutter_typeahead: ^4.6.2
   stomp_dart_client: ^0.4.4
+  assets_audio_player: ^3.0.6
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +61,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/fonts/
+    - assets/audios/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

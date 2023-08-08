@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -97,6 +98,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
         backgroundColor: Colors.transparent,
         child: InkWell(
           onTap: () {
+            _playClickSound();
             _stageProvider.getStageCatch();
           },
           borderRadius: const BorderRadius.all(
@@ -200,6 +202,11 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
         ),
       ),
     );
+  }
+
+  void _playClickSound() {
+    AssetsAudioPlayer.newPlayer()
+        .open(Audio("assets/audios/sound_catch_click.mp3"));
   }
 }
 
