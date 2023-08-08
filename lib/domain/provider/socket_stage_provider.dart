@@ -6,5 +6,6 @@ abstract class SocketStageProvider {
   void onSubscribe();
   void sendMessage(String message);
   void sendReaction();
-  void sendSkeleton(SendSkeletonRequest request);
+  void sendPlaySkeleton(SendSkeletonRequest request);
+  void sendMVPSkeleton(SendSkeletonRequest request);
 }

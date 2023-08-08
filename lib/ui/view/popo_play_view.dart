@@ -256,7 +256,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
       var resuest = SendSkeletonRequest(
           playerNum: _playerNum, frameNum: _frameNum, skeleton: resultMap);
-      _socketStageProvider.sendSkeleton(resuest);
+      _socketStageProvider.sendPlaySkeleton(resuest);
     }
     _frameNum++;
 

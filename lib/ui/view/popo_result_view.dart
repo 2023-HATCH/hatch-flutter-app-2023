@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
+import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
+import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
+import 'package:provider/provider.dart';
 
 // ml_kit_skeleton_custom_view
 class PoPoResultView extends StatefulWidget {
-  const PoPoResultView({Key? key, required this.isResultState})
+  const PoPoResultView(
+      {Key? key, required this.isResultState, this.mvp, required this.userId})
       : super(key: key);
   final bool isResultState;
+  final StagePlayerListItem? mvp;
+  final String userId;
 
   @override
   State<StatefulWidget> createState() => _PoPoResultViewState();
@@ -23,14 +32,46 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   bool _isBusy = false;
   // 스켈레톤 모양을 그려주는 변수
   CustomPaint? _customPaintMid;
-  // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
-  SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
-  final bool _isPlayer = true;
-  // input Lists
-  final List<List<double>> _inputLists = [];
+  bool _isPlayer = false;
+  // 스켈레톤 전송
+  int _frameNum = 0;
+  late SocketStageProviderImpl _socketStageProvider;
+  final skeletonColorList = [
+    AppColor.mintNeonColor,
+    AppColor.yellowNeonColor,
+    AppColor.greenNeonColor
+  ];
+
+  @override
+  void initState() {
+    if (widget.userId == widget.mvp?.userId) {
+      _isPlayer = true;
+    }
+
+    if (_isPlayer) {
+      Fluttertoast.showToast(
+        msg: "춤 짱은 바로 나!!",
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: true);
+
+    if (_socketStageProvider.isMVPSkeletonChange) {
+      _socketStageProvider.setIsMVPSkeletonChange(false);
+      _paintSkeleton();
+    }
+
     // 카메라뷰 보이기
     return Stack(
       children: [
@@ -41,7 +82,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildMVPWidget('assets/images/home_profile_1.jpg', 'okoi2202'),
+              (widget.mvp != null) ? buildMVPWidget(widget.mvp!) : Container()
             ],
           ),
         ),
@@ -52,9 +93,8 @@ class _PoPoResultViewState extends State<PoPoResultView> {
           customPaintMid: _customPaintMid,
           // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
           onImage: (inputImage) {
-            // player는 항상 스켈레톤 추출
-            if (_skeletonDetectMode != SkeletonDetectMode.userMode ||
-                _skeletonDetectMode != SkeletonDetectMode.musicEndMode) {
+            // 플레이어만 스켈레톤 추출
+            if (_isPlayer) {
               processImage(inputImage);
             }
           },
@@ -70,7 +110,16 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     super.dispose();
   }
 
-  Container buildMVPWidget(String profileImg, String nickName) {
+  void _paintSkeleton() {
+    CustomPosePainter painterMid = CustomPosePainter(
+        [Pose(landmarks: _socketStageProvider.mvpSkeleton ?? {})],
+        const Size(1280.0, 720.0),
+        InputImageRotation.rotation270deg,
+        skeletonColorList[widget.mvp!.playerNum!]);
+    _customPaintMid = CustomPaint(painter: painterMid);
+  }
+
+  Container buildMVPWidget(StagePlayerListItem user) {
     return Container(
       decoration: BoxDecoration(
           border: Border.all(
@@ -115,11 +164,18 @@ class _PoPoResultViewState extends State<PoPoResultView> {
                   padding: const EdgeInsets.fromLTRB(2, 0, 0, 12),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(50),
-                    child: Image.asset(
-                      profileImg,
-                      width: 62,
-                      height: 62,
-                    ),
+                    child: (user.profileImg == null)
+                        ? Image.asset(
+                            'assets/images/charactor_popo_default.png',
+                            width: 62,
+                            height: 62,
+                          )
+                        : Image.network(
+                            user.profileImg!,
+                            fit: BoxFit.cover,
+                            width: 62,
+                            height: 62,
+                          ),
                   ),
                 ),
               ],
@@ -128,7 +184,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
               height: 2,
             ),
             Text(
-              nickName,
+              user.nickname,
               style: const TextStyle(color: Colors.white, fontSize: 12),
             ),
           ],
@@ -145,23 +201,26 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     // poseDetector에서 추출된 포즈 가져오기
     List<Pose> poses = await _poseDetector.processImage(inputImage);
 
-    // var test = StageSkeletonTest.fromJson(poses);
-    // print("mmm result test : $test");
-
+    // 소켓에 스켈레톤 전송
     for (final pose in poses) {
-      _inputLists.add(_poseMapToInputList(pose.landmarks));
-    }
+      Map<String, StageSkeletonPoseLandmark> resultMap = {};
 
-    // 이미지가 정상적이면 포즈에 스켈레톤 그려주기
-    if (inputImage.inputImageData?.size != null &&
-        inputImage.inputImageData?.imageRotation != null) {
-      final painter = CustomPosePainter(poses, inputImage.inputImageData!.size,
-          inputImage.inputImageData!.imageRotation, AppColor.mintNeonColor);
-      _customPaintMid = CustomPaint(painter: painter);
-    } else {
-      // 추출된 포즈 없음
-      _customPaintMid = null;
+      pose.landmarks.forEach((key, value) {
+        var poseLandmark = StageSkeletonPoseLandmark(
+            type: value.type.index,
+            x: value.x,
+            y: value.y,
+            z: value.z,
+            likelihood: value.likelihood);
+
+        resultMap[key.index.toString()] = poseLandmark;
+      });
+
+      var resuest =
+          SendSkeletonRequest(frameNum: _frameNum, skeleton: resultMap);
+      _socketStageProvider.sendMVPSkeleton(resuest);
     }
+    _frameNum++;
     _isBusy = false;
     if (mounted) {
       setState(() {});
@@ -170,45 +229,14 @@ class _PoPoResultViewState extends State<PoPoResultView> {
 
   void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
     if (_isPlayer && mounted) {
-      setState(() {
-        _skeletonDetectMode = mode;
+      // setState(() {
+      //   _skeletonDetectMode = mode;
 
-        // 노래 끝나면 대기 화면으로 이동
-        if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
-          _inputLists.clear();
-        }
-      });
+      //   // 노래 끝나면 대기 화면으로 이동
+      //   if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
+      //     _inputLists.clear();
+      //   }
+      // });
     }
-  }
-
-  List<double> _poseMapToInputList(Map<PoseLandmarkType, PoseLandmark> entry) {
-    return [
-      entry[PoseLandmarkType.nose]!.x,
-      entry[PoseLandmarkType.nose]!.y,
-      entry[PoseLandmarkType.rightShoulder]!.x,
-      entry[PoseLandmarkType.rightShoulder]!.y,
-      entry[PoseLandmarkType.rightElbow]!.x,
-      entry[PoseLandmarkType.rightElbow]!.y,
-      entry[PoseLandmarkType.rightWrist]!.x,
-      entry[PoseLandmarkType.rightWrist]!.y,
-      entry[PoseLandmarkType.leftShoulder]!.x,
-      entry[PoseLandmarkType.leftShoulder]!.y,
-      entry[PoseLandmarkType.leftElbow]!.x,
-      entry[PoseLandmarkType.leftElbow]!.y,
-      entry[PoseLandmarkType.leftWrist]!.x,
-      entry[PoseLandmarkType.leftWrist]!.y,
-      entry[PoseLandmarkType.rightHip]!.x,
-      entry[PoseLandmarkType.rightHip]!.y,
-      entry[PoseLandmarkType.rightKnee]!.x,
-      entry[PoseLandmarkType.rightKnee]!.y,
-      entry[PoseLandmarkType.rightAnkle]!.x,
-      entry[PoseLandmarkType.rightAnkle]!.y,
-      entry[PoseLandmarkType.leftHip]!.x,
-      entry[PoseLandmarkType.leftHip]!.y,
-      entry[PoseLandmarkType.leftKnee]!.x,
-      entry[PoseLandmarkType.leftKnee]!.y,
-      entry[PoseLandmarkType.leftAnkle]!.x,
-      entry[PoseLandmarkType.leftAnkle]!.y
-    ];
   }
 }

@@ -5,7 +5,8 @@ import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:provider/provider.dart';
 
 class StageLiveChatBarWidget extends StatefulWidget {
-  const StageLiveChatBarWidget({super.key});
+  const StageLiveChatBarWidget({super.key, required this.nickName});
+  final String nickName;
 
   @override
   State<StageLiveChatBarWidget> createState() => _StageLiveChatBarWidgetState();
@@ -96,10 +97,11 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
                     controller: _textController,
                     cursorColor: Colors.white,
                     focusNode: _inputFieldFocusNode,
-                    decoration: const InputDecoration(
-                      hintText: 'nickname(으)로 댓글 달기...',
-                      hintStyle: TextStyle(color: Colors.white70, fontSize: 14),
-                      labelStyle: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: '${widget.nickName}(으)로 댓글 달기...',
+                      hintStyle:
+                          const TextStyle(color: Colors.white70, fontSize: 14),
+                      labelStyle: const TextStyle(color: Colors.white),
                       border: InputBorder.none,
                     ),
                     textInputAction: TextInputAction.next,

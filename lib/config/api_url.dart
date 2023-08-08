@@ -36,5 +36,6 @@ class AppUrl {
   static const socketSubscribeStageUrl = "/topic/stage";
   static const socketTalkUrl = "/app/talks/messages";
   static const socketReactionUrl = "/app/talks/reactions";
-  static const socketSkeletonUrl = "/app/stage/play/skeleton";
+  static const socketPlaySkeletonUrl = "/app/stage/play/skeleton";
+  static const socketMVPSkeletonUrl = "/app/stage/mvp/skeleton";
 }
