@@ -29,6 +29,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
   late KaKaoLoginProvider _loginProvider;
+  UserData? _userData;
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +67,12 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                     right: 0,
                     child: StageLiveTalkListWidget(),
                   ),
-                  const Positioned(
+                  Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: StageLiveChatBarWidget(),
+                    child: StageLiveChatBarWidget(
+                        nickName: _userData?.nickname ?? ""),
                   ),
                 ],
               ),
@@ -83,7 +85,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   void initState() {
     super.initState();
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
-    _setUserId();
+    _initUser();
   }
 
   @override
@@ -277,8 +279,17 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  _setUserId() async {
-    UserData user = await _loginProvider.getUser();
-    _socketStageProvider.setUserId(user.userId);
+  _initUser() async {
+    UserData userData = await _loginProvider.getUser();
+    _socketStageProvider.setUserId(userData.userId);
+
+    setState(() {
+      _userData = userData;
+    });
+  }
+
+  Future<String> _getUserNickname() async {
+    UserData userData = await _loginProvider.getUser();
+    return userData.nickname;
   }
 }
