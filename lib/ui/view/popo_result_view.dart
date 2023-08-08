@@ -6,8 +6,8 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
-import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
 import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +17,7 @@ class PoPoResultView extends StatefulWidget {
       {Key? key, required this.isResultState, this.mvp, required this.userId})
       : super(key: key);
   final bool isResultState;
-  final StageUserListItem? mvp;
+  final StagePlayerListItem? mvp;
   final String userId;
 
   @override
@@ -36,6 +36,11 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   // 스켈레톤 전송
   int _frameNum = 0;
   late SocketStageProviderImpl _socketStageProvider;
+  final skeletonColorList = [
+    AppColor.mintNeonColor,
+    AppColor.yellowNeonColor,
+    AppColor.greenNeonColor
+  ];
 
   @override
   void initState() {
@@ -110,11 +115,11 @@ class _PoPoResultViewState extends State<PoPoResultView> {
         [Pose(landmarks: _socketStageProvider.mvpSkeleton ?? {})],
         const Size(1280.0, 720.0),
         InputImageRotation.rotation270deg,
-        AppColor.mintNeonColor);
+        skeletonColorList[widget.mvp!.playerNum!]);
     _customPaintMid = CustomPaint(painter: painterMid);
   }
 
-  Container buildMVPWidget(StageUserListItem user) {
+  Container buildMVPWidget(StagePlayerListItem user) {
     return Container(
       decoration: BoxDecoration(
           border: Border.all(

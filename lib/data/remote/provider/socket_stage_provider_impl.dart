@@ -13,7 +13,6 @@ import 'package:pocket_pose/data/entity/socket_response/talk_message_response.da
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
-import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
 import 'package:pocket_pose/ui/view/popo_catch_view.dart';
 import 'package:pocket_pose/ui/view/popo_play_view.dart';
@@ -47,7 +46,7 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   int _userCount = 0;
   final List<StagePlayerListItem> _players = [];
-  StageUserListItem? _mvp;
+  StagePlayerListItem? _mvp;
   StageTalkListItem? _talk;
   Map<PoseLandmarkType, PoseLandmark>? player0;
   Map<PoseLandmarkType, PoseLandmark>? player1;
@@ -291,7 +290,8 @@ class SocketStageProviderImpl extends ChangeNotifier
             jsonDecode(frame.body.toString()),
             StageMVPResponse.fromJson(
                 jsonDecode(frame.body.toString())['data']));
-        _mvp = socketResponse.data?.mvpUser;
+        _mvp = _players.firstWhere((element) =>
+            element.userId == socketResponse.data?.mvpUser?.userId);
         _stageType = response.type;
         break;
       case StageType.MVP_SKELETON:
