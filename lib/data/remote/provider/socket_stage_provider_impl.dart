@@ -285,6 +285,11 @@ class SocketStageProviderImpl extends ChangeNotifier
         }
         setIsPlaySkeletonChange(true);
         break;
+      case StageType.PLAY_END:
+        player0 = null;
+        player1 = null;
+        player2 = null;
+        break;
       case StageType.MVP_START:
         var socketResponse = BaseSocketResponse<StageMVPResponse>.fromJson(
             jsonDecode(frame.body.toString()),

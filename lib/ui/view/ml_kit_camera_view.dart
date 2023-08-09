@@ -1,6 +1,7 @@
 // 카메라 화면
 import 'dart:async';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,7 @@ class _CameraViewState extends State<CameraView> {
   bool _countdownVisibility = false;
   int _seconds = 5;
   late Timer _timer;
+  late AssetsAudioPlayer _assetsAudioPlayer;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +101,8 @@ class _CameraViewState extends State<CameraView> {
     // AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectMode);
     // AudioPlayerUtil().setCameraController(_controller);
 
+    _assetsAudioPlayer = AssetsAudioPlayer();
+
     // 결과 상태인 경우
     if (widget.isResultState) {
       // AudioPlayerUtil().play(
@@ -116,6 +120,8 @@ class _CameraViewState extends State<CameraView> {
   }
 
   void _startTimer() {
+    _assetsAudioPlayer.open(Audio("assets/audios/sound_play_wait.mp3"));
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_seconds == 1) {
         _stopTimer();
@@ -130,6 +136,7 @@ class _CameraViewState extends State<CameraView> {
         //     widget.setIsSkeletonDetectMode);
       } else {
         if (mounted) {
+          _assetsAudioPlayer.open(Audio("assets/audios/sound_play_wait.mp3"));
           setState(() {
             _seconds--;
           });
@@ -144,9 +151,11 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   void dispose() {
-    if (widget.isResultState) {
+    if (!widget.isResultState) {
       // AudioPlayerUtil().stop();
+      _assetsAudioPlayer.dispose();
     }
+
     super.dispose();
   }
 
