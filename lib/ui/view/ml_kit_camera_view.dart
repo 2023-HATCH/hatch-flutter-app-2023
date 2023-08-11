@@ -11,20 +11,11 @@ import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart
 import 'package:pocket_pose/main.dart';
 import 'package:provider/provider.dart';
 
-enum SkeletonDetectMode {
-  playerWaitMode, // 플레이어가 춤 추기 전 준비하는 모드(스켈레톤 추출 O, 스켈레톤 배열에 저장 X)
-  musicStartMode, // 노래 시작. 플레이어의 스켈레톤을 배열에 저장하는 모드 (스켈레톤 추출 O, 스켈레톤 배열에 저장 시작)
-  musicEndMode, // 노래 종료. 플레이어의 스켈레톤을 서버에 전달  (스켈레톤 추출 종료, 스켈레톤 배열에 저장 종료)
-  resultMode, // 결과 화면. 항상 스켈레톤 추출 (스켈레톤 추출 O, 스켈레톤 배열에 저장 X)
-  userMode // 유저 모드. 스켈레톤 추출 안 함 (스켈레톤 추출 X, 스켈레톤 배열에 저장 X)
-}
-
 // ignore: must_be_immutable
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
       required this.isResultState,
-      required this.setIsSkeletonDetectMode,
       this.customPaintLeft,
       required this.customPaintMid,
       this.customPaintRight,
@@ -32,8 +23,6 @@ class CameraView extends StatefulWidget {
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
   bool isResultState;
-  // skeleton 트리거
-  Function setIsSkeletonDetectMode;
   // 스켈레톤을 그려주는 객체
   final CustomPaint? customPaintLeft;
   final CustomPaint? customPaintMid;

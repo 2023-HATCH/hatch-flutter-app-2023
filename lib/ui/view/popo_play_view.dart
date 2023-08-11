@@ -41,13 +41,10 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   CustomPaint? _customPaintLeft;
   CustomPaint? _customPaintMid;
   CustomPaint? _customPaintRight;
-  // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
-  final SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
   bool _isPlayer = false;
   int _playerNum = -1;
   int _frameNum = 0;
-  // input Lists
-  final List<List<double>> _inputLists = [];
+
   late SocketStageProviderImpl _socketStageProvider;
 
   @override
@@ -128,7 +125,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         ),
         CameraView(
           isResultState: widget.isResultState,
-          setIsSkeletonDetectMode: setIsSkeletonDetectMode,
           // 스켈레톤 그려주는 객체 전달
           customPaintLeft: _customPaintLeft,
           customPaintMid: _customPaintMid,
@@ -260,13 +256,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     }
     _frameNum++;
 
-    // 사용자가 춤 추기 시작할 때 스켈레톤 배열에 저장
-    if (_skeletonDetectMode == SkeletonDetectMode.musicStartMode) {
-      for (final pose in poses) {
-        _inputLists.add(_poseMapToInputList(pose.landmarks));
-      }
-    }
-
     _isBusy = false;
     if (mounted) {
       setState(() {});
@@ -305,34 +294,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       _customPaintRight = CustomPaint(painter: painterRignt);
     } else {
       _customPaintRight = null;
-    }
-  }
-
-  void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
-    if (_isPlayer && mounted) {
-      // setState(() {
-      //   _skeletonDetectMode = mode;
-
-      //   // 노래 끝나면 스켈레톤 서버에 보내기
-      //   if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
-      //     // 스켈레톤 파일로 저장: 실행 안 되도록 설정
-      //     if (1 > 2) {
-      //       skeletonToFile(_inputLists);
-      //     }
-
-      //     _provider
-      //         .postSkeletonList(_inputLists)
-      //         .then((value) => Fluttertoast.showToast(
-      //               msg: value.toString(),
-      //               toastLength: Toast.LENGTH_SHORT,
-      //               timeInSecForIosWeb: 1,
-      //               backgroundColor: Colors.black,
-      //               textColor: Colors.white,
-      //               fontSize: 16.0,
-      //             ))
-      //         .then((_) => _inputLists.clear());
-      //   }
-      // });
     }
   }
 
