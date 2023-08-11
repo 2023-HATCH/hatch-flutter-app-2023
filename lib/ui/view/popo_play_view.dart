@@ -281,6 +281,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           InputImageRotation.rotation270deg,
           AppColor.yellowNeonColor);
       _customPaintLeft = CustomPaint(painter: painterLeft);
+    } else {
+      _customPaintLeft = null;
     }
 
     if (_socketStageProvider.player0 != null) {
@@ -290,6 +292,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           InputImageRotation.rotation270deg,
           AppColor.mintNeonColor);
       _customPaintMid = CustomPaint(painter: painterMid);
+    } else {
+      _customPaintMid = null;
     }
 
     if (_socketStageProvider.player2 != null) {
@@ -299,6 +303,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           InputImageRotation.rotation270deg,
           AppColor.greenNeonColor);
       _customPaintRight = CustomPaint(painter: painterRignt);
+    } else {
+      _customPaintRight = null;
     }
   }
 
