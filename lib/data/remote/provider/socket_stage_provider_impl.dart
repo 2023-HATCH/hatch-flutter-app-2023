@@ -7,10 +7,12 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
+import 'package:pocket_pose/data/entity/socket_response/catch_start_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/send_skeleton_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/stage_mvp_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
+import 'package:pocket_pose/domain/entity/stage_music_data.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
@@ -43,6 +45,7 @@ class SocketStageProviderImpl extends ChangeNotifier
     implements SocketStageProvider {
   String? _userId;
   StompClient? _stompClient;
+  StageMusicData? _catchMusicData;
 
   int _userCount = 0;
   final List<StagePlayerListItem> _players = [];
@@ -63,6 +66,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isMVPSkeletonChange = false;
 
   String? get userId => _userId;
+  StageMusicData? get catchMusicData => _catchMusicData;
   int get userCount => _userCount;
   StageTalkListItem? get talk => _talk;
 
@@ -248,6 +252,14 @@ class SocketStageProviderImpl extends ChangeNotifier
         break;
       case StageType.TALK_REACTION:
         setIsReaction(true);
+        break;
+      case StageType.CATCH_START:
+        var socketResponse = BaseSocketResponse<CatchStartResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            CatchStartResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        _catchMusicData = socketResponse.data?.music;
+        _stageType = response.type;
         break;
       case StageType.CATCH_END:
         var socketResponse = BaseSocketResponse<CatchEndResponse>.fromJson(

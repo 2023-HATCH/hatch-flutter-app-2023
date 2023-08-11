@@ -7,7 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/main.dart';
+import 'package:provider/provider.dart';
 
 enum SkeletonDetectMode {
   playerWaitMode, // 플레이어가 춤 추기 전 준비하는 모드(스켈레톤 추출 O, 스켈레톤 배열에 저장 X)
@@ -57,9 +59,12 @@ class _CameraViewState extends State<CameraView> {
   int _seconds = 5;
   late Timer _timer;
   late AssetsAudioPlayer _assetsAudioPlayer;
+  late SocketStageProviderImpl _socketStageProvider;
 
   @override
   Widget build(BuildContext context) {
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -246,9 +251,9 @@ class _CameraViewState extends State<CameraView> {
             'assets/icons/ic_music_note_small.svg',
           ),
           const SizedBox(width: 8.0),
-          const Text(
-            "I AM-IVE",
-            style: TextStyle(fontSize: 10, color: Colors.white),
+          Text(
+            '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
+            style: const TextStyle(fontSize: 10, color: Colors.white),
           ),
         ],
       ),
