@@ -96,8 +96,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     }
 
     if (_isEnter) {
+      _socketStageProvider.exitStage();
       _socketStageProvider.deactivateWebSocket();
-      _stageProvider.getStageExit();
       _isEnter = false;
     }
 

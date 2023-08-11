@@ -226,6 +226,19 @@ class SocketStageProviderImpl extends ChangeNotifier
     }
   }
 
+  @override
+  void exitStage() async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    if (_stompClient != null && (_stompClient?.isActive ?? false)) {
+      _stompClient?.send(
+          destination: AppUrl.socketExitUrl,
+          headers: {'x-access-token': token});
+    }
+  }
+
   void _setStageType(BaseSocketResponse response, StompFrame frame) {
     switch (response.type) {
       case StageType.USER_COUNT:

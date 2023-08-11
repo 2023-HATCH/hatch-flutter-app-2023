@@ -8,4 +8,5 @@ abstract class SocketStageProvider {
   void sendReaction();
   void sendPlaySkeleton(SendSkeletonRequest request);
   void sendMVPSkeleton(SendSkeletonRequest request);
+  void exitStage();
 }

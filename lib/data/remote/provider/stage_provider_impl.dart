@@ -96,33 +96,6 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
   }
 
   @override
-  Future<BaseResponse> getStageExit() async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    const refreshTokenKey = 'kakaoRefreshToken';
-    String accessToken = await storage.read(key: storageKey) ?? "";
-    String refreshToken = await storage.read(key: refreshTokenKey) ?? "";
-
-    var dio = Dio();
-    try {
-      dio.options.headers = {
-        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
-      };
-      dio.options.contentType = "application/json";
-      var response = await dio.get(AppUrl.stageExitUrl);
-      var responseJson = BaseResponse.fromJson(response.data, null);
-      return responseJson;
-    } catch (e) {
-      debugPrint("mmm StageProviderImpl catch: ${e.toString()}");
-      if (e.toString().contains("500")) {
-        return BaseResponse(
-            timeStamp: "", code: "500", message: "", data: null);
-      }
-    }
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> getStageCatch() async {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
