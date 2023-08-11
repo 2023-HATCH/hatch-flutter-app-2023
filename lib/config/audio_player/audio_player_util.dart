@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
-import 'package:pocket_pose/ui/view/ml_kit_camera_view.dart';
 
 class AudioPlayerUtil {
   CameraController? _controller;
@@ -21,17 +20,12 @@ class AudioPlayerUtil {
 
   // 노래 종료 후 실행할 함수 설정
   setPlayerCompletion(Function setIsSkeletonDetectStart) {
-    player.onPlayerCompletion.listen((event) {
-      // 노래 종료
-      setIsSkeletonDetectStart(SkeletonDetectMode.musicEndMode);
-    });
+    player.onPlayerCompletion.listen((event) {});
   }
 
   play(String musicUrl, Function setIsSkeletonDetectStart) async {
     // 내부 음악 실행
     await player.play(musicUrl);
-    // 노래 시작, 스켈레톤 추출 시작
-    setIsSkeletonDetectStart(SkeletonDetectMode.musicStartMode);
     // 외부 음악 종료
     // await audioSession.setActive(false);
   }

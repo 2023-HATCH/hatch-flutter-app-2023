@@ -123,20 +123,18 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
             ],
           ),
         ),
-        CameraView(
-          isResultState: widget.isResultState,
-          // 스켈레톤 그려주는 객체 전달
-          customPaintLeft: _customPaintLeft,
-          customPaintMid: _customPaintMid,
-          customPaintRight: _customPaintRight,
-          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-          onImage: (inputImage) {
-            // 플레이어만 스켈레톤 추출
-            if (_isPlayer) {
+        if (_isPlayer)
+          CameraView(
+            isResultState: widget.isResultState,
+            // 스켈레톤 그려주는 객체 전달
+            customPaintLeft: _customPaintLeft,
+            customPaintMid: _customPaintMid,
+            customPaintRight: _customPaintRight,
+            // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
+            onImage: (inputImage) {
               processImage(inputImage);
-            }
-          },
-        ),
+            },
+          ),
       ],
     );
   }
