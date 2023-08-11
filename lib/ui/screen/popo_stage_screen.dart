@@ -117,9 +117,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         _socketStageProvider.setIsConnect(false);
         _stageProvider
             .getStageEnter(StageEnterRequest(page: 0, size: 10))
-            .then((value) =>
-                _socketStageProvider.setUserCount(value.data.userCount))
-            .then((_) => _socketStageProvider.onSubscribe());
+            .then((value) {
+          print("mmm second screen1: ${value.data.statusElapsedTime}");
+          print(
+              "mmm second screen2: ${((value.data.statusElapsedTime ?? 0) / (1000000 * 1000)).round()}");
+          _socketStageProvider.setUserCount(value.data.userCount);
+          _socketStageProvider
+              .buildStageView(StageType.values.byName(value.data.stageStatus));
+        }).then((_) => _socketStageProvider.onSubscribe());
       });
     }
 

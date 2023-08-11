@@ -19,11 +19,11 @@ class AudioPlayerUtil {
   }
 
   // 노래 종료 후 실행할 함수 설정
-  setPlayerCompletion(Function setIsSkeletonDetectStart) {
+  setPlayerCompletion() {
     player.onPlayerCompletion.listen((event) {});
   }
 
-  play(String musicUrl, Function setIsSkeletonDetectStart) async {
+  play(String musicUrl) async {
     // 내부 음악 실행
     await player.play(musicUrl);
     // 외부 음악 종료

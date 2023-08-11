@@ -25,7 +25,10 @@ import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 enum StageType {
-  WAIT, // only front
+  WAIT,
+  CATCH,
+  PLAY,
+  MVP,
   CATCH_START,
   CATCH_END_RESTART,
   CATCH_END,
@@ -62,6 +65,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isTalk = false;
   bool _isReaction = false;
   bool _isUserCountChange = false;
+  bool _isPlayEnter = false;
   bool _isPlaySkeletonChange = false;
   bool _isMVPSkeletonChange = false;
 
@@ -76,6 +80,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isTalk => _isTalk;
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
+  bool get isPlayEnter => _isPlayEnter;
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
   bool get isMVPSkeletonChange => _isMVPSkeletonChange;
 
@@ -127,6 +132,11 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsReaction(bool value) {
     _isReaction = value;
+    if (value) notifyListeners();
+  }
+
+  setIsPlayEnter(bool value) {
+    _isPlayEnter = value;
     if (value) notifyListeners();
   }
 
@@ -352,15 +362,18 @@ class SocketStageProviderImpl extends ChangeNotifier
       case StageType.STAGE_ROUTINE_STOP:
       case StageType.WAIT:
         return const PoPoWaitView();
+      case StageType.CATCH:
       case StageType.CATCH_START:
       case StageType.CATCH_END_RESTART:
         return PoPoCatchView(type: type);
+      case StageType.PLAY:
       case StageType.PLAY_START:
         return PoPoPlayView(
           isResultState: _stageType == StageType.MVP_START,
           players: _players,
           userId: _userId,
         );
+      case StageType.MVP:
       case StageType.MVP_START:
         return (_mvp != null)
             ? PoPoResultView(
