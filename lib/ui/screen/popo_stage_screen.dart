@@ -59,8 +59,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               appBar: _buildAppBar(context),
               body: Stack(
                 children: [
-                  _socketStageProvider
-                      .buildStageView(_socketStageProvider.stageType),
+                  Expanded(
+                    flex: 1,
+                    child: Navigator(
+                      key: _socketStageProvider.navigatorKey,
+                      initialRoute: stageStageList[0],
+                      onGenerateRoute: _socketStageProvider.onGenerateRoute,
+                    ),
+                  ),
                   const Positioned(
                     bottom: 68,
                     left: 0,
@@ -128,7 +134,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           _socketStageProvider.setUserCount(value.data.userCount);
         }).then((_) {
           print("mmmm 입장 후 화면 변경: $stageType:");
-          _socketStageProvider.buildStageView(stageType);
+          _socketStageProvider.setStageView(stageType);
         }).then((_) => _socketStageProvider.onSubscribe());
       });
     }

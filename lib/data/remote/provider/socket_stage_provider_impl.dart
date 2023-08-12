@@ -44,8 +44,30 @@ enum StageType {
   TALK_REACTION,
 }
 
+final stageStageList = [
+  "WAIT",
+  "CATCH",
+  "PLAY",
+  "MVP",
+  "CATCH_START",
+  "CATCH_END_RESTART",
+  "CATCH_END",
+  "PLAY_START",
+  "PLAY_SKELETON",
+  "PLAY_END",
+  "MVP_START",
+  "MVP_SKELETON",
+  "MVP_END",
+  "USER_COUNT",
+  "STAGE_ROUTINE_STOP",
+  "TALK_MESSAGE",
+  "TALK_REACTION",
+];
+
 class SocketStageProviderImpl extends ChangeNotifier
     implements SocketStageProvider {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
   String? _userId;
   StompClient? _stompClient;
   StageMusicData? _catchMusicData;
@@ -68,6 +90,8 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isPlayEnter = false;
   bool _isPlaySkeletonChange = false;
   bool _isMVPSkeletonChange = false;
+
+  GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 
   String? get userId => _userId;
   StageMusicData? get catchMusicData => _catchMusicData;
@@ -284,6 +308,7 @@ class SocketStageProviderImpl extends ChangeNotifier
                 jsonDecode(frame.body.toString())['data']));
         _catchMusicData = socketResponse.data?.music;
         _stageType = response.type;
+        setStageView(_stageType);
         break;
       case StageType.CATCH_END:
         var socketResponse = BaseSocketResponse<CatchEndResponse>.fromJson(
@@ -334,6 +359,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         _mvp = _players.firstWhere((element) =>
             element.userId == socketResponse.data?.mvpUser?.userId);
         _stageType = response.type;
+        setStageView(_stageType);
         break;
       case StageType.MVP_SKELETON:
         var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
@@ -355,38 +381,51 @@ class SocketStageProviderImpl extends ChangeNotifier
 
       default:
         _stageType = response.type;
+        setStageView(_stageType);
     }
   }
 
-  Widget buildStageView(StageType type) {
-    switch (type) {
+  setStageView(StageType stageType) {
+    _navigatorKey.currentState?.pop();
+    _navigatorKey.currentState?.pushNamed(stageStageList[stageType.index]);
+  }
+
+  MaterialPageRoute onGenerateRoute(RouteSettings setting) {
+    var stageType = StageType.values.byName(setting.name ?? "WAIT");
+    switch (stageType) {
       case StageType.STAGE_ROUTINE_STOP:
       case StageType.WAIT:
-        print("mmmm wait");
-        return const PoPoWaitView();
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => const PoPoWaitView());
       case StageType.CATCH:
       case StageType.CATCH_START:
       case StageType.CATCH_END_RESTART:
-        return PoPoCatchView(type: type);
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => PoPoCatchView(type: stageType));
       case StageType.PLAY:
       case StageType.PLAY_START:
-        return PoPoPlayView(
-          isResultState: _stageType == StageType.MVP_START,
-          players: _players,
-          userId: _userId,
-        );
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => PoPoPlayView(
+                  isResultState: _stageType == StageType.MVP_START,
+                  players: _players,
+                  userId: _userId,
+                ));
+
       case StageType.MVP:
       case StageType.MVP_START:
         return (_mvp != null)
-            ? PoPoResultView(
-                isResultState: _stageType == StageType.MVP_START,
-                mvp: _mvp,
-                userId: _userId!)
-            : PoPoResultView(
-                isResultState: _stageType == StageType.MVP_START,
-                userId: _userId!);
+            ? MaterialPageRoute<dynamic>(
+                builder: (context) => PoPoResultView(
+                    isResultState: _stageType == StageType.MVP_START,
+                    mvp: _mvp,
+                    userId: _userId!))
+            : MaterialPageRoute<dynamic>(
+                builder: (context) => PoPoResultView(
+                    isResultState: _stageType == StageType.MVP_START,
+                    userId: _userId!));
       default:
-        return const PoPoWaitView();
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => const PoPoWaitView());
     }
   }
 }
