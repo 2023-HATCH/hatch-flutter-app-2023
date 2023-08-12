@@ -58,35 +58,12 @@ class _CameraViewState extends State<CameraView> {
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
 
-    if (!_socketStageProvider.isPlayEnter) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _socketStageProvider.setIsPlayEnter(true);
+    // if (!_socketStageProvider.isPlayEnter) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     _socketStageProvider.setIsPlayEnter(true);
 
-        // 플레이 상태인 경우
-        if (!widget.isResultState) {
-          // 카운트다운
-          if (_stageProvider.stageElapsedTime < 1000000 * 1000 * 5) {
-            // 카운트다운 시작 후 노래 재생
-            _startTimer();
-            setState(() {
-              print(
-                  "mmm second: ${(_stageProvider.stageElapsedTime / 1000000 * 1000).round()}");
-              _seconds = (_stageProvider.stageElapsedTime).round();
-              _stageProvider.setStageElapsedTime();
-              _countdownVisibility = true;
-            });
-          }
-          // 노래 재생
-          else {
-            AudioPlayerUtil().play(
-              _socketStageProvider.catchMusicData!.musicUrl,
-            );
-          }
-        }
-        // 결과 상태인 경우
-        else {}
-      });
-    }
+    //   });
+    // }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -131,6 +108,34 @@ class _CameraViewState extends State<CameraView> {
 
     _assetsAudioPlayer = AssetsAudioPlayer();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 플레이 상태인 경우
+      if (!widget.isResultState) {
+        var curSecond =
+            (_stageProvider.stageCurTime / (1000000 * 1000)).round();
+        print("mmmm cameraview sec: ${_stageProvider.stageCurTime}");
+        print("mmmm cameraview sec2: $curSecond");
+        // 카운트다운
+        if (curSecond < 5) {
+          // 카운트다운 시작 후 노래 재생
+          setState(() {
+            _seconds = 5 - curSecond;
+            _stageProvider.setStageCurTime();
+            _countdownVisibility = true;
+          });
+          _startTimer();
+        }
+        // 노래 재생
+        else {
+          AudioPlayerUtil().play(
+            _socketStageProvider.catchMusicData!.musicUrl,
+          );
+        }
+      }
+      // 결과 상태인 경우
+      else {}
+    });
+
     // // 결과 상태인 경우
     // if (widget.isResultState) {
     //   // AudioPlayerUtil().play(
@@ -168,6 +173,7 @@ class _CameraViewState extends State<CameraView> {
             _countdownVisibility = false;
           });
         }
+        _seconds = 5;
         AudioPlayerUtil().play(
           _socketStageProvider.catchMusicData!.musicUrl,
         );

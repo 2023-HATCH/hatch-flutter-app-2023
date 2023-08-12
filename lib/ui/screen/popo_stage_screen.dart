@@ -98,6 +98,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (_isEnter) {
       _socketStageProvider.exitStage();
       _socketStageProvider.deactivateWebSocket();
+      print("mmmm 퇴장----------------------");
       _isEnter = false;
     }
 
@@ -114,16 +115,20 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   void _onSocketResponse() {
     if (_socketStageProvider.isConnect) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        StageType stageType = StageType.WAIT;
         _socketStageProvider.setIsConnect(false);
         _stageProvider
             .getStageEnter(StageEnterRequest(page: 0, size: 10))
             .then((value) {
-          print("mmm second screen1: ${value.data.statusElapsedTime}");
+          print("mmmm 입장----------------------");
+          print("mmmm 입장 후 바로 sec: ${value.data.statusElapsedTime}");
           print(
-              "mmm second screen2: ${((value.data.statusElapsedTime ?? 0) / (1000000 * 1000)).round()}");
+              "mmmm 입장 후 바로 sec: ${((value.data.statusElapsedTime ?? 0) / (1000000 * 1000)).round()}");
+          stageType = StageType.values.byName(value.data.stageStatus);
           _socketStageProvider.setUserCount(value.data.userCount);
-          _socketStageProvider
-              .buildStageView(StageType.values.byName(value.data.stageStatus));
+        }).then((_) {
+          print("mmmm 입장 후 화면 변경: $stageType:");
+          _socketStageProvider.buildStageView(stageType);
         }).then((_) => _socketStageProvider.onSubscribe());
       });
     }
@@ -291,10 +296,5 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     setState(() {
       _userData = userData;
     });
-  }
-
-  Future<String> _getUserNickname() async {
-    UserData userData = await _loginProvider.getUser();
-    return userData.nickname;
   }
 }

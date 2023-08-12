@@ -155,7 +155,7 @@ class SocketStageProviderImpl extends ChangeNotifier
       },
       stompConnectHeaders: {'x-access-token': token},
       webSocketConnectHeaders: {'x-access-token': token},
-      onDebugMessage: (p0) => print("mmm socket: $p0"),
+      onDebugMessage: (p0) => print("popo socket: $p0"),
     ));
     _stompClient!.activate();
   }
@@ -175,6 +175,7 @@ class SocketStageProviderImpl extends ChangeNotifier
             // stage 상태 변경
             var socketResponse = BaseSocketResponse.fromJson(
                 jsonDecode(frame.body.toString()), null);
+            print("mmmm 소켓 구독 후 응답받고 화면 변경: ${socketResponse.type}:");
             _setStageType(socketResponse, frame);
           }
         });
@@ -361,6 +362,7 @@ class SocketStageProviderImpl extends ChangeNotifier
     switch (type) {
       case StageType.STAGE_ROUTINE_STOP:
       case StageType.WAIT:
+        print("mmmm wait");
         return const PoPoWaitView();
       case StageType.CATCH:
       case StageType.CATCH_START:
