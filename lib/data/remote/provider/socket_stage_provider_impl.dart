@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -87,7 +89,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isTalk = false;
   bool _isReaction = false;
   bool _isUserCountChange = false;
-  bool _isPlayEnter = false;
   bool _isPlaySkeletonChange = false;
   bool _isMVPSkeletonChange = false;
 
@@ -104,7 +105,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isTalk => _isTalk;
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
-  bool get isPlayEnter => _isPlayEnter;
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
   bool get isMVPSkeletonChange => _isMVPSkeletonChange;
 
@@ -159,11 +159,6 @@ class SocketStageProviderImpl extends ChangeNotifier
     if (value) notifyListeners();
   }
 
-  setIsPlayEnter(bool value) {
-    _isPlayEnter = value;
-    if (value) notifyListeners();
-  }
-
   @override
   void connectWebSocket() async {
     const storage = FlutterSecureStorage();
@@ -199,7 +194,6 @@ class SocketStageProviderImpl extends ChangeNotifier
             // stage 상태 변경
             var socketResponse = BaseSocketResponse.fromJson(
                 jsonDecode(frame.body.toString()), null);
-            print("mmmm 소켓 구독 후 응답받고 화면 변경: ${socketResponse.type}:");
             _setStageType(socketResponse, frame);
           }
         });

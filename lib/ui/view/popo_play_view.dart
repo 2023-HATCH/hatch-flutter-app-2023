@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
@@ -293,52 +290,5 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     } else {
       _customPaintRight = null;
     }
-  }
-
-  // 파일화를 위한 배열 저장
-  List<double> _poseMapToInputList(Map<PoseLandmarkType, PoseLandmark> entry) {
-    return [
-      entry[PoseLandmarkType.nose]!.x,
-      entry[PoseLandmarkType.nose]!.y,
-      entry[PoseLandmarkType.rightShoulder]!.x,
-      entry[PoseLandmarkType.rightShoulder]!.y,
-      entry[PoseLandmarkType.rightElbow]!.x,
-      entry[PoseLandmarkType.rightElbow]!.y,
-      entry[PoseLandmarkType.rightWrist]!.x,
-      entry[PoseLandmarkType.rightWrist]!.y,
-      entry[PoseLandmarkType.leftShoulder]!.x,
-      entry[PoseLandmarkType.leftShoulder]!.y,
-      entry[PoseLandmarkType.leftElbow]!.x,
-      entry[PoseLandmarkType.leftElbow]!.y,
-      entry[PoseLandmarkType.leftWrist]!.x,
-      entry[PoseLandmarkType.leftWrist]!.y,
-      entry[PoseLandmarkType.rightHip]!.x,
-      entry[PoseLandmarkType.rightHip]!.y,
-      entry[PoseLandmarkType.rightKnee]!.x,
-      entry[PoseLandmarkType.rightKnee]!.y,
-      entry[PoseLandmarkType.rightAnkle]!.x,
-      entry[PoseLandmarkType.rightAnkle]!.y,
-      entry[PoseLandmarkType.leftHip]!.x,
-      entry[PoseLandmarkType.leftHip]!.y,
-      entry[PoseLandmarkType.leftKnee]!.x,
-      entry[PoseLandmarkType.leftKnee]!.y,
-      entry[PoseLandmarkType.leftAnkle]!.x,
-      entry[PoseLandmarkType.leftAnkle]!.y
-    ];
-  }
-
-  Future<void> skeletonToFile(List<List<double>> inputLists) async {
-    var today = DateTime.now().toString().substring(0, 9);
-    var now = DateTime.now();
-
-    final dir = await ExternalPath.getExternalStoragePublicDirectory(
-        ExternalPath.DIRECTORY_DOCUMENTS);
-    // 폴더 생성
-    String folderPath = '$dir/PoPo';
-    await Directory(folderPath).create(recursive: true);
-    // 파일 생성 및 저장
-    final path =
-        '$dir/PoPo/popo-skeleton-$today-${now.hour}-${now.minute}-${now.second}.txt';
-    File(path).writeAsString(inputLists.toString());
   }
 }

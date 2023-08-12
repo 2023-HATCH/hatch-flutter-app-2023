@@ -111,54 +111,32 @@ class _CameraViewState extends State<CameraView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 플레이 상태인 경우
       if (!widget.isResultState) {
-        var curSecond =
-            (_stageProvider.stageCurTime / (1000000 * 1000)).round();
-        print("mmmm cameraview sec: ${_stageProvider.stageCurTime}");
-        print("mmmm cameraview sec2: $curSecond");
+        AudioPlayerUtil()
+            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl);
+
+        if (_stageProvider.stageCurTime != null) {
+          _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+          _stageProvider.setStageCurSecondNULL();
+        } else {
+          _seconds = 0;
+        }
         // 카운트다운
-        if (curSecond < 5) {
+        if (_seconds < 5) {
           // 카운트다운 시작 후 노래 재생
           setState(() {
-            _seconds = 5 - curSecond;
-            _stageProvider.setStageCurTime();
+            _seconds = 5 - _seconds;
             _countdownVisibility = true;
           });
           _startTimer();
         }
         // 노래 재생
         else {
-          AudioPlayerUtil().play(
-            _socketStageProvider.catchMusicData!.musicUrl,
-          );
+          AudioPlayerUtil().playSeek(_seconds - 5);
         }
       }
       // 결과 상태인 경우
       else {}
     });
-
-    // // 결과 상태인 경우
-    // if (widget.isResultState) {
-    //   // AudioPlayerUtil().play(
-    //   //     "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3",
-    //   //     widget.setIsSkeletonDetectMode);
-    // }
-    // // 플레이 상태인 경우
-    // else {
-    //   // 카운트다운
-    //   if (_stageProvider.stageElapsedTime < 5000000.0) {
-    //     // 카운트다운 시작 후 노래 재생
-    //     _startTimer();
-    //     setState(() {
-    //       print("mmm second: ${_stageProvider.stageElapsedTime}");
-    //       _seconds = (_stageProvider.stageElapsedTime).round();
-
-    //       _stageProvider.setStageElapsedTime();
-    //       _countdownVisibility = true;
-    //     });
-    //   }
-    //   // 노래 play
-    //   else {}
-    // }
   }
 
   void _startTimer() {
@@ -174,9 +152,7 @@ class _CameraViewState extends State<CameraView> {
           });
         }
         _seconds = 5;
-        AudioPlayerUtil().play(
-          _socketStageProvider.catchMusicData!.musicUrl,
-        );
+        AudioPlayerUtil().play();
       } else {
         if (mounted) {
           _assetsAudioPlayer.open(Audio("assets/audios/sound_play_wait.mp3"));

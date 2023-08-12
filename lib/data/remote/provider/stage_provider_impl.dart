@@ -15,16 +15,16 @@ import 'package:pocket_pose/domain/provider/stage_provider.dart';
 class StageProviderImpl extends ChangeNotifier implements StageProvider {
   final List<StageTalkListItem> _talkList = [];
   final List<StageUserListItem> _userList = [];
-  late double _stageCurSecond;
+  late double? _stageCurSecond;
   bool _isClicked = false;
 
   List<StageTalkListItem> get talkList => _talkList;
   List<StageUserListItem> get userList => _userList;
-  double get stageCurTime => _stageCurSecond;
+  double? get stageCurTime => _stageCurSecond;
 
   bool get isClicked => _isClicked;
   setIsClicked(bool value) => _isClicked = value;
-  setStageCurTime() => _stageCurSecond = 5;
+  setStageCurSecondNULL() => _stageCurSecond = null;
 
   void toggleIsLeft() {
     if (isClicked) notifyListeners();
@@ -88,8 +88,7 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
 
       var responseJson = BaseResponse<StageEnterResponse>.fromJson(
           response.data, StageEnterResponse.fromJson(response.data['data']));
-      print("mmmm enter 응답 sec: ${responseJson.data.statusElapsedTime}");
-      _stageCurSecond = responseJson.data.statusElapsedTime ?? 5;
+      _stageCurSecond = responseJson.data.statusElapsedTime;
 
       addTalkList(responseJson.data.talkMessageData.messages ?? []);
 

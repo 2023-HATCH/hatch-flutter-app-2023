@@ -104,7 +104,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (_isEnter) {
       _socketStageProvider.exitStage();
       _socketStageProvider.deactivateWebSocket();
-      print("mmmm 퇴장----------------------");
       _isEnter = false;
     }
 
@@ -126,16 +125,11 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         _stageProvider
             .getStageEnter(StageEnterRequest(page: 0, size: 10))
             .then((value) {
-          print("mmmm 입장----------------------");
-          print("mmmm 입장 후 바로 sec: ${value.data.statusElapsedTime}");
-          print(
-              "mmmm 입장 후 바로 sec: ${((value.data.statusElapsedTime ?? 0) / (1000000 * 1000)).round()}");
-          stageType = StageType.values.byName(value.data.stageStatus);
-          _socketStageProvider.setUserCount(value.data.userCount);
-        }).then((_) {
-          print("mmmm 입장 후 화면 변경: $stageType:");
-          _socketStageProvider.setStageView(stageType);
-        }).then((_) => _socketStageProvider.onSubscribe());
+              stageType = StageType.values.byName(value.data.stageStatus);
+              _socketStageProvider.setUserCount(value.data.userCount);
+            })
+            .then((_) => _socketStageProvider.setStageView(stageType))
+            .then((_) => _socketStageProvider.onSubscribe());
       });
     }
 
