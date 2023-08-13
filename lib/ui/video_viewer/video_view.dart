@@ -34,8 +34,6 @@ class _VideoViewState extends State<VideoView>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_multiVideoPlayProvider.videoList.isNotEmpty) {
-        _loadMoreVideos();
-      } else {
         _multiVideoPlayProvider.playVideo();
       }
     });
@@ -129,7 +127,9 @@ class _VideoViewState extends State<VideoView>
             allowImplicitScrolling: true,
             itemCount: 200,
             itemBuilder: (context, index) {
-              if (_multiVideoPlayProvider.currentPage == 0) {
+              if (_multiVideoPlayProvider.currentPage == 0 &&
+                  _multiVideoPlayProvider.videoList.isEmpty) {
+                _multiVideoPlayProvider.resetVideoPlayer();
                 _loadMoreVideos();
                 _multiVideoPlayProvider.loading = false;
                 return const MusicSpinner(); // 비디오 로딩 중

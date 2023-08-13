@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -99,6 +100,15 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                     },
                     onConfirm: () {
                       _loginProvider.signOut();
+
+                      _multiVideoPlayProvider.resetVideoPlayer();
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MainScreen()),
+                        (route) => false,
+                      );
                     },
                   );
                 })

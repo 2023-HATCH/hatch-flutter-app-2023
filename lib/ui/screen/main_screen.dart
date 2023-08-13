@@ -49,12 +49,12 @@ class _MainScreenState extends State<MainScreen> {
     if (index == 1) {
       _multiVideoPlayProvider.pauseVideo();
 
-      if (await _loginProvider.checkAccessToken() == false) {
-        // 사용자 토큰이 없는 경우
-        _loginProvider.showLoginBottomSheet();
+      if (await _loginProvider.checkAccessToken() == true) {
+        _multiVideoPlayProvider.playVideo();
       }
     } else {
-      _multiVideoPlayProvider.playVideo();
+      // 사용자 토큰이 없는 경우
+      _loginProvider.showLoginBottomSheet();
     }
   }
 
@@ -64,6 +64,11 @@ class _MainScreenState extends State<MainScreen> {
       _showPoPoStageScreen();
     } else {
       _loginProvider.showLoginBottomSheet();
+
+      if (await _loginProvider.checkAccessToken()) {
+        _multiVideoPlayProvider.resetVideoPlayer();
+      }
+      debugPrint('현재 페이지: ${_multiVideoPlayProvider.currentIndex}');
     }
   }
 

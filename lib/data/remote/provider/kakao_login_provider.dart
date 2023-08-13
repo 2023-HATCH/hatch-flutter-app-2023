@@ -46,11 +46,9 @@ class KaKaoLoginProvider extends ChangeNotifier {
         Fluttertoast.showToast(
           msg: '성공적으로 로그인 되었습니다.',
         );
-        final multiVideoPlayProvider =
-            Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
+        final multiVideoPlayProvider = MultiVideoPlayProvider();
 
         multiVideoPlayProvider.resetVideoPlayer();
-
         MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScreen()),
           (route) => false,
@@ -64,20 +62,14 @@ class KaKaoLoginProvider extends ChangeNotifier {
   void signOut() async {
     debugPrint('카카오톡 로그아웃');
     removeAccessToken();
-
-    Fluttertoast.showToast(
-      msg: '성공적으로 로그아웃 되었습니다.',
-    );
-
-    MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-      (route) => false,
-    );
-
     final multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
     multiVideoPlayProvider.resetVideoPlayer();
+
+    Fluttertoast.showToast(
+      msg: '성공적으로 로그아웃 되었습니다.',
+    );
   }
 
   Future<void> _login(String kakaoAccessToken) async {
