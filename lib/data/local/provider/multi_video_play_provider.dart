@@ -33,6 +33,7 @@ class MultiVideoPlayProvider with ChangeNotifier {
 
     // Add VideoPlayer Controller
     for (final video in newVideoList) {
+      debugPrint('페이지: 비디오 로딩중');
       controllers.add(VideoPlayerController.network(video.videoUrl));
       videoPlayerFutures.add(controllers.last.initialize().then((value) {
         controllers[currentIndex].setLooping(true); // 영상 무한 반복
@@ -68,11 +69,16 @@ class MultiVideoPlayProvider with ChangeNotifier {
 
   void resetVideoPlayer() {
     pauseVideo();
+
+    for (final controller in controllers) {
+      controller.dispose();
+    }
     controllers = [];
     videoPlayerFutures = [];
+    loading = false;
     videoList = [];
     currentIndex = 0;
-    currentPage = -1;
+    currentPage = 0;
     isLast = false;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());

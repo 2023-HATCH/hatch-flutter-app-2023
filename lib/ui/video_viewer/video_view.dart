@@ -33,7 +33,7 @@ class _VideoViewState extends State<VideoView>
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_multiVideoPlayProvider.videoList.isEmpty) {
+      if (_multiVideoPlayProvider.videoList.isNotEmpty) {
         _loadMoreVideos();
       } else {
         _multiVideoPlayProvider.playVideo();
@@ -117,7 +117,6 @@ class _VideoViewState extends State<VideoView>
       onRefresh: () async {
         setState(() {
           _multiVideoPlayProvider.resetVideoPlayer();
-          _loadMoreVideos();
         });
       },
       color: AppColor.purpleColor,
@@ -130,8 +129,7 @@ class _VideoViewState extends State<VideoView>
             allowImplicitScrolling: true,
             itemCount: 200,
             itemBuilder: (context, index) {
-              if (_multiVideoPlayProvider.currentPage == -1) {
-                _multiVideoPlayProvider.currentPage = 0;
+              if (_multiVideoPlayProvider.currentPage == 0) {
                 _loadMoreVideos();
                 _multiVideoPlayProvider.loading = false;
                 return const MusicSpinner(); // 비디오 로딩 중
