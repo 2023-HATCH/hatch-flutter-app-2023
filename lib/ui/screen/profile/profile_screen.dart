@@ -104,40 +104,43 @@ class _ProfileScreenState extends State<ProfileScreen>
                 SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ProfileEditScreen()),
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
-                              child: SvgPicture.asset(
-                                  'assets/icons/ic_profile_edit.svg'),
+                      Container(
+                        color: Colors.white,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ProfileEditScreen()),
+                                );
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
+                                child: SvgPicture.asset(
+                                    'assets/icons/ic_profile_edit.svg'),
+                              ),
                             ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ProfileSettingScreen()),
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
-                              child: SvgPicture.asset(
-                                  'assets/icons/ic_profile_setting.svg'),
-                            ),
-                          )
-                        ],
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ProfileSettingScreen()),
+                                );
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
+                                child: SvgPicture.asset(
+                                    'assets/icons/ic_profile_setting.svg'),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                       ProfileUserInfoWidget(
                         user: _user,
@@ -148,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 SliverAppBar(
                   pinned: true,
                   backgroundColor: Colors.white,
-                  toolbarHeight: 0,
+                  toolbarHeight: 0.0,
                   bottom: TabBar(
                     controller: _tabController,
                     tabs: [

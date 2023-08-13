@@ -116,6 +116,7 @@ class _VideoViewState extends State<VideoView>
         });
       },
       color: AppColor.purpleColor,
+      backgroundColor: const Color.fromARGB(60, 234, 234, 234),
       child: Stack(
         children: <Widget>[
           PageView.builder(
@@ -142,7 +143,7 @@ class _VideoViewState extends State<VideoView>
                               _videoPlayProvider.loading)) {
                         // 비디오가 준비된 경우
                         _videoPlayProvider.loading = true;
-                        return buildVideoPlayer(index); // 비디오 플레이어 생성
+                        return VideoPlayerWidget(index: index); // 비디오 플레이어 생성
                       } else {
                         return const MusicSpinner(); // 비디오 로딩 중
                       }
@@ -164,23 +165,104 @@ class _VideoViewState extends State<VideoView>
       ),
     );
   }
+}
 
-  Widget buildVideoPlayer(int index) {
+class VideoPlayerWidget extends StatefulWidget {
+  const VideoPlayerWidget({super.key, required int index}) : index = index;
+
+  final int index;
+
+  @override
+  _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
+    with SingleTickerProviderStateMixin {
+  bool isPlaying = false;
+  bool isIconVisible = false;
+  late VideoPlayProvider _videoPlayProvider;
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 0), // 아이콘이 나타날 때의 애니메이션 속도
+      reverseDuration:
+          const Duration(milliseconds: 800), // 아이콘이 사라질 때의 애니메이션 속도
+      value: 0.0, // 시작 값 설정
+    );
+  }
+
+  void _toggleIconVisibility(bool newValue) {
+    setState(() {
+      isIconVisible = newValue;
+      if (isIconVisible) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse().then((_) {
+          setState(() {
+            isIconVisible = false;
+          });
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
         GestureDetector(
           onTap: () {
-            // 비디오 클릭 시 영상 정지/재생
-            if (_videoPlayProvider.controllers[index].value.isPlaying) {
+            final controller = _videoPlayProvider.controllers[widget.index];
+            if (controller.value.isPlaying) {
               _videoPlayProvider.pauseVideo();
+              isPlaying = false;
+              _toggleIconVisibility(true);
+              Future.delayed(const Duration(milliseconds: 800), () {
+                _toggleIconVisibility(false);
+              });
             } else {
               _videoPlayProvider.playVideo();
+              isPlaying = true;
+              _toggleIconVisibility(true);
+              Future.delayed(const Duration(milliseconds: 800), () {
+                _toggleIconVisibility(false);
+              });
             }
           },
-          child: VideoPlayer(_videoPlayProvider.controllers[index]),
+          child: VideoPlayer(_videoPlayProvider.controllers[widget.index]),
         ),
-        VideoRightFrame(index: index),
-        VideoUserInfoFrame(index: index),
+        Positioned.fill(
+          child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _animationController.value,
+                child: Center(
+                  child: Icon(
+                    isPlaying
+                        ? Icons.play_circle_filled_rounded
+                        : Icons.pause_circle_filled_rounded,
+                    size: 60,
+                    color: const Color.fromARGB(60, 234, 234, 234),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        VideoRightFrame(index: widget.index),
+        VideoUserInfoFrame(index: widget.index),
       ],
     );
   }

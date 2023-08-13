@@ -396,49 +396,56 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                       ),
                                     ],
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      for (int i = 0; i < emojiList.length; i++)
-                                        InkWell(
-                                          onTap: () async {
-                                            if (await _loginProvider
-                                                    .checkAccessToken() ==
-                                                false) {
-                                              Navigator.pop(context);
-                                              _loginProvider
-                                                  .showLoginBottomSheet();
-                                            } else {
-                                              int cursorPosition =
-                                                  _textController.text.length;
-                                              String text =
-                                                  _textController.text;
-                                              String newText =
-                                                  text + emojiList[i];
-                                              _textController.value =
-                                                  TextEditingValue(
-                                                text: newText,
-                                                selection:
-                                                    TextSelection.collapsed(
-                                                        offset: cursorPosition +
-                                                            emojiList[i]
-                                                                .length),
-                                              );
+                                  child: Container(
+                                    color: Colors.white,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        for (int i = 0;
+                                            i < emojiList.length;
+                                            i++)
+                                          InkWell(
+                                            onTap: () async {
+                                              if (await _loginProvider
+                                                      .checkAccessToken() ==
+                                                  false) {
+                                                Navigator.pop(context);
+                                                _loginProvider
+                                                    .showLoginBottomSheet();
+                                              } else {
+                                                int cursorPosition =
+                                                    _textController.text.length;
+                                                String text =
+                                                    _textController.text;
+                                                String newText =
+                                                    text + emojiList[i];
+                                                _textController.value =
+                                                    TextEditingValue(
+                                                  text: newText,
+                                                  selection:
+                                                      TextSelection.collapsed(
+                                                          offset:
+                                                              cursorPosition +
+                                                                  emojiList[i]
+                                                                      .length),
+                                                );
 
-                                              bottomState(() {
-                                                setState(() {});
-                                              });
-                                            }
-                                          },
-                                          child: Text(
-                                            emojiList[i],
-                                            style:
-                                                const TextStyle(fontSize: 20),
+                                                bottomState(() {
+                                                  setState(() {});
+                                                });
+                                              }
+                                            },
+                                            child: Text(
+                                              emojiList[i],
+                                              style:
+                                                  const TextStyle(fontSize: 20),
+                                            ),
                                           ),
-                                        ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 Container(
