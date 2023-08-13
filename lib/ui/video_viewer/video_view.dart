@@ -44,27 +44,31 @@ class _VideoViewState extends State<VideoView>
   Future<void> _loadMoreVideos() async {
     try {
       final videoProvider = Provider.of<VideoProvider>(context, listen: false);
-
+      debugPrint(
+          '현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPage}');
       videoProvider
           .getVideos(VideosRequest(
-              page: _multiVideoPlayProvider.currentPage++,
+              page: _multiVideoPlayProvider.currentPage,
               size: _multiVideoPlayProvider.PAGESIZE))
           .then((value) {
         final response = videoProvider.response;
 
         if (response != null) {
           setState(() {
+            if (response.videoList.isNotEmpty) {
+              _multiVideoPlayProvider.addVideos(response.videoList);
+            }
             if (response.isLast) {
               _multiVideoPlayProvider.isLast = true;
               return;
             }
-
-            if (response.videoList.isNotEmpty) {
-              _multiVideoPlayProvider.addVideos(response.videoList);
-            }
           });
         }
       });
+
+      _multiVideoPlayProvider.currentPage++;
+      debugPrint(
+          '다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPage}');
     } catch (e) {
       // Handle error if needed
       debugPrint('moon video_view.dart error: $e');
@@ -126,7 +130,8 @@ class _VideoViewState extends State<VideoView>
             allowImplicitScrolling: true,
             itemCount: 200,
             itemBuilder: (context, index) {
-              if (_multiVideoPlayProvider.videoList.isEmpty) {
+              if (_multiVideoPlayProvider.currentPage == -1) {
+                _multiVideoPlayProvider.currentPage = 0;
                 _loadMoreVideos();
                 _multiVideoPlayProvider.loading = false;
                 return const MusicSpinner(); // 비디오 로딩 중
@@ -152,8 +157,10 @@ class _VideoViewState extends State<VideoView>
                 } else {
                   _multiVideoPlayProvider.loading = false;
                   if (_multiVideoPlayProvider.currentIndex <= 0) {
-                    return const MusicSpinner(); // 비디오 로딩 중
+                    //모든 비디오 로드 전 처음 화면에 진입했을 경우
+                    return Container(color: Colors.black); // 비디오 로딩 중
                   } else {
+                    //마지막 페이지에 진입했을 경우
                     return Container(color: Colors.black);
                   }
                 }
