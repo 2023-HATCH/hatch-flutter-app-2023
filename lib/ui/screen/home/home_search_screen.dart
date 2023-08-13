@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/screen/video_someone_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,7 @@ class HomeSearchScreen extends StatefulWidget {
 
 class _HomeSearchScreenState extends State<HomeSearchScreen>
     with SingleTickerProviderStateMixin {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late TabController _tabController;
   final TextEditingController _textController = TextEditingController();
 
@@ -78,8 +78,9 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
   @override
   void initState() {
     super.initState();
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-    _videoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider.pauseVideo();
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -87,7 +88,7 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
   void dispose() {
     super.dispose();
 
-    _videoPlayProvider.playVideo();
+    _multiVideoPlayProvider.playVideo();
     _tabController.dispose();
   }
 
@@ -158,12 +159,13 @@ class SearchTextField extends StatefulWidget {
 }
 
 class _SearchTextFieldState extends State<SearchTextField> {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   @override
   void initState() {
     super.initState();
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
   }
 
   @override
@@ -202,7 +204,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
                       ),
                     ),
                     suggestionsCallback: (pattern) async {
-                      return _videoPlayProvider.tags.where((item) =>
+                      return _multiVideoPlayProvider.tags.where((item) =>
                           item.toLowerCase().contains(pattern.toLowerCase()));
                     },
                     itemBuilder: (context, suggestion) {

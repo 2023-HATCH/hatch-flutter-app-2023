@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
@@ -25,7 +25,7 @@ class PoPoStageScreen extends StatefulWidget {
 
 class _PoPoStageScreenState extends State<PoPoStageScreen> {
   bool _isEnter = false;
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
   late KaKaoLoginProvider _loginProvider;
@@ -33,7 +33,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
@@ -92,7 +93,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   void dispose() {
     AudioPlayerUtil().stop();
     if (widget.getIndex() == 0) {
-      _videoPlayProvider.playVideo();
+      _multiVideoPlayProvider.playVideo();
     }
 
     if (_isEnter) {

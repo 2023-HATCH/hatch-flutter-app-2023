@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/video_upload_request.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_upload_provider_impl.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/upload/custom_tag_text_field_controller.dart';
@@ -23,7 +23,7 @@ class HomeUploadScreen extends StatefulWidget {
 class _HomeUploadScreenState extends State<HomeUploadScreen> {
   final TextEditingController _titleTextController = TextEditingController();
   VideoPlayerController? _videoPlayerController;
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   late CustomTagTextFieldController _tagController;
   final _provider = VideoUploadProviderImpl();
@@ -33,9 +33,9 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
 
   @override
   void initState() {
-    _videoPlayProvider = Provider.of(context, listen: false);
+    _multiVideoPlayProvider = Provider.of(context, listen: false);
 
-    _videoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo();
     _tagController = CustomTagTextFieldController(setIsTagsFillPutState);
     _initVideoPlayer();
 
@@ -44,7 +44,7 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
 
   @override
   void dispose() {
-    _videoPlayProvider.playVideo();
+    _multiVideoPlayProvider.playVideo();
     _videoPlayerController?.dispose();
     _tagController.dispose();
     super.dispose();
@@ -70,7 +70,7 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
       if (value.code == 'VIDEO-2001') {
         Fluttertoast.showToast(msg: '영상이 성공적으로 업로드 되었습니다.');
         _isLoading = false;
-        _videoPlayProvider.resetVideoPlayer();
+        _multiVideoPlayProvider.resetVideoPlayer();
 
         Navigator.pushAndRemoveUntil(
           context,

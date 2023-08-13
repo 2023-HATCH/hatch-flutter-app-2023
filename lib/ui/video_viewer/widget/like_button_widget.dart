@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:like_button/like_button.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/like_provider.dart';
 import 'package:provider/provider.dart';
@@ -22,10 +22,10 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
     final loginProvider =
         Provider.of<KaKaoLoginProvider>(context, listen: false);
 
-    final videoPlayProvider =
-        Provider.of<VideoPlayProvider>(context, listen: false);
+    final multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     final likeProvider = Provider.of<LikeProvider>(context, listen: false);
-    final video = videoPlayProvider.videoList[widget.index];
+    final video = multiVideoPlayProvider.videoList[widget.index];
 
     return LikeButton(
         size: 25,
@@ -43,7 +43,6 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
         },
         onTap: (isLiked) async {
           if (await loginProvider.checkAccessToken()) {
-
             video.liked = !isLiked;
             if (!isLiked) {
               likeProvider.postLike(video.uuid);
@@ -51,15 +50,12 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
             } else {
               likeProvider.deleteLike(video.uuid);
               video.likeCount--;
-
             }
             return !isLiked;
           } else {
             loginProvider.showLoginBottomSheet();
 
-
             return isLiked;
-
           }
         },
         likeBuilder: (isLiked) {

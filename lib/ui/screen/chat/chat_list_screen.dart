@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/chat_list_response.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -63,13 +63,13 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   Future<ChatListResponse>? chatList;
 
   @override
   void initState() {
-    _videoPlayProvider = Provider.of(context, listen: false);
-    _videoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider = Provider.of(context, listen: false);
+    _multiVideoPlayProvider.pauseVideo();
 
     chatList = Future.value(ChatListResponse.fromJson(chatListString));
 
@@ -78,7 +78,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   void dispose() {
-    _videoPlayProvider.playVideo();
+    _multiVideoPlayProvider.playVideo();
     super.dispose();
   }
 

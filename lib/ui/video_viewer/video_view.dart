@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/videos_request.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/video_user_info_frame.dart';
 import 'package:pocket_pose/ui/video_viewer/video_right_frame.dart';
@@ -24,18 +24,19 @@ class _VideoViewState extends State<VideoView>
   @override
   bool get wantKeepAlive => true;
 
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   @override
   void initState() {
     super.initState();
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_videoPlayProvider.videoList.isEmpty) {
+      if (_multiVideoPlayProvider.videoList.isEmpty) {
         _loadMoreVideos();
       } else {
-        _videoPlayProvider.playVideo();
+        _multiVideoPlayProvider.playVideo();
       }
     });
   }
@@ -46,20 +47,20 @@ class _VideoViewState extends State<VideoView>
 
       videoProvider
           .getVideos(VideosRequest(
-              page: _videoPlayProvider.currentPage++,
-              size: _videoPlayProvider.PAGESIZE))
+              page: _multiVideoPlayProvider.currentPage++,
+              size: _multiVideoPlayProvider.PAGESIZE))
           .then((value) {
         final response = videoProvider.response;
 
         if (response != null) {
           setState(() {
             if (response.isLast) {
-              _videoPlayProvider.isLast = true;
+              _multiVideoPlayProvider.isLast = true;
               return;
             }
 
             if (response.videoList.isNotEmpty) {
-              _videoPlayProvider.addVideos(response.videoList);
+              _multiVideoPlayProvider.addVideos(response.videoList);
             }
           });
         }
@@ -72,36 +73,36 @@ class _VideoViewState extends State<VideoView>
 
   void onPageChanged(int index) {
     setState(() {
-      _videoPlayProvider.pauseVideo();
+      _multiVideoPlayProvider.pauseVideo();
 
-      if (!_videoPlayProvider.isLast) {
-        _videoPlayProvider.currentIndex = index;
+      if (!_multiVideoPlayProvider.isLast) {
+        _multiVideoPlayProvider.currentIndex = index;
 
-        if (_videoPlayProvider.videoList.length -
-                _videoPlayProvider.currentIndex <=
-            _videoPlayProvider.PAGESIZE - 1) {
+        if (_multiVideoPlayProvider.videoList.length -
+                _multiVideoPlayProvider.currentIndex <=
+            _multiVideoPlayProvider.PAGESIZE - 1) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _loadMoreVideos();
           });
         }
       } else {
-        if (_videoPlayProvider.videoList.length == index) {
+        if (_multiVideoPlayProvider.videoList.length == index) {
           // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
-          _videoPlayProvider.pageController.jumpToPage(0);
-          _videoPlayProvider.currentIndex = 0;
+          _multiVideoPlayProvider.pageController.jumpToPage(0);
+          _multiVideoPlayProvider.currentIndex = 0;
         } else {
-          _videoPlayProvider.currentIndex = index;
+          _multiVideoPlayProvider.currentIndex = index;
         }
       }
 
-      _videoPlayProvider.playVideo();
+      _multiVideoPlayProvider.playVideo();
     });
   }
 
   @override
   void dispose() {
     super.dispose();
-    _videoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo();
   }
 
   @override
@@ -111,7 +112,7 @@ class _VideoViewState extends State<VideoView>
     return RefreshIndicator(
       onRefresh: () async {
         setState(() {
-          _videoPlayProvider.resetVideoPlayer();
+          _multiVideoPlayProvider.resetVideoPlayer();
           _loadMoreVideos();
         });
       },
@@ -119,29 +120,29 @@ class _VideoViewState extends State<VideoView>
       child: Stack(
         children: <Widget>[
           PageView.builder(
-            controller: _videoPlayProvider.pageController =
-                PageController(initialPage: _videoPlayProvider.currentIndex),
+            controller: _multiVideoPlayProvider.pageController = PageController(
+                initialPage: _multiVideoPlayProvider.currentIndex),
             scrollDirection: Axis.vertical,
             allowImplicitScrolling: true,
             itemCount: 200,
             itemBuilder: (context, index) {
-              if (_videoPlayProvider.videoList.isEmpty) {
+              if (_multiVideoPlayProvider.videoList.isEmpty) {
                 _loadMoreVideos();
-                _videoPlayProvider.loading = false;
+                _multiVideoPlayProvider.loading = false;
                 return const MusicSpinner(); // 비디오 로딩 중
               } else {
-                if (index < _videoPlayProvider.videoList.length) {
+                if (index < _multiVideoPlayProvider.videoList.length) {
                   // 현재 비디오 인덱스 안에 있는 경우
                   return FutureBuilder(
-                    future: _videoPlayProvider
-                        .videoPlayerFutures[_videoPlayProvider.currentIndex],
+                    future: _multiVideoPlayProvider.videoPlayerFutures[
+                        _multiVideoPlayProvider.currentIndex],
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done ||
                           (snapshot.connectionState ==
                                   ConnectionState.waiting &&
-                              _videoPlayProvider.loading)) {
+                              _multiVideoPlayProvider.loading)) {
                         // 비디오가 준비된 경우
-                        _videoPlayProvider.loading = true;
+                        _multiVideoPlayProvider.loading = true;
                         return buildVideoPlayer(index); // 비디오 플레이어 생성
                       } else {
                         return const MusicSpinner(); // 비디오 로딩 중
@@ -149,8 +150,8 @@ class _VideoViewState extends State<VideoView>
                     },
                   );
                 } else {
-                  _videoPlayProvider.loading = false;
-                  if (_videoPlayProvider.currentIndex <= 0) {
+                  _multiVideoPlayProvider.loading = false;
+                  if (_multiVideoPlayProvider.currentIndex <= 0) {
                     return const MusicSpinner(); // 비디오 로딩 중
                   } else {
                     return Container(color: Colors.black);
@@ -171,13 +172,13 @@ class _VideoViewState extends State<VideoView>
         GestureDetector(
           onTap: () {
             // 비디오 클릭 시 영상 정지/재생
-            if (_videoPlayProvider.controllers[index].value.isPlaying) {
-              _videoPlayProvider.pauseVideo();
+            if (_multiVideoPlayProvider.controllers[index].value.isPlaying) {
+              _multiVideoPlayProvider.pauseVideo();
             } else {
-              _videoPlayProvider.playVideo();
+              _multiVideoPlayProvider.playVideo();
             }
           },
-          child: VideoPlayer(_videoPlayProvider.controllers[index]),
+          child: VideoPlayer(_multiVideoPlayProvider.controllers[index]),
         ),
         VideoRightFrame(index: index),
         VideoUserInfoFrame(index: index),

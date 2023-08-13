@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocket_pose/data/entity/response/kakao_login_response.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/repository/kakao_login_repository.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/main.dart';
@@ -46,10 +46,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
         Fluttertoast.showToast(
           msg: '성공적으로 로그인 되었습니다.',
         );
-        final videoPlayProvider =
-            Provider.of<VideoPlayProvider>(mainContext, listen: false);
+        final multiVideoPlayProvider =
+            Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
-        videoPlayProvider.resetVideoPlayer();
+        multiVideoPlayProvider.resetVideoPlayer();
 
         MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -74,10 +74,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
       (route) => false,
     );
 
-    final videoPlayProvider =
-        Provider.of<VideoPlayProvider>(mainContext, listen: false);
+    final multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
-    videoPlayProvider.resetVideoPlayer();
+    multiVideoPlayProvider.resetVideoPlayer();
   }
 
   Future<void> _login(String kakaoAccessToken) async {

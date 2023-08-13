@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:provider/provider.dart';
@@ -11,14 +11,15 @@ import 'package:provider/provider.dart';
 class VideoUserInfoFrame extends StatelessWidget {
   VideoUserInfoFrame({super.key, required this.index});
 
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   final int index;
 
   @override
   Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-    UserData user = _videoPlayProvider.videoList[index].user;
-    VideoData video = _videoPlayProvider.videoList[index];
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    UserData user = _multiVideoPlayProvider.videoList[index].user;
+    VideoData video = _multiVideoPlayProvider.videoList[index];
 
     return Positioned(
         bottom: 110,

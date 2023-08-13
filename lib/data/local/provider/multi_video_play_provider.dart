@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPlayProvider with ChangeNotifier {
+class MultiVideoPlayProvider with ChangeNotifier {
   late List<VideoPlayerController> controllers = [];
   late List<Future<void>> videoPlayerFutures = [];
   late PageController pageController;

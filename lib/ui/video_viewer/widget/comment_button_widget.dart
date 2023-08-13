@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/comment_data.dart';
@@ -35,8 +35,8 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
       Provider.of<CommentProvider>(context, listen: false);
   late List<CommentData>? _commentList;
   final ScrollController _scrollController = ScrollController();
-  late final VideoPlayProvider _videoPlayProvider =
-      Provider.of<VideoPlayProvider>(context, listen: false);
+  late final MultiVideoPlayProvider _multiVideoPlayProvider =
+      Provider.of<MultiVideoPlayProvider>(context, listen: false);
   bool _isInit = false;
   UserData? user;
   bool _isNotEmptyComment = false;
@@ -149,8 +149,8 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                       _isInit = true;
                     }
 
-                    int commentCount =
-                        _videoPlayProvider.videoList[widget.index].commentCount;
+                    int commentCount = _multiVideoPlayProvider
+                        .videoList[widget.index].commentCount;
                     return SizedBox(
                       height: isClicked == false
                           ? 500
@@ -355,7 +355,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                         msg: '댓글이 삭제되었습니다.');
                                                     bottomState(() {
                                                       setState(() {
-                                                        _videoPlayProvider
+                                                        _multiVideoPlayProvider
                                                             .videoList[
                                                                 widget.index]
                                                             .commentCount--;
@@ -555,7 +555,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
                                                         bottomState(() {
                                                           setState(() {
-                                                            _videoPlayProvider
+                                                            _multiVideoPlayProvider
                                                                 .videoList[
                                                                     widget
                                                                         .index]
@@ -595,7 +595,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                               .unfocus();
                                                           bottomState(() {
                                                             setState(() {
-                                                              _videoPlayProvider
+                                                              _multiVideoPlayProvider
                                                                   .videoList[
                                                                       widget
                                                                           .index]

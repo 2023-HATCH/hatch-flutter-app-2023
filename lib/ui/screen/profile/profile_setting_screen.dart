@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +15,7 @@ class ProfileSettingScreen extends StatefulWidget {
 
 class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
   late KaKaoLoginProvider _loginProvider;
-  late VideoPlayProvider _videoProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   @override
   void initState() {
     super.initState();
@@ -24,7 +24,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
   @override
   Widget build(BuildContext context) {
     _loginProvider = Provider.of<KaKaoLoginProvider>(context);
-    _videoProvider = Provider.of<VideoPlayProvider>(context);
+    _multiVideoPlayProvider = Provider.of<MultiVideoPlayProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
