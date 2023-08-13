@@ -116,6 +116,7 @@ class _VideoViewState extends State<VideoView>
         });
       },
       color: AppColor.purpleColor,
+      backgroundColor: const Color.fromARGB(60, 234, 234, 234),
       child: Stack(
         children: <Widget>[
           PageView.builder(
