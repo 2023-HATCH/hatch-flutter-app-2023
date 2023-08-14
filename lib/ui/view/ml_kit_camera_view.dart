@@ -48,8 +48,8 @@ class _CameraViewState extends State<CameraView> {
   // 5초 카운트다운 텍스트
   bool _countdownVisibility = false;
   int _seconds = 5;
-  late Timer _timer;
-  late AssetsAudioPlayer _assetsAudioPlayer;
+  Timer? _timer;
+  AssetsAudioPlayer? _assetsAudioPlayer;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
@@ -140,7 +140,7 @@ class _CameraViewState extends State<CameraView> {
   }
 
   void _startTimer() {
-    _assetsAudioPlayer.open(Audio("assets/audios/sound_play_wait.mp3"));
+    _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_seconds == 1) {
@@ -155,7 +155,7 @@ class _CameraViewState extends State<CameraView> {
         AudioPlayerUtil().play();
       } else {
         if (mounted) {
-          _assetsAudioPlayer.open(Audio("assets/audios/sound_play_wait.mp3"));
+          _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
           setState(() {
             _seconds--;
           });
@@ -165,13 +165,16 @@ class _CameraViewState extends State<CameraView> {
   }
 
   void _stopTimer() {
-    _timer.cancel();
+    _timer?.cancel();
+    _timer = null;
   }
 
   @override
   void dispose() {
     AudioPlayerUtil().stop();
-    _assetsAudioPlayer.dispose();
+    _assetsAudioPlayer = null;
+    _assetsAudioPlayer?.dispose();
+    _stopTimer();
 
     super.dispose();
   }
