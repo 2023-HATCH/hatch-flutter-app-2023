@@ -59,13 +59,10 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               appBar: _buildAppBar(context),
               body: Stack(
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: Navigator(
-                      key: _socketStageProvider.navigatorKey,
-                      initialRoute: stageStageList[0],
-                      onGenerateRoute: _socketStageProvider.onGenerateRoute,
-                    ),
+                  Navigator(
+                    key: _socketStageProvider.navigatorKey,
+                    initialRoute: stageStageList[0],
+                    onGenerateRoute: _socketStageProvider.onGenerateRoute,
                   ),
                   const Positioned(
                     bottom: 68,
