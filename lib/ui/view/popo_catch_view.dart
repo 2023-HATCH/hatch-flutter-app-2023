@@ -27,11 +27,14 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
   late StageProviderImpl _stageProvider;
+  late SocketStageProviderImpl _socketStageProvider;
   StageType _prevStageType = StageType.CATCH_START;
 
   @override
   Widget build(BuildContext context) {
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: true);
     if (_prevStageType != widget.type) {
       _prevStageType = widget.type;
       _milliseconds = 0;
@@ -64,7 +67,8 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 10.0),
-              musicTitleContainer('I AM-IVE'),
+              musicTitleContainer(
+                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}'),
               const SizedBox(height: 10.0),
               Flexible(
                 child: SvgPicture.asset(
@@ -194,7 +198,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
                 const SizedBox(width: 8.0),
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 24, color: Colors.white),
+                  style: const TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ],
             ),

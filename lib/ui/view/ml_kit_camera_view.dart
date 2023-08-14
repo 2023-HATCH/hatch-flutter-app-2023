@@ -7,22 +7,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
+import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/main.dart';
-
-enum SkeletonDetectMode {
-  playerWaitMode, // 플레이어가 춤 추기 전 준비하는 모드(스켈레톤 추출 O, 스켈레톤 배열에 저장 X)
-  musicStartMode, // 노래 시작. 플레이어의 스켈레톤을 배열에 저장하는 모드 (스켈레톤 추출 O, 스켈레톤 배열에 저장 시작)
-  musicEndMode, // 노래 종료. 플레이어의 스켈레톤을 서버에 전달  (스켈레톤 추출 종료, 스켈레톤 배열에 저장 종료)
-  resultMode, // 결과 화면. 항상 스켈레톤 추출 (스켈레톤 추출 O, 스켈레톤 배열에 저장 X)
-  userMode // 유저 모드. 스켈레톤 추출 안 함 (스켈레톤 추출 X, 스켈레톤 배열에 저장 X)
-}
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
       required this.isResultState,
-      required this.setIsSkeletonDetectMode,
       this.customPaintLeft,
       required this.customPaintMid,
       this.customPaintRight,
@@ -30,8 +25,6 @@ class CameraView extends StatefulWidget {
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
   bool isResultState;
-  // skeleton 트리거
-  Function setIsSkeletonDetectMode;
   // 스켈레톤을 그려주는 객체
   final CustomPaint? customPaintLeft;
   final CustomPaint? customPaintMid;
@@ -55,11 +48,23 @@ class _CameraViewState extends State<CameraView> {
   // 5초 카운트다운 텍스트
   bool _countdownVisibility = false;
   int _seconds = 5;
-  late Timer _timer;
-  late AssetsAudioPlayer _assetsAudioPlayer;
+  Timer? _timer;
+  AssetsAudioPlayer? _assetsAudioPlayer;
+  late StageProviderImpl _stageProvider;
+  late SocketStageProviderImpl _socketStageProvider;
 
   @override
   Widget build(BuildContext context) {
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: true);
+
+    // if (!_socketStageProvider.isPlayEnter) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     _socketStageProvider.setIsPlayEnter(true);
+
+    //   });
+    // }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -71,6 +76,7 @@ class _CameraViewState extends State<CameraView> {
   @override
   void initState() {
     super.initState();
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
 
     // 카메라 설정. 기기에서 실행 가능한 카메라, 카메라 방향 설정...
     if (cameras.any(
@@ -98,29 +104,43 @@ class _CameraViewState extends State<CameraView> {
     }
 
     // AudioPlayer 초기화
-    // AudioPlayerUtil().setPlayerCompletion(widget.setIsSkeletonDetectMode);
-    // AudioPlayerUtil().setCameraController(_controller);
+    AudioPlayerUtil().setCameraController(_controller);
 
     _assetsAudioPlayer = AssetsAudioPlayer();
 
-    // 결과 상태인 경우
-    if (widget.isResultState) {
-      // AudioPlayerUtil().play(
-      //     "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3",
-      //     widget.setIsSkeletonDetectMode);
-    }
-    // 플레이 상태인 경우
-    else {
-      // 카운트다운 시작 후 노래 재생
-      setState(() {
-        _countdownVisibility = true;
-      });
-      _startTimer();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 플레이 상태인 경우
+      if (!widget.isResultState) {
+        AudioPlayerUtil()
+            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl);
+
+        if (_stageProvider.stageCurTime != null) {
+          _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+          _stageProvider.setStageCurSecondNULL();
+        } else {
+          _seconds = 0;
+        }
+        // 카운트다운
+        if (_seconds < 5) {
+          // 카운트다운 시작 후 노래 재생
+          setState(() {
+            _seconds = 5 - _seconds;
+            _countdownVisibility = true;
+          });
+          _startTimer();
+        }
+        // 노래 재생
+        else {
+          AudioPlayerUtil().playSeek(_seconds - 5);
+        }
+      }
+      // 결과 상태인 경우
+      else {}
+    });
   }
 
   void _startTimer() {
-    _assetsAudioPlayer.open(Audio("assets/audios/sound_play_wait.mp3"));
+    _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_seconds == 1) {
@@ -131,12 +151,11 @@ class _CameraViewState extends State<CameraView> {
             _countdownVisibility = false;
           });
         }
-        // AudioPlayerUtil().play(
-        //     "https://popo2023.s3.ap-northeast-2.amazonaws.com/music/M3-1.mp3",
-        //     widget.setIsSkeletonDetectMode);
+        _seconds = 5;
+        AudioPlayerUtil().play();
       } else {
         if (mounted) {
-          _assetsAudioPlayer.open(Audio("assets/audios/sound_play_wait.mp3"));
+          _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
           setState(() {
             _seconds--;
           });
@@ -146,15 +165,16 @@ class _CameraViewState extends State<CameraView> {
   }
 
   void _stopTimer() {
-    _timer.cancel();
+    _timer?.cancel();
+    _timer = null;
   }
 
   @override
   void dispose() {
-    if (!widget.isResultState) {
-      // AudioPlayerUtil().stop();
-      _assetsAudioPlayer.dispose();
-    }
+    AudioPlayerUtil().stop();
+    _assetsAudioPlayer = null;
+    _assetsAudioPlayer?.dispose();
+    _stopTimer();
 
     super.dispose();
   }
@@ -246,9 +266,9 @@ class _CameraViewState extends State<CameraView> {
             'assets/icons/ic_music_note_small.svg',
           ),
           const SizedBox(width: 8.0),
-          const Text(
-            "I AM-IVE",
-            style: TextStyle(fontSize: 10, color: Colors.white),
+          Text(
+            '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
+            style: const TextStyle(fontSize: 10, color: Colors.white),
           ),
         ],
       ),

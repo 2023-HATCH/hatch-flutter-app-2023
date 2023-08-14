@@ -59,8 +59,11 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               appBar: _buildAppBar(context),
               body: Stack(
                 children: [
-                  _socketStageProvider
-                      .buildStageView(_socketStageProvider.stageType),
+                  Navigator(
+                    key: _socketStageProvider.navigatorKey,
+                    initialRoute: stageStageList[0],
+                    onGenerateRoute: _socketStageProvider.onGenerateRoute,
+                  ),
                   const Positioned(
                     bottom: 68,
                     left: 0,
@@ -96,8 +99,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     }
 
     if (_isEnter) {
+      _socketStageProvider.exitStage();
       _socketStageProvider.deactivateWebSocket();
-      _stageProvider.getStageExit();
       _isEnter = false;
     }
 
@@ -114,11 +117,15 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   void _onSocketResponse() {
     if (_socketStageProvider.isConnect) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        StageType stageType = StageType.WAIT;
         _socketStageProvider.setIsConnect(false);
         _stageProvider
             .getStageEnter(StageEnterRequest(page: 0, size: 10))
-            .then((value) =>
-                _socketStageProvider.setUserCount(value.data.userCount))
+            .then((value) {
+              stageType = StageType.values.byName(value.data.stageStatus);
+              _socketStageProvider.setUserCount(value.data.userCount);
+            })
+            .then((_) => _socketStageProvider.setStageView(stageType))
             .then((_) => _socketStageProvider.onSubscribe());
       });
     }
@@ -286,10 +293,5 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     setState(() {
       _userData = userData;
     });
-  }
-
-  Future<String> _getUserNickname() async {
-    UserData userData = await _loginProvider.getUser();
-    return userData.nickname;
   }
 }

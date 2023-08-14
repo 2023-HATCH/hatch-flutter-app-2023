@@ -25,7 +25,6 @@ class AppUrl {
   static const stageAccuracyUrl = "$_stageUrl/similarity";
   static const stageUserListUrl = "$_stageUrl/users";
   static const stageEnterUrl = "$_stageUrl/enter";
-  static const stageExitUrl = "$_stageUrl/exit"; // 임시 url
   static const stageCatchUrl = "$_stageUrl/catch";
   static const stageTalkUrl = "$_talkUrl/messages";
 
@@ -38,4 +37,5 @@ class AppUrl {
   static const socketReactionUrl = "/app/talks/reactions";
   static const socketPlaySkeletonUrl = "/app/stage/play/skeleton";
   static const socketMVPSkeletonUrl = "/app/stage/mvp/skeleton";
+  static const socketExitUrl = "/app/stage/exit";
 }
