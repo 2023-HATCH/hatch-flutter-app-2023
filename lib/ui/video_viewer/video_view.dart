@@ -160,10 +160,10 @@ class _VideoViewState extends State<VideoView>
                   _multiVideoPlayProvider.loading = false;
                   if (_multiVideoPlayProvider.currentIndex <= 0) {
                     //모든 비디오 로드 전 처음 화면에 진입했을 경우
-                    return Container(color: Colors.black); // 비디오 로딩 중
+                    return Container(color: Colors.yellow); // 비디오 로딩 중
                   } else {
                     //마지막 페이지에 진입했을 경우
-                    return Container(color: Colors.black);
+                    return Container(color: Colors.pink);
                   }
                 }
               }
@@ -187,7 +187,29 @@ class _VideoViewState extends State<VideoView>
               _multiVideoPlayProvider.playVideo();
             }
           },
-          child: VideoPlayer(_multiVideoPlayProvider.controllers[index]),
+          child: Stack(children: [
+            VideoPlayer(_multiVideoPlayProvider.controllers[index]),
+            // 영상이 로딩중일 때 썸네일과 인디케이터 보이기
+            if (!_multiVideoPlayProvider.controllers[index].value.isInitialized)
+              Stack(children: [
+                Center(
+                    child: SizedBox(
+                  width: double.infinity, // 가로 너비를 최대로 확장
+                  height: double.infinity, // 세로 높이를 최대로 확장
+                  child: Image.network(
+                    _multiVideoPlayProvider.videoList[index].thumbnailUrl,
+                    fit: BoxFit.cover, // 이미지를 화면에 꽉 차게 표시
+                  ),
+                )),
+                const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color.fromARGB(60, 234, 234, 234),
+                    ),
+                  ),
+                )
+              ]),
+          ]),
         ),
         VideoRightFrame(index: index),
         VideoUserInfoFrame(index: index),
