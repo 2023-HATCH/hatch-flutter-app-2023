@@ -23,7 +23,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     with SingleTickerProviderStateMixin {
   int _milliseconds = 0;
   double _catchCountDown = 0.0;
-  late Timer _timer;
+  Timer? _timer;
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
   late StageProviderImpl _stageProvider;
@@ -35,19 +35,12 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
+
+    _onMidEnter();
+
+    // 캐치 재진행인 경우 토스트 띄우고 카운트다운 재시작
     if (_prevStageType != widget.type) {
-      _prevStageType = widget.type;
-      _milliseconds = 0;
-      _catchCountDown = 0.0;
-      _startTimer();
-      Fluttertoast.showToast(
-        msg: "캐치를 아무도 안 했어요...😢",
-        toastLength: Toast.LENGTH_SHORT,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      _reCountDown();
     }
 
     return Column(
@@ -90,12 +83,43 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     );
   }
 
+  void _onMidEnter() {
+    if (_socketStageProvider.isCatchMidEnter) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _socketStageProvider.setIsCatchMidEnter(false);
+        // 중간임장인 경우
+        if (_stageProvider.stageCurTime != null) {
+          // 중간 입장한 초부터 시작
+          setState(() {
+            _milliseconds = (_stageProvider.stageCurTime! / 1000000).round();
+          });
+          _stageProvider.setStageCurSecondNULL();
+        }
+      });
+    }
+  }
+
+  void _reCountDown() {
+    _prevStageType = widget.type;
+    _milliseconds = 0;
+    _catchCountDown = 0.0;
+    _startTimer();
+    Fluttertoast.showToast(
+      msg: "캐치를 아무도 안 했어요...😢",
+      toastLength: Toast.LENGTH_SHORT,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
   SizedBox _buildCatchButton() {
     return SizedBox(
       width: 100,
       height: 45,
       child: SemicircularIndicator(
-        progress: _catchCountDown,
+        progress: (_catchCountDown > 1) ? 1 : _catchCountDown,
         color: Colors.yellow,
         bottomPadding: 0,
         strokeWidth: 2,
@@ -157,9 +181,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   }
 
   void _stopTimer() {
-    if (_timer.isActive) {
-      _timer.cancel();
-    }
+    _timer?.cancel();
   }
 
   @override
