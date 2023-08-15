@@ -124,6 +124,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             .then((value) {
               stageType = StageType.values.byName(value.data.stageStatus);
               _socketStageProvider.setUserCount(value.data.userCount);
+              if (stageType == StageType.CATCH) {
+                _socketStageProvider.setIsCatchMidEnter(true);
+              }
             })
             .then((_) => _socketStageProvider.setStageView(stageType))
             .then((_) => _socketStageProvider.onSubscribe());

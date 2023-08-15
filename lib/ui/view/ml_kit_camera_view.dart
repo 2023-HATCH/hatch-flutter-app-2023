@@ -58,13 +58,6 @@ class _CameraViewState extends State<CameraView> {
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
 
-    // if (!_socketStageProvider.isPlayEnter) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     _socketStageProvider.setIsPlayEnter(true);
-
-    //   });
-    // }
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -103,21 +96,26 @@ class _CameraViewState extends State<CameraView> {
       _startLiveFeed();
     }
 
-    // AudioPlayer 초기화
-    AudioPlayerUtil().setCameraController(_controller);
-
     _assetsAudioPlayer = AssetsAudioPlayer();
 
+    // 중간입장 처리
+    _onMidEnter();
+  }
+
+  void _onMidEnter() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 플레이 상태인 경우
       if (!widget.isResultState) {
         AudioPlayerUtil()
             .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl);
 
+        // 중간임장인 경우
         if (_stageProvider.stageCurTime != null) {
+          // 중간 입장한 초부터 시작
           _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
           _stageProvider.setStageCurSecondNULL();
         } else {
+          // 중간입장 아닐 시 0초부터 시작
           _seconds = 0;
         }
         // 카운트다운
@@ -135,7 +133,21 @@ class _CameraViewState extends State<CameraView> {
         }
       }
       // 결과 상태인 경우
-      else {}
+      else {
+        AudioPlayerUtil().setMusicUrl(
+            "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3");
+        // 중간임장인 경우
+        if (_stageProvider.stageCurTime != null) {
+          // 중간 입장한 초부터 시작
+          _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+          _stageProvider.setStageCurSecondNULL();
+          AudioPlayerUtil().playSeek(_seconds);
+        } else {
+          // 중간입장 아닐 시 0초부터 시작
+          _seconds = 0;
+          AudioPlayerUtil().play();
+        }
+      }
     });
   }
 
@@ -171,7 +183,7 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   void dispose() {
-    AudioPlayerUtil().stop();
+    // AudioPlayerUtil().stop();
     _assetsAudioPlayer = null;
     _assetsAudioPlayer?.dispose();
     _stopTimer();

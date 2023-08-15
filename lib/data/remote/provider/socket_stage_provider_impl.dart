@@ -89,6 +89,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isTalk = false;
   bool _isReaction = false;
   bool _isUserCountChange = false;
+  bool _isCatchMidEnter = false;
   bool _isPlaySkeletonChange = false;
   bool _isMVPSkeletonChange = false;
 
@@ -105,6 +106,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isTalk => _isTalk;
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
+  bool get isCatchMidEnter => _isCatchMidEnter;
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
   bool get isMVPSkeletonChange => _isMVPSkeletonChange;
 
@@ -136,6 +138,11 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsUserCountChange(bool value) {
     _isUserCountChange = value;
+    if (value) notifyListeners();
+  }
+
+  setIsCatchMidEnter(bool value) {
+    _isCatchMidEnter = value;
     if (value) notifyListeners();
   }
 
