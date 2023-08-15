@@ -2,7 +2,7 @@ import 'package:just_audio/just_audio.dart';
 
 class AudioPlayerUtil {
   // late AudioSession? audioSession;
-  AudioPlayer player = AudioPlayer();
+  AudioPlayer? player = AudioPlayer();
 
   static final AudioPlayerUtil _instance = AudioPlayerUtil._internal();
 
@@ -13,27 +13,27 @@ class AudioPlayerUtil {
   }
 
   setMusicUrl(String musicUrl) async {
-    await player.setUrl(musicUrl);
+    await player?.setUrl(musicUrl);
   }
 
   play() async {
     // 내부 음악 실행
-    await player.play();
+    await player?.play();
     // 외부 음악 종료
     // await audioSession?.setActive(false);
   }
 
   playSeek(int sec) async {
     // 내부 음악 실행
-    await player.seek(Duration(seconds: sec));
-    await player.play();
+    await player?.seek(Duration(seconds: sec));
+    await player?.play();
     // 외부 음악 종료
     // await audioSession?.setActive(false);
   }
 
   stop() async {
     // 내부 음악 종료
-    await player.stop();
+    await player?.stop();
     // 외부 음악 실행
     // await audioSession?.setActive(true);
   }
