@@ -140,22 +140,36 @@ class _VideoViewState extends State<VideoView>
                     future: _multiVideoPlayProvider.videoPlayerFutures[
                         _multiVideoPlayProvider.currentIndex],
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done ||
-                          (snapshot.connectionState ==
-                                  ConnectionState.waiting &&
-                              _multiVideoPlayProvider.loading)) {
+                      if (snapshot.connectionState == ConnectionState.done) {
                         // 비디오가 준비된 경우
                         _multiVideoPlayProvider.loading = true;
                         return buildVideoPlayer(index); // 비디오 플레이어 생성
+                      }
+                      if ((snapshot.connectionState ==
+                              ConnectionState.waiting &&
+                          _multiVideoPlayProvider.loading)) {
+                        // 비디오가 준비된 경우
+                        _multiVideoPlayProvider.loading = true;
+                        return Stack(children: [
+                          buildVideoPlayer(index),
+                          const Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color.fromARGB(60, 234, 234, 234),
+                              ),
+                            ),
+                          )
+                        ]); // 비디오 플레이어 생성
                       } else {
                         _multiVideoPlayProvider.loading = false;
                         return const MusicSpinner(); // 비디오 로딩 중
                       }
                     },
                   );
+                  //마지막 페이지에 진입할 경우
                 } else if (index == _multiVideoPlayProvider.videoList.length) {
                   _multiVideoPlayProvider.loading = true;
-                  return buildVideoPlayer(0);
+                  return const MusicSpinner();
                 } else {
                   _multiVideoPlayProvider.loading = false;
                   if (_multiVideoPlayProvider.currentIndex <= 0) {
