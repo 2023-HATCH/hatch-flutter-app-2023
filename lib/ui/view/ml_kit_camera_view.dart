@@ -58,13 +58,6 @@ class _CameraViewState extends State<CameraView> {
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
 
-    // if (!_socketStageProvider.isPlayEnter) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     _socketStageProvider.setIsPlayEnter(true);
-
-    //   });
-    // }
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -114,10 +107,13 @@ class _CameraViewState extends State<CameraView> {
         AudioPlayerUtil()
             .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl);
 
+        // 중간임장인 경우
         if (_stageProvider.stageCurTime != null) {
+          // 중간 입장한 초부터 시작
           _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
           _stageProvider.setStageCurSecondNULL();
         } else {
+          // 중간입장 아닐 시 0초부터 시작
           _seconds = 0;
         }
         // 카운트다운
