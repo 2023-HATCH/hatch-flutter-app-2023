@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:provider/provider.dart';
@@ -152,6 +153,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   void initState() {
     super.initState();
 
+    AudioPlayerUtil().stop();
     _startTimer();
 
     _animationController = AnimationController(
