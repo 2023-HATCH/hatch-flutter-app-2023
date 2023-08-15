@@ -29,12 +29,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
+    super.initState();
+
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    _loginProvider.mainContext = context;
-
-    super.initState();
   }
 
   final List<Widget> _screens = <Widget>[
@@ -42,19 +41,22 @@ class _MainScreenState extends State<MainScreen> {
     const ProfileScreen(),
   ];
 
-  Future<void> _onItemTapped(int index) async {
+  void _onItemTapped(int index) async {
     setState(() {
       _bottomNavIndex = index;
     });
     if (index == 1) {
+      _loginProvider.mainContext = context;
+      // 프로필 페이지 클릭
       _multiVideoPlayProvider.pauseVideo();
 
-      if (await _loginProvider.checkAccessToken() == true) {
-        _multiVideoPlayProvider.playVideo();
+      if (await _loginProvider.checkAccessToken() == false) {
+        // 사용자 토큰이 없는 경우
+        _loginProvider.showLoginBottomSheet();
       }
     } else {
-      // 사용자 토큰이 없는 경우
-      _loginProvider.showLoginBottomSheet();
+      // 홈 페이지 클릭
+      _multiVideoPlayProvider.playVideo();
     }
   }
 

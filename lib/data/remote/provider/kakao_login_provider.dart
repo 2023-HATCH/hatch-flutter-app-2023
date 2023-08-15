@@ -31,9 +31,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
   KaKaoLoginResponse? get response => _response;
 
   late BuildContext mainContext;
+  bool isInstalled = false;
 
   // 카카오 로그인, 로그아웃
-  void signIn() async {
+  Future<bool> signIn() async {
     try {
       bool isInstalled = await isKakaoTalkInstalled();
       OAuthToken token = isInstalled
@@ -46,16 +47,21 @@ class KaKaoLoginProvider extends ChangeNotifier {
         Fluttertoast.showToast(
           msg: '성공적으로 로그인 되었습니다.',
         );
-        final multiVideoPlayProvider = MultiVideoPlayProvider();
+
+        final multiVideoPlayProvider =
+            Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
         multiVideoPlayProvider.resetVideoPlayer();
+
         MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScreen()),
           (route) => false,
         );
       });
+      return isInstalled;
     } catch (error) {
       debugPrint('카카오톡으로 로그인 실패: $error');
+      return isInstalled;
     }
   }
 
@@ -91,8 +97,6 @@ class KaKaoLoginProvider extends ChangeNotifier {
   Future<bool> checkAccessToken() async {
     _accessToken = await _storage.read(key: _accessTokenKey);
     _refreshToken = await _storage.read(key: _refreshTokenKey);
-
-    notifyListeners();
 
     if (_accessToken != null && _refreshToken != null) {
       return true;
