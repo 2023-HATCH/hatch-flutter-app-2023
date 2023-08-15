@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:pocket_pose/data/entity/base_object.dart';
 import 'package:pocket_pose/data/entity/response/stage_talk_message_response.dart';
+import 'package:pocket_pose/domain/entity/stage_music_data.dart';
 
 part 'stage_enter_response.g.dart';
 
@@ -8,11 +9,15 @@ part 'stage_enter_response.g.dart';
 class StageEnterResponse extends BaseObject<StageEnterResponse> {
   String stageStatus;
   int userCount;
+  double? statusElapsedTime;
+  StageMusicData? currentMusic;
   StageTalkMessageResponse talkMessageData;
 
   StageEnterResponse({
     required this.stageStatus,
     required this.userCount,
+    this.statusElapsedTime,
+    this.currentMusic,
     required this.talkMessageData,
   });
 

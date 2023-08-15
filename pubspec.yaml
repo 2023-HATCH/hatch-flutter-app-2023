@@ -26,7 +26,7 @@ dependencies:
   http: ^0.13.5
   dio: ^5.0.3
   audio_session: ^0.1.15
-  audioplayers: ^0.20.0
+  just_audio: ^0.9.34
   video_player: ^2.6.1
   json_annotation: ^4.8.0
   change_app_package_name: ^1.1.0

@@ -143,7 +143,9 @@ class _VideoViewState extends State<VideoView>
                       if (snapshot.connectionState == ConnectionState.done) {
                         // 비디오가 준비된 경우
                         _multiVideoPlayProvider.loading = true;
-                        return buildVideoPlayer(index); // 비디오 플레이어 생성
+                        return VideoPlayerWidget(
+                          index: index,
+                        ); // 비디오 플레이어 생성
                       }
                       if ((snapshot.connectionState ==
                               ConnectionState.waiting &&
@@ -151,7 +153,9 @@ class _VideoViewState extends State<VideoView>
                         // 비디오가 준비된 경우
                         _multiVideoPlayProvider.loading = true;
                         return Stack(children: [
-                          buildVideoPlayer(index),
+                          VideoPlayerWidget(
+                            index: index,
+                          ),
                           const Center(
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
@@ -188,45 +192,106 @@ class _VideoViewState extends State<VideoView>
       ),
     );
   }
+}
 
-  Widget buildVideoPlayer(int index) {
+class VideoPlayerWidget extends StatefulWidget {
+  const VideoPlayerWidget({super.key, required int index}) : index = index;
+
+  final int index;
+
+  @override
+  _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
+    with SingleTickerProviderStateMixin {
+  bool isPlaying = false;
+  bool isIconVisible = false;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 0), // 아이콘이 나타날 때의 애니메이션 속도
+      reverseDuration:
+          const Duration(milliseconds: 800), // 아이콘이 사라질 때의 애니메이션 속도
+      value: 0.0, // 시작 값 설정
+    );
+  }
+
+  void _toggleIconVisibility(bool newValue) {
+    setState(() {
+      isIconVisible = newValue;
+      if (isIconVisible) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse().then((_) {
+          setState(() {
+            isIconVisible = false;
+          });
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
         GestureDetector(
           onTap: () {
-            // 비디오 클릭 시 영상 정지/재생
-            if (_multiVideoPlayProvider.controllers[index].value.isPlaying) {
+            final controller =
+                _multiVideoPlayProvider.controllers[widget.index];
+            if (controller.value.isPlaying) {
               _multiVideoPlayProvider.pauseVideo();
+              isPlaying = false;
+              _toggleIconVisibility(true);
+              Future.delayed(const Duration(milliseconds: 800), () {
+                _toggleIconVisibility(false);
+              });
             } else {
               _multiVideoPlayProvider.playVideo();
+              isPlaying = true;
+              _toggleIconVisibility(true);
+              Future.delayed(const Duration(milliseconds: 800), () {
+                _toggleIconVisibility(false);
+              });
             }
           },
-          child: Stack(children: [
-            VideoPlayer(_multiVideoPlayProvider.controllers[index]),
-            // 영상이 로딩중일 때 썸네일과 인디케이터 보이기
-            if (!_multiVideoPlayProvider.controllers[index].value.isInitialized)
-              Stack(children: [
-                Center(
-                    child: SizedBox(
-                  width: double.infinity, // 가로 너비를 최대로 확장
-                  height: double.infinity, // 세로 높이를 최대로 확장
-                  child: Image.network(
-                    _multiVideoPlayProvider.videoList[index].thumbnailUrl,
-                    fit: BoxFit.cover, // 이미지를 화면에 꽉 차게 표시
-                  ),
-                )),
-                const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color.fromARGB(60, 234, 234, 234),
-                    ),
-                  ),
-                )
-              ]),
-          ]),
+          child: VideoPlayer(_multiVideoPlayProvider.controllers[widget.index]),
         ),
-        VideoRightFrame(index: index),
-        VideoUserInfoFrame(index: index),
+        Positioned.fill(
+          child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _animationController.value,
+                child: Center(
+                  child: Icon(
+                    isPlaying
+                        ? Icons.play_circle_filled_rounded
+                        : Icons.pause_circle_filled_rounded,
+                    size: 60,
+                    color: const Color.fromARGB(60, 234, 234, 234),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        VideoRightFrame(index: widget.index),
+        VideoUserInfoFrame(index: widget.index),
       ],
     );
   }

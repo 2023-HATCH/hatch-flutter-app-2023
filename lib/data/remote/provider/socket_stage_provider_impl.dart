@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -7,10 +9,12 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
+import 'package:pocket_pose/data/entity/socket_response/catch_start_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/send_skeleton_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/stage_mvp_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
+import 'package:pocket_pose/domain/entity/stage_music_data.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
@@ -23,7 +27,10 @@ import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 enum StageType {
-  WAIT, // only front
+  WAIT,
+  CATCH,
+  PLAY,
+  MVP,
   CATCH_START,
   CATCH_END_RESTART,
   CATCH_END,
@@ -39,10 +46,33 @@ enum StageType {
   TALK_REACTION,
 }
 
+final stageStageList = [
+  "WAIT",
+  "CATCH",
+  "PLAY",
+  "MVP",
+  "CATCH_START",
+  "CATCH_END_RESTART",
+  "CATCH_END",
+  "PLAY_START",
+  "PLAY_SKELETON",
+  "PLAY_END",
+  "MVP_START",
+  "MVP_SKELETON",
+  "MVP_END",
+  "USER_COUNT",
+  "STAGE_ROUTINE_STOP",
+  "TALK_MESSAGE",
+  "TALK_REACTION",
+];
+
 class SocketStageProviderImpl extends ChangeNotifier
     implements SocketStageProvider {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
   String? _userId;
   StompClient? _stompClient;
+  StageMusicData? _catchMusicData;
 
   int _userCount = 0;
   final List<StagePlayerListItem> _players = [];
@@ -59,10 +89,14 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isTalk = false;
   bool _isReaction = false;
   bool _isUserCountChange = false;
+  bool _isCatchMidEnter = false;
   bool _isPlaySkeletonChange = false;
   bool _isMVPSkeletonChange = false;
 
+  GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
+
   String? get userId => _userId;
+  StageMusicData? get catchMusicData => _catchMusicData;
   int get userCount => _userCount;
   StageTalkListItem? get talk => _talk;
 
@@ -72,6 +106,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isTalk => _isTalk;
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
+  bool get isCatchMidEnter => _isCatchMidEnter;
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
   bool get isMVPSkeletonChange => _isMVPSkeletonChange;
 
@@ -103,6 +138,11 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsUserCountChange(bool value) {
     _isUserCountChange = value;
+    if (value) notifyListeners();
+  }
+
+  setIsCatchMidEnter(bool value) {
+    _isCatchMidEnter = value;
     if (value) notifyListeners();
   }
 
@@ -141,7 +181,7 @@ class SocketStageProviderImpl extends ChangeNotifier
       },
       stompConnectHeaders: {'x-access-token': token},
       webSocketConnectHeaders: {'x-access-token': token},
-      onDebugMessage: (p0) => print("mmm socket: $p0"),
+      onDebugMessage: (p0) => print("popo socket: $p0"),
     ));
     _stompClient!.activate();
   }
@@ -222,6 +262,19 @@ class SocketStageProviderImpl extends ChangeNotifier
     }
   }
 
+  @override
+  void exitStage() async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    String token = await storage.read(key: storageKey) ?? "";
+
+    if (_stompClient != null && (_stompClient?.isActive ?? false)) {
+      _stompClient?.send(
+          destination: AppUrl.socketExitUrl,
+          headers: {'x-access-token': token});
+    }
+  }
+
   void _setStageType(BaseSocketResponse response, StompFrame frame) {
     switch (response.type) {
       case StageType.USER_COUNT:
@@ -248,6 +301,15 @@ class SocketStageProviderImpl extends ChangeNotifier
         break;
       case StageType.TALK_REACTION:
         setIsReaction(true);
+        break;
+      case StageType.CATCH_START:
+        var socketResponse = BaseSocketResponse<CatchStartResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            CatchStartResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        _catchMusicData = socketResponse.data?.music;
+        _stageType = response.type;
+        setStageView(_stageType);
         break;
       case StageType.CATCH_END:
         var socketResponse = BaseSocketResponse<CatchEndResponse>.fromJson(
@@ -298,6 +360,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         _mvp = _players.firstWhere((element) =>
             element.userId == socketResponse.data?.mvpUser?.userId);
         _stageType = response.type;
+        setStageView(_stageType);
         break;
       case StageType.MVP_SKELETON:
         var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
@@ -319,34 +382,51 @@ class SocketStageProviderImpl extends ChangeNotifier
 
       default:
         _stageType = response.type;
+        setStageView(_stageType);
     }
   }
 
-  Widget buildStageView(StageType type) {
-    switch (type) {
+  setStageView(StageType stageType) {
+    _navigatorKey.currentState?.pop();
+    _navigatorKey.currentState?.pushNamed(stageStageList[stageType.index]);
+  }
+
+  MaterialPageRoute onGenerateRoute(RouteSettings setting) {
+    var stageType = StageType.values.byName(setting.name ?? "WAIT");
+    switch (stageType) {
       case StageType.STAGE_ROUTINE_STOP:
       case StageType.WAIT:
-        return const PoPoWaitView();
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => const PoPoWaitView());
+      case StageType.CATCH:
       case StageType.CATCH_START:
       case StageType.CATCH_END_RESTART:
-        return PoPoCatchView(type: type);
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => PoPoCatchView(type: stageType));
+      case StageType.PLAY:
       case StageType.PLAY_START:
-        return PoPoPlayView(
-          isResultState: _stageType == StageType.MVP_START,
-          players: _players,
-          userId: _userId,
-        );
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => PoPoPlayView(
+                  isResultState: _stageType == StageType.MVP_START,
+                  players: _players,
+                  userId: _userId,
+                ));
+
+      case StageType.MVP:
       case StageType.MVP_START:
         return (_mvp != null)
-            ? PoPoResultView(
-                isResultState: _stageType == StageType.MVP_START,
-                mvp: _mvp,
-                userId: _userId!)
-            : PoPoResultView(
-                isResultState: _stageType == StageType.MVP_START,
-                userId: _userId!);
+            ? MaterialPageRoute<dynamic>(
+                builder: (context) => PoPoResultView(
+                    isResultState: _stageType == StageType.MVP_START,
+                    mvp: _mvp,
+                    userId: _userId!))
+            : MaterialPageRoute<dynamic>(
+                builder: (context) => PoPoResultView(
+                    isResultState: _stageType == StageType.MVP_START,
+                    userId: _userId!));
       default:
-        return const PoPoWaitView();
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => const PoPoWaitView());
     }
   }
 }

@@ -7,6 +7,5 @@ abstract class StageProvider {
   Future<BaseResponse<StageUserListResponse>> getUserList();
   Future<BaseResponse<StageEnterResponse>> getStageEnter(
       StageEnterRequest request);
-  Future<BaseResponse> getStageExit();
   Future<void> getStageCatch();
 }

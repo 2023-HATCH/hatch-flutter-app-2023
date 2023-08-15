@@ -86,19 +86,19 @@ class _PoPoResultViewState extends State<PoPoResultView> {
             ],
           ),
         ),
-        CameraView(
-          isResultState: widget.isResultState,
-          setIsSkeletonDetectMode: setIsSkeletonDetectMode,
-          // 스켈레톤 그려주는 객체 전달
-          customPaintMid: _customPaintMid,
-          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-          onImage: (inputImage) {
-            // 플레이어만 스켈레톤 추출
-            if (_isPlayer) {
-              processImage(inputImage);
-            }
-          },
-        ),
+        if (_isPlayer)
+          CameraView(
+            isResultState: widget.isResultState,
+            // 스켈레톤 그려주는 객체 전달
+            customPaintMid: _customPaintMid,
+            // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
+            onImage: (inputImage) {
+              // 플레이어만 스켈레톤 추출
+              if (_isPlayer) {
+                processImage(inputImage);
+              }
+            },
+          ),
       ],
     );
   }
@@ -224,19 +224,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     _isBusy = false;
     if (mounted) {
       setState(() {});
-    }
-  }
-
-  void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
-    if (_isPlayer && mounted) {
-      // setState(() {
-      //   _skeletonDetectMode = mode;
-
-      //   // 노래 끝나면 대기 화면으로 이동
-      //   if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
-      //     _inputLists.clear();
-      //   }
-      // });
     }
   }
 }

@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
@@ -41,13 +38,10 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   CustomPaint? _customPaintLeft;
   CustomPaint? _customPaintMid;
   CustomPaint? _customPaintRight;
-  // 스켈레톤 추출할지 안할지, 추출한다면 배열에 저장할지 할지 관리하는 변수
-  final SkeletonDetectMode _skeletonDetectMode = SkeletonDetectMode.userMode;
   bool _isPlayer = false;
   int _playerNum = -1;
   int _frameNum = 0;
-  // input Lists
-  final List<List<double>> _inputLists = [];
+
   late SocketStageProviderImpl _socketStageProvider;
 
   @override
@@ -126,21 +120,18 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
             ],
           ),
         ),
-        CameraView(
-          isResultState: widget.isResultState,
-          setIsSkeletonDetectMode: setIsSkeletonDetectMode,
-          // 스켈레톤 그려주는 객체 전달
-          customPaintLeft: _customPaintLeft,
-          customPaintMid: _customPaintMid,
-          customPaintRight: _customPaintRight,
-          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-          onImage: (inputImage) {
-            // 플레이어만 스켈레톤 추출
-            if (_isPlayer) {
+        if (_isPlayer)
+          CameraView(
+            isResultState: widget.isResultState,
+            // 스켈레톤 그려주는 객체 전달
+            customPaintLeft: _customPaintLeft,
+            customPaintMid: _customPaintMid,
+            customPaintRight: _customPaintRight,
+            // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
+            onImage: (inputImage) {
               processImage(inputImage);
-            }
-          },
-        ),
+            },
+          ),
       ],
     );
   }
@@ -260,13 +251,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     }
     _frameNum++;
 
-    // 사용자가 춤 추기 시작할 때 스켈레톤 배열에 저장
-    if (_skeletonDetectMode == SkeletonDetectMode.musicStartMode) {
-      for (final pose in poses) {
-        _inputLists.add(_poseMapToInputList(pose.landmarks));
-      }
-    }
-
     _isBusy = false;
     if (mounted) {
       setState(() {});
@@ -306,80 +290,5 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     } else {
       _customPaintRight = null;
     }
-  }
-
-  void setIsSkeletonDetectMode(SkeletonDetectMode mode) async {
-    if (_isPlayer && mounted) {
-      // setState(() {
-      //   _skeletonDetectMode = mode;
-
-      //   // 노래 끝나면 스켈레톤 서버에 보내기
-      //   if (_skeletonDetectMode == SkeletonDetectMode.musicEndMode) {
-      //     // 스켈레톤 파일로 저장: 실행 안 되도록 설정
-      //     if (1 > 2) {
-      //       skeletonToFile(_inputLists);
-      //     }
-
-      //     _provider
-      //         .postSkeletonList(_inputLists)
-      //         .then((value) => Fluttertoast.showToast(
-      //               msg: value.toString(),
-      //               toastLength: Toast.LENGTH_SHORT,
-      //               timeInSecForIosWeb: 1,
-      //               backgroundColor: Colors.black,
-      //               textColor: Colors.white,
-      //               fontSize: 16.0,
-      //             ))
-      //         .then((_) => _inputLists.clear());
-      //   }
-      // });
-    }
-  }
-
-  // 파일화를 위한 배열 저장
-  List<double> _poseMapToInputList(Map<PoseLandmarkType, PoseLandmark> entry) {
-    return [
-      entry[PoseLandmarkType.nose]!.x,
-      entry[PoseLandmarkType.nose]!.y,
-      entry[PoseLandmarkType.rightShoulder]!.x,
-      entry[PoseLandmarkType.rightShoulder]!.y,
-      entry[PoseLandmarkType.rightElbow]!.x,
-      entry[PoseLandmarkType.rightElbow]!.y,
-      entry[PoseLandmarkType.rightWrist]!.x,
-      entry[PoseLandmarkType.rightWrist]!.y,
-      entry[PoseLandmarkType.leftShoulder]!.x,
-      entry[PoseLandmarkType.leftShoulder]!.y,
-      entry[PoseLandmarkType.leftElbow]!.x,
-      entry[PoseLandmarkType.leftElbow]!.y,
-      entry[PoseLandmarkType.leftWrist]!.x,
-      entry[PoseLandmarkType.leftWrist]!.y,
-      entry[PoseLandmarkType.rightHip]!.x,
-      entry[PoseLandmarkType.rightHip]!.y,
-      entry[PoseLandmarkType.rightKnee]!.x,
-      entry[PoseLandmarkType.rightKnee]!.y,
-      entry[PoseLandmarkType.rightAnkle]!.x,
-      entry[PoseLandmarkType.rightAnkle]!.y,
-      entry[PoseLandmarkType.leftHip]!.x,
-      entry[PoseLandmarkType.leftHip]!.y,
-      entry[PoseLandmarkType.leftKnee]!.x,
-      entry[PoseLandmarkType.leftKnee]!.y,
-      entry[PoseLandmarkType.leftAnkle]!.x,
-      entry[PoseLandmarkType.leftAnkle]!.y
-    ];
-  }
-
-  Future<void> skeletonToFile(List<List<double>> inputLists) async {
-    var today = DateTime.now().toString().substring(0, 9);
-    var now = DateTime.now();
-
-    final dir = await ExternalPath.getExternalStoragePublicDirectory(
-        ExternalPath.DIRECTORY_DOCUMENTS);
-    // 폴더 생성
-    String folderPath = '$dir/PoPo';
-    await Directory(folderPath).create(recursive: true);
-    // 파일 생성 및 저장
-    final path =
-        '$dir/PoPo/popo-skeleton-$today-${now.hour}-${now.minute}-${now.second}.txt';
-    File(path).writeAsString(inputLists.toString());
   }
 }
