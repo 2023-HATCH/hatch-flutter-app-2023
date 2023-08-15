@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/comment_button_widget.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/like_button_widget.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/share_button_widget.dart';
@@ -16,12 +16,13 @@ class VideoRightFrame extends StatefulWidget {
 }
 
 class _VideoRightFrameState extends State<VideoRightFrame> {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   @override
   Widget build(BuildContext context) {
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-    final video = _videoPlayProvider.videoList[widget.index];
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    final video = _multiVideoPlayProvider.videoList[widget.index];
 
     return Positioned(
       right: 12,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/home/home_upload_screen.dart';
 import 'package:provider/provider.dart';
@@ -22,12 +23,14 @@ class UploadButtonWidget extends StatefulWidget {
 
 class _UploadButtonWidgetState extends State<UploadButtonWidget> {
   late KaKaoLoginProvider _loginProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   @override
   void initState() {
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
     _loginProvider.mainContext = context;
-
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     super.initState();
   }
 
@@ -55,6 +58,8 @@ class _UploadButtonWidgetState extends State<UploadButtonWidget> {
                       HomeUploadScreen(uploadFile: videoFile!)),
             );
           } else {
+            _multiVideoPlayProvider.playVideo();
+
             ScaffoldMessenger.of(widget.context).showSnackBar(
                 const SnackBar(content: Text('Nothing is selected')));
           }
@@ -120,7 +125,11 @@ class _UploadButtonWidgetState extends State<UploadButtonWidget> {
                   ),
                 ),
                 InkWell(
-                  onTap: () {
+                  onTap: () async {
+                    _multiVideoPlayProvider.pauseVideo();
+                    await Future.delayed(const Duration(
+                        milliseconds: 200)); // 비디오 켤 때 버벅거림을 줄이기 위해 delay
+
                     getVideo(ImageSource.camera);
                     Navigator.of(context).pop();
                   },

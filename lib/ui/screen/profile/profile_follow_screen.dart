@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +19,7 @@ class ProfileFollowScreen extends StatefulWidget {
 
 class _ProfileFollowScreenState extends State<ProfileFollowScreen>
     with SingleTickerProviderStateMixin {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late TabController _tabController;
 
   List<String> followingProfileList = [
@@ -81,7 +81,8 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
   @override
   void initState() {
     super.initState();
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _tabController =
         TabController(length: 2, vsync: this, initialIndex: widget.tapNum);
   }
@@ -91,7 +92,7 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _videoPlayProvider.videoList[widget.index].user.nickname,
+          _multiVideoPlayProvider.videoList[widget.index].user.nickname,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,

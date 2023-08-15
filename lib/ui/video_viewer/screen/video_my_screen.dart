@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
@@ -19,7 +19,7 @@ class VideoMyScreen extends StatefulWidget {
 }
 
 class _VideoMyScreenState extends State<VideoMyScreen> {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late VideoProvider _videoProvider;
 
   final TextEditingController _textController = TextEditingController();
@@ -27,7 +27,8 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
   @override
   void initState() {
     super.initState();
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _videoProvider = Provider.of<VideoProvider>(context, listen: false);
   }
 
@@ -35,7 +36,7 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
   void dispose() {
     super.dispose();
     _textController.dispose();
-    _videoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo();
   }
 
   @override
@@ -72,9 +73,11 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
                                 Navigator.pop(context);
                               },
                               onConfirm: () {
-                                _videoProvider.deleteVideo(_videoPlayProvider
-                                    .videoList[_videoPlayProvider.currentIndex]
-                                    .uuid);
+                                _videoProvider.deleteVideo(
+                                    _multiVideoPlayProvider
+                                        .videoList[_multiVideoPlayProvider
+                                            .currentIndex]
+                                        .uuid);
                                 Fluttertoast.showToast(
                                   msg: '영상이 삭제되었습니다.',
                                 );

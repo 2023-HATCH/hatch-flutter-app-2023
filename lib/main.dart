@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
@@ -27,7 +27,7 @@ Future<void> main() async {
   bool showOnBoarding = await LocalPrefProvider().getShowOnBoarding();
 
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => VideoPlayProvider()),
+    ChangeNotifierProvider(create: (_) => MultiVideoPlayProvider()),
     ChangeNotifierProvider(create: (_) => KaKaoLoginProvider()),
     ChangeNotifierProvider(create: (_) => VideoProvider()),
     ChangeNotifierProvider(create: (_) => LikeProvider()),

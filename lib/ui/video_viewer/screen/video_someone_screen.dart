@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/comment_button_widget.dart';
@@ -18,26 +18,27 @@ class VideoSomeoneScreen extends StatefulWidget {
 }
 
 class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
   }
 
   @override
   void dispose() {
     super.dispose();
     _textController.dispose();
-    _videoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo();
   }
 
   @override
   Widget build(BuildContext context) {
-    UserData user = _videoPlayProvider.videoList[widget.index].user;
-    final video = _videoPlayProvider.videoList[widget.index];
+    UserData user = _multiVideoPlayProvider.videoList[widget.index].user;
+    final video = _multiVideoPlayProvider.videoList[widget.index];
 
     return Scaffold(
         appBar: AppBar(

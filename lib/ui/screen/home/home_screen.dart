@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 
 import 'package:pocket_pose/ui/screen/chat/chat_list_screen.dart';
@@ -19,13 +19,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late KaKaoLoginProvider _loginProvider;
 
   @override
   void initState() {
     super.initState();
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
     _loginProvider.mainContext = context;
   }
@@ -40,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onTap: () {
-              _videoPlayProvider.pageController.animateToPage(
+              _multiVideoPlayProvider.pageController.animateToPage(
                 0,
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.ease,
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
             GestureDetector(
                 onTap: () async {
                   if (await _loginProvider.checkAccessToken()) {
-                    _videoPlayProvider.pauseVideo();
+                    _multiVideoPlayProvider.pauseVideo();
                     _showChatScreen();
                   } else {
                     _loginProvider.showLoginBottomSheet();

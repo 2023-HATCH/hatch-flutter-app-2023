@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPlayProvider with ChangeNotifier {
+class MultiVideoPlayProvider with ChangeNotifier {
   late List<VideoPlayerController> controllers = [];
   late List<Future<void>> videoPlayerFutures = [];
   late PageController pageController;
@@ -29,36 +29,33 @@ class VideoPlayProvider with ChangeNotifier {
   ];
 
   void addVideos(List<VideoData> newVideoList) {
-    int num = videoList.length;
-
     videoList.addAll(newVideoList);
 
-    for (final video in videoList) {
-      debugPrint(video.videoUrl);
-    }
-
     // Add VideoPlayer Controller
-    controllers.addAll(List<VideoPlayerController>.generate(
-      PAGESIZE,
-      (index) => VideoPlayerController.network(videoList[num + index].videoUrl),
-    ));
+    for (final video in newVideoList) {
+      debugPrint('페이지: 비디오 로딩중');
+      controllers.add(VideoPlayerController.network(video.videoUrl));
+      videoPlayerFutures.add(controllers.last.initialize().then((value) {
+        controllers[currentIndex].setLooping(true); // 영상 무한 반복
+        controllers[currentIndex].setVolume(1.0); // 볼륨 설정
 
-    // Initialize VideoPlayer Controller
-    videoPlayerFutures.addAll(List<Future<void>>.generate(
-        PAGESIZE, (index) => controllers[num + index].initialize()));
-
-    playVideo();
-    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
+        playVideo();
+        WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
+        debugPrint('페이지: 비디오 로딩 하나끝');
+      }));
+    }
   }
 
   void playVideo() {
     if (currentIndex >= 0 && currentIndex < controllers.length) {
-      controllers[currentIndex].setLooping(true); // 영상 무한 반복
-      controllers[currentIndex].setVolume(1.0); // 볼륨 설정
+      if (!controllers[currentIndex].value.isPlaying) {
+        controllers[currentIndex].setLooping(true); // 영상 무한 반복
+        controllers[currentIndex].setVolume(1.0); // 볼륨 설정
 
-      controllers[currentIndex].play();
+        controllers[currentIndex].play();
 
-      WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
+        WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
+      }
     }
   }
 
@@ -71,11 +68,17 @@ class VideoPlayProvider with ChangeNotifier {
   }
 
   void resetVideoPlayer() {
+    pauseVideo();
+
+    for (final controller in controllers) {
+      controller.dispose();
+    }
     controllers = [];
     videoPlayerFutures = [];
+    loading = false;
     videoList = [];
     currentIndex = 0;
-    currentPage = -1;
+    currentPage = 0;
     isLast = false;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());

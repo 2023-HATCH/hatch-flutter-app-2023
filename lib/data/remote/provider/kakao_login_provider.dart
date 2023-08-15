@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocket_pose/data/entity/response/kakao_login_response.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/repository/kakao_login_repository.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/main.dart';
@@ -31,9 +31,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
   KaKaoLoginResponse? get response => _response;
 
   late BuildContext mainContext;
+  bool isInstalled = false;
 
   // 카카오 로그인, 로그아웃
-  void signIn() async {
+  Future<bool> signIn() async {
     try {
       bool isInstalled = await isKakaoTalkInstalled();
       OAuthToken token = isInstalled
@@ -46,38 +47,35 @@ class KaKaoLoginProvider extends ChangeNotifier {
         Fluttertoast.showToast(
           msg: '성공적으로 로그인 되었습니다.',
         );
-        final videoPlayProvider =
-            Provider.of<VideoPlayProvider>(mainContext, listen: false);
 
-        videoPlayProvider.resetVideoPlayer();
+        final multiVideoPlayProvider =
+            Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
+
+        multiVideoPlayProvider.resetVideoPlayer();
 
         MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScreen()),
           (route) => false,
         );
       });
+      return isInstalled;
     } catch (error) {
       debugPrint('카카오톡으로 로그인 실패: $error');
+      return isInstalled;
     }
   }
 
   void signOut() async {
     debugPrint('카카오톡 로그아웃');
     removeAccessToken();
+    final multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
+
+    multiVideoPlayProvider.resetVideoPlayer();
 
     Fluttertoast.showToast(
       msg: '성공적으로 로그아웃 되었습니다.',
     );
-
-    MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-      (route) => false,
-    );
-
-    final videoPlayProvider =
-        Provider.of<VideoPlayProvider>(mainContext, listen: false);
-
-    videoPlayProvider.resetVideoPlayer();
   }
 
   Future<void> _login(String kakaoAccessToken) async {
@@ -99,8 +97,6 @@ class KaKaoLoginProvider extends ChangeNotifier {
   Future<bool> checkAccessToken() async {
     _accessToken = await _storage.read(key: _accessTokenKey);
     _refreshToken = await _storage.read(key: _refreshTokenKey);
-
-    notifyListeners();
 
     if (_accessToken != null && _refreshToken != null) {
       return true;

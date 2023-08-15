@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/home/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
@@ -18,7 +18,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  late VideoPlayProvider _videoPlayProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late KaKaoLoginProvider _loginProvider;
 
   int _bottomNavIndex = 0;
@@ -29,11 +29,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
-    _videoPlayProvider = Provider.of<VideoPlayProvider>(context, listen: false);
-    _loginProvider.mainContext = context;
-
     super.initState();
+
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
   }
 
   final List<Widget> _screens = <Widget>[
@@ -41,28 +41,36 @@ class _MainScreenState extends State<MainScreen> {
     const ProfileScreen(),
   ];
 
-  Future<void> _onItemTapped(int index) async {
+  void _onItemTapped(int index) async {
     setState(() {
       _bottomNavIndex = index;
     });
     if (index == 1) {
-      _videoPlayProvider.pauseVideo();
+      _loginProvider.mainContext = context;
+      // 프로필 페이지 클릭
+      _multiVideoPlayProvider.pauseVideo();
 
       if (await _loginProvider.checkAccessToken() == false) {
         // 사용자 토큰이 없는 경우
         _loginProvider.showLoginBottomSheet();
       }
     } else {
-      _videoPlayProvider.playVideo();
+      // 홈 페이지 클릭
+      _multiVideoPlayProvider.playVideo();
     }
   }
 
   void _onFloatingButtonClicked() async {
     if (await _loginProvider.checkAccessToken()) {
-      _videoPlayProvider.pauseVideo();
+      _multiVideoPlayProvider.pauseVideo();
       _showPoPoStageScreen();
     } else {
       _loginProvider.showLoginBottomSheet();
+
+      if (await _loginProvider.checkAccessToken()) {
+        _multiVideoPlayProvider.resetVideoPlayer();
+      }
+      debugPrint('현재 페이지: ${_multiVideoPlayProvider.currentIndex}');
     }
   }
 

@@ -10,12 +10,12 @@ class VideoData {
   final String tag;
   final UserData user;
   final String videoUrl;
+  final String thumbnailUrl;
   late int likeCount;
   late int commentCount;
   final int length;
   final DateTime createdAt;
   late bool liked;
-
 
   VideoData({
     required this.uuid,
@@ -23,6 +23,7 @@ class VideoData {
     required this.tag,
     required this.user,
     required this.videoUrl,
+    required this.thumbnailUrl,
     required this.likeCount,
     required this.commentCount,
     required this.length,

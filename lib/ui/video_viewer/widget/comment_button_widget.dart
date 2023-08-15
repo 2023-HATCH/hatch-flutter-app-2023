@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/video_play_provider.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/comment_data.dart';
@@ -35,8 +35,8 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
       Provider.of<CommentProvider>(context, listen: false);
   late List<CommentData>? _commentList;
   final ScrollController _scrollController = ScrollController();
-  late final VideoPlayProvider _videoPlayProvider =
-      Provider.of<VideoPlayProvider>(context, listen: false);
+  late final MultiVideoPlayProvider _multiVideoPlayProvider =
+      Provider.of<MultiVideoPlayProvider>(context, listen: false);
   bool _isInit = false;
   UserData? user;
   bool _isNotEmptyComment = false;
@@ -60,17 +60,19 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
       _commentProvider.getComments(widget.videoId).then((value) {
         final newCommentList = _commentProvider.response?.commentList;
 
-        bottomState(() {
-          setState(() {
-            _commentList = newCommentList?.reversed.toList();
+        if (mounted) {
+          bottomState(() {
+            setState(() {
+              _commentList = newCommentList?.reversed.toList();
 
-            // commentCount api 완성되면 삭제
-            _isNotEmptyComment =
-                _commentList != null || _commentList!.isNotEmpty;
-            // commentCount api 완성되면 주석 해제
-            // _isNotEmptyComment =_videoPlayProvider.videoList[widget.index].commentCount > 0;
+              // commentCount api 완성되면 삭제
+              _isNotEmptyComment =
+                  _commentList != null || _commentList!.isNotEmpty;
+              // commentCount api 완성되면 주석 해제
+              // _isNotEmptyComment =_videoPlayProvider.videoList[widget.index].commentCount > 0;
+            });
           });
-        });
+        }
       });
     } catch (e) {
       debugPrint('댓글 목록 조회 api 호출 실패');
@@ -80,14 +82,16 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   void _initUser(StateSetter bottomState) async {
     if (await _loginProvider.checkAccessToken()) {
       final newUser = await _loginProvider.getUser();
-      bottomState(() {
-        setState(() {
-          user = newUser;
-          _profileImg =
-              user!.profileImg ?? 'assets/images/charactor_popo_default.png';
-          _hintText = '${user!.nickname}(으)로 댓글 달기...';
+      if (mounted) {
+        bottomState(() {
+          setState(() {
+            user = newUser;
+            _profileImg =
+                user!.profileImg ?? 'assets/images/charactor_popo_default.png';
+            _hintText = '${user!.nickname}(으)로 댓글 달기...';
+          });
         });
-      });
+      }
     }
   }
 
@@ -98,15 +102,16 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
 
     _commentProvider.getComments(widget.videoId).then((value) {
       final newCommentList = _commentProvider.response?.commentList;
+      if (mounted) {
+        setState(() {
+          _commentList = newCommentList?.reversed.toList();
 
-      setState(() {
-        _commentList = newCommentList?.reversed.toList();
-
-        // commentCount api 완성되면 삭제
-        _isNotEmptyComment = _commentList != null || _commentList!.isNotEmpty;
-        // commentCount api 완성되면 주석 해제
-        // _isNotEmptyComment =_videoPlayProvider.videoList[widget.index].commentCount > 0;
-      });
+          // commentCount api 완성되면 삭제
+          _isNotEmptyComment = _commentList != null || _commentList!.isNotEmpty;
+          // commentCount api 완성되면 주석 해제
+          // _isNotEmptyComment =_videoPlayProvider.videoList[widget.index].commentCount > 0;
+        });
+      }
     });
   }
 
@@ -125,11 +130,14 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                   if (await _loginProvider.checkAccessToken())
                     {
                       user = await _loginProvider.getUser(),
-                      setState(() {
-                        _profileImg = user!.profileImg ??
-                            'assets/images/charactor_popo_default.png';
-                        _hintText = '${user!.nickname}(으)로 댓글 달기...';
-                      }),
+                      if (mounted)
+                        {
+                          setState(() {
+                            _profileImg = user!.profileImg ??
+                                'assets/images/charactor_popo_default.png';
+                            _hintText = '${user!.nickname}(으)로 댓글 달기...';
+                          }),
+                        }
                     }
                 },
               showModalBottomSheet(
@@ -149,8 +157,8 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                       _isInit = true;
                     }
 
-                    int commentCount =
-                        _videoPlayProvider.videoList[widget.index].commentCount;
+                    int commentCount = _multiVideoPlayProvider
+                        .videoList[widget.index].commentCount;
                     return SizedBox(
                       height: isClicked == false
                           ? 500
@@ -353,14 +361,16 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                         bottomState);
                                                     Fluttertoast.showToast(
                                                         msg: '댓글이 삭제되었습니다.');
-                                                    bottomState(() {
-                                                      setState(() {
-                                                        _videoPlayProvider
-                                                            .videoList[
-                                                                widget.index]
-                                                            .commentCount--;
+                                                    if (mounted) {
+                                                      bottomState(() {
+                                                        setState(() {
+                                                          _multiVideoPlayProvider
+                                                              .videoList[
+                                                                  widget.index]
+                                                              .commentCount--;
+                                                        });
                                                       });
-                                                    });
+                                                    }
                                                   });
                                                 },
                                                 child: Text(
@@ -433,9 +443,11 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                                       .length),
                                                 );
 
-                                                bottomState(() {
-                                                  setState(() {});
-                                                });
+                                                if (mounted) {
+                                                  bottomState(() {
+                                                    setState(() {});
+                                                  });
+                                                }
                                               }
                                             },
                                             child: Text(
@@ -531,17 +543,21 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                       _loginProvider
                                                           .showLoginBottomSheet();
                                                     } else {
-                                                      bottomState(() {
-                                                        setState(() {
-                                                          isClicked = true;
+                                                      if (mounted) {
+                                                        bottomState(() {
+                                                          setState(() {
+                                                            isClicked = true;
+                                                          });
                                                         });
-                                                      });
+                                                      }
                                                     }
                                                   },
                                                   onChanged: (text) {
-                                                    bottomState(() {
-                                                      setState(() {});
-                                                    });
+                                                    if (mounted) {
+                                                      bottomState(() {
+                                                        setState(() {});
+                                                      });
+                                                    }
                                                   },
                                                   onEditingComplete: () {
                                                     if (_textController
@@ -559,16 +575,17 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                         _textController.clear();
                                                         FocusScope.of(context)
                                                             .unfocus();
-
-                                                        bottomState(() {
-                                                          setState(() {
-                                                            _videoPlayProvider
-                                                                .videoList[
-                                                                    widget
-                                                                        .index]
-                                                                .commentCount++;
+                                                        if (mounted) {
+                                                          bottomState(() {
+                                                            setState(() {
+                                                              _multiVideoPlayProvider
+                                                                  .videoList[
+                                                                      widget
+                                                                          .index]
+                                                                  .commentCount++;
+                                                            });
                                                           });
-                                                        });
+                                                        }
                                                       });
                                                     }
                                                     _scrollController.animateTo(
@@ -600,15 +617,17 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                               .clear();
                                                           FocusScope.of(context)
                                                               .unfocus();
-                                                          bottomState(() {
-                                                            setState(() {
-                                                              _videoPlayProvider
-                                                                  .videoList[
-                                                                      widget
-                                                                          .index]
-                                                                  .commentCount++;
+                                                          if (mounted) {
+                                                            bottomState(() {
+                                                              setState(() {
+                                                                _multiVideoPlayProvider
+                                                                    .videoList[
+                                                                        widget
+                                                                            .index]
+                                                                    .commentCount++;
+                                                              });
                                                             });
-                                                          });
+                                                          }
                                                         });
                                                         _scrollController.animateTo(
                                                             0,
