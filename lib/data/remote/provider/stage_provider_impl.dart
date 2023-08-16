@@ -9,17 +9,17 @@ import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/entity/response/stage_enter_response.dart';
 import 'package:pocket_pose/data/entity/response/stage_user_list_response.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
-import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
+import 'package:pocket_pose/domain/entity/user_list_item.dart';
 import 'package:pocket_pose/domain/provider/stage_provider.dart';
 
 class StageProviderImpl extends ChangeNotifier implements StageProvider {
   final List<StageTalkListItem> _talkList = [];
-  final List<StageUserListItem> _userList = [];
+  final List<UserListItem> _userList = [];
   late double? _stageCurSecond;
   bool _isClicked = false;
 
   List<StageTalkListItem> get talkList => _talkList;
-  List<StageUserListItem> get userList => _userList;
+  List<UserListItem> get userList => _userList;
   double? get stageCurTime => _stageCurSecond;
 
   bool get isClicked => _isClicked;

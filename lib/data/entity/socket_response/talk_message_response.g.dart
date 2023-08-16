@@ -9,7 +9,7 @@ part of 'talk_message_response.dart';
 TalkMessageResponse _$TalkMessageResponseFromJson(Map<String, dynamic> json) =>
     TalkMessageResponse(
       content: json['content'] as String,
-      sender: ChatUserListItem.fromJson(json['sender'] as Map<String, dynamic>),
+      sender: UserListItem.fromJson(json['sender'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$TalkMessageResponseToJson(

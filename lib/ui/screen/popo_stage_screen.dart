@@ -8,7 +8,7 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
-import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
+import 'package:pocket_pose/domain/entity/user_list_item.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
@@ -225,7 +225,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  Future<dynamic> _showUserListDialog(List<StageUserListItem> userList) {
+  Future<dynamic> _showUserListDialog(List<UserListItem> userList) {
     return showDialog(
       context: context,
       barrierColor: Colors.transparent,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/domain/entity/chat_list_item.dart';
+import 'package:pocket_pose/domain/entity/chat_room_list_item.dart';
 import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 
-class ChatListItemWidget extends StatelessWidget {
-  final ChatListItem chat;
+class ChatRoomListItemWidget extends StatelessWidget {
+  final ChatRoomListItem chatRoom;
 
-  const ChatListItemWidget({super.key, required this.chat});
+  const ChatRoomListItemWidget({super.key, required this.chatRoom});
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +25,9 @@ class ChatListItemWidget extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: Image.asset(
-                  (chat.opponentUser.profileImg == null)
+                  (chatRoom.opponentUser.profileImg == null)
                       ? 'assets/images/charactor_popo_default.png'
-                      : chat.opponentUser.profileImg!,
+                      : chatRoom.opponentUser.profileImg!,
                   width: 40,
                   height: 40,
                   fit: BoxFit.contain,
@@ -40,7 +40,7 @@ class ChatListItemWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    chat.opponentUser.nickname,
+                    chatRoom.opponentUser.nickname,
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.left,
@@ -53,7 +53,7 @@ class ChatListItemWidget extends StatelessWidget {
                   SizedBox(
                     width: 250,
                     child: Text(
-                      chat.recentContent == null ? "" : chat.recentContent!,
+                      chatRoom.recentContent ?? "",
                       style:
                           TextStyle(fontSize: 12, color: AppColor.grayColor5),
                       maxLines: 1,

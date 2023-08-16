@@ -10,7 +10,7 @@ StageMVPResponse _$StageMVPResponseFromJson(Map<String, dynamic> json) =>
     StageMVPResponse(
       json['mvpUser'] == null
           ? null
-          : StageUserListItem.fromJson(json['mvpUser'] as Map<String, dynamic>),
+          : UserListItem.fromJson(json['mvpUser'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$StageMVPResponseToJson(StageMVPResponse instance) =>

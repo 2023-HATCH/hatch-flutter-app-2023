@@ -1,12 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:pocket_pose/data/entity/base_object.dart';
-import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
+import 'package:pocket_pose/domain/entity/user_list_item.dart';
 
 part 'stage_mvp_response.g.dart';
 
 @JsonSerializable()
 class StageMVPResponse extends BaseObject<StageMVPResponse> {
-  StageUserListItem? mvpUser;
+  UserListItem? mvpUser;
 
   StageMVPResponse(
     this.mvpUser,

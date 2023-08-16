@@ -1,21 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'chat_list_item.dart';
+part of 'chat_room_list_item.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ChatListItem _$ChatListItemFromJson(Map<String, dynamic> json) => ChatListItem(
+ChatRoomListItem _$ChatRoomListItemFromJson(Map<String, dynamic> json) =>
+    ChatRoomListItem(
       chatRoomId: json['chatRoomId'] as String,
-      opponentUser: ChatUserListItem.fromJson(
-          json['opponentUser'] as Map<String, dynamic>),
+      opponentUser:
+          UserListItem.fromJson(json['opponentUser'] as Map<String, dynamic>),
       recentContent: json['recentContent'] as String?,
+      recentSendAt: json['recentSendAt'] as String?,
     );
 
-Map<String, dynamic> _$ChatListItemToJson(ChatListItem instance) =>
+Map<String, dynamic> _$ChatRoomListItemToJson(ChatRoomListItem instance) =>
     <String, dynamic>{
       'chatRoomId': instance.chatRoomId,
       'opponentUser': instance.opponentUser,
       'recentContent': instance.recentContent,
+      'recentSendAt': instance.recentSendAt,
     };

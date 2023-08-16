@@ -8,10 +8,11 @@ part of 'stage_talk_list_item.dart';
 
 StageTalkListItem _$StageTalkListItemFromJson(Map<String, dynamic> json) =>
     StageTalkListItem(
+      messageId: json['messageId'] as String?,
       content: json['content'] as String,
-      sender: ChatUserListItem.fromJson(json['sender'] as Map<String, dynamic>),
+      sender: UserListItem.fromJson(json['sender'] as Map<String, dynamic>),
       createdAt: json['createdAt'] as String?,
-    )..messageId = json['messageId'] as String;
+    );
 
 Map<String, dynamic> _$StageTalkListItemToJson(StageTalkListItem instance) =>
     <String, dynamic>{

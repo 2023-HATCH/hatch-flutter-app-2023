@@ -8,6 +8,7 @@ class AppUrl {
 
   static const _stageUrl = "$_apiBaseUrl/stage";
   static const _talkUrl = "$_apiBaseUrl/talks";
+  static const _chatUrl = "$_apiBaseUrl/chats";
 
   // 로그인 & 회원가입
   static const signInSignUpUrl = "$_apiBaseUrl/auth/login?type=kakao";
@@ -30,6 +31,9 @@ class AppUrl {
 
   // 스켈레톤 정확도 확인
   static const skeletonAccuracyUrl = "$_aiBaseUrl/api/similarity/test";
+
+  // 채팅
+  static const chatRoomUrl = "$_chatUrl/rooms";
 
   // web socket
   static const socketSubscribeStageUrl = "/topic/stage";

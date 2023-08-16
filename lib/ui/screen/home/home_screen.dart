@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 
-import 'package:pocket_pose/ui/screen/chat/chat_list_screen.dart';
+import 'package:pocket_pose/ui/screen/chat/chat_room_list_screen.dart';
 
 import 'package:pocket_pose/ui/screen/home/home_search_screen.dart';
 import 'package:pocket_pose/ui/video_viewer/video_view.dart';
@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showChatScreen() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const ChatListScreen()),
+      MaterialPageRoute(builder: (context) => const ChatRoomListScreen()),
     );
   }
 }
