@@ -2,76 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/chat_room_list_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/chat_room_list_item.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_room_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
-final chatListString = {
-  "chatRooms": [
-    {
-      "chatRoomId": "1",
-      "opponentUser": {
-        "userId": "11",
-        "profileImg": "assets/images/chat_user_1.png",
-        "nickname": "hello_kiti"
-      },
-      "recentContent": "놀자"
-    },
-    {
-      "chatRoomId": "2",
-      "opponentUser": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "recentContent": "뭐해?"
-    },
-    {
-      "chatRoomId": "3",
-      "opponentUser": {
-        "userId": "33",
-        "profileImg": "assets/images/chat_user_3.png",
-        "nickname": "pom_pom_pulin"
-      },
-      // "recentContent": "밥먹자"
-    },
-    {
-      "chatRoomId": "4",
-      "opponentUser": {
-        "userId": "44",
-        "profileImg": "assets/images/chat_user_4.png",
-        "nickname": "kelo_kelo_kelopi"
-      },
-      "recentContent": "산책하자산책하자산책하자산책하자산책하자산책하자산책하자산책하자"
-    },
-    {
-      "chatRoomId": "5",
-      "opponentUser": {
-        "userId": "55",
-        // "profileImg": "",
-        "nickname": "kogimyung_"
-      },
-      "recentContent": "졸려..."
-    },
-  ]
-};
-
-class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({super.key});
+class ChatRoomListScreen extends StatefulWidget {
+  const ChatRoomListScreen({super.key});
 
   @override
-  State<ChatListScreen> createState() => _ChatListScreenState();
+  State<ChatRoomListScreen> createState() => _ChatListRoomScreenState();
 }
 
-class _ChatListScreenState extends State<ChatListScreen> {
+class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
+  late ChatProviderImpl _chatProvider;
   Future<ChatRoomListResponse>? chatList;
 
   @override
   void initState() {
     _multiVideoPlayProvider = Provider.of(context, listen: false);
     _multiVideoPlayProvider.pauseVideo();
-
-    chatList = Future.value(ChatRoomListResponse.fromJson(chatListString));
 
     super.initState();
   }
@@ -84,6 +35,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
+
     return Scaffold(
       appBar: _buildAppBar(context),
       body: Column(
@@ -93,11 +46,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
             height: 3,
           ),
           FutureBuilder(
-            future: chatList,
+            future: _chatProvider.getChatRoomList(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Expanded(
-                  child: buildChatList(snapshot),
+                  child: buildChatList(snapshot.data?.data.chatRooms ?? []),
                 );
               }
               return const Center(
@@ -110,12 +63,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  ListView buildChatList(AsyncSnapshot<ChatRoomListResponse> snapshot) {
+  ListView buildChatList(List<ChatRoomListItem> chatRooms) {
     return ListView.separated(
       scrollDirection: Axis.vertical,
-      itemCount: snapshot.data!.chatRooms.length,
+      itemCount: chatRooms.length,
       itemBuilder: (context, index) {
-        final chatRoom = snapshot.data!.chatRooms[index];
+        final chatRoom = chatRooms[index];
         return ChatRoomListItemWidget(chatRoom: chatRoom);
       },
       separatorBuilder: (context, index) => const SizedBox(

@@ -33,7 +33,7 @@ class AppUrl {
   static const skeletonAccuracyUrl = "$_aiBaseUrl/api/similarity/test";
 
   // 채팅
-  static const chatRoomCreateUrl = "$_chatUrl/rooms";
+  static const chatRoomUrl = "$_chatUrl/rooms";
 
   // web socket
   static const socketSubscribeStageUrl = "/topic/stage";
