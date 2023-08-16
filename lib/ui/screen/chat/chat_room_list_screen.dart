@@ -50,7 +50,18 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Expanded(
-                  child: buildChatList(snapshot.data?.data.chatRooms ?? []),
+                  child: ((snapshot.data?.data.chatRooms ?? []).isEmpty)
+                      ? Center(
+                          child: Text(
+                            "아직 채팅이 없습니다.🥲\n '메시지' 버튼을 눌러 채팅을 시작해보세요!",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColor.grayColor,
+                            ),
+                          ),
+                        )
+                      : buildChatList(snapshot.data?.data.chatRooms ?? []),
                 );
               }
               return const Center(
