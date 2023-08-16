@@ -32,7 +32,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: AppColor.whiteColor,
       height: 300,
       child: Center(
           child: Column(

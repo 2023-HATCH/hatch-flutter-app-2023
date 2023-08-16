@@ -6,6 +6,7 @@ class AppColor {
   static Color purpleColor = const Color(0xFFB259F8);
   static Color purpleColor2 = const Color(0xFFBD00FF);
   static Color purpleColor3 = const Color(0xFFBFC1F4);
+  static Color whiteColor = const Color.fromARGB(255, 252, 253, 255);
   static Color blackColor = const Color(0xFF414B5A);
   static Color grayColor = const Color(0xFF3F3F3F);
   static Color grayColor1 = const Color(0xFFE7EBF0);

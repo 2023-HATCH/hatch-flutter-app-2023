@@ -105,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   child: Column(
                     children: [
                       Container(
-                        color: Colors.white,
+                        color: AppColor.whiteColor,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -150,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 SliverAppBar(
                   pinned: true,
-                  backgroundColor: Colors.white,
+                  backgroundColor: AppColor.whiteColor,
                   toolbarHeight: 0.0,
                   bottom: TabBar(
                     controller: _tabController,

@@ -51,16 +51,18 @@ class _VideoViewState extends State<VideoView>
           .then((value) {
         final response = videoProvider.response;
 
-        if (response != null) {
-          setState(() {
-            if (response.videoList.isNotEmpty) {
-              _multiVideoPlayProvider.addVideos(response.videoList);
-            }
-            if (response.isLast) {
-              _multiVideoPlayProvider.isLast = true;
-              return;
-            }
-          });
+        if (mounted) {
+          if (response != null) {
+            setState(() {
+              if (response.videoList.isNotEmpty) {
+                _multiVideoPlayProvider.addVideos(response.videoList);
+              }
+              if (response.isLast) {
+                _multiVideoPlayProvider.isLast = true;
+                return;
+              }
+            });
+          }
         }
       });
 
@@ -74,31 +76,33 @@ class _VideoViewState extends State<VideoView>
   }
 
   void onPageChanged(int index) {
-    setState(() {
-      _multiVideoPlayProvider.pauseVideo();
+    if (mounted) {
+      setState(() {
+        _multiVideoPlayProvider.pauseVideo();
 
-      if (!_multiVideoPlayProvider.isLast) {
-        _multiVideoPlayProvider.currentIndex = index;
-
-        if (_multiVideoPlayProvider.videoList.length -
-                _multiVideoPlayProvider.currentIndex <=
-            _multiVideoPlayProvider.PAGESIZE - 1) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _loadMoreVideos();
-          });
-        }
-      } else {
-        if (_multiVideoPlayProvider.videoList.length == index) {
-          // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
-          _multiVideoPlayProvider.pageController.jumpToPage(0);
-          _multiVideoPlayProvider.currentIndex = 0;
-        } else {
+        if (!_multiVideoPlayProvider.isLast) {
           _multiVideoPlayProvider.currentIndex = index;
-        }
-      }
 
-      _multiVideoPlayProvider.playVideo();
-    });
+          if (_multiVideoPlayProvider.videoList.length -
+                  _multiVideoPlayProvider.currentIndex <=
+              _multiVideoPlayProvider.PAGESIZE - 1) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _loadMoreVideos();
+            });
+          }
+        } else {
+          if (_multiVideoPlayProvider.videoList.length == index) {
+            // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
+            _multiVideoPlayProvider.pageController.jumpToPage(0);
+            _multiVideoPlayProvider.currentIndex = 0;
+          } else {
+            _multiVideoPlayProvider.currentIndex = index;
+          }
+        }
+
+        _multiVideoPlayProvider.playVideo();
+      });
+    }
   }
 
   @override
@@ -113,9 +117,11 @@ class _VideoViewState extends State<VideoView>
 
     return RefreshIndicator(
       onRefresh: () async {
-        setState(() {
-          _multiVideoPlayProvider.resetVideoPlayer();
-        });
+        if (mounted) {
+          setState(() {
+            _multiVideoPlayProvider.resetVideoPlayer();
+          });
+        }
       },
       color: AppColor.purpleColor,
       child: Stack(
@@ -225,18 +231,20 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
   }
 
   void _toggleIconVisibility(bool newValue) {
-    setState(() {
-      isIconVisible = newValue;
-      if (isIconVisible) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse().then((_) {
-          setState(() {
-            isIconVisible = false;
+    if (mounted) {
+      setState(() {
+        isIconVisible = newValue;
+        if (isIconVisible) {
+          _animationController.forward();
+        } else {
+          _animationController.reverse().then((_) {
+            setState(() {
+              isIconVisible = false;
+            });
           });
-        });
-      }
-    });
+        }
+      });
+    }
   }
 
   @override
@@ -280,10 +288,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
                 child: Center(
                   child: Icon(
                     isPlaying
-                        ? Icons.play_circle_filled_rounded
-                        : Icons.pause_circle_filled_rounded,
+                        ? Icons.play_circle_filled_sharp
+                        : Icons.pause_circle_filled_sharp,
                     size: 60,
-                    color: const Color.fromARGB(60, 234, 234, 234),
+                    color: const Color.fromARGB(127, 147, 147, 147),
                   ),
                 ),
               );

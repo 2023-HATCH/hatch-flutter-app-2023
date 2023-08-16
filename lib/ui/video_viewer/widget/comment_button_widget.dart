@@ -33,7 +33,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   late KaKaoLoginProvider _loginProvider;
   late final CommentProvider _commentProvider =
       Provider.of<CommentProvider>(context, listen: false);
-  late List<CommentData>? _commentList;
+  List<CommentData>? _commentList = [];
   final ScrollController _scrollController = ScrollController();
   late final MultiVideoPlayProvider _multiVideoPlayProvider =
       Provider.of<MultiVideoPlayProvider>(context, listen: false);
@@ -66,10 +66,12 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
               _commentList = newCommentList?.reversed.toList();
 
               // commentCount api 완성되면 삭제
-              _isNotEmptyComment =
-                  _commentList != null || _commentList!.isNotEmpty;
+              // _isNotEmptyComment =
+              //     _commentList != null || _commentList!.isNotEmpty;
               // commentCount api 완성되면 주석 해제
-              // _isNotEmptyComment =_videoPlayProvider.videoList[widget.index].commentCount > 0;
+              _isNotEmptyComment =
+                  _multiVideoPlayProvider.videoList[widget.index].commentCount >
+                      0;
             });
           });
         }
@@ -107,9 +109,10 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
           _commentList = newCommentList?.reversed.toList();
 
           // commentCount api 완성되면 삭제
-          _isNotEmptyComment = _commentList != null || _commentList!.isNotEmpty;
+          //_isNotEmptyComment = _commentList != null || _commentList!.isNotEmpty;
           // commentCount api 완성되면 주석 해제
-          // _isNotEmptyComment =_videoPlayProvider.videoList[widget.index].commentCount > 0;
+          _isNotEmptyComment =
+              _multiVideoPlayProvider.videoList[widget.index].commentCount > 0;
         });
       }
     });
@@ -198,196 +201,207 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                             ),
                           ),
                           resizeToAvoidBottomInset: true,
-                          body: Padding(
-                            padding: const EdgeInsets.only(bottom: 95),
-                            child: Visibility(
-                                visible: _isNotEmptyComment,
-                                replacement:
-                                    const Center(child: Text('등록된 댓글이 없습니다.')),
-                                child: ListView.builder(
-                                  controller: _scrollController,
-                                  itemCount: _commentList?.length,
-                                  itemBuilder: (context, index) {
-                                    final year =
-                                        _commentList?[index].createdAt.year;
-                                    final month = _commentList?[index]
-                                        .createdAt
-                                        .month
-                                        .toString()
-                                        .padLeft(2, '0');
+                          body: SingleChildScrollView(
+                            controller: _scrollController,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 95),
+                              child: Visibility(
+                                  visible: _isNotEmptyComment,
+                                  replacement: const Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                                    child:
+                                        Center(child: Text('등록된 댓글이 없습니다. 🥲')),
+                                  ),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    controller: _scrollController,
+                                    itemCount: _commentList?.length,
+                                    itemBuilder: (context, index) {
+                                      final year =
+                                          _commentList?[index].createdAt.year;
+                                      final month = _commentList?[index]
+                                          .createdAt
+                                          .month
+                                          .toString()
+                                          .padLeft(2, '0');
 
-                                    final day = _commentList?[index]
-                                        .createdAt
-                                        .day
-                                        .toString()
-                                        .padLeft(2, '0');
+                                      final day = _commentList?[index]
+                                          .createdAt
+                                          .day
+                                          .toString()
+                                          .padLeft(2, '0');
 
-                                    final hour = _commentList?[index]
-                                        .createdAt
-                                        .hour
-                                        .toString()
-                                        .padLeft(2, '0');
-                                    final minute = _commentList?[index]
-                                        .createdAt
-                                        .minute
-                                        .toString()
-                                        .padLeft(2, '0');
-                                    final createdAt =
-                                        '$year-$month-$day $hour:$minute';
+                                      final hour = _commentList?[index]
+                                          .createdAt
+                                          .hour
+                                          .toString()
+                                          .padLeft(2, '0');
+                                      final minute = _commentList?[index]
+                                          .createdAt
+                                          .minute
+                                          .toString()
+                                          .padLeft(2, '0');
+                                      final createdAt =
+                                          '$year-$month-$day $hour:$minute';
 
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 8),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                18, 4, 0, 12),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            50),
-                                                    child: Image.network(
-                                                      _commentList?[index]
-                                                              .user
-                                                              .profileImg ??
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      18, 4, 0, 12),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50),
+                                                      child: Image.network(
+                                                        _commentList?[index]
+                                                                .user
+                                                                .profileImg ??
+                                                            'assets/images/charactor_popo_default.png',
+                                                        loadingBuilder: (context,
+                                                            child,
+                                                            loadingProgress) {
+                                                          if (loadingProgress ==
+                                                              null) {
+                                                            return child;
+                                                          }
+                                                          return Center(
+                                                            child:
+                                                                CircularProgressIndicator(
+                                                              color: AppColor
+                                                                  .purpleColor,
+                                                            ),
+                                                          );
+                                                        },
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Image.asset(
                                                           'assets/images/charactor_popo_default.png',
-                                                      loadingBuilder: (context,
-                                                          child,
-                                                          loadingProgress) {
-                                                        if (loadingProgress ==
-                                                            null) {
-                                                          return child;
-                                                        }
-                                                        return Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                            color: AppColor
-                                                                .purpleColor,
-                                                          ),
-                                                        );
-                                                      },
-                                                      errorBuilder: (context,
-                                                              error,
-                                                              stackTrace) =>
-                                                          Image.asset(
-                                                        'assets/images/charactor_popo_default.png',
+                                                          fit: BoxFit.cover,
+                                                          width: 35,
+                                                          height: 35,
+                                                        ),
                                                         fit: BoxFit.cover,
                                                         width: 35,
                                                         height: 35,
-                                                      ),
-                                                      fit: BoxFit.cover,
-                                                      width: 35,
-                                                      height: 35,
-                                                    )),
-                                                const Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 8)),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      _commentList?[index]
-                                                              .user
-                                                              .nickname ??
-                                                          '',
-                                                      style: const TextStyle(
-                                                          fontSize: 12),
-                                                    ),
-                                                    const Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                bottom: 8)),
-                                                    SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width -
-                                                              120,
-                                                      child: Text(
+                                                      )),
+                                                  const Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 8)),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
                                                         _commentList?[index]
-                                                                .content ??
+                                                                .user
+                                                                .nickname ??
                                                             '',
                                                         style: const TextStyle(
-                                                            fontSize: 14),
-                                                        maxLines: 50,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
+                                                            fontSize: 12),
                                                       ),
-                                                    ),
-                                                    const Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                bottom: 4)),
-                                                    Text(
-                                                      createdAt,
-                                                      style: TextStyle(
-                                                          fontSize: 10,
-                                                          color: AppColor
-                                                              .grayColor2),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Visibility(
-                                            visible: user != null &&
-                                                user!.userId ==
-                                                    _commentList?[index]
-                                                        .user
-                                                        .userId,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 4, 18, 12),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  _commentProvider
-                                                      .deleteComment(
+                                                      const Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  bottom: 8)),
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width -
+                                                            120,
+                                                        child: Text(
                                                           _commentList?[index]
-                                                                  .uuid ??
-                                                              '')
-                                                      .then((value) {
-                                                    _loadCommentList(
-                                                        bottomState);
-                                                    Fluttertoast.showToast(
-                                                        msg: '댓글이 삭제되었습니다.');
-                                                    if (mounted) {
-                                                      bottomState(() {
-                                                        setState(() {
-                                                          _multiVideoPlayProvider
-                                                              .videoList[
-                                                                  widget.index]
-                                                              .commentCount--;
+                                                                  .content ??
+                                                              '',
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 14),
+                                                          maxLines: 50,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                      const Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  bottom: 4)),
+                                                      Text(
+                                                        createdAt,
+                                                        style: TextStyle(
+                                                            fontSize: 10,
+                                                            color: AppColor
+                                                                .grayColor2),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Visibility(
+                                              visible: user != null &&
+                                                  user!.userId ==
+                                                      _commentList?[index]
+                                                          .user
+                                                          .userId,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 4, 18, 12),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    _commentProvider
+                                                        .deleteComment(
+                                                            _commentList?[index]
+                                                                    .uuid ??
+                                                                '')
+                                                        .then((value) {
+                                                      _loadCommentList(
+                                                          bottomState);
+                                                      Fluttertoast.showToast(
+                                                          msg: '댓글이 삭제되었습니다.');
+                                                      if (mounted) {
+                                                        bottomState(() {
+                                                          setState(() {
+                                                            _multiVideoPlayProvider
+                                                                .videoList[
+                                                                    widget
+                                                                        .index]
+                                                                .commentCount--;
+                                                          });
                                                         });
-                                                      });
-                                                    }
-                                                  });
-                                                },
-                                                child: Text(
-                                                  '삭제',
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      color:
-                                                          AppColor.grayColor2),
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Text(
+                                                    '삭제',
+                                                    style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: AppColor
+                                                            .grayColor2),
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                )),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  )),
+                            ),
                           ),
                           bottomSheet: SizedBox(
                             height: 100,
@@ -412,7 +426,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.end,
+                                          CrossAxisAlignment.center,
                                       children: [
                                         for (int i = 0;
                                             i < emojiList.length;
@@ -452,8 +466,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                             },
                                             child: Text(
                                               emojiList[i],
-                                              style:
-                                                  const TextStyle(fontSize: 20),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                              ),
                                             ),
                                           ),
                                       ],
