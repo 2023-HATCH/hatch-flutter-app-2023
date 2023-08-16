@@ -6,7 +6,7 @@ import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
-class SocketStageProviderImpl extends ChangeNotifier
+class SocketChatProviderImpl extends ChangeNotifier
     implements SocketChatProvider {
   StompClient? _stompClient;
 

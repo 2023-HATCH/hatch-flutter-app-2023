@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/chat_detail_list_response.dart';
+import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_left_bubble_widget.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart';
+import 'package:provider/provider.dart';
 
 final chatDetailListString = {
   "pageNum": 1,
@@ -122,6 +124,9 @@ class ChatDetailScreen extends StatefulWidget {
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
+  late SocketChatProviderImpl _socketChatProvider;
+  bool _isEnter = false;
+
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
@@ -151,6 +156,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _socketChatProvider =
+        Provider.of<SocketChatProviderImpl>(context, listen: true);
+
+    // 입장
+    _chatEnter();
+    // 소켓 반응 처리
+    _onSocketResponse();
+
     // build마다 채팅 스크롤 맨 밑으로
     if (_messageList.isNotEmpty) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -308,5 +321,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
       ),
     );
+  }
+
+  void _chatEnter() {
+    if (!_isEnter) {
+      _isEnter = true;
+      _socketChatProvider.connectWebSocket();
+    }
+  }
+
+  void _onSocketResponse() {
+    if (_socketChatProvider.isConnect) {
+      print("mmm 구독 완");
+    }
   }
 }
