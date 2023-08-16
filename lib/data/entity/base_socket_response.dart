@@ -3,7 +3,7 @@ import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart
 
 class BaseSocketResponse<T> {
   String timeStamp;
-  StageType type;
+  SocketType type;
   String message;
   T? data;
 
@@ -17,7 +17,7 @@ class BaseSocketResponse<T> {
       Map<String, dynamic> json, BaseObject? target) {
     return BaseSocketResponse(
       timeStamp: json['timeStamp'],
-      type: StageType.values.byName(json['type'].toString()),
+      type: SocketType.values.byName(json['type'].toString()),
       message: json['message'],
       data: target?.fromJson(json['data']),
     );

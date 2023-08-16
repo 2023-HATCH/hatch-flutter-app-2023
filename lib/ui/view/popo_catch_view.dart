@@ -13,7 +13,7 @@ import 'package:semicircle_indicator/semicircle_indicator.dart';
 import 'dart:math' as math;
 
 class PoPoCatchView extends StatefulWidget {
-  final StageType type;
+  final SocketType type;
   const PoPoCatchView({Key? key, required this.type}) : super(key: key);
 
   @override
@@ -29,7 +29,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   late Animation<double> _opacityAnimation;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
-  StageType _prevStageType = StageType.CATCH_START;
+  SocketType _prevStageType = SocketType.CATCH_START;
 
   @override
   Widget build(BuildContext context) {

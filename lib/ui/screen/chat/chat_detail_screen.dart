@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/entity/response/chat_detail_list_response.dart';
+import 'package:pocket_pose/data/entity/request/chat_room_request.dart';
+import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
+import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
+import 'package:pocket_pose/domain/entity/chat_detail_list_response.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_left_bubble_widget.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart';
 import 'package:provider/provider.dart';
@@ -115,9 +118,11 @@ final chatDetailListString = {
 };
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen({Key? key, required this.chatRoomId})
+  const ChatDetailScreen(
+      {Key? key, required this.opponentUserId, required this.chatRoomId})
       : super(key: key);
 
+  final String opponentUserId;
   final String chatRoomId;
 
   @override
@@ -126,6 +131,7 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   late SocketChatProviderImpl _socketChatProvider;
+  late ChatProviderImpl _chatProvider;
   bool _isEnter = false;
 
   final List<ChatDetailListItem> _messageList = [];
@@ -159,6 +165,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Widget build(BuildContext context) {
     _socketChatProvider =
         Provider.of<SocketChatProviderImpl>(context, listen: true);
+    _chatProvider = Provider.of<ChatProviderImpl>(context, listen: true);
 
     // 입장
     _chatEnter();
@@ -275,6 +282,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 style: TextButton.styleFrom(
                                     splashFactory: NoSplash.splashFactory),
                                 onPressed: () {
+                                  _socketChatProvider.sendMessage(
+                                      SendChatRequest(
+                                          chatRoomId: widget.chatRoomId,
+                                          content: _textController.text));
                                   _textController.clear();
                                   setState(() {
                                     _isMessageFillOut = false;
@@ -335,7 +346,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     if (_socketChatProvider.isConnect) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _socketChatProvider.setIsConnect(false);
-        _socketChatProvider.onSubscribe(widget.chatRoomId);
+        _chatProvider
+            .postChatRoom(
+                ChatRoomRequest(opponentUserId: widget.opponentUserId))
+            .then((_) => _socketChatProvider.onSubscribe(widget.chatRoomId));
+      });
+    }
+
+    // 실시간 채팅
+    if (_socketChatProvider.isChat) {
+      _socketChatProvider.setIsChat(false);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("mmm 받음여");
       });
     }
   }

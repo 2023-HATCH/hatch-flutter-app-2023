@@ -50,5 +50,6 @@ class AppUrl {
   static const socketMVPSkeletonUrl = "/app/stage/mvp/skeleton";
   static const socketExitUrl = "/app/stage/exit";
   // 채팅
-  static const socketSubscribeChatUrl = "/topic/chats/messages";
+  static const socketSubscribeChatUrl = "/topic/chats/rooms";
+  static const socketChatkUrl = "/app/chats/messages";
 }

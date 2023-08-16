@@ -26,7 +26,7 @@ import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
-enum StageType {
+enum SocketType {
   WAIT,
   CATCH,
   PLAY,
@@ -44,9 +44,11 @@ enum StageType {
   STAGE_ROUTINE_STOP,
   TALK_MESSAGE,
   TALK_REACTION,
+
+  CHAT_MESSAGE,
 }
 
-final stageStageList = [
+final socketTypeList = [
   "WAIT",
   "CATCH",
   "PLAY",
@@ -83,7 +85,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   Map<PoseLandmarkType, PoseLandmark>? player2;
   Map<PoseLandmarkType, PoseLandmark>? mvpSkeleton;
 
-  StageType _stageType = StageType.WAIT;
+  SocketType _stageType = SocketType.WAIT;
   bool _isConnect = false;
   bool _isSubscribe = false;
   bool _isTalk = false;
@@ -100,7 +102,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   int get userCount => _userCount;
   StageTalkListItem? get talk => _talk;
 
-  StageType get stageType => _stageType;
+  SocketType get stageType => _stageType;
   bool get isConnect => _isConnect;
   bool get isSubscribe => _isSubscribe;
   bool get isTalk => _isTalk;
@@ -110,7 +112,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
   bool get isMVPSkeletonChange => _isMVPSkeletonChange;
 
-  bool get isMVPStart => stageType == StageType.MVP_START;
+  bool get isMVPStart => stageType == SocketType.MVP_START;
 
   setUserId(String id) {
     _userId = id;
@@ -276,7 +278,7 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   void _setStageType(BaseSocketResponse response, StompFrame frame) {
     switch (response.type) {
-      case StageType.USER_COUNT:
+      case SocketType.USER_COUNT:
         var socketResponse = BaseSocketResponse<UserCountResponse>.fromJson(
             jsonDecode(frame.body.toString()),
             UserCountResponse.fromJson(
@@ -285,7 +287,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         setUserCount(socketResponse.data!.userCount);
         setIsUserCountChange(true);
         break;
-      case StageType.TALK_MESSAGE:
+      case SocketType.TALK_MESSAGE:
         var socketResponse = BaseSocketResponse<TalkMessageResponse>.fromJson(
             jsonDecode(frame.body.toString()),
             TalkMessageResponse.fromJson(
@@ -298,10 +300,10 @@ class SocketStageProviderImpl extends ChangeNotifier
         setTalk(talk);
         setIsTalk(true);
         break;
-      case StageType.TALK_REACTION:
+      case SocketType.TALK_REACTION:
         setIsReaction(true);
         break;
-      case StageType.CATCH_START:
+      case SocketType.CATCH_START:
         var socketResponse = BaseSocketResponse<CatchStartResponse>.fromJson(
             jsonDecode(frame.body.toString()),
             CatchStartResponse.fromJson(
@@ -310,7 +312,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         _stageType = response.type;
         setStageView(_stageType);
         break;
-      case StageType.CATCH_END:
+      case SocketType.CATCH_END:
         var socketResponse = BaseSocketResponse<CatchEndResponse>.fromJson(
             jsonDecode(frame.body.toString()),
             CatchEndResponse.fromJson(
@@ -318,7 +320,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         _players.clear();
         _players.addAll(socketResponse.data?.players ?? []);
         break;
-      case StageType.PLAY_SKELETON:
+      case SocketType.PLAY_SKELETON:
         var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
             jsonDecode(frame.body.toString()),
             SendSkeletonResponse.fromJson(
@@ -346,12 +348,12 @@ class SocketStageProviderImpl extends ChangeNotifier
         }
         setIsPlaySkeletonChange(true);
         break;
-      case StageType.PLAY_END:
+      case SocketType.PLAY_END:
         player0 = null;
         player1 = null;
         player2 = null;
         break;
-      case StageType.MVP_START:
+      case SocketType.MVP_START:
         var socketResponse = BaseSocketResponse<StageMVPResponse>.fromJson(
             jsonDecode(frame.body.toString()),
             StageMVPResponse.fromJson(
@@ -361,7 +363,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         _stageType = response.type;
         setStageView(_stageType);
         break;
-      case StageType.MVP_SKELETON:
+      case SocketType.MVP_SKELETON:
         var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
             jsonDecode(frame.body.toString()),
             SendSkeletonResponse.fromJson(
@@ -385,43 +387,43 @@ class SocketStageProviderImpl extends ChangeNotifier
     }
   }
 
-  setStageView(StageType stageType) {
+  setStageView(SocketType stageType) {
     _navigatorKey.currentState?.pop();
-    _navigatorKey.currentState?.pushNamed(stageStageList[stageType.index]);
+    _navigatorKey.currentState?.pushNamed(socketTypeList[stageType.index]);
   }
 
   MaterialPageRoute onGenerateRoute(RouteSettings setting) {
-    var stageType = StageType.values.byName(setting.name ?? "WAIT");
+    var stageType = SocketType.values.byName(setting.name ?? "WAIT");
     switch (stageType) {
-      case StageType.STAGE_ROUTINE_STOP:
-      case StageType.WAIT:
+      case SocketType.STAGE_ROUTINE_STOP:
+      case SocketType.WAIT:
         return MaterialPageRoute<dynamic>(
             builder: (context) => const PoPoWaitView());
-      case StageType.CATCH:
-      case StageType.CATCH_START:
-      case StageType.CATCH_END_RESTART:
+      case SocketType.CATCH:
+      case SocketType.CATCH_START:
+      case SocketType.CATCH_END_RESTART:
         return MaterialPageRoute<dynamic>(
             builder: (context) => PoPoCatchView(type: stageType));
-      case StageType.PLAY:
-      case StageType.PLAY_START:
+      case SocketType.PLAY:
+      case SocketType.PLAY_START:
         return MaterialPageRoute<dynamic>(
             builder: (context) => PoPoPlayView(
-                  isResultState: _stageType == StageType.MVP_START,
+                  isResultState: _stageType == SocketType.MVP_START,
                   players: _players,
                   userId: _userId,
                 ));
 
-      case StageType.MVP:
-      case StageType.MVP_START:
+      case SocketType.MVP:
+      case SocketType.MVP_START:
         return (_mvp != null)
             ? MaterialPageRoute<dynamic>(
                 builder: (context) => PoPoResultView(
-                    isResultState: _stageType == StageType.MVP_START,
+                    isResultState: _stageType == SocketType.MVP_START,
                     mvp: _mvp,
                     userId: _userId!))
             : MaterialPageRoute<dynamic>(
                 builder: (context) => PoPoResultView(
-                    isResultState: _stageType == StageType.MVP_START,
+                    isResultState: _stageType == SocketType.MVP_START,
                     userId: _userId!));
       default:
         return MaterialPageRoute<dynamic>(

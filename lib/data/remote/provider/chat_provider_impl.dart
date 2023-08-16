@@ -23,7 +23,7 @@ class ChatProviderImpl extends ChangeNotifier implements ChatProvider {
   }
 
   @override
-  Future<BaseResponse<ChatRoomResponse>> poseChatRoom(
+  Future<BaseResponse<ChatRoomResponse>> postChatRoom(
       ChatRoomRequest request) async {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
