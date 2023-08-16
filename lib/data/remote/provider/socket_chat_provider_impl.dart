@@ -23,6 +23,7 @@ class SocketChatProviderImpl extends ChangeNotifier
 
   setIsSubscribe(bool value) {
     _isSubscribe = value;
+    print("mmm 구독 완");
     notifyListeners();
   }
 

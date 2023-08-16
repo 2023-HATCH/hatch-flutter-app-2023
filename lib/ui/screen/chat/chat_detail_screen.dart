@@ -115,9 +115,10 @@ final chatDetailListString = {
 };
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen({
-    Key? key,
-  }) : super(key: key);
+  const ChatDetailScreen({Key? key, required this.chatRoomId})
+      : super(key: key);
+
+  final String chatRoomId;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -332,7 +333,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   void _onSocketResponse() {
     if (_socketChatProvider.isConnect) {
-      print("mmm 구독 완");
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _socketChatProvider.setIsConnect(false);
+        _socketChatProvider.onSubscribe(widget.chatRoomId);
+      });
     }
   }
 }
