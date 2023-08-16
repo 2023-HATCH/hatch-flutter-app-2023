@@ -70,4 +70,30 @@ class VideoRepository {
       return false;
     }
   }
+
+  Future<void> getView(String videoId) async {
+    final url = Uri.parse('${AppUrl.videoUrl}/$videoId/view');
+
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
+
+    final headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      if (accessToken != null && refreshToken != null)
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+    };
+
+    final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    loginProvider.updateToken(response.headers);
+
+    if (response.statusCode == 200) {
+      debugPrint("조회수 증가 성공! json: $json");
+    } else {
+      debugPrint('조회수 증가 실패 json $json');
+    }
+  }
 }
