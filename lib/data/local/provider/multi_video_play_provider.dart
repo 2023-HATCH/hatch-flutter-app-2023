@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+
+import '../../remote/provider/video_provider.dart';
 
 class MultiVideoPlayProvider with ChangeNotifier {
   late List<VideoPlayerController> controllers = [];
@@ -28,6 +31,14 @@ class MultiVideoPlayProvider with ChangeNotifier {
     '토카토카',
   ];
 
+  final double endVideoViewAmount = 0.2; //20퍼센트 이상 시청했을 경우 조회수 증가
+  late BuildContext mainContext;
+  List<bool> isVideoViewEnding = List.generate(200, (index) => false);
+  Duration _videoPosition = Duration.zero;
+  Duration _videoDuration = Duration.zero;
+  List<bool> getAddView = List.generate(200, (index) => false);
+  List<bool> videoEnd = List.generate(200, (index) => false);
+
   void addVideos(List<VideoData> newVideoList) {
     videoList.addAll(newVideoList);
 
@@ -48,6 +59,38 @@ class MultiVideoPlayProvider with ChangeNotifier {
 
   void playVideo() {
     if (currentIndex >= 0 && currentIndex < controllers.length) {
+      controllers[currentIndex].addListener(() {
+        _videoPosition = controllers[currentIndex].value.position;
+        _videoDuration = controllers[currentIndex].value.duration;
+
+        final isMoreThen20Per = _videoPosition >=
+            _videoDuration * endVideoViewAmount; // 20퍼 이상 재생 됐을 때 True
+        final isMoreThen95Per = _videoPosition >=
+            _videoDuration -
+                const Duration(milliseconds: 100); // 대략 끝까지 재생 됐을 때 True
+
+        if (isMoreThen20Per) {
+          if (!isMoreThen95Per) {
+            if (!getAddView[currentIndex]) {
+              getAddView[currentIndex] = true;
+
+              debugPrint('❤️  $currentIndex번 영상 조회수 증가 요청');
+              final videoProvider =
+                  Provider.of<VideoProvider>(mainContext, listen: false);
+              videoProvider.getView(videoList[currentIndex].uuid);
+            }
+          } else {
+            if (getAddView[currentIndex]) {
+              getAddView[currentIndex] = false;
+            }
+            videoEnd[currentIndex] = !videoEnd[currentIndex];
+          }
+        } else {
+          getAddView[currentIndex] = false;
+          videoEnd[currentIndex] = false;
+        }
+      });
+
       if (!controllers[currentIndex].value.isPlaying) {
         controllers[currentIndex].setLooping(true); // 영상 무한 반복
         controllers[currentIndex].setVolume(1.0); // 볼륨 설정

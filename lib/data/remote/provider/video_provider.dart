@@ -31,4 +31,14 @@ class VideoProvider extends ChangeNotifier {
       debugPrint('VideoRepository deleteVideo 에러: $e');
     }
   }
+
+  Future<void> getView(String videoId) async {
+    try {
+      await VideoRepository().getView(videoId);
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('VideoRepository getView 에러: $e');
+    }
+  }
 }

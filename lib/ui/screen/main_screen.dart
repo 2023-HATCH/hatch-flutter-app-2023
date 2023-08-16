@@ -34,6 +34,7 @@ class _MainScreenState extends State<MainScreen> {
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider.mainContext = context;
   }
 
   final List<Widget> _screens = <Widget>[
