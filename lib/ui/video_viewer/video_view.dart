@@ -288,10 +288,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
                 child: Center(
                   child: Icon(
                     isPlaying
-                        ? Icons.play_circle_filled_rounded
-                        : Icons.pause_circle_filled_rounded,
+                        ? Icons.play_circle_filled_sharp
+                        : Icons.pause_circle_filled_sharp,
                     size: 60,
-                    color: const Color.fromARGB(60, 234, 234, 234),
+                    color: const Color.fromARGB(127, 147, 147, 147),
                   ),
                 ),
               );
