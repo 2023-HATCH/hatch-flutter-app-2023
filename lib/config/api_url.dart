@@ -42,10 +42,13 @@ class AppUrl {
   static const chatRoomUrl = "$_chatUrl/rooms";
 
   // web socket
+  // 스테이지
   static const socketSubscribeStageUrl = "/topic/stage";
   static const socketTalkUrl = "/app/talks/messages";
   static const socketReactionUrl = "/app/talks/reactions";
   static const socketPlaySkeletonUrl = "/app/stage/play/skeleton";
   static const socketMVPSkeletonUrl = "/app/stage/mvp/skeleton";
   static const socketExitUrl = "/app/stage/exit";
+  // 채팅
+  static const socketSubscribeChatUrl = "topic/chats/messages";
 }

@@ -176,8 +176,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         config: StompConfig(
       url: AppUrl.webSocketUrl,
       onConnect: (frame) {
-        _isConnect = true;
-        notifyListeners();
+        setIsConnect(true);
       },
       stompConnectHeaders: {'x-access-token': token},
       webSocketConnectHeaders: {'x-access-token': token},
