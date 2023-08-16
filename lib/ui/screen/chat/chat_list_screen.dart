@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/chat_list_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
-import 'package:pocket_pose/ui/widget/chat/chat_list_item_widget.dart';
+import 'package:pocket_pose/ui/widget/chat/chat_room_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
 final chatListString = {
@@ -113,10 +113,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
   ListView buildChatList(AsyncSnapshot<ChatListResponse> snapshot) {
     return ListView.separated(
       scrollDirection: Axis.vertical,
-      itemCount: snapshot.data!.list.length,
+      itemCount: snapshot.data!.chatRooms.length,
       itemBuilder: (context, index) {
-        final chatInfo = snapshot.data!.list[index];
-        return ChatListItemWidget(chat: chatInfo);
+        final chatRoom = snapshot.data!.chatRooms[index];
+        return ChatRoomListItemWidget(chatRoom: chatRoom);
       },
       separatorBuilder: (context, index) => const SizedBox(
         width: 40,

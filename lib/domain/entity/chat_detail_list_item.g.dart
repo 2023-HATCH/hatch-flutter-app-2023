@@ -9,7 +9,7 @@ part of 'chat_detail_list_item.dart';
 ChatDetailListItem _$ChatDetailListItemFromJson(Map<String, dynamic> json) =>
     ChatDetailListItem(
       content: json['content'] as String,
-      sender: ChatUserListItem.fromJson(json['sender'] as Map<String, dynamic>),
+      sender: UserListItem.fromJson(json['sender'] as Map<String, dynamic>),
       createdAt: json['createdAt'] as String,
     );
 

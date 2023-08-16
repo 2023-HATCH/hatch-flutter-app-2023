@@ -10,7 +10,7 @@ StageUserListResponse _$StageUserListResponseFromJson(
         Map<String, dynamic> json) =>
     StageUserListResponse(
       (json['list'] as List<dynamic>?)
-          ?.map((e) => StageUserListItem.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => UserListItem.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

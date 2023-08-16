@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_pose/domain/entity/stage_user_list_item.dart';
+import 'package:pocket_pose/domain/entity/user_list_item.dart';
 
 class UserListItemWidget extends StatelessWidget {
-  final StageUserListItem user;
+  final UserListItem user;
 
   const UserListItemWidget({super.key, required this.user});
 
