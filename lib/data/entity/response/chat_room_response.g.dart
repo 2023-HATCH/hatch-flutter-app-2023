@@ -8,10 +8,10 @@ part of 'chat_room_response.dart';
 
 ChatRoomResponse _$ChatRoomResponseFromJson(Map<String, dynamic> json) =>
     ChatRoomResponse(
-      opponentUserId: json['opponentUserId'] as String,
+      chatRoomId: json['chatRoomId'] as String,
     );
 
 Map<String, dynamic> _$ChatRoomResponseToJson(ChatRoomResponse instance) =>
     <String, dynamic>{
-      'opponentUserId': instance.opponentUserId,
+      'chatRoomId': instance.chatRoomId,
     };

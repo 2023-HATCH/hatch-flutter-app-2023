@@ -5,10 +5,10 @@ part 'chat_room_response.g.dart';
 
 @JsonSerializable()
 class ChatRoomResponse extends BaseObject<ChatRoomResponse> {
-  String opponentUserId;
+  String chatRoomId;
 
   ChatRoomResponse({
-    required this.opponentUserId,
+    required this.chatRoomId,
   });
 
   factory ChatRoomResponse.fromJson(Map<String, dynamic> json) =>

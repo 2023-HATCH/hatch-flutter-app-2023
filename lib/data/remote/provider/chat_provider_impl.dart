@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +26,11 @@ class ChatProviderImpl extends ChangeNotifier implements ChatProvider {
         "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
       };
       dio.options.contentType = "application/json";
-      var response = await dio.get(AppUrl.chatRoomCreateUrl, data: request);
+      var response =
+          await dio.post(AppUrl.chatRoomCreateUrl, data: jsonEncode(request));
 
       var responseJson = BaseResponse<ChatRoomResponse>.fromJson(
           response.data, ChatRoomResponse.fromJson(response.data['data']));
-
-      print("mmm response: $responseJson");
 
       notifyListeners();
       return responseJson;

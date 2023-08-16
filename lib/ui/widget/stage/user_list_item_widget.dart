@@ -10,20 +10,23 @@ class UserListItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(50),
-          child: (user.profileImg == null)
-              ? Image.asset(
-                  'assets/images/charactor_popo_default.png',
-                  width: 58,
-                  height: 58,
-                )
-              : Image.network(
-                  user.profileImg!,
-                  fit: BoxFit.cover,
-                  width: 58,
-                  height: 58,
-                ),
+        GestureDetector(
+          onTap: () {},
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: (user.profileImg == null)
+                ? Image.asset(
+                    'assets/images/charactor_popo_default.png',
+                    width: 58,
+                    height: 58,
+                  )
+                : Image.network(
+                    user.profileImg!,
+                    fit: BoxFit.cover,
+                    width: 58,
+                    height: 58,
+                  ),
+          ),
         ),
         const SizedBox(
           height: 4,
