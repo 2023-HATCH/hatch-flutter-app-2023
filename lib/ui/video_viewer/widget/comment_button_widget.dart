@@ -33,7 +33,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   late KaKaoLoginProvider _loginProvider;
   late final CommentProvider _commentProvider =
       Provider.of<CommentProvider>(context, listen: false);
-  late List<CommentData>? _commentList;
+  List<CommentData>? _commentList = [];
   final ScrollController _scrollController = ScrollController();
   late final MultiVideoPlayProvider _multiVideoPlayProvider =
       Provider.of<MultiVideoPlayProvider>(context, listen: false);
