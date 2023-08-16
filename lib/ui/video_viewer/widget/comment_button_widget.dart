@@ -426,7 +426,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.end,
+                                          CrossAxisAlignment.center,
                                       children: [
                                         for (int i = 0;
                                             i < emojiList.length;
@@ -466,8 +466,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                             },
                                             child: Text(
                                               emojiList[i],
-                                              style:
-                                                  const TextStyle(fontSize: 20),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                              ),
                                             ),
                                           ),
                                       ],
