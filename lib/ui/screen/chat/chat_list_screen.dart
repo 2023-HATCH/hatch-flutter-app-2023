@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/entity/response/chat_list_response.dart';
+import 'package:pocket_pose/data/entity/response/chat_room_list_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_room_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
 final chatListString = {
-  "list": [
+  "chatRooms": [
     {
       "chatRoomId": "1",
       "opponentUser": {
@@ -64,14 +64,14 @@ class ChatListScreen extends StatefulWidget {
 
 class _ChatListScreenState extends State<ChatListScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
-  Future<ChatListResponse>? chatList;
+  Future<ChatRoomListResponse>? chatList;
 
   @override
   void initState() {
     _multiVideoPlayProvider = Provider.of(context, listen: false);
     _multiVideoPlayProvider.pauseVideo();
 
-    chatList = Future.value(ChatListResponse.fromJson(chatListString));
+    chatList = Future.value(ChatRoomListResponse.fromJson(chatListString));
 
     super.initState();
   }
@@ -110,7 +110,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  ListView buildChatList(AsyncSnapshot<ChatListResponse> snapshot) {
+  ListView buildChatList(AsyncSnapshot<ChatRoomListResponse> snapshot) {
     return ListView.separated(
       scrollDirection: Axis.vertical,
       itemCount: snapshot.data!.chatRooms.length,
