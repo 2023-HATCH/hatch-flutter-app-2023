@@ -5,12 +5,16 @@ part 'chat_detail_list_item.g.dart';
 
 @JsonSerializable()
 class ChatDetailListItem {
-  String content = "";
-  UserListItem sender;
+  String chatMessageId;
   String createdAt;
+  UserListItem sender;
+  String content = "";
 
   ChatDetailListItem(
-      {required this.content, required this.sender, required this.createdAt});
+      {required this.chatMessageId,
+      required this.createdAt,
+      required this.sender,
+      required this.content});
 
   factory ChatDetailListItem.fromJson(Map<String, dynamic> json) =>
       _$ChatDetailListItemFromJson(json);

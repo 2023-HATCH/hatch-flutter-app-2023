@@ -69,6 +69,7 @@ class SocketChatProviderImpl extends ChangeNotifier
                 jsonDecode(frame.body.toString()),
                 SendChatResponse.fromJson(
                     jsonDecode(frame.body.toString())['data']));
+            print("mmm response: ${socketResponse.data?.sender.nickname}");
             setIsChat(true);
           }
         });
