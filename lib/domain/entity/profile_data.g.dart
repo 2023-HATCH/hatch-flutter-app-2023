@@ -1,14 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_profile_data.dart';
+part of 'profile_data.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserProfileData _$UserProfileDataFromJson(Map<String, dynamic> json) =>
-    UserProfileData(
-      user: UserData.fromJson(json['user'] as Map<String, dynamic>),
+ProfileData _$ProfileDataFromJson(Map<String, dynamic> json) => ProfileData(
       isMe: json['isMe'] as bool,
       introduce: json['introduce'] as String,
       instagramId: json['instagramId'] as String,
@@ -19,9 +17,8 @@ UserProfileData _$UserProfileDataFromJson(Map<String, dynamic> json) =>
       modifiedAt: DateTime.parse(json['modifiedAt'] as String),
     );
 
-Map<String, dynamic> _$UserProfileDataToJson(UserProfileData instance) =>
+Map<String, dynamic> _$ProfileDataToJson(ProfileData instance) =>
     <String, dynamic>{
-      'user': instance.user,
       'isMe': instance.isMe,
       'introduce': instance.introduce,
       'instagramId': instance.instagramId,

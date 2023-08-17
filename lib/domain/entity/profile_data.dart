@@ -1,11 +1,9 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pocket_pose/domain/entity/user_data.dart';
 
-part 'user_profile_data.g.dart';
+part 'profile_data.g.dart';
 
 @JsonSerializable()
-class UserProfileData {
-  final UserData user;
+class ProfileData {
   final bool isMe;
   final String introduce;
   final String instagramId;
@@ -15,8 +13,7 @@ class UserProfileData {
   final DateTime createdAt;
   final DateTime modifiedAt;
 
-  UserProfileData({
-    required this.user,
+  ProfileData({
     required this.isMe,
     required this.introduce,
     required this.instagramId,
@@ -27,7 +24,7 @@ class UserProfileData {
     required this.modifiedAt,
   });
 
-  factory UserProfileData.fromJson(Map<String, dynamic> json) =>
-      _$UserProfileDataFromJson(json);
-  Map<String, dynamic> toJson() => _$UserProfileDataToJson(this);
+  factory ProfileData.fromJson(Map<String, dynamic> json) =>
+      _$ProfileDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ProfileDataToJson(this);
 }
