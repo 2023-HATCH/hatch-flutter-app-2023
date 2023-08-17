@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
-import 'package:pocket_pose/ui/video_viewer/video_view.dart';
+import 'package:pocket_pose/ui/video_viewer/multi_video_player_view.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -91,7 +91,7 @@ class _VideoMyScreenState extends State<VideoMyScreen> {
       ),
       extendBodyBehindAppBar: true, //body 위에 appbar
       resizeToAvoidBottomInset: false,
-      body: const VideoView(screenName: 'my'),
+      body: const MultiVideoPlayerView(screenName: 'my'),
       bottomSheet: Container(
         height: 65,
         color: Colors.black,

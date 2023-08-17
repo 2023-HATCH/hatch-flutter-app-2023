@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
-import 'package:pocket_pose/ui/video_viewer/video_view.dart';
+import 'package:pocket_pose/ui/video_viewer/multi_video_player_view.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/comment_button_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +60,7 @@ class _VideoSomeoneScreenState extends State<VideoSomeoneScreen> {
         ),
         extendBodyBehindAppBar: true, //body 위에 appbar
         resizeToAvoidBottomInset: false,
-        body: const VideoView(screenName: 'someone'),
+        body: const MultiVideoPlayerView(screenName: 'someone'),
         bottomSheet: Container(
           height: 65,
           color: Colors.white,

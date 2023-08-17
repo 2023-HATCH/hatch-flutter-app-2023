@@ -7,7 +7,7 @@ import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/chat/chat_room_list_screen.dart';
 
 import 'package:pocket_pose/ui/screen/home/home_search_screen.dart';
-import 'package:pocket_pose/ui/video_viewer/video_view.dart';
+import 'package:pocket_pose/ui/video_viewer/multi_video_player_view.dart';
 import 'package:pocket_pose/ui/widget/home/upload_button_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         extendBodyBehindAppBar: true, //body 위에 appbar
         resizeToAvoidBottomInset: false,
-        body: const VideoView(screenName: 'home'));
+        body: const MultiVideoPlayerView(screenName: 'home'));
   }
 
   void _showChatScreen() {
