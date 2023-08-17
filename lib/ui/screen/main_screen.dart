@@ -32,6 +32,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
 
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _multiVideoPlayProvider.mainContext = context;
@@ -39,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = <Widget>[
     const HomeScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) async {

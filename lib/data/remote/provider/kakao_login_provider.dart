@@ -95,8 +95,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
 
   // token 관리
   Future<bool> checkAccessToken() async {
-    _accessToken = await _storage.read(key: _accessTokenKey);
-    _refreshToken = await _storage.read(key: _refreshTokenKey);
+    if (_accessToken == null || _refreshToken == null) {
+      _accessToken = await _storage.read(key: _accessTokenKey);
+      _refreshToken = await _storage.read(key: _refreshTokenKey);
+    }
 
     if (_accessToken != null && _refreshToken != null) {
       return true;
