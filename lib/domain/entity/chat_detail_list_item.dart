@@ -5,13 +5,13 @@ part 'chat_detail_list_item.g.dart';
 
 @JsonSerializable()
 class ChatDetailListItem {
-  String chatMessageId;
+  String? chatMessageId;
   String createdAt;
   UserListItem sender;
   String content = "";
 
   ChatDetailListItem(
-      {required this.chatMessageId,
+      {this.chatMessageId,
       required this.createdAt,
       required this.sender,
       required this.content});

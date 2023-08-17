@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
@@ -10,11 +9,9 @@ import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart'
 import 'package:provider/provider.dart';
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen(
-      {Key? key, required this.opponentUserId, required this.chatRoomId})
+  const ChatDetailScreen({Key? key, required this.chatRoomId})
       : super(key: key);
 
-  final String opponentUserId;
   final String chatRoomId;
 
   @override
@@ -35,15 +32,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   void initState() {
     super.initState();
-
-    // setState(() {
-    //   var chatDetailJson =
-    //       ChatDetailListResponse.fromJson(chatDetailListString);
-    //   chatDetailJson.messeges = chatDetailJson.messeges.reversed.toList();
-    //   for (var element in chatDetailJson.messeges) {
-    //     _messageList.add(element);
-    //   }
-    // });
+    // 선택한 채팅방 채팅메세지 조회
+    _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
+    _chatProvider.getChatDetailList(widget.chatRoomId).then((value) {
+      for (var chat in value.data.messages) {
+        _messageList.add(chat);
+      }
+    });
   }
 
   @override
@@ -57,29 +52,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Widget build(BuildContext context) {
     _socketChatProvider =
         Provider.of<SocketChatProviderImpl>(context, listen: true);
-    _chatProvider = Provider.of<ChatProviderImpl>(context, listen: true);
-
-    _chatProvider.getChatDetailList(widget.chatRoomId).then((value) {
-      for (var chat in value.data.messages) {
-        _messageList.add(chat);
-      }
-    });
 
     // 입장
     _chatEnter();
     // 소켓 반응 처리
     _onSocketResponse();
-
-    // build마다 채팅 스크롤 맨 밑으로
-    if (_messageList.isNotEmpty) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 50),
-          curve: Curves.easeOut,
-        );
-      });
-    }
 
     return Scaffold(
       appBar: _buildAppBar(context),
@@ -242,19 +219,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   void _onSocketResponse() {
     if (_socketChatProvider.isConnect) {
-      // WidgetsBinding.instance.addPostFrameCallback((_) {
-      //   _socketChatProvider.setIsConnect(false);
-      //   _chatProvider
-      //       .putChatRoom(ChatRoomRequest(opponentUserId: widget.opponentUserId))
-      //       .then((_) => _socketChatProvider.onSubscribe(widget.chatRoomId));
-      // });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _socketChatProvider.setIsConnect(false);
+        _socketChatProvider.onSubscribe(widget.chatRoomId);
+      });
     }
 
     // 실시간 채팅
     if (_socketChatProvider.isChat) {
       _socketChatProvider.setIsChat(false);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        print("mmm 받음여");
+        setState(() {
+          _messageList.insert(0, _socketChatProvider.chat!);
+        });
       });
     }
   }

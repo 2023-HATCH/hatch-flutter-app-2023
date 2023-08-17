@@ -6,6 +6,7 @@ import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
 import 'package:pocket_pose/data/entity/socket_response/send_chat_response.dart';
+import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_chat_provider.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
@@ -14,10 +15,13 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 class SocketChatProviderImpl extends ChangeNotifier
     implements SocketChatProvider {
   StompClient? _stompClient;
+  ChatDetailListItem? _chat;
 
   bool _isConnect = false;
   bool _isSubscribe = false;
   bool _isChat = false;
+
+  ChatDetailListItem? get chat => _chat;
 
   bool get isConnect => _isConnect;
   bool get isSubscribe => _isSubscribe;
@@ -69,7 +73,10 @@ class SocketChatProviderImpl extends ChangeNotifier
                 jsonDecode(frame.body.toString()),
                 SendChatResponse.fromJson(
                     jsonDecode(frame.body.toString())['data']));
-            print("mmm response: ${socketResponse.data?.sender.nickname}");
+            _chat = ChatDetailListItem(
+                createdAt: socketResponse.data!.createdAt,
+                sender: socketResponse.data!.sender,
+                content: socketResponse.data!.content);
             setIsChat(true);
           }
         });

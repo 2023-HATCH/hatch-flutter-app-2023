@@ -8,7 +8,7 @@ part of 'chat_detail_list_item.dart';
 
 ChatDetailListItem _$ChatDetailListItemFromJson(Map<String, dynamic> json) =>
     ChatDetailListItem(
-      chatMessageId: json['chatMessageId'] as String,
+      chatMessageId: json['chatMessageId'] as String?,
       createdAt: json['createdAt'] as String,
       sender: UserListItem.fromJson(json['sender'] as Map<String, dynamic>),
       content: json['content'] as String,
