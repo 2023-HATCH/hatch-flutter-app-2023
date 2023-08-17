@@ -45,10 +45,10 @@ class ProfileTapbarWidget extends StatelessWidget {
               InkWell(
                 onTap: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfileEditScreen()),
-                  );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProfileEditScreen(
+                              profileResponse: profileResponse)));
                 },
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
@@ -91,10 +91,10 @@ class ProfileTapbarWidget extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProfileEditScreen()),
-                      );
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfileEditScreen(
+                                  profileResponse: profileResponse)));
                     },
                     child: Container(
                       margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),

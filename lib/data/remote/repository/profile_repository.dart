@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
+import 'package:pocket_pose/data/entity/request/profile_edit_request.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/profile_data.dart';
@@ -54,7 +55,41 @@ class ProfileRepository {
         profile: profile,
       );
     } else {
-      throw Exception('댓글 목록 조회 실패');
+      throw Exception('프로필 정보 조회 실패');
+    }
+  }
+
+  Future<bool> patchProfile(ProfileEditRequest profileEditRequest) async {
+    final url = Uri.parse('${AppUrl.profileEditUrl}/');
+
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json;charset=UTF-8',
+      if (accessToken != null && refreshToken != null)
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+    };
+
+    final body = jsonEncode({
+      'introduce': profileEditRequest.introduce,
+      'instagramId': profileEditRequest.instagramId,
+      'twitterId': profileEditRequest.twitterId,
+    });
+
+    final response = await http.patch(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      debugPrint("프로필 수정 성공! json: $json");
+
+      loginProvider.updateToken(response.headers);
+
+      return true;
+    } else {
+      throw Exception('프로필 수정 실패');
     }
   }
 }

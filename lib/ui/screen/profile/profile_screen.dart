@@ -29,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   late ProfileProvider _profileProvider;
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late String? _userId;
-  bool isGetProfilDone = false;
+
   bool isNotBottomNavi = false;
 
   final List<String> _videoImagePath1 = [
@@ -84,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<bool> _initUser() async {
-    if (!isGetProfilDone) {
+    if (!_profileProvider.isGetProfilDone) {
       // 로그인 했는지 확인
       if (await _loginProvider.checkAccessToken()) {
         // 로그인 한 경우
@@ -102,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           });
         }
       }
-      isGetProfilDone = true;
+      _profileProvider.isGetProfilDone = true;
       if (_userId == null) {
         return true;
       } else {
@@ -118,6 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.dispose();
     _tabController.dispose();
     _multiVideoPlayProvider.playVideo();
+    _profileProvider.isGetProfilDone = false;
   }
 
   @override
@@ -139,8 +140,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                             child: Column(
                               children: [
                                 ProfileTapbarWidget(
-                                    profileResponse: _profileProvider.response!,
-                                    isNotBottomNavi: isNotBottomNavi),
+                                  profileResponse: _profileProvider.response!,
+                                  isNotBottomNavi: isNotBottomNavi,
+                                ),
                                 ProfileUserInfoWidget(
                                     profileResponse:
                                         _profileProvider.response!),

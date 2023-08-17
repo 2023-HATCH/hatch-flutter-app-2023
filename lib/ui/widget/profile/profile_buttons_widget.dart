@@ -90,7 +90,8 @@ class ProfileButtonsWidget extends StatelessWidget {
             ),
           ),
           Visibility(
-            visible: profileResponse.profile.instagramId != null,
+            visible: profileResponse.profile.instagramId != null &&
+                profileResponse.profile.instagramId != '',
             child: Container(
               margin: const EdgeInsets.fromLTRB(2, 0, 2, 0),
               child: OutlinedButton(
@@ -112,7 +113,8 @@ class ProfileButtonsWidget extends StatelessWidget {
             ),
           ),
           Visibility(
-            visible: profileResponse.profile.twitterId != null,
+            visible: profileResponse.profile.twitterId != null &&
+                profileResponse.profile.twitterId != '',
             child: Container(
               margin: const EdgeInsets.fromLTRB(2, 0, 2, 0),
               child: OutlinedButton(

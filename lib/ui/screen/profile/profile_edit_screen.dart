@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/entity/request/profile_edit_request.dart';
+import 'package:pocket_pose/data/entity/response/profile_response.dart';
+import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
+import 'package:provider/provider.dart';
 
 class ProfileEditScreen extends StatefulWidget {
-  const ProfileEditScreen({Key? key}) : super(key: key);
+  const ProfileEditScreen({required this.profileResponse, Key? key})
+      : super(key: key);
+  final ProfileResponse profileResponse;
 
   @override
   _ProfileEditScreenState createState() => _ProfileEditScreenState();
 }
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
+  late ProfileProvider _profileProvider;
   final List<TextEditingController> _textControllers = [
     TextEditingController(),
     TextEditingController(),
@@ -47,6 +55,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _profileProvider = Provider.of<ProfileProvider>(context, listen: true);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -84,18 +94,30 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 width: 100,
                 height: 100,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    'assets/images/profile_profile.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Image.network(
+                      widget.profileResponse.user.profileImg!,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: AppColor.purpleColor,
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) => Image.asset(
+                        'assets/images/charactor_popo_default.png',
+                        fit: BoxFit.cover,
+                      ),
+                      fit: BoxFit.cover,
+                    )),
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
-                child: const Text(
-                  "cat_chur",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                child: Text(
+                  widget.profileResponse.user.nickname,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
               const SizedBox(height: 50.0),
@@ -109,10 +131,16 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 child: TextField(
                   controller: _textControllers[0],
                   cursorColor: Colors.white,
-                  decoration: const InputDecoration(
-                    hintText: '자기소개',
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                    labelStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                  decoration: InputDecoration(
+                    hintText:
+                        widget.profileResponse.profile.introduce == null ||
+                                widget.profileResponse.profile.introduce == ''
+                            ? '자기소개'
+                            : widget.profileResponse.profile.introduce,
+                    hintStyle:
+                        const TextStyle(color: Colors.grey, fontSize: 14),
+                    labelStyle:
+                        const TextStyle(color: Colors.grey, fontSize: 14),
                     border: InputBorder.none,
                   ),
                 ),
@@ -173,12 +201,18 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       child: TextField(
                         controller: _textControllers[1],
                         cursorColor: Colors.white,
-                        decoration: const InputDecoration(
-                          hintText: 'Instagram',
+                        decoration: InputDecoration(
+                          hintText: widget.profileResponse.profile
+                                          .instagramId ==
+                                      null ||
+                                  widget.profileResponse.profile.instagramId ==
+                                      ''
+                              ? 'Instagram'
+                              : widget.profileResponse.profile.instagramId,
                           hintStyle:
-                              TextStyle(color: Colors.grey, fontSize: 14),
+                              const TextStyle(color: Colors.grey, fontSize: 14),
                           labelStyle:
-                              TextStyle(color: Colors.grey, fontSize: 14),
+                              const TextStyle(color: Colors.grey, fontSize: 14),
                           border: InputBorder.none,
                         ),
                       ),
@@ -204,12 +238,16 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       child: TextField(
                         controller: _textControllers[2],
                         cursorColor: Colors.white,
-                        decoration: const InputDecoration(
-                          hintText: 'twitter',
+                        decoration: InputDecoration(
+                          hintText: widget.profileResponse.profile.twitterId ==
+                                      null ||
+                                  widget.profileResponse.profile.twitterId == ''
+                              ? 'Twitter'
+                              : widget.profileResponse.profile.twitterId,
                           hintStyle:
-                              TextStyle(color: Colors.grey, fontSize: 14),
+                              const TextStyle(color: Colors.grey, fontSize: 14),
                           labelStyle:
-                              TextStyle(color: Colors.grey, fontSize: 14),
+                              const TextStyle(color: Colors.grey, fontSize: 14),
                           border: InputBorder.none,
                         ),
                       ),
@@ -230,7 +268,20 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           children: [
             Expanded(
               child: ElevatedButton(
-                onPressed: isButtonEnabled() ? () => {} : null,
+                onPressed: isButtonEnabled()
+                    ? () {
+                        // 버튼 클릭시 프로필 수정
+                        _profileProvider.patchProfile(ProfileEditRequest(
+                            introduce: _textControllers[0].text,
+                            instagramId: _textControllers[1].text,
+                            twitterId: _textControllers[2].text));
+
+                        Fluttertoast.showToast(msg: '수정되었습니다!');
+                        // profileResponse 새로고침
+                        _profileProvider.isGetProfilDone = false;
+                        Navigator.pop(context);
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isButtonEnabled()
                       ? AppColor.purpleColor
