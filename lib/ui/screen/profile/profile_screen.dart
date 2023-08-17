@@ -8,7 +8,6 @@ import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/profile_tab_videos_widget.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/profile_tapbar_widget.dart';
 
-import 'package:pocket_pose/ui/widget/not_login_widget.dart';
 import 'package:pocket_pose/ui/widget/profile/profile_user_info_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   late ProfileProvider _profileProvider;
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late String? _userId;
-  bool isLogin = false;
   bool isGetProfilDone = false;
   bool isNotBottomNavi = false;
 
@@ -87,13 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Future<bool> _initUser() async {
     if (!isGetProfilDone) {
-      // 프로필 조회 완료
-      // if (isLogin == true) { // 로그인 한 경우
-      //   return true;
-      // }
-
       // 로그인 했는지 확인
-      if (isLogin = await _loginProvider.checkAccessToken()) {
+      if (await _loginProvider.checkAccessToken()) {
         // 로그인 한 경우
         UserData user = await _loginProvider.getUser(); // 로그인 된 사용자 정보
 
@@ -109,9 +102,12 @@ class _ProfileScreenState extends State<ProfileScreen>
           });
         }
       }
-
-      _profileProvider.getUserProfile(_userId!);
       isGetProfilDone = true;
+      if (_userId == null) {
+        return true;
+      } else {
+        _profileProvider.getUserProfile(_userId!);
+      }
     }
 
     return true;
@@ -136,71 +132,65 @@ class _ProfileScreenState extends State<ProfileScreen>
             loading++;
             if (loading >= 2) {
               return _profileProvider.response != null
-                  ? Visibility(
-                      visible:
-                          _profileProvider.response!.profile.isMe && !isLogin,
-                      replacement: Scaffold(
-                        body: CustomScrollView(
-                          slivers: <Widget>[
-                            SliverToBoxAdapter(
-                              child: Column(
-                                children: [
-                                  ProfileTapbarWidget(
-                                      profileResponse:
-                                          _profileProvider.response!,
-                                      isNotBottomNavi: isNotBottomNavi),
-                                  ProfileUserInfoWidget(
-                                      profileResponse:
-                                          _profileProvider.response!),
-                                ],
-                              ),
+                  ? Scaffold(
+                      body: CustomScrollView(
+                        slivers: <Widget>[
+                          SliverToBoxAdapter(
+                            child: Column(
+                              children: [
+                                ProfileTapbarWidget(
+                                    profileResponse: _profileProvider.response!,
+                                    isNotBottomNavi: isNotBottomNavi),
+                                ProfileUserInfoWidget(
+                                    profileResponse:
+                                        _profileProvider.response!),
+                              ],
                             ),
-                            SliverAppBar(
-                              pinned: true,
-                              backgroundColor: AppColor.whiteColor,
-                              toolbarHeight: 0.0,
-                              bottom: TabBar(
-                                controller: _tabController,
-                                tabs: [
-                                  Tab(
-                                    icon: _tabController.index == 0
-                                        ? SvgPicture.asset(
-                                            'assets/icons/ic_profile_list_select.svg')
-                                        : SvgPicture.asset(
-                                            'assets/icons/ic_profile_list_unselect.svg'),
-                                  ),
-                                  Tab(
-                                    icon: _tabController.index == 1
-                                        ? SvgPicture.asset(
-                                            'assets/icons/ic_heart_select.svg')
-                                        : SvgPicture.asset(
-                                            'assets/icons/ic_heart_unselect.svg'),
-                                  ),
-                                ],
-                                indicator: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: AppColor.purpleColor,
-                                      width: 3.0,
-                                    ),
+                          ),
+                          SliverAppBar(
+                            pinned: true,
+                            backgroundColor: AppColor.whiteColor,
+                            toolbarHeight: 0.0,
+                            bottom: TabBar(
+                              controller: _tabController,
+                              tabs: [
+                                Tab(
+                                  icon: _tabController.index == 0
+                                      ? SvgPicture.asset(
+                                          'assets/icons/ic_profile_list_select.svg')
+                                      : SvgPicture.asset(
+                                          'assets/icons/ic_profile_list_unselect.svg'),
+                                ),
+                                Tab(
+                                  icon: _tabController.index == 1
+                                      ? SvgPicture.asset(
+                                          'assets/icons/ic_heart_select.svg')
+                                      : SvgPicture.asset(
+                                          'assets/icons/ic_heart_unselect.svg'),
+                                ),
+                              ],
+                              indicator: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: AppColor.purpleColor,
+                                    width: 3.0,
                                   ),
                                 ),
-                                onTap: (index) {
-                                  debugPrint("Selected Tab: $index");
-                                  setState(
-                                      () {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
-                                },
                               ),
+                              onTap: (index) {
+                                debugPrint("Selected Tab: $index");
+                                setState(
+                                    () {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
+                              },
                             ),
-                            ProfileTabVideosWidget(
-                                index: _tabController.index,
-                                tabController: _tabController,
-                                videoImagePath1: _videoImagePath1,
-                                videoImagePath2: _videoImagePath2),
-                          ],
-                        ),
+                          ),
+                          ProfileTabVideosWidget(
+                              index: _tabController.index,
+                              tabController: _tabController,
+                              videoImagePath1: _videoImagePath1,
+                              videoImagePath2: _videoImagePath2),
+                        ],
                       ),
-                      child: const Scaffold(body: NotLoginWidget()),
                     )
                   : Container(
                       color: Colors.white,
