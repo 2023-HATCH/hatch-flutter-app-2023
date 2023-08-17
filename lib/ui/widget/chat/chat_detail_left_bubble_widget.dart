@@ -36,14 +36,18 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
           profileVisiblity
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    (chatDetail.sender.profileImg == null)
-                        ? 'assets/images/charactor_popo_default.png'
-                        : chatDetail.sender.profileImg!,
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.contain,
-                  ),
+                  child: (chatDetail.sender.profileImg == null)
+                      ? Image.asset(
+                          'assets/images/charactor_popo_default.png',
+                          width: 50,
+                          height: 50,
+                        )
+                      : Image.network(
+                          chatDetail.sender.profileImg!,
+                          fit: BoxFit.cover,
+                          width: 50,
+                          height: 50,
+                        ),
                 )
               : const SizedBox(
                   width: 50,

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_left_bubble_widget.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,8 @@ class ChatDetailScreen extends StatefulWidget {
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   late SocketChatProviderImpl _socketChatProvider;
   late ChatProviderImpl _chatProvider;
+  late KaKaoLoginProvider _loginProvider;
+  late String _userId;
   bool _isEnter = false;
 
   final List<ChatDetailListItem> _messageList = [];
@@ -32,6 +36,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   void initState() {
     super.initState();
+
+    _initUserId();
+
     // 선택한 채팅방 채팅메세지 조회
     _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
     _chatProvider.getChatDetailList(widget.chatRoomId).then((value) {
@@ -46,6 +53,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.dispose();
 
     _scrollController.dispose();
+  }
+
+  _initUserId() async {
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+    UserData user = await _loginProvider.getUser();
+
+    setState(() {
+      _userId = user.userId;
+    });
   }
 
   @override
@@ -90,14 +106,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             itemCount: _messageList.length,
             itemBuilder: (BuildContext context, int index) {
               if (index < _messageList.length - 1 &&
-                  _messageList[index + 1].sender.nickname != "pochako") {
+                  _messageList[index + 1].sender.userId == _userId) {
                 _isNextSenderRight = true;
               } else if (index == _messageList.length - 1) {
                 _isNextSenderRight = true;
               } else {
                 _isNextSenderRight = false;
               }
-              return _messageList[index].sender.nickname != "pochako"
+              return _messageList[index].sender.userId == _userId
                   ? ChatDetailRightBubbleWidget(chatDetail: _messageList[index])
                   : ChatDetailLeftBubbleWidget(
                       chatDetail: _messageList[index],

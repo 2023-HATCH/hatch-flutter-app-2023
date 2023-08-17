@@ -16,9 +16,8 @@ class ChatRoomListItemWidget extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ChatDetailScreen(
-                    opponentUserId: chatRoom.opponentUser.userId,
-                    chatRoomId: chatRoom.chatRoomId)),
+                builder: (context) =>
+                    ChatDetailScreen(chatRoomId: chatRoom.chatRoomId)),
           );
         },
         child: Padding(
