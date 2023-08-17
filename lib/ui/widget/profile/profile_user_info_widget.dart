@@ -1,33 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_follow_screen.dart';
+import 'package:pocket_pose/ui/widget/profile/profile_buttons_widget.dart';
 
 // ignore: must_be_immutable
 class ProfileUserInfoWidget extends StatelessWidget {
-  ProfileUserInfoWidget({
+  const ProfileUserInfoWidget({
     super.key,
     required this.profileResponse,
   });
 
   final ProfileResponse profileResponse;
-
-  List<String> videoLinks = [
-    'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-2.mp4',
-    'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-4.mp4',
-    'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-5.mp4',
-    'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-3.mp4',
-    'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-1.mp4',
-  ];
-
-  List<String> likes = [
-    '6.6천',
-    '1만',
-    '9.2만',
-    '9.4천',
-    '2.8만',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -116,48 +100,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 0, 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // Respond to button press
-                    },
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-
-                      minimumSize: const Size(100, 30), // 원하는 가로 길이와 세로 길이 지정
-                    ),
-                    child: const Text(
-                      "메시지",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ),
-                OutlinedButton(
-                  onPressed: () {
-                    // Respond to button press
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    minimumSize: const Size(30, 30), // 원하는 가로 길이와 세로 길이 지정
-                  ),
-                  child: SvgPicture.asset(
-                    'assets/icons/ic_profile_insta.svg',
-                    width: 20,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ProfileButtonsWidget(profileResponse: profileResponse),
           Text(profileResponse.profile.introduce ?? ''),
         ],
       )),
