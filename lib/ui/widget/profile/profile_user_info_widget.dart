@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/domain/entity/profile_data.dart';
-import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_follow_screen.dart';
 
 // ignore: must_be_immutable
 class ProfileUserInfoWidget extends StatelessWidget {
   ProfileUserInfoWidget({
     super.key,
-    required this.user,
-    required this.profile,
+    required this.profileResponse,
   });
 
-  final UserData user;
-  final ProfileData profile;
+  final ProfileResponse profileResponse;
 
   List<String> videoLinks = [
     'https://popo2023.s3.ap-northeast-2.amazonaws.com/video/test/V2-2.mp4',
@@ -47,7 +44,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: Image.network(
-                  user.profileImg!,
+                  profileResponse.user.profileImg!,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Center(
@@ -66,7 +63,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
           Container(
             margin: const EdgeInsets.fromLTRB(0, 20, 0, 14),
             child: Text(
-              user.nickname,
+              profileResponse.user.nickname,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
@@ -84,7 +81,8 @@ class ProfileUserInfoWidget extends StatelessWidget {
                       children: [
                         Container(
                             margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                            child: Text(profile.followerCount.toString())),
+                            child: Text(profileResponse.profile.followerCount
+                                .toString())),
                         const Text("팔로워"),
                       ],
                     ),
@@ -103,7 +101,8 @@ class ProfileUserInfoWidget extends StatelessWidget {
                     children: [
                       Container(
                           margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                          child: Text(profile.followingCount.toString())),
+                          child: Text(profileResponse.profile.followingCount
+                              .toString())),
                       const Text("팔로잉"),
                     ],
                   ),
@@ -159,7 +158,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
               ],
             ),
           ),
-          Text(profile.introduce ?? ''),
+          Text(profileResponse.profile.introduce ?? ''),
         ],
       )),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
@@ -27,10 +28,11 @@ class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
   late KaKaoLoginProvider _loginProvider;
   late ProfileProvider _profileProvider;
-  late UserData _user;
-  late String? _userId = widget.userId;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
+  late String? _userId;
   bool isLogin = false;
   bool isGetProfilDone = false;
+  bool isNotBottomNavi = false;
 
   final List<String> _videoImagePath1 = [
     "profile_video_0",
@@ -70,38 +72,56 @@ class _ProfileScreenState extends State<ProfileScreen>
   ];
 
   late TabController _tabController;
+  int loading = 0;
 
   @override
   void initState() {
     super.initState();
-
     _tabController = TabController(length: 2, vsync: this);
+    _userId = widget.userId;
+
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    _multiVideoPlayProvider.pauseVideo();
   }
 
   Future<bool> _initUser() async {
-    if (isLogin == true) {
-      return true;
-    }
-    if (await _loginProvider.checkAccessToken()) {
-      isLogin = true;
-      UserData user = await _loginProvider.getUser();
-      if (mounted) {
-        setState(() {
-          _user = user;
-          _userId = _user.userId;
-        });
+    if (!isGetProfilDone) {
+      // 프로필 조회 완료
+      // if (isLogin == true) { // 로그인 한 경우
+      //   return true;
+      // }
+
+      // 로그인 했는지 확인
+      if (isLogin = await _loginProvider.checkAccessToken()) {
+        // 로그인 한 경우
+        UserData user = await _loginProvider.getUser(); // 로그인 된 사용자 정보
+
+        if (mounted) {
+          setState(() {
+            if (_userId != null) {
+              // navigation이 아닌 곳에서 자신의 프로필을 조회한 경우
+              if (_userId == user.userId) {
+                isNotBottomNavi = true;
+              }
+            }
+            _userId ??= user.userId;
+          });
+        }
       }
 
-      return true;
+      _profileProvider.getUserProfile(_userId!);
+      isGetProfilDone = true;
     }
-    return false;
+
+    return true;
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
-
     super.dispose();
+    _tabController.dispose();
+    _multiVideoPlayProvider.playVideo();
   }
 
   @override
@@ -109,99 +129,107 @@ class _ProfileScreenState extends State<ProfileScreen>
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: true);
     _profileProvider = Provider.of<ProfileProvider>(context, listen: true);
 
-    if (!isGetProfilDone) {
-      if (_userId == null) {
-        debugPrint('프로필: 사용자입니다!!!!!!!!');
-        _initUser().then((value) {
-          if (value) {
-            debugPrint('프로필: 로그인 했습니다. 로그인 $isLogin');
-            _profileProvider.getUserProfile(_userId!);
-          } else {
-            debugPrint('프로필: 로그인 하지 않았습니다.로그인 $isLogin');
-          }
-        });
-      } else {
-        debugPrint('프로필: 다른 사용자입니다!!!!!!!!로그인 $isLogin');
-        _profileProvider.getUserProfile(_userId!); // 다른 사용자일 경우
-      }
-
-      isGetProfilDone = true;
-
-      debugPrint('프로필 FutureBuilder 전!!!!!!!!!: $_userId');
-      if (_profileProvider.response != null) {
-        debugPrint(
-            '프로필 user 정보 !!!!!!!!!: ${_profileProvider.response!.profile.isMe}');
-        debugPrint(
-            '프로필 user 정보 !!!!!!!!!: ${_profileProvider.response!.user.nickname}');
-      }
-    }
-    return _profileProvider.response != null
-        ? Visibility(
-            visible: _profileProvider.response!.profile.isMe && !isLogin,
-            replacement: Scaffold(
-              body: CustomScrollView(
-                slivers: <Widget>[
-                  SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        const ProfileTapbarWidget(), // isMe에 따라 보이기
-                        ProfileUserInfoWidget(
-                          user: _profileProvider.response!.user,
-                          profile: _profileProvider.response!.profile,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SliverAppBar(
-                    pinned: true,
-                    backgroundColor: AppColor.whiteColor,
-                    toolbarHeight: 0.0,
-                    bottom: TabBar(
-                      controller: _tabController,
-                      tabs: [
-                        Tab(
-                          icon: _tabController.index == 0
-                              ? SvgPicture.asset(
-                                  'assets/icons/ic_profile_list_select.svg')
-                              : SvgPicture.asset(
-                                  'assets/icons/ic_profile_list_unselect.svg'),
-                        ),
-                        Tab(
-                          icon: _tabController.index == 1
-                              ? SvgPicture.asset(
-                                  'assets/icons/ic_heart_select.svg')
-                              : SvgPicture.asset(
-                                  'assets/icons/ic_heart_unselect.svg'),
-                        ),
-                      ],
-                      indicator: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: AppColor.purpleColor,
-                            width: 3.0,
-                          ),
+    return FutureBuilder(
+        future: _initUser(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            loading++;
+            if (loading >= 2) {
+              return _profileProvider.response != null
+                  ? Visibility(
+                      visible:
+                          _profileProvider.response!.profile.isMe && !isLogin,
+                      replacement: Scaffold(
+                        body: CustomScrollView(
+                          slivers: <Widget>[
+                            SliverToBoxAdapter(
+                              child: Column(
+                                children: [
+                                  ProfileTapbarWidget(
+                                      profileResponse:
+                                          _profileProvider.response!,
+                                      isNotBottomNavi: isNotBottomNavi),
+                                  ProfileUserInfoWidget(
+                                      profileResponse:
+                                          _profileProvider.response!),
+                                ],
+                              ),
+                            ),
+                            SliverAppBar(
+                              pinned: true,
+                              backgroundColor: AppColor.whiteColor,
+                              toolbarHeight: 0.0,
+                              bottom: TabBar(
+                                controller: _tabController,
+                                tabs: [
+                                  Tab(
+                                    icon: _tabController.index == 0
+                                        ? SvgPicture.asset(
+                                            'assets/icons/ic_profile_list_select.svg')
+                                        : SvgPicture.asset(
+                                            'assets/icons/ic_profile_list_unselect.svg'),
+                                  ),
+                                  Tab(
+                                    icon: _tabController.index == 1
+                                        ? SvgPicture.asset(
+                                            'assets/icons/ic_heart_select.svg')
+                                        : SvgPicture.asset(
+                                            'assets/icons/ic_heart_unselect.svg'),
+                                  ),
+                                ],
+                                indicator: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: AppColor.purpleColor,
+                                      width: 3.0,
+                                    ),
+                                  ),
+                                ),
+                                onTap: (index) {
+                                  debugPrint("Selected Tab: $index");
+                                  setState(
+                                      () {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
+                                },
+                              ),
+                            ),
+                            ProfileTabVideosWidget(
+                                index: _tabController.index,
+                                tabController: _tabController,
+                                videoImagePath1: _videoImagePath1,
+                                videoImagePath2: _videoImagePath2),
+                          ],
                         ),
                       ),
-                      onTap: (index) {
-                        debugPrint("Selected Tab: $index");
-                        setState(() {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
-                      },
-                    ),
+                      child: const Scaffold(body: NotLoginWidget()),
+                    )
+                  : Container(
+                      color: Colors.white,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColor.purpleColor,
+                        ),
+                      ),
+                    );
+            } else {
+              return Container(
+                color: Colors.white,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: AppColor.purpleColor,
                   ),
-                  ProfileTabVideosWidget(
-                      index: _tabController.index,
-                      tabController: _tabController,
-                      videoImagePath1: _videoImagePath1,
-                      videoImagePath2: _videoImagePath2),
-                ],
+                ),
+              );
+            }
+          } else {
+            return Container(
+              color: Colors.white,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: AppColor.purpleColor,
+                ),
               ),
-            ),
-            child: const NotLoginWidget(),
-          )
-        : Center(
-            child: CircularProgressIndicator(
-              color: AppColor.purpleColor,
-            ),
-          );
+            );
+          }
+        });
   }
 }

@@ -1,10 +1,10 @@
 // ignore: must_be_immutable
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
+import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -32,7 +32,13 @@ class VideoUserInfoFrame extends StatelessWidget {
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
-                    Fluttertoast.showToast(msg: 'user 클릭');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ProfileScreen(userId: user.userId),
+                        ));
+                    _multiVideoPlayProvider.pauseVideo();
                   },
                   child: Row(children: <Widget>[
                     ClipRRect(
