@@ -140,8 +140,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   void dispose() async {
     _canProcess = false;
     _poseDetector.close();
-
-    print("mmm fps: $_frameNum");
     super.dispose();
   }
 

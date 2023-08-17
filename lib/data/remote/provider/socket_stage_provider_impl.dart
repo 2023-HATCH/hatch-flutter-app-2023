@@ -359,7 +359,7 @@ class SocketStageProviderImpl extends ChangeNotifier
             StageMVPResponse.fromJson(
                 jsonDecode(frame.body.toString())['data']));
         _mvp = _players.firstWhere((element) =>
-            element.userId == socketResponse.data?.mvpUser?.userId);
+            element.playerNum == socketResponse.data?.mvpPlayerNum);
         _stageType = response.type;
         setStageView(_stageType);
         break;
