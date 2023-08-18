@@ -4,7 +4,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:pocket_pose/ui/video_viewer/multi_video_player_view.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/comment_button_widget.dart';
@@ -14,13 +16,11 @@ import 'package:provider/provider.dart';
 class ProfileVideoScreen extends StatefulWidget {
   const ProfileVideoScreen(
       {Key? key,
-      required this.isMe,
       required this.videoList,
       required this.initialIndex,
       required this.profileResponse})
       : super(key: key);
 
-  final bool isMe;
   final List<VideoData> videoList;
   final int initialIndex;
   final ProfileResponse profileResponse;
@@ -32,8 +32,12 @@ class ProfileVideoScreen extends StatefulWidget {
 class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late VideoProvider _videoProvider;
+  late KaKaoLoginProvider _loginProvider;
+
+  late UserData? _user;
 
   final TextEditingController _textController = TextEditingController();
+  bool isMe = true;
 
   @override
   void initState() {
@@ -41,6 +45,19 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _videoProvider = Provider.of<VideoProvider>(context, listen: false);
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: true);
+
+    initUser();
+  }
+
+  void initUser() async {
+    // 로그인한 사용자 정보 받아오기
+    if (await _loginProvider.checkAccessToken()) {
+      UserData user = await _loginProvider.getUser();
+      setState(() {
+        _user = user;
+      });
+    }
   }
 
   @override
@@ -69,7 +86,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
           },
         ),
         actions: [
-          if (widget.isMe) // 본인 영상일때만 보이는 삭제 버튼
+          if (isMe) // 본인 영상일때만 보이는 삭제 버튼
             Container(
               margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
               child: GestureDetector(
@@ -113,7 +130,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
       bottomSheet: Container(
         height: 55,
         color: Colors.black,
-        child: widget.isMe
+        child: isMe
             ? Row(
                 children: <Widget>[
                   const Padding(padding: EdgeInsets.only(left: 18)),

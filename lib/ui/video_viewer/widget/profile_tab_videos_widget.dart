@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/profile_videos_request.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
-import 'package:pocket_pose/ui/video_viewer/profile_video_frame_screen.dart';
+import 'package:pocket_pose/ui/video_viewer/screen/profile_video_screen.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/profile_video_skeleton_loader_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProfileTabVideosWidget extends StatefulWidget {
   const ProfileTabVideosWidget({
@@ -97,9 +97,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             ProfileVideoScreen(
-                                                // 내 화면인지 아닌지 bool 값 전송
-                                                isMe: widget._profileResponse
-                                                    .profile.isMe,
+
                                                 // 내 화면이라면 하단에 보여줄 정보가 필요해서 profileResponse 전송
                                                 profileResponse:
                                                     widget._profileResponse,
@@ -141,11 +139,19 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                       if (loadingProgress == null) {
                                         return child;
                                       }
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: 0.5, // 크기를 조절할 값 (0.0 ~ 1.0)
-                                          strokeWidth: 2.0, // 인디케이터 선의 굵기
-                                          color: AppColor.purpleColor,
+                                      return Shimmer.fromColors(
+                                        baseColor: const Color.fromRGBO(
+                                            240, 240, 240, 1),
+                                        highlightColor: const Color.fromARGB(
+                                            255, 255, 255, 255),
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              color: const Color.fromRGBO(
+                                                  240, 240, 240, 1)),
                                         ),
                                       );
                                     }),
@@ -158,6 +164,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                             'assets/icons/ic_profile_heart.svg',
                                             width: 16,
                                             height: 16,
+                                            color: Colors.white,
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
