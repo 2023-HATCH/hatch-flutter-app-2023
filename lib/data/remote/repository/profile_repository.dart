@@ -139,4 +139,48 @@ class ProfileRepository {
       throw Exception('프로필 업로드한 비디오 목록 조회 실패');
     }
   }
+
+  Future<VideosResponse> getLikeVideos(
+      ProfileVideosRequest profileVideosRequest) async {
+    final url = Uri.parse(
+            '${AppUrl.profileLikeVideoUrl}/${profileVideosRequest.userId}')
+        .replace(queryParameters: {
+      'page': profileVideosRequest.page.toString(),
+      'size': profileVideosRequest.size.toString(),
+    });
+
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
+
+    final headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      if (accessToken != null && refreshToken != null)
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+    };
+
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      debugPrint("프로필 좋아요한 비디오 목록 조회 성공! json: $json");
+
+      final List<dynamic> videoListJson = json['data']['videoList'];
+      final List<VideoData> videoList = videoListJson
+          .map((videoJson) => VideoData.fromJson(videoJson))
+          .toList();
+
+      final bool isLast = json['data']['isLast'];
+
+      loginProvider.updateToken(response.headers);
+
+      return VideosResponse(
+        videoList: videoList,
+        isLast: isLast,
+      );
+    } else {
+      throw Exception('프로필 좋아요한 비디오 목록 조회 실패');
+    }
+  }
 }

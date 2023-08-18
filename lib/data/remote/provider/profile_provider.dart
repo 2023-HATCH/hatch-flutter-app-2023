@@ -8,21 +8,36 @@ import 'package:pocket_pose/data/remote/repository/profile_repository.dart';
 class ProfileProvider extends ChangeNotifier {
   ProfileResponse? _profileResponse;
   VideosResponse? _uploadVideosResponse;
+  VideosResponse? _likeVideosResponse;
   bool? _isGetSuccess;
   bool? _isPatchSuccess;
 
   ProfileResponse? get profileResponse => _profileResponse;
   VideosResponse? get uploadVideosResponse => _uploadVideosResponse;
+  VideosResponse? get likeVideosResponse => _likeVideosResponse;
   bool? get isPostSuccess => _isGetSuccess;
   bool? get isPatchSuccess => _isPatchSuccess;
 
   bool _isGetProfilDone = false;
+  bool _isVideoLoadingDone = false;
 
   bool get isGetProfilDone => _isGetProfilDone;
+  bool get isVideoLoadingDone => _isVideoLoadingDone;
 
-  // Setter for isGetProfilDone
   set isGetProfilDone(bool value) {
     _isGetProfilDone = value;
+  }
+
+  set isVideoLoadingDone(bool value) {
+    _isVideoLoadingDone = value;
+  }
+
+  set uploadVideosResponse(VideosResponse? value) {
+    _uploadVideosResponse = value;
+  }
+
+  set likeVideosResponse(VideosResponse? value) {
+    _likeVideosResponse = value;
   }
 
   Future<bool> getUserProfile(String userId) async {
@@ -68,12 +83,12 @@ class ProfileProvider extends ChangeNotifier {
   Future<void> getLikeVideos(ProfileVideosRequest profileVideosRequest) async {
     try {
       final repositoryResponse =
-          await ProfileRepository().getUploadVideos(profileVideosRequest);
-      _uploadVideosResponse = repositoryResponse;
+          await ProfileRepository().getLikeVideos(profileVideosRequest);
+      _likeVideosResponse = repositoryResponse;
 
       notifyListeners();
     } catch (e) {
-      debugPrint('ProfileProvider getUploadVideos 에러: $e');
+      debugPrint('ProfileProvider getLikeVideos 에러: $e');
     }
   }
 }
