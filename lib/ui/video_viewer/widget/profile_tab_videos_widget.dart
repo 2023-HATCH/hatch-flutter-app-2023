@@ -136,8 +136,9 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                   ),
                                   child: Stack(
                                     children: [
-                                      Image.asset(
-                                        "assets/images/${_videoImagePath2[index]}.png",
+                                      Image.network(
+                                        _uploadVideos!
+                                            .videoList[index].thumbnailUrl,
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                         height: double.infinity,
@@ -171,7 +172,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                           },
                         );
                       },
-                      childCount: 6,
+                      childCount: _uploadVideos!.videoList.length,
                     ),
                   )
                 :
