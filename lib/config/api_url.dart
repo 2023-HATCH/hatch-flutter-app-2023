@@ -22,6 +22,12 @@ class AppUrl {
   // 댓글
   static const commentUrl = "$_apiBaseUrl/comments";
 
+  // 프로필
+  static const profileUrl = "$_apiBaseUrl/users/profile";
+  static const profileEditUrl = "$_apiBaseUrl/users/me";
+  static const profileVideoUrl = "$_apiBaseUrl/users/videos";
+  static const profileLikeVideoUrl = "$_apiBaseUrl/likes";
+
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";
   static const stageUserListUrl = "$_stageUrl/users";

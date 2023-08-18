@@ -73,6 +73,8 @@ class KaKaoLoginProvider extends ChangeNotifier {
 
     multiVideoPlayProvider.resetVideoPlayer();
 
+    notifyListeners();
+
     Fluttertoast.showToast(
       msg: '성공적으로 로그아웃 되었습니다.',
     );
@@ -95,8 +97,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
 
   // token 관리
   Future<bool> checkAccessToken() async {
-    _accessToken = await _storage.read(key: _accessTokenKey);
-    _refreshToken = await _storage.read(key: _refreshTokenKey);
+    if (_accessToken == null || _refreshToken == null) {
+      _accessToken = await _storage.read(key: _accessTokenKey);
+      _refreshToken = await _storage.read(key: _refreshTokenKey);
+    }
 
     if (_accessToken != null && _refreshToken != null) {
       return true;
