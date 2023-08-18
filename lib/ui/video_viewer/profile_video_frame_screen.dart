@@ -53,142 +53,142 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "PoPo",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.transparent, //appBar 투명색
-          elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
-          leading: IconButton(
-            icon: SvgPicture.asset(
-              'assets/icons/ic_stage_back_white.svg',
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: [
-            if (widget.isMe) // 본인 영상일때만 보이는 삭제 버튼
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-                child: GestureDetector(
-                  child: SvgPicture.asset('assets/icons/ic_profile_trash.svg'),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return CustomSimpleDialog(
-                          title: '⛔ 삭제',
-                          message: '영상을 삭제 하시겠습니까?',
-                          onCancel: () {
-                            Navigator.pop(context);
-                          },
-                          onConfirm: () {
-                            _videoProvider.deleteVideo(
-                              _multiVideoPlayProvider
-                                  .videoList[
-                                      _multiVideoPlayProvider.currentIndex]
-                                  .uuid,
-                            );
-                            Fluttertoast.showToast(
-                              msg: '영상이 삭제되었습니다.',
-                            );
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                            //프로필 영상 조회 api 호출
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-          ],
+      appBar: AppBar(
+        title: const Text(
+          "PoPo",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        extendBodyBehindAppBar: true, //body 위에 appbar
-        resizeToAvoidBottomInset: false,
-        body: const MultiVideoPlayerView(
-            screenName:
-                'my'), // 하나로 만들어야된다.. videoList(required)랑 initialIndex(nullable, null이면 0부터)를 인자로..
-        bottomSheet: Container(
-          height: 65,
-          color: Colors.white,
-          child: widget.isMe
-              ? Row(
-                  children: <Widget>[
-                    const Padding(padding: EdgeInsets.only(left: 18)),
-                    SvgPicture.asset(
-                      'assets/icons/ic_profile_views.svg',
-                      width: 20,
-                      color: AppColor.purpleColor2,
-                    ),
-                    const Padding(padding: EdgeInsets.only(left: 18)),
-                    const Expanded(
-                      child: Text(
-                        '조회수 46회',
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                      ),
-                    ),
-                  ],
-                )
-              : Row(
-                  children: <Widget>[
-                    const Padding(padding: EdgeInsets.only(left: 18)),
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Image.network(
-                          widget.profileResponse.user.profileImg ??
-                              'assets/images/charactor_popo_default.png',
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            }
-                            return Center(
-                              child: CircularProgressIndicator(
-                                color: AppColor.purpleColor,
-                              ),
-                            );
-                          },
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.cover,
-                        )),
-                    const Padding(padding: EdgeInsets.only(left: 18)),
-                    Expanded(
-                      child: CommentButtonWidget(
-                        index: widget.initialIndex,
-                        onRefresh: () {
-                          setState(() {});
+        backgroundColor: Colors.transparent, //appBar 투명색
+        elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
+        leading: IconButton(
+          icon: SvgPicture.asset(
+            'assets/icons/ic_stage_back_white.svg',
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          if (widget.isMe) // 본인 영상일때만 보이는 삭제 버튼
+            Container(
+              margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+              child: GestureDetector(
+                child: SvgPicture.asset('assets/icons/ic_profile_trash.svg'),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return CustomSimpleDialog(
+                        title: '⛔ 삭제',
+                        message: '영상을 삭제 하시겠습니까?',
+                        onCancel: () {
+                          Navigator.pop(context);
                         },
-                        videoId: widget.videoList[widget.initialIndex].uuid,
-                        commentCount:
-                            widget.videoList[widget.initialIndex].commentCount,
-                        childWidget: Container(
-                          height: 36,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(color: AppColor.grayColor2),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 18)),
-                              Expanded(
-                                child: Text(
-                                  '따듯한 말 한마디 해주세요!',
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 14),
-                                ),
+                        onConfirm: () {
+                          _videoProvider.deleteVideo(
+                            _multiVideoPlayProvider
+                                .videoList[_multiVideoPlayProvider.currentIndex]
+                                .uuid,
+                          );
+                          Fluttertoast.showToast(
+                            msg: '영상이 삭제되었습니다.',
+                          );
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          //프로필 영상 조회 api 호출
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+      extendBodyBehindAppBar: true, //body 위에 appbar
+      resizeToAvoidBottomInset: false,
+      body: const MultiVideoPlayerView(screenName: 'my'),
+      // 하나로 만들어야된다.. videoList(required)랑 initialIndex(nullable, null이면 0부터)를 인자로..
+
+      bottomSheet: Container(
+        height: 55,
+        color: Colors.black,
+        child: widget.isMe
+            ? Row(
+                children: <Widget>[
+                  const Padding(padding: EdgeInsets.only(left: 18)),
+                  SvgPicture.asset(
+                    'assets/icons/ic_profile_views.svg',
+                    width: 16,
+                    color: Colors.grey,
+                  ),
+                  const Padding(padding: EdgeInsets.only(left: 18)),
+                  const Expanded(
+                    child: Text(
+                      '조회수 46회',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                children: <Widget>[
+                  const Padding(padding: EdgeInsets.only(left: 18)),
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image.network(
+                        widget.profileResponse.user.profileImg ??
+                            'assets/images/charactor_popo_default.png',
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          }
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: AppColor.purpleColor,
+                            ),
+                          );
+                        },
+                        width: 34,
+                        height: 34,
+                        fit: BoxFit.cover,
+                      )),
+                  //const Padding(padding: EdgeInsets.only(left: 18)),
+                  Expanded(
+                    child: CommentButtonWidget(
+                      index: widget.initialIndex,
+                      onRefresh: () {
+                        setState(() {});
+                      },
+                      videoId: widget.videoList[widget.initialIndex].uuid,
+                      commentCount:
+                          widget.videoList[widget.initialIndex].commentCount,
+                      childWidget: const SizedBox(
+                        height: 36,
+                        // decoration: BoxDecoration(
+                        //   borderRadius: BorderRadius.circular(30),
+                        //   border: Border.all(color: AppColor.grayColor2),
+                        // ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(padding: EdgeInsets.only(left: 18)),
+                            Expanded(
+                              child: Text(
+                                '따듯한 말 한마디 남겨주세요!',
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const Padding(padding: EdgeInsets.only(left: 18)),
-                  ],
-                ),
-        ));
+                  ),
+                  const Padding(padding: EdgeInsets.only(left: 18)),
+                ],
+              ),
+      ),
+    );
   }
 }
