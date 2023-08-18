@@ -45,6 +45,7 @@ dependencies:
   flutter_typeahead: ^4.6.2
   stomp_dart_client: ^0.4.4
   assets_audio_player: ^3.0.6
+  shimmer: ^3.0.0
 
 
 dev_dependencies:

@@ -47,12 +47,14 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _initIsLoginAndScreens() async {
     isLogin = await _loginProvider.checkAccessToken();
 
-    setState(() {
-      _screens = [
-        const HomeScreen(),
-        isLogin ? ProfileScreen() : const NotLoginWidget(),
-      ];
-    });
+    if (mounted) {
+      setState(() {
+        _screens = [
+          const HomeScreen(),
+          isLogin ? ProfileScreen() : const NotLoginWidget(),
+        ];
+      });
+    }
   }
 
   void _onItemTapped(int index) async {

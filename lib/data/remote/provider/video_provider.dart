@@ -18,7 +18,7 @@ class VideoProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('HomeVideosResponse getVideos 에러: $e');
+      debugPrint('VideoProvider getVideos 에러: $e');
     }
   }
 
@@ -28,7 +28,7 @@ class VideoProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('VideoRepository deleteVideo 에러: $e');
+      debugPrint('VideoProvider deleteVideo 에러: $e');
     }
   }
 
@@ -38,7 +38,7 @@ class VideoProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('VideoRepository getView 에러: $e');
+      debugPrint('VideoProvider getView 에러: $e');
     }
   }
 }

@@ -25,6 +25,7 @@ class AppUrl {
   // 프로필
   static const profileUrl = "$_apiBaseUrl/users/profile";
   static const profileEditUrl = "$_apiBaseUrl/users/me";
+  static const profileVideoUrl = "$_apiBaseUrl/users/videos";
 
   // 포포 스테이지
   static const stageAccuracyUrl = "$_stageUrl/similarity";

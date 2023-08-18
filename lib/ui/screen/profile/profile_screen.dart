@@ -32,43 +32,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   bool isNotBottomNavi = false;
 
-  final List<String> _videoImagePath1 = [
-    "profile_video_0",
-    "profile_video_1",
-    "profile_video_3",
-    "profile_video_5",
-    "profile_video_0",
-    "profile_video_1",
-    "profile_video_2",
-    "profile_video_3",
-    "profile_video_5",
-    "profile_video_0",
-    "profile_video_1",
-    "profile_video_2",
-    "profile_video_3",
-    "profile_video_5",
-    "profile_video_0",
-    "profile_video_1",
-    "profile_video_2",
-    "profile_video_3",
-    "profile_video_5",
-  ];
-
-  final List<String> _videoImagePath2 = [
-    "profile_video_8",
-    "profile_video_10",
-    "profile_video_11",
-    "profile_video_6",
-    "profile_video_8",
-    "profile_video_10",
-    "profile_video_11",
-    "profile_video_6",
-    "profile_video_8",
-    "profile_video_10",
-    "profile_video_11",
-    "profile_video_6",
-  ];
-
   late TabController _tabController;
   int loading = 0;
 
@@ -129,10 +92,11 @@ class _ProfileScreenState extends State<ProfileScreen>
     return FutureBuilder(
         future: _initUser(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.done ||
+              snapshot.connectionState == ConnectionState.waiting) {
             loading++;
-            if (loading >= 2) {
-              return _profileProvider.response != null
+            if (loading >= 4) {
+              return _profileProvider.profileResponse != null
                   ? Scaffold(
                       body: CustomScrollView(
                         slivers: <Widget>[
@@ -140,12 +104,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                             child: Column(
                               children: [
                                 ProfileTapbarWidget(
-                                  profileResponse: _profileProvider.response!,
+                                  profileResponse:
+                                      _profileProvider.profileResponse!,
                                   isNotBottomNavi: isNotBottomNavi,
                                 ),
                                 ProfileUserInfoWidget(
                                     profileResponse:
-                                        _profileProvider.response!),
+                                        _profileProvider.profileResponse!),
                               ],
                             ),
                           ),
@@ -187,10 +152,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                           ),
                           ProfileTabVideosWidget(
-                              index: _tabController.index,
-                              tabController: _tabController,
-                              videoImagePath1: _videoImagePath1,
-                              videoImagePath2: _videoImagePath2),
+                            index: _tabController.index,
+                            tabController: _tabController,
+                            profileResponse: _profileProvider.profileResponse!,
+                          ),
                         ],
                       ),
                     )
@@ -213,6 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               );
             }
           } else {
+            // 로딩 인디케이터 수정
             return Container(
               color: Colors.white,
               child: Center(
