@@ -18,24 +18,57 @@ class ProfileEditScreen extends StatefulWidget {
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   late ProfileProvider _profileProvider;
-  final List<TextEditingController> _textControllers = [
-    TextEditingController(),
-    TextEditingController(),
-    TextEditingController(),
+  List<TextEditingController> _textControllers = [];
+
+  final List<bool> _isClickeds = [
+    false,
+    false,
+    false,
   ];
 
   bool isButtonEnabled() {
-    for (final controller in _textControllers) {
-      if (controller.text.isNotEmpty) {
-        return true;
-      }
+    if (_isClickeds[0] &&
+        _textControllers[0].text != widget.profileResponse.profile.introduce) {
+      return true;
     }
+    if (_isClickeds[1] &&
+        _textControllers[1].text !=
+            widget.profileResponse.profile.instagramId) {
+      return true;
+    }
+    if (_isClickeds[2] &&
+        _textControllers[2].text != widget.profileResponse.profile.twitterId) {
+      return true;
+    }
+
     return false;
   }
 
   @override
   void initState() {
     super.initState();
+
+    _textControllers = [
+      TextEditingController(
+        text: widget.profileResponse.profile.introduce == null ||
+                widget.profileResponse.profile.introduce == ''
+            ? '자기소개'
+            : widget.profileResponse.profile.introduce,
+      ),
+      TextEditingController(
+        text: widget.profileResponse.profile.instagramId == null ||
+                widget.profileResponse.profile.instagramId == ''
+            ? 'Instagram'
+            : widget.profileResponse.profile.instagramId,
+      ),
+      TextEditingController(
+        text: widget.profileResponse.profile.twitterId == null ||
+                widget.profileResponse.profile.twitterId == ''
+            ? 'Twitter'
+            : widget.profileResponse.profile.twitterId,
+      ),
+    ];
+
     for (final controller in _textControllers) {
       controller.addListener(updateButtonState);
     }
@@ -130,17 +163,37 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 ),
                 child: TextField(
                   controller: _textControllers[0],
-                  cursorColor: Colors.white,
-                  decoration: InputDecoration(
-                    hintText:
-                        widget.profileResponse.profile.introduce == null ||
+                  cursorColor: Colors.black,
+                  style: TextStyle(
+                    color: _isClickeds[0]
+                        ? Colors.black
+                        : widget.profileResponse.profile.introduce == null ||
                                 widget.profileResponse.profile.introduce == ''
-                            ? '자기소개'
-                            : widget.profileResponse.profile.introduce,
-                    hintStyle:
-                        const TextStyle(color: Colors.grey, fontSize: 14),
-                    labelStyle:
-                        const TextStyle(color: Colors.grey, fontSize: 14),
+                            ? Colors.black12
+                            : Colors.black45,
+                    fontSize: 14,
+                  ),
+                  onTap: () {
+                    if (!_isClickeds[0]) {
+                      setState(() {
+                        _textControllers[0].text =
+                            (widget.profileResponse.profile.introduce == null ||
+                                    widget.profileResponse.profile.introduce ==
+                                        ''
+                                ? '자기소개'
+                                : widget.profileResponse.profile.introduce)!;
+
+                        _isClickeds[0] = true;
+                      });
+                    }
+                    Future.delayed(Duration.zero, () {
+                      _textControllers[0].selection =
+                          TextSelection.fromPosition(
+                        TextPosition(offset: _textControllers[0].text.length),
+                      );
+                    });
+                  },
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                   ),
                 ),
@@ -200,19 +253,44 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       ),
                       child: TextField(
                         controller: _textControllers[1],
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          hintText: widget.profileResponse.profile
-                                          .instagramId ==
-                                      null ||
-                                  widget.profileResponse.profile.instagramId ==
-                                      ''
-                              ? 'Instagram'
-                              : widget.profileResponse.profile.instagramId,
-                          hintStyle:
-                              const TextStyle(color: Colors.grey, fontSize: 14),
-                          labelStyle:
-                              const TextStyle(color: Colors.grey, fontSize: 14),
+                        cursorColor: Colors.black,
+                        style: TextStyle(
+                          color: _isClickeds[1]
+                              ? Colors.black
+                              : widget.profileResponse.profile.instagramId ==
+                                          null ||
+                                      widget.profileResponse.profile
+                                              .instagramId ==
+                                          ''
+                                  ? Colors.black12
+                                  : Colors.black45,
+                          fontSize: 14,
+                        ),
+                        onTap: () {
+                          if (!_isClickeds[1]) {
+                            setState(() {
+                              _textControllers[1].text =
+                                  (widget.profileResponse.profile.instagramId ==
+                                              null ||
+                                          widget.profileResponse.profile
+                                                  .instagramId ==
+                                              ''
+                                      ? 'Instagram'
+                                      : widget.profileResponse.profile
+                                          .instagramId)!;
+
+                              _isClickeds[1] = true;
+                            });
+                          }
+                          Future.delayed(Duration.zero, () {
+                            _textControllers[1].selection =
+                                TextSelection.fromPosition(
+                              TextPosition(
+                                  offset: _textControllers[1].text.length),
+                            );
+                          });
+                        },
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                         ),
                       ),
@@ -237,17 +315,43 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       ),
                       child: TextField(
                         controller: _textControllers[2],
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          hintText: widget.profileResponse.profile.twitterId ==
-                                      null ||
-                                  widget.profileResponse.profile.twitterId == ''
-                              ? 'Twitter'
-                              : widget.profileResponse.profile.twitterId,
-                          hintStyle:
-                              const TextStyle(color: Colors.grey, fontSize: 14),
-                          labelStyle:
-                              const TextStyle(color: Colors.grey, fontSize: 14),
+                        cursorColor: Colors.black,
+                        style: TextStyle(
+                          color: _isClickeds[2]
+                              ? Colors.black
+                              : widget.profileResponse.profile.twitterId ==
+                                          null ||
+                                      widget.profileResponse.profile
+                                              .twitterId ==
+                                          ''
+                                  ? Colors.black12
+                                  : Colors.black45,
+                          fontSize: 14,
+                        ),
+                        onTap: () {
+                          if (!_isClickeds[2]) {
+                            setState(() {
+                              _textControllers[2].text = (widget.profileResponse
+                                              .profile.twitterId ==
+                                          null ||
+                                      widget.profileResponse.profile
+                                              .twitterId ==
+                                          ''
+                                  ? 'Twitter'
+                                  : widget.profileResponse.profile.twitterId)!;
+
+                              _isClickeds[2] = true;
+                            });
+                          }
+                          Future.delayed(Duration.zero, () {
+                            _textControllers[2].selection =
+                                TextSelection.fromPosition(
+                              TextPosition(
+                                  offset: _textControllers[2].text.length),
+                            );
+                          });
+                        },
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                         ),
                       ),
@@ -271,6 +375,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 onPressed: isButtonEnabled()
                     ? () {
                         // 버튼 클릭시 프로필 수정
+
                         _profileProvider.patchProfile(ProfileEditRequest(
                             introduce: _textControllers[0].text,
                             instagramId: _textControllers[1].text,
