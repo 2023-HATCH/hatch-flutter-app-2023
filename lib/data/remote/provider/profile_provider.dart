@@ -64,4 +64,16 @@ class ProfileProvider extends ChangeNotifier {
       debugPrint('ProfileProvider getUploadVideos 에러: $e');
     }
   }
+
+  Future<void> getLikeVideos(ProfileVideosRequest profileVideosRequest) async {
+    try {
+      final repositoryResponse =
+          await ProfileRepository().getUploadVideos(profileVideosRequest);
+      _uploadVideosResponse = repositoryResponse;
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('ProfileProvider getUploadVideos 에러: $e');
+    }
+  }
 }

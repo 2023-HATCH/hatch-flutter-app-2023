@@ -72,8 +72,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
   @override
   Widget build(BuildContext context) {
     _profileProvider = Provider.of<ProfileProvider>(context, listen: true);
-    // _profileProvider.getUploadVideos(ProfileVideosRequest(
-    //     userId: _profileResponse.user.userId, page: 0, size: 5));
 
     return FutureBuilder<bool>(
         future: _initVideo(),
