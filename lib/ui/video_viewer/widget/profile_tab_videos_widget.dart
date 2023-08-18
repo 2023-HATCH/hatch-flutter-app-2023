@@ -4,8 +4,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/profile_videos_request.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
-import 'package:pocket_pose/ui/video_viewer/screen/video_my_screen.dart';
-import 'package:pocket_pose/ui/video_viewer/screen/video_someone_screen.dart';
+import 'package:pocket_pose/ui/video_viewer/profile_video_frame_screen.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/profile_video_skeleton_loader_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -93,23 +92,28 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                   ),
                             child: GestureDetector(
                               onTap: () {
-                                widget._profileResponse.profile.isMe
-                                    ? //내 프로필이면
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ProfileVideoScreen(
+                                                // 내 화면인지 아닌지 bool 값 전송
+                                                isMe: widget._profileResponse
+                                                    .profile.isMe,
+                                                // 내 화면이라면 하단에 보여줄 정보가 필요해서 profileResponse 전송
+                                                profileResponse:
+                                                    widget._profileResponse,
+                                                // 업로드 비디오 리스트 전송
+                                                videoList: widget._index == 0
+                                                    ? _profileProvider
+                                                        .uploadVideosResponse!
+                                                        .videoList
+                                                    : _profileProvider
+                                                        .likeVideosResponse!
+                                                        .videoList,
 
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => VideoMyScreen(
-                                                index:
-                                                    0))) //사용자 index 값 넣기 (0은 임시 값)
-
-                                    : Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                VideoSomeoneScreen(
-                                                    index:
-                                                        0))); //사용자 index 값 넣기 (0은 임시 값)
+                                                // 처음에 열 페이지 전송
+                                                initialIndex: index)));
                               },
                               child: Container(
                                 decoration: BoxDecoration(

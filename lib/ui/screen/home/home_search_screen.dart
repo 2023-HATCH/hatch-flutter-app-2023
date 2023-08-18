@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
-import 'package:pocket_pose/ui/video_viewer/screen/video_someone_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeSearchScreen extends StatefulWidget {
@@ -366,12 +365,12 @@ class VideoGridView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => VideoSomeoneScreen(index: index),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => ProfileVideoScreen(index: index),
+            //   ),
+            // );
           },
           child: Container(
             decoration: BoxDecoration(
