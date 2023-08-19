@@ -56,7 +56,7 @@ class SocketChatProviderImpl extends ChangeNotifier
       },
       stompConnectHeaders: {'x-access-token': token},
       webSocketConnectHeaders: {'x-access-token': token},
-      onDebugMessage: (p0) => print("mmm popo chat socket: $p0"),
+      onDebugMessage: (p0) => debugPrint("popo chat socket: $p0"),
     ));
     _stompClient!.activate();
   }

@@ -182,7 +182,7 @@ class SocketStageProviderImpl extends ChangeNotifier
       },
       stompConnectHeaders: {'x-access-token': token},
       webSocketConnectHeaders: {'x-access-token': token},
-      onDebugMessage: (p0) => print("popo socket: $p0"),
+      onDebugMessage: (p0) => debugPrint("popo socket: $p0"),
     ));
     _stompClient!.activate();
   }
