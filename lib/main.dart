@@ -11,6 +11,7 @@ import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/data/remote/provider/stage_talk_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/screen/on_boarding_screen.dart';
@@ -39,6 +40,7 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (_) => SocketChatProviderImpl()),
     ChangeNotifierProvider(create: (_) => StageProviderImpl()),
     ChangeNotifierProvider(create: (_) => SocketStageProviderImpl()),
+    ChangeNotifierProvider(create: (_) => StageTalkProviderImpl()),
   ], child: MyApp(showOnBoarding: showOnBoarding)));
 }
 

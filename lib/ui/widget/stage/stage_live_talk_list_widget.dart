@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/data/entity/request/stage_talk_message_request.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/data/remote/provider/stage_talk_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/ui/widget/stage/talk_list_item_widget.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +16,15 @@ class StageLiveTalkListWidget extends StatefulWidget {
 
 class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
   final ScrollController _scrollController = ScrollController();
-  late StageProviderImpl _provider;
+  late StageTalkProviderImpl _talkProvider;
+  late StageProviderImpl _stageProvider;
+  var pageKey = 1;
 
   @override
   void initState() {
     super.initState();
+    _talkProvider = Provider.of<StageTalkProviderImpl>(context, listen: false);
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
@@ -26,16 +32,17 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
     super.dispose();
 
     _scrollController.dispose();
+    _stageProvider.talkList.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    _provider = Provider.of<StageProviderImpl>(context, listen: true);
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
 
-    return _buildStageChatList(_provider.talkList);
+    return _buildStageChatList(_stageProvider.talkList);
   }
 
-  SingleChildScrollView _buildStageChatList(List<StageTalkListItem> entries) {
+  Widget _buildStageChatList(List<StageTalkListItem> entries) {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
@@ -74,5 +81,22 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
         ),
       ),
     );
+  }
+
+  _scrollListener() async {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      var response = await _talkProvider
+          .getTalkMessages(StageTalkMessageRequest(page: pageKey, size: 10));
+      pageKey++;
+      var talkList = response.data.messages ?? [];
+
+      setState(() {
+        for (var element in talkList) {
+          _stageProvider.talkList.add(element);
+        }
+      });
+    }
   }
 }
