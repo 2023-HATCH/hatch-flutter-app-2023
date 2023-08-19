@@ -9,9 +9,9 @@ part of 'chat_detail_list_response.dart';
 ChatDetailListResponse _$ChatDetailListResponseFromJson(
         Map<String, dynamic> json) =>
     ChatDetailListResponse(
-      pageNum: json['pageNum'] as int,
+      page: json['page'] as int,
       size: json['size'] as int,
-      messeges: (json['messeges'] as List<dynamic>)
+      messages: (json['messages'] as List<dynamic>)
           .map((e) => ChatDetailListItem.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -19,7 +19,7 @@ ChatDetailListResponse _$ChatDetailListResponseFromJson(
 Map<String, dynamic> _$ChatDetailListResponseToJson(
         ChatDetailListResponse instance) =>
     <String, dynamic>{
-      'pageNum': instance.pageNum,
+      'page': instance.page,
       'size': instance.size,
-      'messeges': instance.messeges,
+      'messages': instance.messages,
     };

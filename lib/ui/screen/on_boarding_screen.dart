@@ -291,7 +291,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   void goHomepage() async {
     LocalPrefProvider().setShowOnBoarding(false);
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => MainScreen()),
+      MaterialPageRoute(builder: (_) => const MainScreen()),
     );
   }
 
