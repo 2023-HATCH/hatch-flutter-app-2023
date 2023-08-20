@@ -86,19 +86,34 @@ class _PoPoResultViewState extends State<PoPoResultView> {
             ],
           ),
         ),
-        if (_isPlayer)
-          CameraView(
-            isResultState: widget.isResultState,
-            // 스켈레톤 그려주는 객체 전달
-            customPaintMid: _customPaintMid,
-            // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-            onImage: (inputImage) {
-              // 플레이어만 스켈레톤 추출
-              if (_isPlayer) {
-                processImage(inputImage);
-              }
-            },
+        Positioned(
+          top: 115,
+          right: 10,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: _socketStageProvider.playerInfos.map((element) {
+              return Text(
+                "${element.player.nickname}: ${element.similarity}",
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.white,
+                ),
+              );
+            }).toList(), // .toList() added here
           ),
+        ),
+        CameraView(
+          isResultState: widget.isResultState,
+          // 스켈레톤 그려주는 객체 전달
+          customPaintMid: _customPaintMid,
+          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
+          onImage: (inputImage) {
+            // 플레이어만 스켈레톤 추출
+            if (_isPlayer) {
+              processImage(inputImage);
+            }
+          },
+        ),
       ],
     );
   }
