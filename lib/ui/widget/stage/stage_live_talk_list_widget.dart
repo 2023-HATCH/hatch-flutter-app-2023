@@ -18,7 +18,7 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
   final ScrollController _scrollController = ScrollController();
   late StageTalkProviderImpl _talkProvider;
   late StageProviderImpl _stageProvider;
-  var pageKey = 1;
+  var _page = 1;
 
   @override
   void initState() {
@@ -88,8 +88,8 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
             _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       var response = await _talkProvider
-          .getTalkMessages(StageTalkMessageRequest(page: pageKey, size: 10));
-      pageKey++;
+          .getTalkMessages(StageTalkMessageRequest(page: _page, size: 10));
+      _page++;
       var talkList = response.data.messages ?? [];
 
       setState(() {

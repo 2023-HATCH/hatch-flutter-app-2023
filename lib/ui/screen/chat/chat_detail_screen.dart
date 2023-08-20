@@ -26,6 +26,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   late KaKaoLoginProvider _loginProvider;
   late String _userId;
   bool _isEnter = false;
+  int _page = 0;
 
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
@@ -38,10 +39,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.initState();
 
     _initUserId();
+    _scrollController.addListener(_scrollListener);
 
     // 선택한 채팅방 채팅메세지 조회
     _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
-    _chatProvider.getChatDetailList(widget.chatRoomId).then((value) {
+    _chatProvider.getChatDetailList(widget.chatRoomId, 0).then((value) {
       for (var chat in value.data.messages) {
         _messageList.add(chat);
       }
@@ -248,6 +250,23 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         setState(() {
           _messageList.insert(0, _socketChatProvider.chat!);
         });
+      });
+    }
+  }
+
+  _scrollListener() async {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      var response =
+          await _chatProvider.getChatDetailList(widget.chatRoomId, _page);
+      _page++;
+      var talkList = response.data.messages;
+
+      setState(() {
+        for (var element in talkList) {
+          _messageList.add(element);
+        }
       });
     }
   }

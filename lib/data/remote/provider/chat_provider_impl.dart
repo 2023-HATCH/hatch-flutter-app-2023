@@ -81,7 +81,7 @@ class ChatProviderImpl extends ChangeNotifier implements ChatProvider {
 
   @override
   Future<BaseResponse<ChatDetailListResponse>> getChatDetailList(
-      String chatRoomId) async {
+      String chatRoomId, int page) async {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
     const refreshTokenKey = 'kakaoRefreshToken';
@@ -95,7 +95,7 @@ class ChatProviderImpl extends ChangeNotifier implements ChatProvider {
       };
       dio.options.contentType = "application/json";
       var response = await dio
-          .get('${AppUrl.chatRoomUrl}/$chatRoomId/messages?page=0&size=5');
+          .get('${AppUrl.chatRoomUrl}/$chatRoomId/messages?page=$page&size=15');
 
       var responseJson = BaseResponse<ChatDetailListResponse>.fromJson(
           response.data,
