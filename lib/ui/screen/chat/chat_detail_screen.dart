@@ -86,6 +86,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             height: 3,
           ),
           _buildChatsArea(),
+          const SizedBox(
+            height: 10,
+          ),
           _buildChatTextField(context),
         ],
       ),
