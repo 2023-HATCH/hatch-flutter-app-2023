@@ -15,6 +15,7 @@ import 'package:pocket_pose/data/entity/socket_response/stage_mvp_response.dart'
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
 import 'package:pocket_pose/domain/entity/stage_music_data.dart';
+import 'package:pocket_pose/domain/entity/stage_player_info_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
@@ -79,6 +80,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   int _userCount = 0;
   final List<StagePlayerListItem> _players = [];
   StagePlayerListItem? _mvp;
+  List<StagePlayerInfoListItem> _playerInfos = [];
   StageTalkListItem? _talk;
   Map<PoseLandmarkType, PoseLandmark>? player0;
   Map<PoseLandmarkType, PoseLandmark>? player1;
@@ -100,6 +102,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   String? get userId => _userId;
   StageMusicData? get catchMusicData => _catchMusicData;
   int get userCount => _userCount;
+  List<StagePlayerInfoListItem> get playerInfos => _playerInfos;
   StageTalkListItem? get talk => _talk;
 
   SocketType get stageType => _stageType;
@@ -360,6 +363,7 @@ class SocketStageProviderImpl extends ChangeNotifier
                 jsonDecode(frame.body.toString())['data']));
         _mvp = _players.firstWhere((element) =>
             element.playerNum == socketResponse.data?.mvpPlayerNum);
+        _playerInfos = socketResponse.data?.playerInfos ?? [];
         _stageType = response.type;
         setStageView(_stageType);
         break;

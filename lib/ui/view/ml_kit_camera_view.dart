@@ -98,11 +98,11 @@ class _CameraViewState extends State<CameraView> {
 
     _assetsAudioPlayer = AssetsAudioPlayer();
 
-    // 중간입장 처리
-    _onMidEnter();
+    // 입장 처리
+    _onEnter();
   }
 
-  void _onMidEnter() {
+  void _onEnter() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 플레이 상태인 경우
       if (!widget.isResultState) {

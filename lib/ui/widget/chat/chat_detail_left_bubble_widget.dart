@@ -39,18 +39,18 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
                   child: (chatDetail.sender.profileImg == null)
                       ? Image.asset(
                           'assets/images/charactor_popo_default.png',
-                          width: 50,
-                          height: 50,
+                          width: 45,
+                          height: 45,
                         )
                       : Image.network(
                           chatDetail.sender.profileImg!,
                           fit: BoxFit.cover,
-                          width: 50,
-                          height: 50,
+                          width: 45,
+                          height: 45,
                         ),
                 )
               : const SizedBox(
-                  width: 50,
+                  width: 45,
                 ),
           const SizedBox(
             width: 14,

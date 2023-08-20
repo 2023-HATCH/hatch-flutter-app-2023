@@ -11,10 +11,12 @@ import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart'
 import 'package:provider/provider.dart';
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen({Key? key, required this.chatRoomId})
+  const ChatDetailScreen(
+      {Key? key, required this.chatRoomId, required this.opponentUserNickName})
       : super(key: key);
 
   final String chatRoomId;
+  final String opponentUserNickName;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -26,6 +28,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   late KaKaoLoginProvider _loginProvider;
   late String _userId;
   bool _isEnter = false;
+  int _page = 0;
 
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
@@ -38,13 +41,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.initState();
 
     _initUserId();
+    _scrollController.addListener(_scrollListener);
 
     // 선택한 채팅방 채팅메세지 조회
     _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
-    _chatProvider.getChatDetailList(widget.chatRoomId).then((value) {
-      for (var chat in value.data.messages) {
-        _messageList.add(chat);
-      }
+    _chatProvider.getChatDetailList(widget.chatRoomId, 0).then((value) {
+      setState(() {
+        for (var chat in value.data.messages) {
+          _messageList.add(chat);
+        }
+      });
     });
   }
 
@@ -84,6 +90,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             height: 3,
           ),
           _buildChatsArea(),
+          const SizedBox(
+            height: 10,
+          ),
           _buildChatTextField(context),
         ],
       ),
@@ -208,9 +217,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      title: const Text(
-        "pochako",
-        style: TextStyle(
+      title: Text(
+        widget.opponentUserNickName,
+        style: const TextStyle(
             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
       ),
       backgroundColor: AppColor.purpleColor3,
@@ -248,6 +257,23 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         setState(() {
           _messageList.insert(0, _socketChatProvider.chat!);
         });
+      });
+    }
+  }
+
+  _scrollListener() async {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      var response =
+          await _chatProvider.getChatDetailList(widget.chatRoomId, _page);
+      _page++;
+      var talkList = response.data.messages;
+
+      setState(() {
+        for (var element in talkList) {
+          _messageList.add(element);
+        }
       });
     }
   }

@@ -9,7 +9,8 @@ import 'package:pocket_pose/data/entity/request/stage_talk_message_request.dart'
 import 'package:pocket_pose/data/entity/response/stage_talk_message_response.dart';
 import 'package:pocket_pose/domain/provider/stage_talk_provider.dart';
 
-class StageTalkProviderImpl implements StageTalkProvider {
+class StageTalkProviderImpl extends ChangeNotifier
+    implements StageTalkProvider {
   @override
   Future<BaseResponse<StageTalkMessageResponse>> getTalkMessages(
       StageTalkMessageRequest request) async {

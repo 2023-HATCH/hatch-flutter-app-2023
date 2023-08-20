@@ -8,5 +8,5 @@ abstract class ChatProvider {
   Future<BaseResponse<ChatRoomResponse>> putChatRoom(ChatRoomRequest request);
   Future<BaseResponse<ChatRoomListResponse>> getChatRoomList();
   Future<BaseResponse<ChatDetailListResponse>> getChatDetailList(
-      String chatRoomId);
+      String chatRoomId, int page);
 }
