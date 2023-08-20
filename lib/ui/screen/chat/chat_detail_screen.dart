@@ -11,10 +11,12 @@ import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart'
 import 'package:provider/provider.dart';
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen({Key? key, required this.chatRoomId})
+  const ChatDetailScreen(
+      {Key? key, required this.chatRoomId, required this.opponentUserNickName})
       : super(key: key);
 
   final String chatRoomId;
+  final String opponentUserNickName;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -213,9 +215,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      title: const Text(
-        "pochako",
-        style: TextStyle(
+      title: Text(
+        widget.opponentUserNickName,
+        style: const TextStyle(
             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
       ),
       backgroundColor: AppColor.purpleColor3,
