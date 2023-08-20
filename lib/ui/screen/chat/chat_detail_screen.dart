@@ -46,9 +46,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     // 선택한 채팅방 채팅메세지 조회
     _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
     _chatProvider.getChatDetailList(widget.chatRoomId, 0).then((value) {
-      for (var chat in value.data.messages) {
-        _messageList.add(chat);
-      }
+      setState(() {
+        for (var chat in value.data.messages) {
+          _messageList.add(chat);
+        }
+      });
     });
   }
 
