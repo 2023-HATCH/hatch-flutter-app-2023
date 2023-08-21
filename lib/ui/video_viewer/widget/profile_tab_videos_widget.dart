@@ -33,11 +33,11 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     if (!_profileProvider.isVideoLoadingDone) {
       // 업로드한 영상 목록 조회
       _profileProvider.getUploadVideos(ProfileVideosRequest(
-          userId: widget._profileResponse.user.userId, page: 0, size: 5));
+          userId: widget._profileResponse.user.userId, page: 0, size: 9));
 
       // 좋아요한 영상 목록 조회
       _profileProvider.getLikeVideos(ProfileVideosRequest(
-          userId: widget._profileResponse.user.userId, page: 0, size: 5));
+          userId: widget._profileResponse.user.userId, page: 0, size: 9));
 
       _profileProvider.isVideoLoadingDone = true;
     }

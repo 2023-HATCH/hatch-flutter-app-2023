@@ -128,9 +128,11 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
       child: Stack(
         children: <Widget>[
           PageView.builder(
-            controller: PageController(
-                initialPage:
-                    _multiVideoPlayProvider.currentIndexs[widget.screenNum]),
+            controller:
+                _multiVideoPlayProvider.pageControllers[widget.screenNum] =
+                    PageController(
+                        initialPage: _multiVideoPlayProvider
+                            .currentIndexs[widget.screenNum]),
             scrollDirection: Axis.vertical,
             allowImplicitScrolling: true,
             itemCount: 200,
@@ -143,7 +145,14 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
                 return const MusicSpinner(); // 비디오 로딩 중
               } else {
                 if (index <
-                    _multiVideoPlayProvider.videos[widget.screenNum].length) {
+                        _multiVideoPlayProvider
+                            .videoControllers[widget.screenNum].length &&
+                    index <
+                        _multiVideoPlayProvider
+                            .videos[widget.screenNum].length &&
+                    index <
+                        _multiVideoPlayProvider
+                            .videoFutures[widget.screenNum].length) {
                   // 현재 비디오 인덱스 안에 있는 경우
                   return FutureBuilder(
                     future:

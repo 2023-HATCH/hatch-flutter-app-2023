@@ -10,8 +10,9 @@ class MultiVideoPlayProvider with ChangeNotifier {
 
   // 홈: 0, 업로드: 1, 좋아요: 2, 검색 3
   late List<List<VideoPlayerController>> videoControllers = [[], [], [], []];
-  late List<List<Future<void>>> videoFutures = [[], [], []];
-  late List<PageController> pageControllers = [];
+  late List<List<Future<void>>> videoFutures = [[], [], [], []];
+  late List<PageController> pageControllers =
+      List.generate(4, (_) => PageController());
 
   List<List<VideoData>> videos = [[], [], [], []];
   List<bool> loadings = [false, false, false, false];
@@ -154,6 +155,8 @@ class MultiVideoPlayProvider with ChangeNotifier {
       }
     }
 
-    pageControllers[0].dispose();
+    // for (final pageController in pageControllers) {
+    //   pageController.dispose();
+    // }
   }
 }
