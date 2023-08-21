@@ -41,6 +41,7 @@ class MultiVideoPlayProvider with ChangeNotifier {
   List<bool> videoEnd = List.generate(200, (index) => false);
 
   void addVideos(int screenNum, List<VideoData> newVideoList) {
+    debugPrint('비디오 스크린 번호: $screenNum');
     videos[screenNum].addAll(newVideoList);
 
     // Add VideoPlayer Controller
@@ -56,7 +57,10 @@ class MultiVideoPlayProvider with ChangeNotifier {
         videoControllers[screenNum][currentIndexs[screenNum]]
             .setVolume(1.0); // 볼륨 설정
 
-        playVideo(screenNum);
+        if (screenNum == 0) {
+          playVideo(screenNum);
+        }
+
         WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
         debugPrint('페이지: 비디오 로딩 하나끝');
       }));
@@ -65,8 +69,8 @@ class MultiVideoPlayProvider with ChangeNotifier {
 
   void playVideo(int screenNum) {
     if (currentIndexs[screenNum] >= 0 &&
-        currentIndexs[screenNum] < videoControllers[0].length) {
-      videoControllers[screenNum][currentIndexs[0]].addListener(() {
+        currentIndexs[screenNum] < videoControllers[screenNum].length) {
+      videoControllers[screenNum][currentIndexs[screenNum]].addListener(() {
         _videoPosition = videoControllers[screenNum][currentIndexs[screenNum]]
             .value
             .position;
@@ -134,13 +138,13 @@ class MultiVideoPlayProvider with ChangeNotifier {
     for (final controller in videoControllers[screenNum]) {
       controller.dispose();
     }
-    videoControllers[0] = [];
-    videoFutures[0] = [];
-    loadings[0] = false;
-    videos[0] = [];
-    currentIndexs[0] = 0;
-    currentPages[0] = 0;
-    isLasts[0] = false;
+    videoControllers[screenNum] = [];
+    videoFutures[screenNum] = [];
+    loadings[screenNum] = false;
+    videos[screenNum] = [];
+    currentIndexs[screenNum] = 0;
+    currentPages[screenNum] = 0;
+    isLasts[screenNum] = false;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
@@ -155,8 +159,8 @@ class MultiVideoPlayProvider with ChangeNotifier {
       }
     }
 
-    // for (final pageController in pageControllers) {
-    //   pageController.dispose();
-    // }
+    for (final pageController in pageControllers) {
+      pageController.dispose();
+    }
   }
 }

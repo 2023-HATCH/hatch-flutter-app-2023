@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/data/entity/request/profile_videos_request.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/ui/video_viewer/screen/profile_video_screen.dart';
 import 'package:pocket_pose/ui/video_viewer/widget/profile_video_skeleton_loader_widget.dart';
@@ -28,20 +29,87 @@ class ProfileTabVideosWidget extends StatefulWidget {
 
 class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
   late ProfileProvider _profileProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+
+    _multiVideoPlayProvider.pauseVideo(0);
+  }
 
   Future<bool> _initVideo() async {
-    if (!_profileProvider.isVideoLoadingDone) {
-      // 업로드한 영상 목록 조회
-      _profileProvider.getUploadVideos(ProfileVideosRequest(
-          userId: widget._profileResponse.user.userId, page: 0, size: 9));
+    if (mounted) {
+      if (!_profileProvider.isVideoLoadingDone) {
+        // 업로드한 영상 목록 조회
+        debugPrint(
+            '1: 프로필 현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
 
-      // 좋아요한 영상 목록 조회
-      _profileProvider.getLikeVideos(ProfileVideosRequest(
-          userId: widget._profileResponse.user.userId, page: 0, size: 9));
+        _profileProvider
+            .getUploadVideos(ProfileVideosRequest(
+                userId: widget._profileResponse.user.userId,
+                page: _multiVideoPlayProvider.currentPages[1],
+                size: _multiVideoPlayProvider.pageSize))
+            .then((value) {
+          final response = _profileProvider.uploadVideosResponse;
 
-      _profileProvider.isVideoLoadingDone = true;
+          if (mounted) {
+            if (response != null) {
+              setState(() {
+                if (response.videoList.isNotEmpty) {
+                  _multiVideoPlayProvider.addVideos(1, response.videoList);
+                }
+                if (response.isLast) {
+                  _multiVideoPlayProvider.isLasts[1] = true;
+                  return;
+                }
+              });
+            }
+          }
+
+          _multiVideoPlayProvider.currentPages[1]++;
+          debugPrint(
+              '1: 프로필 다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
+        });
+
+        debugPrint(
+            '2: 프로필 현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
+
+        // 좋아요한 영상 목록 조회
+        _profileProvider
+            .getLikeVideos(ProfileVideosRequest(
+                userId: widget._profileResponse.user.userId,
+                page: _multiVideoPlayProvider.currentPages[2],
+                size: _multiVideoPlayProvider.pageSize))
+            .then((value) {
+          final response = _profileProvider.likeVideosResponse;
+
+          if (mounted) {
+            if (response != null) {
+              setState(() {
+                if (response.videoList.isNotEmpty) {
+                  _multiVideoPlayProvider.addVideos(2, response.videoList);
+                }
+                if (response.isLast) {
+                  _multiVideoPlayProvider.isLasts[2] = true;
+                  return;
+                }
+              });
+            }
+          }
+
+          _multiVideoPlayProvider.currentPages[2]++;
+          debugPrint(
+              '2: 프로필 다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[2]}');
+        });
+
+        _profileProvider.isVideoLoadingDone = true;
+      }
+      return true;
     }
-    return true;
+    return false;
   }
 
   @override
@@ -51,6 +119,10 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     _profileProvider.isVideoLoadingDone = false;
     _profileProvider.uploadVideosResponse = null;
     _profileProvider.likeVideosResponse = null;
+
+    debugPrint("프로필 dispose");
+    _multiVideoPlayProvider.resetVideoPlayer(1);
+    _multiVideoPlayProvider.resetVideoPlayer(2);
   }
 
   @override
@@ -60,6 +132,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     return FutureBuilder<bool>(
         future: _initVideo(),
         builder: (context, snapshot) {
+          debugPrint('프로필: _initVideo 끝');
           if (snapshot.connectionState == ConnectionState.done ||
               snapshot.connectionState == ConnectionState.waiting) {
             return _profileProvider.uploadVideosResponse != null &&
@@ -97,7 +170,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             ProfileVideoScreen(
-                                                screenNum: widget._index,
+                                                screenNum: widget._index + 1,
 
                                                 // 내 화면이라면 하단에 보여줄 정보가 필요해서 profileResponse 전송
                                                 profileResponse:

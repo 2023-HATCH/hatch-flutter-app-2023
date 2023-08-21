@@ -135,8 +135,9 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
               ),
               extendBodyBehindAppBar: true, //body 위에 appbar
               resizeToAvoidBottomInset: false,
-              body: MultiVideoPlayerView(screenNum: widget.screenNum),
-              // 하나로 만들어야된다.. videoList(required)랑 initialIndex(nullable, null이면 0부터)를 인자로..
+              body: MultiVideoPlayerView(
+                  screenNum: widget.screenNum,
+                  initialIndex: widget.initialIndex),
 
               bottomSheet: Container(
                 height: 55,

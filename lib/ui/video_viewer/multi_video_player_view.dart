@@ -8,10 +8,13 @@ import 'package:pocket_pose/ui/widget/music_spinner_widget.dart';
 import 'package:provider/provider.dart';
 
 class MultiVideoPlayerView extends StatefulWidget {
-  const MultiVideoPlayerView({super.key, required int screenNum})
-      : screenNum = screenNum;
+  const MultiVideoPlayerView(
+      {super.key, required int screenNum, int? initialIndex})
+      : screenNum = screenNum,
+        initialIndex = initialIndex;
 
   final int screenNum;
+  final int? initialIndex;
 
   @override
   State<MultiVideoPlayerView> createState() => _MultiVideoPlayerViewState();
@@ -32,6 +35,10 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_multiVideoPlayProvider.videos[widget.screenNum].isNotEmpty) {
+        if (widget.initialIndex != null) {
+          _multiVideoPlayProvider.currentIndexs[widget.screenNum] =
+              widget.initialIndex!;
+        }
         _multiVideoPlayProvider.playVideo(widget.screenNum);
       }
     });
@@ -39,35 +46,38 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
 
   Future<void> _loadMoreVideos() async {
     try {
-      final videoProvider = Provider.of<VideoProvider>(context, listen: false);
-      debugPrint(
-          '현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
-      videoProvider
-          .getVideos(VideosRequest(
-              page: _multiVideoPlayProvider.currentPages[widget.screenNum],
-              size: _multiVideoPlayProvider.pageSize))
-          .then((value) {
-        final response = videoProvider.response;
+      if (widget.screenNum == 0) {
+        final videoProvider =
+            Provider.of<VideoProvider>(context, listen: false);
+        debugPrint(
+            '현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
+        videoProvider
+            .getVideos(VideosRequest(
+                page: _multiVideoPlayProvider.currentPages[widget.screenNum],
+                size: _multiVideoPlayProvider.pageSize))
+            .then((value) {
+          final response = videoProvider.response;
 
-        if (mounted) {
-          if (response != null) {
-            setState(() {
-              if (response.videoList.isNotEmpty) {
-                _multiVideoPlayProvider.addVideos(
-                    widget.screenNum, response.videoList);
-              }
-              if (response.isLast) {
-                _multiVideoPlayProvider.isLasts[widget.screenNum] = true;
-                return;
-              }
-            });
+          if (mounted) {
+            if (response != null) {
+              setState(() {
+                if (response.videoList.isNotEmpty) {
+                  _multiVideoPlayProvider.addVideos(
+                      widget.screenNum, response.videoList);
+                }
+                if (response.isLast) {
+                  _multiVideoPlayProvider.isLasts[widget.screenNum] = true;
+                  return;
+                }
+              });
+            }
           }
-        }
-      });
+        });
 
-      _multiVideoPlayProvider.currentPages[widget.screenNum]++;
-      debugPrint(
-          '다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
+        _multiVideoPlayProvider.currentPages[widget.screenNum]++;
+        debugPrint(
+            '다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
+      }
     } catch (e) {
       // Handle error if needed
       debugPrint('moon video_view.dart error: $e');
@@ -82,12 +92,14 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
         if (!_multiVideoPlayProvider.isLasts[widget.screenNum]) {
           _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
 
-          if (_multiVideoPlayProvider.videos[widget.screenNum].length -
-                  _multiVideoPlayProvider.currentIndexs[widget.screenNum] <=
-              _multiVideoPlayProvider.pageSize - 1) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _loadMoreVideos();
-            });
+          if (widget.screenNum == 0) {
+            if (_multiVideoPlayProvider.videos[widget.screenNum].length -
+                    _multiVideoPlayProvider.currentIndexs[widget.screenNum] <=
+                _multiVideoPlayProvider.pageSize - 1) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _loadMoreVideos();
+              });
+            }
           }
         } else {
           if (_multiVideoPlayProvider.videos[widget.screenNum].length ==
@@ -118,10 +130,12 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
 
     return RefreshIndicator(
       onRefresh: () async {
-        if (mounted) {
-          setState(() {
-            _multiVideoPlayProvider.resetVideoPlayer(widget.screenNum);
-          });
+        if (widget.screenNum == 0) {
+          if (mounted) {
+            setState(() {
+              _multiVideoPlayProvider.resetVideoPlayer(widget.screenNum);
+            });
+          }
         }
       },
       color: AppColor.purpleColor,
@@ -131,8 +145,9 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
             controller:
                 _multiVideoPlayProvider.pageControllers[widget.screenNum] =
                     PageController(
-                        initialPage: _multiVideoPlayProvider
-                            .currentIndexs[widget.screenNum]),
+                        initialPage: widget.initialIndex ??
+                            _multiVideoPlayProvider
+                                .currentIndexs[widget.screenNum]),
             scrollDirection: Axis.vertical,
             allowImplicitScrolling: true,
             itemCount: 200,
