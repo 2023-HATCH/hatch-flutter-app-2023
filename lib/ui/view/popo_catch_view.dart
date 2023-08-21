@@ -13,8 +13,7 @@ import 'package:semicircle_indicator/semicircle_indicator.dart';
 import 'dart:math' as math;
 
 class PoPoCatchView extends StatefulWidget {
-  final SocketType type;
-  const PoPoCatchView({Key? key, required this.type}) : super(key: key);
+  const PoPoCatchView({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _PoPoCatchViewState();
@@ -29,7 +28,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   late Animation<double> _opacityAnimation;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
-  SocketType _prevStageType = SocketType.CATCH_START;
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +37,19 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
 
     _onMidEnter();
 
-    // 캐치 재진행인 경우 토스트 띄우고 카운트다운 재시작
-    if (_prevStageType != widget.type) {
-      _reCountDown();
+    // 캐치 재진행 토스트
+    if (_socketStageProvider.isReCatch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _socketStageProvider.setIsReCatch(false);
+        Fluttertoast.showToast(
+          msg: "캐치를 아무도 안 했어요...😢",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      });
     }
 
     return Column(
@@ -98,21 +106,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
         }
       });
     }
-  }
-
-  void _reCountDown() {
-    _prevStageType = widget.type;
-    _milliseconds = 0;
-    _catchCountDown = 0.0;
-    _startTimer();
-    Fluttertoast.showToast(
-      msg: "캐치를 아무도 안 했어요...😢",
-      toastLength: Toast.LENGTH_SHORT,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.black,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
   }
 
   SizedBox _buildCatchButton() {

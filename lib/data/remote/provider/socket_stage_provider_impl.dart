@@ -94,6 +94,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isReaction = false;
   bool _isUserCountChange = false;
   bool _isCatchMidEnter = false;
+  bool _isReCatch = false;
   bool _isPlaySkeletonChange = false;
   bool _isMVPSkeletonChange = false;
 
@@ -112,6 +113,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isReaction => _isReaction;
   bool get isUserCountChange => _isUserCountChange;
   bool get isCatchMidEnter => _isCatchMidEnter;
+  bool get isReCatch => _isReCatch;
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
   bool get isMVPSkeletonChange => _isMVPSkeletonChange;
 
@@ -151,6 +153,11 @@ class SocketStageProviderImpl extends ChangeNotifier
     if (value) notifyListeners();
   }
 
+  setIsReCatch(bool value) {
+    _isReCatch = value;
+    notifyListeners();
+  }
+
   setIsPlaySkeletonChange(bool value) {
     _isPlaySkeletonChange = value;
     if (value) notifyListeners();
@@ -188,11 +195,6 @@ class SocketStageProviderImpl extends ChangeNotifier
       onDebugMessage: (p0) => debugPrint("popo socket: $p0"),
     ));
     _stompClient!.activate();
-  }
-
-  @override
-  void deactivateWebSocket() {
-    _stompClient?.deactivate();
   }
 
   @override
@@ -276,6 +278,7 @@ class SocketStageProviderImpl extends ChangeNotifier
       _stompClient?.send(
           destination: AppUrl.socketExitUrl,
           headers: {'x-access-token': token});
+      _stompClient?.deactivate();
     }
   }
 
@@ -322,6 +325,9 @@ class SocketStageProviderImpl extends ChangeNotifier
                 jsonDecode(frame.body.toString())['data']));
         _players.clear();
         _players.addAll(socketResponse.data?.players ?? []);
+        break;
+      case SocketType.CATCH_END_RESTART:
+        setIsReCatch(true);
         break;
       case SocketType.PLAY_SKELETON:
         var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
@@ -405,9 +411,8 @@ class SocketStageProviderImpl extends ChangeNotifier
             builder: (context) => const PoPoWaitView());
       case SocketType.CATCH:
       case SocketType.CATCH_START:
-      case SocketType.CATCH_END_RESTART:
         return MaterialPageRoute<dynamic>(
-            builder: (context) => PoPoCatchView(type: stageType));
+            builder: (context) => const PoPoCatchView());
       case SocketType.PLAY:
       case SocketType.PLAY_START:
         return MaterialPageRoute<dynamic>(
