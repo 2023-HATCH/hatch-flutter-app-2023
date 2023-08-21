@@ -28,7 +28,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   late KaKaoLoginProvider _loginProvider;
   late String _userId;
   bool _isEnter = false;
-  int _page = 0;
+  int _page = 1;
+  String? _curDate;
+  String? _nextDate;
+  bool _isHeaderVisible = false;
 
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
@@ -114,6 +117,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             controller: _scrollController,
             itemCount: _messageList.length,
             itemBuilder: (BuildContext context, int index) {
+              // 날짜 헤더
+              _isHeaderVisible = false;
+
+              _curDate = _messageList[index].createdAt.split(' ')[0];
+              if (index < _messageList.length - 1) {
+                _nextDate = _messageList[index + 1].createdAt.split(' ')[0];
+              }
+              if (_curDate != null && _nextDate != null) {
+                _isHeaderVisible = (_curDate != _nextDate) ? true : false;
+              }
+              if (index == _messageList.length - 1) _isHeaderVisible = true;
+
+              // 말풍선 왼쪽 오른쪽 구분
               if (index < _messageList.length - 1 &&
                   _messageList[index + 1].sender.userId == _userId) {
                 _isNextSenderRight = true;
@@ -123,10 +139,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 _isNextSenderRight = false;
               }
               return _messageList[index].sender.userId == _userId
-                  ? ChatDetailRightBubbleWidget(chatDetail: _messageList[index])
+                  ? ChatDetailRightBubbleWidget(
+                      chatDetail: _messageList[index],
+                      headerVisiblity: _isHeaderVisible,
+                    )
                   : ChatDetailLeftBubbleWidget(
                       chatDetail: _messageList[index],
-                      profileVisiblity: _isNextSenderRight);
+                      profileVisiblity: _isNextSenderRight,
+                      headerVisiblity: _isHeaderVisible);
             },
           ),
         ),
@@ -271,8 +291,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       var talkList = response.data.messages;
 
       setState(() {
-        for (var element in talkList) {
-          _messageList.add(element);
+        for (var chat in talkList) {
+          _messageList.add(chat);
         }
       });
     }
