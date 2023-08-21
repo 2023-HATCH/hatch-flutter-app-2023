@@ -191,11 +191,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   }
 
   @override
-  void deactivateWebSocket() {
-    _stompClient?.deactivate();
-  }
-
-  @override
   void onSubscribe() {
     _stompClient?.subscribe(
         destination: AppUrl.socketSubscribeStageUrl,
@@ -276,6 +271,7 @@ class SocketStageProviderImpl extends ChangeNotifier
       _stompClient?.send(
           destination: AppUrl.socketExitUrl,
           headers: {'x-access-token': token});
+      _stompClient?.deactivate();
     }
   }
 
