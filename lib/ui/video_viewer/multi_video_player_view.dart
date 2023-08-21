@@ -8,10 +8,10 @@ import 'package:pocket_pose/ui/widget/music_spinner_widget.dart';
 import 'package:provider/provider.dart';
 
 class MultiVideoPlayerView extends StatefulWidget {
-  const MultiVideoPlayerView({super.key, required String screenName})
-      : screenName = screenName;
+  const MultiVideoPlayerView({super.key, required int screenNum})
+      : screenNum = screenNum;
 
-  final String screenName;
+  final int screenNum;
 
   @override
   State<MultiVideoPlayerView> createState() => _MultiVideoPlayerViewState();
@@ -31,7 +31,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_multiVideoPlayProvider.videoList.isNotEmpty) {
+      if (_multiVideoPlayProvider.videos[widget.screenNum].isNotEmpty) {
         _multiVideoPlayProvider.playVideo();
       }
     });
@@ -41,11 +41,11 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
     try {
       final videoProvider = Provider.of<VideoProvider>(context, listen: false);
       debugPrint(
-          '현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPage}');
+          '현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
       videoProvider
           .getVideos(VideosRequest(
-              page: _multiVideoPlayProvider.currentPage,
-              size: _multiVideoPlayProvider.PAGESIZE))
+              page: _multiVideoPlayProvider.currentPages[widget.screenNum],
+              size: _multiVideoPlayProvider.pageSize))
           .then((value) {
         final response = videoProvider.response;
 
@@ -53,10 +53,11 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
           if (response != null) {
             setState(() {
               if (response.videoList.isNotEmpty) {
-                _multiVideoPlayProvider.addVideos(response.videoList);
+                _multiVideoPlayProvider.addVideos(
+                    widget.screenNum, response.videoList);
               }
               if (response.isLast) {
-                _multiVideoPlayProvider.isLast = true;
+                _multiVideoPlayProvider.isLasts[widget.screenNum] = true;
                 return;
               }
             });
@@ -64,9 +65,9 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
         }
       });
 
-      _multiVideoPlayProvider.currentPage++;
+      _multiVideoPlayProvider.currentPages[widget.screenNum]++;
       debugPrint(
-          '다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPage}');
+          '다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
     } catch (e) {
       // Handle error if needed
       debugPrint('moon video_view.dart error: $e');
@@ -78,23 +79,25 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
       setState(() {
         _multiVideoPlayProvider.pauseVideo();
 
-        if (!_multiVideoPlayProvider.isLast) {
-          _multiVideoPlayProvider.currentIndex = index;
+        if (!_multiVideoPlayProvider.isLasts[widget.screenNum]) {
+          _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
 
-          if (_multiVideoPlayProvider.videoList.length -
-                  _multiVideoPlayProvider.currentIndex <=
-              _multiVideoPlayProvider.PAGESIZE - 1) {
+          if (_multiVideoPlayProvider.videos[widget.screenNum].length -
+                  _multiVideoPlayProvider.currentIndexs[widget.screenNum] <=
+              _multiVideoPlayProvider.pageSize - 1) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _loadMoreVideos();
             });
           }
         } else {
-          if (_multiVideoPlayProvider.videoList.length == index) {
+          if (_multiVideoPlayProvider.videos[widget.screenNum].length ==
+              index) {
             // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
-            _multiVideoPlayProvider.pageController.jumpToPage(0);
-            _multiVideoPlayProvider.currentIndex = 0;
+            _multiVideoPlayProvider.pageControllers[widget.screenNum]
+                .jumpToPage(0);
+            _multiVideoPlayProvider.currentIndexs[widget.screenNum] = 0;
           } else {
-            _multiVideoPlayProvider.currentIndex = index;
+            _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
           }
         }
 
@@ -125,39 +128,46 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
       child: Stack(
         children: <Widget>[
           PageView.builder(
-            controller: _multiVideoPlayProvider.pageController = PageController(
-                initialPage: _multiVideoPlayProvider.currentIndex),
+            controller:
+                _multiVideoPlayProvider.pageControllers[widget.screenNum],
             scrollDirection: Axis.vertical,
             allowImplicitScrolling: true,
             itemCount: 200,
             itemBuilder: (context, index) {
-              if (_multiVideoPlayProvider.currentPage == 0 &&
-                  _multiVideoPlayProvider.videoList.isEmpty) {
+              if (_multiVideoPlayProvider.currentPages[widget.screenNum] == 0 &&
+                  _multiVideoPlayProvider.videos[widget.screenNum].isEmpty) {
                 _multiVideoPlayProvider.resetVideoPlayer();
                 _loadMoreVideos();
-                _multiVideoPlayProvider.loading = false;
+                _multiVideoPlayProvider.loadings[widget.screenNum] = false;
                 return const MusicSpinner(); // 비디오 로딩 중
               } else {
-                if (index < _multiVideoPlayProvider.videoList.length) {
+                if (index <
+                    _multiVideoPlayProvider.videos[widget.screenNum].length) {
                   // 현재 비디오 인덱스 안에 있는 경우
                   return FutureBuilder(
-                    future: _multiVideoPlayProvider.videoPlayerFutures[
-                        _multiVideoPlayProvider.currentIndex],
+                    future:
+                        _multiVideoPlayProvider.videoFutures[widget.screenNum][
+                            _multiVideoPlayProvider
+                                .currentIndexs[widget.screenNum]],
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         // 비디오가 준비된 경우
-                        _multiVideoPlayProvider.loading = true;
+                        _multiVideoPlayProvider.loadings[widget.screenNum] =
+                            true;
                         return VideoPlayerWidget(
+                          screenNum: widget.screenNum,
                           index: index,
                         ); // 비디오 플레이어 생성
                       }
                       if ((snapshot.connectionState ==
                               ConnectionState.waiting &&
-                          _multiVideoPlayProvider.loading)) {
+                          _multiVideoPlayProvider.loadings[widget.screenNum])) {
                         // 비디오가 준비된 경우
-                        _multiVideoPlayProvider.loading = true;
+                        _multiVideoPlayProvider.loadings[widget.screenNum] =
+                            true;
                         return Stack(children: [
                           VideoPlayerWidget(
+                            screenNum: widget.screenNum,
                             index: index,
                           ),
                           const Center(
@@ -169,18 +179,21 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
                           )
                         ]); // 비디오 플레이어 생성
                       } else {
-                        _multiVideoPlayProvider.loading = false;
+                        _multiVideoPlayProvider.loadings[widget.screenNum] =
+                            false;
                         return const MusicSpinner(); // 비디오 로딩 중
                       }
                     },
                   );
                   //마지막 페이지에 진입할 경우
-                } else if (index == _multiVideoPlayProvider.videoList.length) {
-                  _multiVideoPlayProvider.loading = true;
+                } else if (index ==
+                    _multiVideoPlayProvider.videos[widget.screenNum].length) {
+                  _multiVideoPlayProvider.loadings[widget.screenNum] = true;
                   return const MusicSpinner();
                 } else {
-                  _multiVideoPlayProvider.loading = false;
-                  if (_multiVideoPlayProvider.currentIndex <= 0) {
+                  _multiVideoPlayProvider.loadings[widget.screenNum] = false;
+                  if (_multiVideoPlayProvider.currentIndexs[widget.screenNum] <=
+                      0) {
                     //모든 비디오 로드 전 처음 화면에 진입했을 경우
                     return Container(color: Colors.yellow); // 비디오 로딩 중
                   } else {

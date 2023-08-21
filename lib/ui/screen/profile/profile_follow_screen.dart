@@ -91,9 +91,9 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _multiVideoPlayProvider.videoList[widget.index].user.nickname,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        title: const Text(
+          '_multiVideoPlayProvider.videoList[widget.index].user.nickname',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,

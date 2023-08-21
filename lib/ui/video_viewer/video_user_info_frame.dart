@@ -9,17 +9,18 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class VideoUserInfoFrame extends StatelessWidget {
-  VideoUserInfoFrame({super.key, required this.index});
+  VideoUserInfoFrame({super.key, required this.screenNum, required this.index});
 
   late MultiVideoPlayProvider _multiVideoPlayProvider;
+  final int screenNum;
   final int index;
 
   @override
   Widget build(BuildContext context) {
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    UserData user = _multiVideoPlayProvider.videoList[index].user;
-    VideoData video = _multiVideoPlayProvider.videoList[index];
+    UserData user = _multiVideoPlayProvider.videos[screenNum][index].user;
+    VideoData video = _multiVideoPlayProvider.videos[screenNum][index];
 
     return Positioned(
         bottom: 110,

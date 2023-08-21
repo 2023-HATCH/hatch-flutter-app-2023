@@ -97,6 +97,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             ProfileVideoScreen(
+                                                screenNum: widget._index,
 
                                                 // 내 화면이라면 하단에 보여줄 정보가 필요해서 profileResponse 전송
                                                 profileResponse:

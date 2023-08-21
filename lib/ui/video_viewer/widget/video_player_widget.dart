@@ -6,8 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
-  const VideoPlayerWidget({super.key, required int index}) : index = index;
+  const VideoPlayerWidget(
+      {super.key, required int screenNum, required int index})
+      : screenNum = screenNum,
+        index = index;
 
+  final int screenNum;
   final int index;
 
   @override
@@ -64,8 +68,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
       children: <Widget>[
         GestureDetector(
           onTap: () {
-            final controller =
-                _multiVideoPlayProvider.controllers[widget.index];
+            final controller = _multiVideoPlayProvider
+                .videoControllers[widget.screenNum][widget.index];
             if (controller.value.isPlaying) {
               _multiVideoPlayProvider.pauseVideo();
               isPlaying = false;
@@ -82,7 +86,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
               });
             }
           },
-          child: VideoPlayer(_multiVideoPlayProvider.controllers[widget.index]),
+          child: VideoPlayer(_multiVideoPlayProvider
+              .videoControllers[widget.screenNum][widget.index]),
         ),
         Positioned.fill(
           child: AnimatedBuilder(
@@ -103,8 +108,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
             },
           ),
         ),
-        VideoRightFrame(index: widget.index),
+        VideoRightFrame(screenNum: widget.screenNum, index: widget.index),
         VideoUserInfoFrame(
+          screenNum: widget.screenNum,
           index: widget.index,
         ),
       ],

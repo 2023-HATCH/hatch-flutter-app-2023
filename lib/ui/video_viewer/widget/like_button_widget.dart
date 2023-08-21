@@ -8,8 +8,9 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class LikeButtonWidget extends StatefulWidget {
-  LikeButtonWidget({super.key, required this.index});
+  LikeButtonWidget({super.key, required this.screenNum, required this.index});
 
+  int screenNum;
   int index;
 
   @override
@@ -25,7 +26,7 @@ class _LikeButtonWidgetState extends State<LikeButtonWidget> {
     final multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
     final likeProvider = Provider.of<LikeProvider>(context, listen: false);
-    final video = multiVideoPlayProvider.videoList[widget.index];
+    final video = multiVideoPlayProvider.videos[widget.screenNum][widget.index];
 
     return LikeButton(
         size: 25,

@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onTap: () {
-              _multiVideoPlayProvider.pageController.animateToPage(
+              _multiVideoPlayProvider.pageControllers[0].animateToPage(
                 0,
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.ease,
@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         extendBodyBehindAppBar: true, //body 위에 appbar
         resizeToAvoidBottomInset: false,
-        body: const MultiVideoPlayerView(screenName: 'home'));
+        body: const MultiVideoPlayerView(screenNum: 0));
   }
 
   void _showChatScreen() {

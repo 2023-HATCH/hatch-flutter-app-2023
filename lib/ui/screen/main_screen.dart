@@ -99,7 +99,6 @@ class _MainScreenState extends State<MainScreen> {
       if (await _loginProvider.checkAccessToken()) {
         _multiVideoPlayProvider.resetVideoPlayer();
       }
-      debugPrint('현재 페이지: ${_multiVideoPlayProvider.currentIndex}');
     }
   }
 

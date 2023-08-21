@@ -12,12 +12,14 @@ import 'package:provider/provider.dart';
 class CommentButtonWidget extends StatefulWidget {
   CommentButtonWidget(
       {super.key,
+      required this.screenNum,
       required this.index,
       required this.onRefresh,
       required this.videoId,
       required this.commentCount,
       required this.childWidget});
 
+  int screenNum;
   int index;
   VoidCallback onRefresh;
   String videoId;
@@ -65,13 +67,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
             setState(() {
               _commentList = newCommentList?.reversed.toList();
 
-              // commentCount api 완성되면 삭제
-              // _isNotEmptyComment =
-              //     _commentList != null || _commentList!.isNotEmpty;
-              // commentCount api 완성되면 주석 해제
-              _isNotEmptyComment =
-                  _multiVideoPlayProvider.videoList[widget.index].commentCount >
-                      0;
+              _isNotEmptyComment = _multiVideoPlayProvider
+                      .videos[widget.screenNum][widget.index].commentCount >
+                  0;
             });
           });
         }
@@ -111,8 +109,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
           // commentCount api 완성되면 삭제
           //_isNotEmptyComment = _commentList != null || _commentList!.isNotEmpty;
           // commentCount api 완성되면 주석 해제
-          _isNotEmptyComment =
-              _multiVideoPlayProvider.videoList[widget.index].commentCount > 0;
+          _isNotEmptyComment = _multiVideoPlayProvider
+                  .videos[widget.screenNum][widget.index].commentCount >
+              0;
         });
       }
     });
@@ -161,7 +160,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     }
 
                     int commentCount = _multiVideoPlayProvider
-                        .videoList[widget.index].commentCount;
+                        .videos[widget.screenNum][widget.index].commentCount;
                     return SizedBox(
                       height: isClicked == false
                           ? 500
@@ -377,8 +376,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                         bottomState(() {
                                                           setState(() {
                                                             _multiVideoPlayProvider
-                                                                .videoList[
-                                                                    widget
+                                                                .videos[widget
+                                                                        .screenNum]
+                                                                    [widget
                                                                         .index]
                                                                 .commentCount--;
                                                           });
@@ -594,8 +594,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                           bottomState(() {
                                                             setState(() {
                                                               _multiVideoPlayProvider
-                                                                  .videoList[
-                                                                      widget
+                                                                  .videos[widget
+                                                                          .screenNum]
+                                                                      [widget
                                                                           .index]
                                                                   .commentCount++;
                                                             });
@@ -636,8 +637,10 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                             bottomState(() {
                                                               setState(() {
                                                                 _multiVideoPlayProvider
-                                                                    .videoList[
+                                                                    .videos[
                                                                         widget
+                                                                            .screenNum]
+                                                                        [widget
                                                                             .index]
                                                                     .commentCount++;
                                                               });

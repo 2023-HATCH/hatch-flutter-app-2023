@@ -17,11 +17,13 @@ import 'package:provider/provider.dart';
 class ProfileVideoScreen extends StatefulWidget {
   const ProfileVideoScreen(
       {Key? key,
+      required this.screenNum,
       required this.videoList,
       required this.initialIndex,
       required this.profileResponse})
       : super(key: key);
 
+  final int screenNum;
   final List<VideoData> videoList;
   final int initialIndex;
   final ProfileResponse profileResponse;
@@ -110,8 +112,10 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                                 onConfirm: () {
                                   _videoProvider.deleteVideo(
                                     _multiVideoPlayProvider
-                                        .videoList[_multiVideoPlayProvider
-                                            .currentIndex]
+                                        .videos[widget.screenNum][
+                                            _multiVideoPlayProvider
+                                                    .currentIndexs[
+                                                widget.screenNum]]
                                         .uuid,
                                   );
                                   Fluttertoast.showToast(
@@ -131,7 +135,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
               ),
               extendBodyBehindAppBar: true, //body 위에 appbar
               resizeToAvoidBottomInset: false,
-              body: const MultiVideoPlayerView(screenName: 'my'),
+              body: MultiVideoPlayerView(screenNum: widget.screenNum),
               // 하나로 만들어야된다.. videoList(required)랑 initialIndex(nullable, null이면 0부터)를 인자로..
 
               bottomSheet: Container(
@@ -182,6 +186,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                           //const Padding(padding: EdgeInsets.only(left: 18)),
                           Expanded(
                             child: CommentButtonWidget(
+                              screenNum: widget.screenNum,
                               index: widget.initialIndex,
                               onRefresh: () {
                                 setState(() {});
