@@ -62,7 +62,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   void dispose() {
     super.dispose();
     _textController.dispose();
-    _multiVideoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo(widget.screenNum);
   }
 
   @override

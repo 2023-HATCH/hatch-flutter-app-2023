@@ -32,7 +32,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_multiVideoPlayProvider.videos[widget.screenNum].isNotEmpty) {
-        _multiVideoPlayProvider.playVideo();
+        _multiVideoPlayProvider.playVideo(widget.screenNum);
       }
     });
   }
@@ -77,7 +77,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
   void onPageChanged(int index) {
     if (mounted) {
       setState(() {
-        _multiVideoPlayProvider.pauseVideo();
+        _multiVideoPlayProvider.pauseVideo(widget.screenNum);
 
         if (!_multiVideoPlayProvider.isLasts[widget.screenNum]) {
           _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
@@ -101,7 +101,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
           }
         }
 
-        _multiVideoPlayProvider.playVideo();
+        _multiVideoPlayProvider.playVideo(widget.screenNum);
       });
     }
   }
@@ -109,7 +109,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
   @override
   void dispose() {
     super.dispose();
-    _multiVideoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo(widget.screenNum);
   }
 
   @override
@@ -120,7 +120,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
       onRefresh: () async {
         if (mounted) {
           setState(() {
-            _multiVideoPlayProvider.resetVideoPlayer();
+            _multiVideoPlayProvider.resetVideoPlayer(widget.screenNum);
           });
         }
       },
@@ -128,15 +128,16 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
       child: Stack(
         children: <Widget>[
           PageView.builder(
-            controller:
-                _multiVideoPlayProvider.pageControllers[widget.screenNum],
+            controller: PageController(
+                initialPage:
+                    _multiVideoPlayProvider.currentIndexs[widget.screenNum]),
             scrollDirection: Axis.vertical,
             allowImplicitScrolling: true,
             itemCount: 200,
             itemBuilder: (context, index) {
               if (_multiVideoPlayProvider.currentPages[widget.screenNum] == 0 &&
                   _multiVideoPlayProvider.videos[widget.screenNum].isEmpty) {
-                _multiVideoPlayProvider.resetVideoPlayer();
+                _multiVideoPlayProvider.resetVideoPlayer(widget.screenNum);
                 _loadMoreVideos();
                 _multiVideoPlayProvider.loadings[widget.screenNum] = false;
                 return const MusicSpinner(); // 비디오 로딩 중

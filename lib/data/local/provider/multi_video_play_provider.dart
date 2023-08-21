@@ -11,12 +11,7 @@ class MultiVideoPlayProvider with ChangeNotifier {
   // 홈: 0, 업로드: 1, 좋아요: 2, 검색 3
   late List<List<VideoPlayerController>> videoControllers = [[], [], [], []];
   late List<List<Future<void>>> videoFutures = [[], [], []];
-  late List<PageController> pageControllers = [
-    PageController(initialPage: currentIndexs[0]),
-    PageController(initialPage: currentIndexs[1]),
-    PageController(initialPage: currentIndexs[2]),
-    PageController(initialPage: currentIndexs[3]),
-  ];
+  late List<PageController> pageControllers = [];
 
   List<List<VideoData>> videos = [[], [], [], []];
   List<bool> loadings = [false, false, false, false];
@@ -52,16 +47,6 @@ class MultiVideoPlayProvider with ChangeNotifier {
       debugPrint('페이지: 비디오 로딩중');
       videoControllers[screenNum]
           .add(VideoPlayerController.network(video.videoUrl));
-      // videoFutures[screenNum] = videoFutures[screenNum]
-      //     .then((_) => videoControllers[screenNum].last.initialize())
-      //     .then((value) {
-      //   videoControllers[screenNum][currentIndexs[screenNum]].setLooping(true);
-      //   videoControllers[screenNum][currentIndexs[screenNum]].setVolume(1.0);
-
-      //   playVideo();
-      //   WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
-      //   debugPrint('페이지: 비디오 로딩 하나끝');
-      // });
 
       videoFutures[screenNum]
           .add(videoControllers[screenNum].last.initialize().then((value) {
@@ -70,20 +55,23 @@ class MultiVideoPlayProvider with ChangeNotifier {
         videoControllers[screenNum][currentIndexs[screenNum]]
             .setVolume(1.0); // 볼륨 설정
 
-        playVideo();
+        playVideo(screenNum);
         WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
         debugPrint('페이지: 비디오 로딩 하나끝');
       }));
     }
   }
 
-  // 0 대신screenNum으로 변경!!!!!!
-  void playVideo() {
-    if (currentIndexs[0] >= 0 &&
-        currentIndexs[0] < videoControllers[0].length) {
-      videoControllers[0][currentIndexs[0]].addListener(() {
-        _videoPosition = videoControllers[0][currentIndexs[0]].value.position;
-        _videoDuration = videoControllers[0][currentIndexs[0]].value.duration;
+  void playVideo(int screenNum) {
+    if (currentIndexs[screenNum] >= 0 &&
+        currentIndexs[screenNum] < videoControllers[0].length) {
+      videoControllers[screenNum][currentIndexs[0]].addListener(() {
+        _videoPosition = videoControllers[screenNum][currentIndexs[screenNum]]
+            .value
+            .position;
+        _videoDuration = videoControllers[screenNum][currentIndexs[screenNum]]
+            .value
+            .duration;
 
         final isMoreThen20Per = _videoPosition >=
             _videoDuration * endVideoViewAmount; // 20퍼 이상 재생 됐을 때 True
@@ -93,50 +81,56 @@ class MultiVideoPlayProvider with ChangeNotifier {
 
         if (isMoreThen20Per) {
           if (!isMoreThen95Per) {
-            if (!getAddView[currentIndexs[0]]) {
-              getAddView[currentIndexs[0]] = true;
+            if (!getAddView[currentIndexs[screenNum]]) {
+              getAddView[currentIndexs[screenNum]] = true;
 
-              debugPrint('❤️  ${currentIndexs[0]}번 영상 조회수 증가 요청');
+              debugPrint('❤️  ${currentIndexs[screenNum]}번 영상 조회수 증가 요청');
               final videoProvider =
                   Provider.of<VideoProvider>(mainContext, listen: false);
-              videoProvider.getView(videos[0][currentIndexs[0]].uuid);
+              videoProvider
+                  .getView(videos[screenNum][currentIndexs[screenNum]].uuid);
             }
           } else {
-            if (getAddView[currentIndexs[0]]) {
-              getAddView[currentIndexs[0]] = false;
+            if (getAddView[currentIndexs[screenNum]]) {
+              getAddView[currentIndexs[screenNum]] = false;
             }
-            videoEnd[currentIndexs[0]] = !videoEnd[currentIndexs[0]];
+            videoEnd[currentIndexs[screenNum]] =
+                !videoEnd[currentIndexs[screenNum]];
           }
         } else {
-          getAddView[currentIndexs[0]] = false;
-          videoEnd[currentIndexs[0]] = false;
+          getAddView[currentIndexs[screenNum]] = false;
+          videoEnd[currentIndexs[screenNum]] = false;
         }
       });
 
-      if (!videoControllers[0][currentIndexs[0]].value.isPlaying) {
-        videoControllers[0][currentIndexs[0]].setLooping(true); // 영상 무한 반복
-        videoControllers[0][currentIndexs[0]].setVolume(1.0); // 볼륨 설정
+      if (!videoControllers[screenNum][currentIndexs[screenNum]]
+          .value
+          .isPlaying) {
+        videoControllers[screenNum][currentIndexs[screenNum]]
+            .setLooping(true); // 영상 무한 반복
+        videoControllers[screenNum][currentIndexs[screenNum]]
+            .setVolume(1.0); // 볼륨 설정
 
-        videoControllers[0][currentIndexs[0]].play();
+        videoControllers[screenNum][currentIndexs[screenNum]].play();
 
         WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
       }
     }
   }
 
-  void pauseVideo() {
-    if (currentIndexs[0] >= 0 &&
-        currentIndexs[0] < videoControllers[0].length) {
-      videoControllers[0][currentIndexs[0]].pause();
+  void pauseVideo(int screenNum) {
+    if (currentIndexs[screenNum] >= 0 &&
+        currentIndexs[screenNum] < videoControllers[screenNum].length) {
+      videoControllers[screenNum][currentIndexs[screenNum]].pause();
 
       WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
     }
   }
 
-  void resetVideoPlayer() {
-    pauseVideo();
+  void resetVideoPlayer(int screenNum) {
+    pauseVideo(screenNum);
 
-    for (final controller in videoControllers[0]) {
+    for (final controller in videoControllers[screenNum]) {
       controller.dispose();
     }
     videoControllers[0] = [];
@@ -154,8 +148,10 @@ class MultiVideoPlayProvider with ChangeNotifier {
   void dispose() {
     super.dispose();
 
-    for (final controller in videoControllers[0]) {
-      controller.dispose();
+    for (final controllers in videoControllers) {
+      for (final controller in controllers) {
+        controller.dispose();
+      }
     }
 
     pageControllers[0].dispose();

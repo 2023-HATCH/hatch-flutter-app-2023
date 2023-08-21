@@ -101,7 +101,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                     onConfirm: () {
                       _loginProvider.signOut();
 
-                      _multiVideoPlayProvider.resetVideoPlayer();
+                      _multiVideoPlayProvider.resetVideoPlayer(0);
 
                       Navigator.pushAndRemoveUntil(
                         context,

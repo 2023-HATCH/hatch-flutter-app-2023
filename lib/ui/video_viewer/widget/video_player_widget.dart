@@ -71,14 +71,14 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
             final controller = _multiVideoPlayProvider
                 .videoControllers[widget.screenNum][widget.index];
             if (controller.value.isPlaying) {
-              _multiVideoPlayProvider.pauseVideo();
+              _multiVideoPlayProvider.pauseVideo(0);
               isPlaying = false;
               _toggleIconVisibility(true);
               Future.delayed(const Duration(milliseconds: 800), () {
                 _toggleIconVisibility(false);
               });
             } else {
-              _multiVideoPlayProvider.playVideo();
+              _multiVideoPlayProvider.playVideo(0);
               isPlaying = true;
               _toggleIconVisibility(true);
               Future.delayed(const Duration(milliseconds: 800), () {

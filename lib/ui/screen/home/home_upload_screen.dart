@@ -35,7 +35,7 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
   void initState() {
     _multiVideoPlayProvider = Provider.of(context, listen: false);
 
-    _multiVideoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo(0);
     _tagController = CustomTagTextFieldController(setIsTagsFillPutState);
     _initVideoPlayer();
 
@@ -44,7 +44,7 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
 
   @override
   void dispose() {
-    _multiVideoPlayProvider.playVideo();
+    _multiVideoPlayProvider.playVideo(0);
     _videoPlayerController?.dispose();
     _tagController.dispose();
     super.dispose();
@@ -70,11 +70,11 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
       if (value.code == 'VIDEO-2001') {
         Fluttertoast.showToast(msg: '영상이 성공적으로 업로드 되었습니다.');
         _isLoading = false;
-        _multiVideoPlayProvider.resetVideoPlayer();
+        _multiVideoPlayProvider.resetVideoPlayer(0);
 
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
           (route) => false,
         );
       }

@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
             GestureDetector(
                 onTap: () async {
                   if (await _loginProvider.checkAccessToken()) {
-                    _multiVideoPlayProvider.pauseVideo();
+                    _multiVideoPlayProvider.pauseVideo(0);
                     _showChatScreen();
                   } else {
                     _loginProvider.showLoginBottomSheet();

@@ -43,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    _multiVideoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo(0);
   }
 
   Future<bool> _initUser() async {
@@ -80,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   void dispose() {
     super.dispose();
     _tabController.dispose();
-    _multiVideoPlayProvider.playVideo();
+
     _profileProvider.isGetProfilDone = false;
   }
 

@@ -96,7 +96,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   void dispose() {
     AudioPlayerUtil().stop();
     if (widget.getIndex() == 0) {
-      _multiVideoPlayProvider.playVideo();
+      _multiVideoPlayProvider.playVideo(0);
     }
 
     if (_isEnter) {

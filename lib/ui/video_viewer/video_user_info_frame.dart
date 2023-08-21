@@ -39,7 +39,7 @@ class VideoUserInfoFrame extends StatelessWidget {
                           builder: (context) =>
                               ProfileScreen(userId: user.userId),
                         ));
-                    _multiVideoPlayProvider.pauseVideo();
+                    _multiVideoPlayProvider.pauseVideo(screenNum);
                   },
                   child: Row(children: <Widget>[
                     ClipRRect(
