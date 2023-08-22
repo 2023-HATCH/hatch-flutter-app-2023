@@ -76,12 +76,14 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
                   ? TabBarView(
                       controller: _tabController,
                       children: [
-                        FollowListViewWidget(
-                            tabNum: 0, followList: response.followerList),
-                        FollowListViewWidget(
-                          tabNum: 1,
-                          followList: response.followingList,
-                        ),
+                        response.followerList.isEmpty
+                            ? const Center(child: Text('팔로워한 사용자가 없습니다.'))
+                            : FollowListViewWidget(
+                                tabNum: 0, followList: response.followerList),
+                        response.followingList.isEmpty
+                            ? const Center(child: Text('팔로우한 사용자가 없습니다.'))
+                            : FollowListViewWidget(
+                                tabNum: 1, followList: response.followingList),
                       ],
                     )
                   :
