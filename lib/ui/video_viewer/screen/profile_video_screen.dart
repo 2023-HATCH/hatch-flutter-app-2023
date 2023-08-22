@@ -170,7 +170,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                 setCurrentIndex: setCurrentIndex,
               ),
               bottomSheet: Container(
-                height: 55,
+                height: 65,
                 color: Colors.black,
                 child: _user != null &&
                         widget.videoList[currentIndex].user.userId ==
