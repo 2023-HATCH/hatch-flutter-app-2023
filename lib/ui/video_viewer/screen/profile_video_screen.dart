@@ -85,6 +85,8 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
           debugPrint(
               '프로필: snapshot.connectionState ${snapshot.connectionState}');
           if (snapshot.connectionState == ConnectionState.done) {
+            debugPrint('프로필: ${widget.videoList[currentIndex].user.nickname}');
+            debugPrint('프로필: ${_user!.nickname}');
             return Scaffold(
                 appBar: AppBar(
                   title: const Text(
@@ -102,7 +104,8 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                     },
                   ),
                   actions: [
-                    if (isMe) // 본인 영상일때만 보이는 삭제 버튼
+                    if (widget.videoList[currentIndex].user.userId ==
+                        _user!.userId) // 본인 영상일때만 보이는 삭제 버튼
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
                         child: GestureDetector(
