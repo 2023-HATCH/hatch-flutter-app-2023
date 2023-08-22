@@ -36,8 +36,8 @@ class FollowRepository {
     }
   }
 
-  Future<bool> postComment(String videoId, String content) async {
-    final url = Uri.parse('${AppUrl.commentUrl}/$videoId');
+  Future<bool> postFollow(String userId) async {
+    final url = Uri.parse('${AppUrl.followUrl}/$userId');
 
     await loginProvider.checkAccessToken();
 
@@ -50,28 +50,23 @@ class FollowRepository {
         "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
     };
 
-    final Map<String, dynamic> body = {
-      'content': content,
-    };
-
-    final response =
-        await http.post(url, headers: headers, body: jsonEncode(body));
+    final response = await http.post(url, headers: headers);
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("댓글 등록 성공! json: $json");
+      debugPrint("팔로우 등록 성공! json: $json");
 
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('댓글 등록 실패 json $json');
+      debugPrint('팔로우 등록 실패 json $json');
       return false;
     }
   }
 
-  Future<bool> deleteComment(String commentId) async {
-    final url = Uri.parse('${AppUrl.commentUrl}/$commentId');
+  Future<bool> deleteFollow(String userId) async {
+    final url = Uri.parse('${AppUrl.followUrl}/$userId');
 
     await loginProvider.checkAccessToken();
 
@@ -88,13 +83,13 @@ class FollowRepository {
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("댓글 삭제 성공! json: $json");
+      debugPrint("팔로우 삭제 성공! json: $json");
 
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('댓글 삭제 실패 json $json');
+      debugPrint('팔로우 삭제 실패 json $json');
       return false;
     }
   }

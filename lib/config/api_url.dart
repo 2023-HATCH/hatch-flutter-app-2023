@@ -18,6 +18,9 @@ class AppUrl {
   // 댓글
   static const commentUrl = "$_apiBaseUrl/comments";
 
+  // 팔로우
+  static const followUrl = "$_apiBaseUrl/users/follow";
+
   // 프로필
   static const profileUrl = "$_apiBaseUrl/users/profile";
   static const profileEditUrl = "$_apiBaseUrl/users/me";

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/entity/response/comment_list_response.dart';
 import 'package:pocket_pose/data/remote/repository/comment_repository.dart';
+import 'package:pocket_pose/data/remote/repository/follow_repository.dart';
 
 class FollowProvider extends ChangeNotifier {
   CommentListResponse? _response;
@@ -23,23 +24,24 @@ class FollowProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> postComment(String videoId, String content) async {
+  Future<bool> postFollow(String userId) async {
     try {
-      _isPostSuccess = await CommentRepository().postComment(videoId, content);
+      _isPostSuccess = await FollowRepository().postFollow(userId);
 
       notifyListeners();
     } catch (e) {
-      debugPrint('CommentRepository postComment 에러: $e');
+      debugPrint('FollowRepository postFollow 에러: $e');
     }
+    return _isPostSuccess ?? false;
   }
 
-  Future<void> deleteComment(String commentId) async {
+  Future<bool> deleteFollow(String userId) async {
     try {
-      _isDeleteSuccess = await CommentRepository().deleteComment(commentId);
-
-      notifyListeners();
+      _isDeleteSuccess = await FollowRepository().deleteFollow(userId);
     } catch (e) {
-      debugPrint('CommentRepository deleteComment 에러: $e');
+      debugPrint('FollowRepository deleteFollow 에러: $e');
     }
+
+    return _isDeleteSuccess ?? false;
   }
 }
