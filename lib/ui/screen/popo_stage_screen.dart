@@ -62,7 +62,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 children: [
                   Navigator(
                     key: _socketStageProvider.navigatorKey,
-                    initialRoute: stageStageList[0],
+                    initialRoute: socketTypeList[0],
                     onGenerateRoute: _socketStageProvider.onGenerateRoute,
                   ),
                   const Positioned(
@@ -101,7 +101,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
     if (_isEnter) {
       _socketStageProvider.exitStage();
-      _socketStageProvider.deactivateWebSocket();
       _isEnter = false;
     }
 
@@ -118,14 +117,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   void _onSocketResponse() {
     if (_socketStageProvider.isConnect) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        StageType stageType = StageType.WAIT;
+        SocketType stageType = SocketType.WAIT;
         _socketStageProvider.setIsConnect(false);
         _stageProvider
             .getStageEnter(StageEnterRequest(page: 0, size: 10))
             .then((value) {
-              stageType = StageType.values.byName(value.data.stageStatus);
+              stageType = SocketType.values.byName(value.data.stageStatus);
               _socketStageProvider.setUserCount(value.data.userCount);
-              if (stageType == StageType.CATCH) {
+              if (stageType == SocketType.CATCH) {
                 _socketStageProvider.setIsCatchMidEnter(true);
               }
             })

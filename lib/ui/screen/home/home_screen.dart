@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _loginProvider.showLoginBottomSheet();
                   }
                 },
-                child: SvgPicture.asset('assets/icons/ic_home_chat_list.svg')),
+                child: SvgPicture.asset('assets/icons/ic_home_chat.svg')),
             UploadButtonWidget(
               context: context,
             ),

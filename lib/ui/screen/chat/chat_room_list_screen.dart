@@ -64,8 +64,10 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
                       : buildChatList(snapshot.data?.data.chatRooms ?? []),
                 );
               }
-              return const Center(
-                child: CircularProgressIndicator(),
+              return const Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
               );
             },
           ),

@@ -49,7 +49,7 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
               childWidget: Column(
                 children: <Widget>[
                   SvgPicture.asset(
-                    'assets/icons/ic_home_chat.svg',
+                    'assets/icons/ic_home_comment.svg',
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 2)),
                   Text(

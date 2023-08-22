@@ -8,12 +8,15 @@ part of 'stage_mvp_response.dart';
 
 StageMVPResponse _$StageMVPResponseFromJson(Map<String, dynamic> json) =>
     StageMVPResponse(
-      json['mvpUser'] == null
-          ? null
-          : UserListItem.fromJson(json['mvpUser'] as Map<String, dynamic>),
+      mvpPlayerNum: json['mvpPlayerNum'] as int,
+      playerInfos: (json['playerInfos'] as List<dynamic>)
+          .map((e) =>
+              StagePlayerInfoListItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$StageMVPResponseToJson(StageMVPResponse instance) =>
     <String, dynamic>{
-      'mvpUser': instance.mvpUser,
+      'mvpPlayerNum': instance.mvpPlayerNum,
+      'playerInfos': instance.playerInfos,
     };

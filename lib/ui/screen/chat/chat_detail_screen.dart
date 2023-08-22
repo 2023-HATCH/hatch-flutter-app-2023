@@ -1,127 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/entity/response/chat_detail_list_response.dart';
+import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
+import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_left_bubble_widget.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_detail_right_bubble_widget.dart';
-
-final chatDetailListString = {
-  "pageNum": 1,
-  "size": 20,
-  "messeges": [
-    {
-      "content": "야~~",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "뭐해!!!",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "낼 같이 공부할래?",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "응?",
-      "sender": {
-        "userId": "11",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "min0"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "공부하자",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자공부하자",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "뭐 뭐야",
-      "sender": {
-        "userId": "11",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "min0"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어싫어",
-      "sender": {
-        "userId": "11",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "min0"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "그래",
-      "sender": {
-        "userId": "11",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "min0"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "아싸",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-    {
-      "content": "낼 덕다 ㄱ",
-      "sender": {
-        "userId": "22",
-        "profileImg": "assets/images/chat_user_2.png",
-        "nickname": "pochako"
-      },
-      "createdAt": "2023-07-23 11:58:20.551705"
-    },
-  ]
-};
+import 'package:provider/provider.dart';
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen({
-    Key? key,
-  }) : super(key: key);
+  const ChatDetailScreen(
+      {Key? key, required this.chatRoomId, required this.opponentUserNickName})
+      : super(key: key);
+
+  final String chatRoomId;
+  final String opponentUserNickName;
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
+  late SocketChatProviderImpl _socketChatProvider;
+  late ChatProviderImpl _chatProvider;
+  late KaKaoLoginProvider _loginProvider;
+  late String _userId;
+  bool _isEnter = false;
+  int _page = 1;
+  String? _curDate;
+  String? _nextDate;
+  bool _isHeaderVisible = false;
+
   final List<ChatDetailListItem> _messageList = [];
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
@@ -132,13 +43,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void initState() {
     super.initState();
 
-    setState(() {
-      var chatDetailJson =
-          ChatDetailListResponse.fromJson(chatDetailListString);
-      chatDetailJson.messeges = chatDetailJson.messeges.reversed.toList();
-      for (var element in chatDetailJson.messeges) {
-        _messageList.add(element);
-      }
+    _initUserId();
+    _scrollController.addListener(_scrollListener);
+
+    // 선택한 채팅방 채팅메세지 조회
+    _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
+    _chatProvider.getChatDetailList(widget.chatRoomId, 0).then((value) {
+      setState(() {
+        for (var chat in value.data.messages) {
+          _messageList.add(chat);
+        }
+      });
     });
   }
 
@@ -149,18 +64,24 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     _scrollController.dispose();
   }
 
+  _initUserId() async {
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+    UserData user = await _loginProvider.getUser();
+
+    setState(() {
+      _userId = user.userId;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // build마다 채팅 스크롤 맨 밑으로
-    if (_messageList.isNotEmpty) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 50),
-          curve: Curves.easeOut,
-        );
-      });
-    }
+    _socketChatProvider =
+        Provider.of<SocketChatProviderImpl>(context, listen: true);
+
+    // 입장
+    _chatEnter();
+    // 소켓 반응 처리
+    _onSocketResponse();
 
     return Scaffold(
       appBar: _buildAppBar(context),
@@ -172,6 +93,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             height: 3,
           ),
           _buildChatsArea(),
+          const SizedBox(
+            height: 10,
+          ),
           _buildChatTextField(context),
         ],
       ),
@@ -193,19 +117,36 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             controller: _scrollController,
             itemCount: _messageList.length,
             itemBuilder: (BuildContext context, int index) {
+              // 날짜 헤더
+              _isHeaderVisible = false;
+
+              _curDate = _messageList[index].createdAt.split(' ')[0];
+              if (index < _messageList.length - 1) {
+                _nextDate = _messageList[index + 1].createdAt.split(' ')[0];
+              }
+              if (_curDate != null && _nextDate != null) {
+                _isHeaderVisible = (_curDate != _nextDate) ? true : false;
+              }
+              if (index == _messageList.length - 1) _isHeaderVisible = true;
+
+              // 말풍선 왼쪽 오른쪽 구분
               if (index < _messageList.length - 1 &&
-                  _messageList[index + 1].sender.nickname != "pochako") {
+                  _messageList[index + 1].sender.userId == _userId) {
                 _isNextSenderRight = true;
               } else if (index == _messageList.length - 1) {
                 _isNextSenderRight = true;
               } else {
                 _isNextSenderRight = false;
               }
-              return _messageList[index].sender.nickname != "pochako"
-                  ? ChatDetailRightBubbleWidget(chatDetail: _messageList[index])
+              return _messageList[index].sender.userId == _userId
+                  ? ChatDetailRightBubbleWidget(
+                      chatDetail: _messageList[index],
+                      headerVisiblity: _isHeaderVisible,
+                    )
                   : ChatDetailLeftBubbleWidget(
                       chatDetail: _messageList[index],
-                      profileVisiblity: _isNextSenderRight);
+                      profileVisiblity: _isNextSenderRight,
+                      headerVisiblity: _isHeaderVisible);
             },
           ),
         ),
@@ -261,6 +202,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 style: TextButton.styleFrom(
                                     splashFactory: NoSplash.splashFactory),
                                 onPressed: () {
+                                  _socketChatProvider.sendMessage(
+                                      SendChatRequest(
+                                          chatRoomId: widget.chatRoomId,
+                                          content: _textController.text));
                                   _textController.clear();
                                   setState(() {
                                     _isMessageFillOut = false;
@@ -292,9 +237,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      title: const Text(
-        "pochako",
-        style: TextStyle(
+      title: Text(
+        widget.opponentUserNickName,
+        style: const TextStyle(
             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
       ),
       backgroundColor: AppColor.purpleColor3,
@@ -308,5 +253,48 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
       ),
     );
+  }
+
+  void _chatEnter() {
+    if (!_isEnter) {
+      _isEnter = true;
+      _socketChatProvider.connectWebSocket();
+    }
+  }
+
+  void _onSocketResponse() {
+    if (_socketChatProvider.isConnect) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _socketChatProvider.setIsConnect(false);
+        _socketChatProvider.onSubscribe(widget.chatRoomId);
+      });
+    }
+
+    // 실시간 채팅
+    if (_socketChatProvider.isChat) {
+      _socketChatProvider.setIsChat(false);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _messageList.insert(0, _socketChatProvider.chat!);
+        });
+      });
+    }
+  }
+
+  _scrollListener() async {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      var response =
+          await _chatProvider.getChatDetailList(widget.chatRoomId, _page);
+      _page++;
+      var talkList = response.data.messages;
+
+      setState(() {
+        for (var chat in talkList) {
+          _messageList.add(chat);
+        }
+      });
+    }
   }
 }
