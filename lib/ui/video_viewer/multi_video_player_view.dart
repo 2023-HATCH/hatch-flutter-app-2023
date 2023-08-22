@@ -134,18 +134,115 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        if (widget.screenNum == 0) {
+    if (widget.screenNum == 0) {
+      return RefreshIndicator(
+        onRefresh: () async {
           if (mounted) {
             setState(() {
               _multiVideoPlayProvider.resetVideoPlayer(widget.screenNum);
             });
           }
-        }
-      },
-      color: AppColor.purpleColor,
-      child: Stack(
+        },
+        color: AppColor.purpleColor,
+        child: Stack(
+          children: <Widget>[
+            PageView.builder(
+              controller:
+                  _multiVideoPlayProvider.pageControllers[widget.screenNum] =
+                      PageController(
+                          initialPage: widget.initialIndex ??
+                              _multiVideoPlayProvider
+                                  .currentIndexs[widget.screenNum]),
+              scrollDirection: Axis.vertical,
+              allowImplicitScrolling: true,
+              itemCount: 200,
+              itemBuilder: (context, index) {
+                if (_multiVideoPlayProvider.currentPages[widget.screenNum] ==
+                        0 &&
+                    _multiVideoPlayProvider.videos[widget.screenNum].isEmpty) {
+                  _multiVideoPlayProvider.resetVideoPlayer(widget.screenNum);
+                  _loadMoreVideos();
+                  _multiVideoPlayProvider.loadings[widget.screenNum] = false;
+                  return const MusicSpinner(); // 비디오 로딩 중
+                } else {
+                  if (index <
+                          _multiVideoPlayProvider
+                              .videoControllers[widget.screenNum].length &&
+                      index <
+                          _multiVideoPlayProvider
+                              .videos[widget.screenNum].length &&
+                      index <
+                          _multiVideoPlayProvider
+                              .videoFutures[widget.screenNum].length) {
+                    // 현재 비디오 인덱스 안에 있는 경우
+                    return FutureBuilder(
+                      future:
+                          _multiVideoPlayProvider.videoFutures[widget.screenNum]
+                              [_multiVideoPlayProvider
+                                  .currentIndexs[widget.screenNum]],
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          // 비디오가 준비된 경우
+                          _multiVideoPlayProvider.loadings[widget.screenNum] =
+                              true;
+                          return VideoPlayerWidget(
+                            screenNum: widget.screenNum,
+                            index: index,
+                          ); // 비디오 플레이어 생성
+                        }
+                        if ((snapshot.connectionState ==
+                                ConnectionState.waiting &&
+                            _multiVideoPlayProvider
+                                .loadings[widget.screenNum])) {
+                          // 비디오가 준비된 경우
+                          _multiVideoPlayProvider.loadings[widget.screenNum] =
+                              true;
+                          return Stack(children: [
+                            VideoPlayerWidget(
+                              screenNum: widget.screenNum,
+                              index: index,
+                            ),
+                            const Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color.fromARGB(60, 234, 234, 234),
+                                ),
+                              ),
+                            )
+                          ]); // 비디오 플레이어 생성
+                        } else {
+                          _multiVideoPlayProvider.loadings[widget.screenNum] =
+                              false;
+                          return const MusicSpinner(); // 비디오 로딩 중
+                        }
+                      },
+                    );
+                    //마지막 페이지에 진입할 경우
+                  } else if (index ==
+                      _multiVideoPlayProvider.videos[widget.screenNum].length) {
+                    _multiVideoPlayProvider.loadings[widget.screenNum] = true;
+                    return const MusicSpinner();
+                  } else {
+                    _multiVideoPlayProvider.loadings[widget.screenNum] = false;
+                    if (_multiVideoPlayProvider
+                            .currentIndexs[widget.screenNum] <=
+                        0) {
+                      //모든 비디오 로드 전 처음 화면에 진입했을 경우
+                      return Container(color: Colors.yellow); // 비디오 로딩 중
+                    } else {
+                      //마지막 페이지에 진입했을 경우
+                      return Container(color: Colors.pink);
+                    }
+                  }
+                }
+              },
+              onPageChanged: onPageChanged,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Stack(
         children: <Widget>[
           PageView.builder(
             controller:
@@ -237,7 +334,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
             onPageChanged: onPageChanged,
           ),
         ],
-      ),
-    );
+      );
+    }
   }
 }
