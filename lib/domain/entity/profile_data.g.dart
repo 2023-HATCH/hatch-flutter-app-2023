@@ -13,6 +13,7 @@ ProfileData _$ProfileDataFromJson(Map<String, dynamic> json) => ProfileData(
       twitterId: json['twitterId'] as String?,
       followingCount: json['followingCount'] as int,
       followerCount: json['followerCount'] as int,
+      isFollowing: json['isFollowing'] as bool,
     );
 
 Map<String, dynamic> _$ProfileDataToJson(ProfileData instance) =>
@@ -23,4 +24,5 @@ Map<String, dynamic> _$ProfileDataToJson(ProfileData instance) =>
       'twitterId': instance.twitterId,
       'followingCount': instance.followingCount,
       'followerCount': instance.followerCount,
+      'isFollowing': instance.isFollowing,
     };

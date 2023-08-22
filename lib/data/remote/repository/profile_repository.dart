@@ -51,6 +51,7 @@ class ProfileRepository {
         twitterId: json['data']['twitterId'],
         followingCount: json['data']['followingCount'],
         followerCount: json['data']['followerCount'],
+        isFollowing: json['data']['isFollowing'],
       );
 
       return ProfileResponse(
