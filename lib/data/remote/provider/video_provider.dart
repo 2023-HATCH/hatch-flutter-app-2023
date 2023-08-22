@@ -22,14 +22,13 @@ class VideoProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteVideo(String videoId) async {
+  Future<bool> deleteVideo(String videoId) async {
     try {
       _isDeleteSuccess = await VideoRepository().deleteVideo(videoId);
-
-      notifyListeners();
     } catch (e) {
       debugPrint('VideoProvider deleteVideo 에러: $e');
     }
+    return _isDeleteSuccess ?? false;
   }
 
   Future<void> getView(String videoId) async {

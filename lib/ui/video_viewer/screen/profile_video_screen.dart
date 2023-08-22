@@ -5,6 +5,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
@@ -20,13 +21,15 @@ class ProfileVideoScreen extends StatefulWidget {
       required this.screenNum,
       required this.videoList,
       required this.initialIndex,
-      required this.profileResponse})
+      required this.profileResponse,
+      required this.onRefresh})
       : super(key: key);
 
   final int screenNum;
   final List<VideoData> videoList;
   final int initialIndex;
   final ProfileResponse profileResponse;
+  final VoidCallback onRefresh;
 
   @override
   State<ProfileVideoScreen> createState() => _ProfileVideoScreenState();
@@ -36,6 +39,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late VideoProvider _videoProvider;
   late KaKaoLoginProvider _loginProvider;
+  late ProfileProvider _profileProvider;
 
   late UserData? _user;
 
@@ -78,6 +82,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   Widget build(BuildContext context) {
     _videoProvider = Provider.of<VideoProvider>(context, listen: false);
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: true);
+    _profileProvider = Provider.of<ProfileProvider>(context, listen: true);
 
     return FutureBuilder<bool>(
         future: _initUser(),
@@ -85,8 +90,6 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
           debugPrint(
               '프로필: snapshot.connectionState ${snapshot.connectionState}');
           if (snapshot.connectionState == ConnectionState.done) {
-            debugPrint('프로필: ${widget.videoList[currentIndex].user.nickname}');
-            debugPrint('프로필: ${_user!.nickname}');
             return Scaffold(
                 appBar: AppBar(
                   title: const Text(
@@ -121,21 +124,36 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                                   onCancel: () {
                                     Navigator.pop(context);
                                   },
-                                  onConfirm: () {
-                                    _videoProvider.deleteVideo(
+                                  onConfirm: () async {
+                                    // 영상 삭제
+                                    if (await _videoProvider.deleteVideo(
+                                        widget.videoList[currentIndex].uuid)) {
+                                      // 프로필 업데이트
+
+                                      _profileProvider.isVideoLoadingDone =
+                                          false;
+                                      _profileProvider.uploadVideosResponse =
+                                          null;
+                                      _profileProvider.likeVideosResponse =
+                                          null;
+
                                       _multiVideoPlayProvider
-                                          .videos[widget.screenNum][
-                                              _multiVideoPlayProvider
-                                                      .currentIndexs[
-                                                  widget.screenNum]]
-                                          .uuid,
-                                    );
-                                    Fluttertoast.showToast(
-                                      msg: '영상이 삭제되었습니다.',
-                                    );
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                    //프로필 영상 조회 api 호출
+                                          .resetVideoPlayer(1);
+                                      _multiVideoPlayProvider
+                                          .resetVideoPlayer(2);
+
+                                      widget.onRefresh();
+                                      Fluttertoast.showToast(
+                                        msg: '영상이 삭제되었습니다.',
+                                      );
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    } else {
+                                      Fluttertoast.showToast(
+                                        msg: '다시 시도하세요.',
+                                      );
+                                      Navigator.pop(context);
+                                    }
                                   },
                                 );
                               },
