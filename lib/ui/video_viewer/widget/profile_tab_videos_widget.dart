@@ -51,7 +51,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
             .getUploadVideos(ProfileVideosRequest(
                 userId: widget._profileResponse.user.userId,
                 page: _multiVideoPlayProvider.currentPages[1],
-                size: _multiVideoPlayProvider.pageSize))
+                size: 100)) //_multiVideoPlayProvider.pageSize))
             .then((value) {
           final response = _profileProvider.uploadVideosResponse;
 
@@ -82,7 +82,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
             .getLikeVideos(ProfileVideosRequest(
                 userId: widget._profileResponse.user.userId,
                 page: _multiVideoPlayProvider.currentPages[2],
-                size: _multiVideoPlayProvider.pageSize))
+                size: 100)) //_multiVideoPlayProvider.pageSize))
             .then((value) {
           final response = _profileProvider.likeVideosResponse;
 
