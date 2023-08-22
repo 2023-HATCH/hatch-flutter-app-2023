@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_pose/data/entity/response/comment_list_response.dart';
-import 'package:pocket_pose/data/remote/repository/comment_repository.dart';
+import 'package:pocket_pose/data/entity/response/follow_list_response.dart';
 import 'package:pocket_pose/data/remote/repository/follow_repository.dart';
 
 class FollowProvider extends ChangeNotifier {
-  CommentListResponse? _response;
+  FollowListResponse? _response;
+  bool? _isGetSuccess;
   bool? _isPostSuccess;
   bool? _isDeleteSuccess;
 
+  bool? get isGetSuccess => _isGetSuccess;
   bool? get isPostSuccess => _isPostSuccess;
   bool? get isDeleteSuccess => _isDeleteSuccess;
 
-  CommentListResponse? get response => _response;
+  FollowListResponse? get response => _response;
 
-  Future<void> getComments(String videoId) async {
+  Future<bool> getFollows(String userId) async {
     try {
-      final repositoryResponse = await CommentRepository().getComments(videoId);
+      final repositoryResponse = await FollowRepository().getFollows(userId);
       _response = repositoryResponse;
 
-      notifyListeners();
+      _isGetSuccess = true;
     } catch (e) {
-      debugPrint('CommentRepository getComments 에러: $e');
+      debugPrint('FollowRepository getFollows 에러: $e');
     }
+    return _isGetSuccess ?? false;
   }
 
   Future<bool> postFollow(String userId) async {

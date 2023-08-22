@@ -5,10 +5,12 @@ part 'follow_list_response.g.dart';
 
 @JsonSerializable()
 class FollowListResponse {
-  final List<FollowData> followList;
+  final List<FollowData> followerList;
+  final List<FollowData> followingList;
 
   const FollowListResponse({
-    required this.followList,
+    required this.followerList,
+    required this.followingList,
   });
 
   factory FollowListResponse.fromJson(Map<String, dynamic> json) =>

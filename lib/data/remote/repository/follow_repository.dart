@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
-import 'package:pocket_pose/data/entity/response/comment_list_response.dart';
+import 'package:pocket_pose/data/entity/response/follow_list_response.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
-import 'package:pocket_pose/domain/entity/comment_data.dart';
+import 'package:pocket_pose/domain/entity/follow_data.dart';
 
 class FollowRepository {
   KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
 
-  Future<CommentListResponse> getComments(String videoId) async {
-    final url = Uri.parse('${AppUrl.commentUrl}/$videoId');
+  Future<FollowListResponse> getFollows(String userId) async {
+    final url = Uri.parse('${AppUrl.followUrl}/$userId');
 
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',
@@ -21,18 +21,24 @@ class FollowRepository {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("댓글 목록 조회 성공! json: $json");
+      debugPrint("팔로우 목록 조회 성공! json: $json");
 
-      final List<dynamic> commentListJson = json['data']['commentList'];
-      final List<CommentData> commentList = commentListJson
-          .map((commentJson) => CommentData.fromJson(commentJson))
+      final List<dynamic> followerListJson = json['data']['followerList'];
+      final List<FollowData> followerList = followerListJson
+          .map((followerListJson) => FollowData.fromJson(followerListJson))
           .toList();
 
-      return CommentListResponse(
-        commentList: commentList,
+      final List<dynamic> followingListJson = json['data']['followingList'];
+      final List<FollowData> followingList = followingListJson
+          .map((followingListJson) => FollowData.fromJson(followingListJson))
+          .toList();
+
+      return FollowListResponse(
+        followerList: followerList,
+        followingList: followingList,
       );
     } else {
-      throw Exception('댓글 목록 조회 실패');
+      throw Exception('팔로우 목록 조회 실패');
     }
   }
 

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
+import 'package:pocket_pose/data/remote/provider/follow_provider.dart';
+import 'package:pocket_pose/domain/entity/follow_data.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
+import 'package:provider/provider.dart';
 
 class ProfileFollowScreen extends StatefulWidget {
   const ProfileFollowScreen(
@@ -19,68 +22,18 @@ class ProfileFollowScreen extends StatefulWidget {
 class _ProfileFollowScreenState extends State<ProfileFollowScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  List<String> followingProfileList = [
-    'assets/images/chat_user_1.png',
-    'assets/images/chat_user_2.png',
-    'assets/images/chat_user_3.png',
-    'assets/images/chat_user_4.png',
-    'assets/images/chat_user_5.png',
-    'assets/images/chat_user_6.png',
-  ];
-
-  List<String> followingNicknameList = [
-    'hello_kiti',
-    'pochako',
-    'pom_pom_pulin',
-    'kelo_kelo_kelopi',
-    'kogimyung_',
-    'teogsido_saem'
-  ];
-
-  List<String> followingIntroduceList = [
-    '안녕 난 키티야',
-    '',
-    '푸루루루푸우린',
-    '케로로 아님',
-    '',
-    ''
-  ];
-
-  List<bool> followingList = [
-    true,
-    true,
-    false,
-    true,
-    true,
-    true,
-  ];
-
-  List<String> followerProfileList = [
-    'assets/images/chat_user_4.png',
-    'assets/images/chat_user_5.png',
-    'assets/images/chat_user_6.png',
-  ];
-
-  List<String> followerNicknameList = [
-    'kelo_kelo_kelopi',
-    'kogimyung_',
-    'teogsido_saem'
-  ];
-
-  List<String> followerIntroduceList = ['케로로 아님', '', ''];
-
-  List<bool> followerList = [
-    false,
-    true,
-    true,
-  ];
+  late FollowProvider _followProvider;
 
   @override
   void initState() {
     super.initState();
     _tabController =
         TabController(length: 2, vsync: this, initialIndex: widget.tapNum);
+    _followProvider = Provider.of<FollowProvider>(context, listen: false);
+  }
+
+  Future<bool> _initFollows() {
+    return _followProvider.getFollows(widget.profileResponse.user.userId);
   }
 
   @override
@@ -114,43 +67,52 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          FollowListViewWidget(
-              tabNum: 0,
-              isfollows: followerList,
-              profiles: followerProfileList,
-              nicknames: followerNicknameList,
-              introduces: followerIntroduceList),
-          FollowListViewWidget(
-              tabNum: 1,
-              isfollows: followingList,
-              profiles: followingProfileList,
-              nicknames: followingNicknameList,
-              introduces: followingIntroduceList),
-        ],
-      ),
+      body: FutureBuilder<bool>(
+          future: _initFollows(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              final response = _followProvider.response;
+              return response != null
+                  ? TabBarView(
+                      controller: _tabController,
+                      children: [
+                        FollowListViewWidget(
+                            tabNum: 0, followList: response.followerList),
+                        FollowListViewWidget(
+                          tabNum: 1,
+                          followList: response.followingList,
+                        ),
+                      ],
+                    )
+                  :
+                  // 프로필 목록 로딩 인디케이터
+                  Center(
+                      child: CircularProgressIndicator(
+                        color: AppColor.purpleColor,
+                      ),
+                    );
+            } else {
+              // 프로필 목록 로딩 인디케이터
+              return Center(
+                child: CircularProgressIndicator(
+                  color: AppColor.purpleColor,
+                ),
+              );
+            }
+          }),
     );
   }
 }
 
-// ignore: must_be_immutable
 class FollowListViewWidget extends StatefulWidget {
-  FollowListViewWidget({
+  const FollowListViewWidget({
     Key? key,
     required this.tabNum,
-    required this.isfollows,
-    required this.profiles,
-    required this.nicknames,
-    required this.introduces,
+    required this.followList,
   }) : super(key: key);
 
-  int tabNum;
-  List<bool> isfollows;
-  List<String> profiles;
-  List<String> nicknames;
-  List<String> introduces;
+  final int tabNum;
+  final List<FollowData> followList;
 
   @override
   State<StatefulWidget> createState() => _FollowListViewWidgetState();
@@ -160,7 +122,7 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: widget.isfollows.length,
+      itemCount: widget.followList.length,
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(25, 20, 25, 10),
@@ -172,27 +134,43 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Image.asset(
-                      widget.profiles[index],
-                      width: 35,
-                    ),
-                  ),
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image.network(
+                        widget.followList[index].user.profileImg!,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: AppColor.purpleColor,
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
+                          'assets/images/charactor_popo_default.png',
+                          fit: BoxFit.cover,
+                          width: 35,
+                          height: 35,
+                        ),
+                        fit: BoxFit.cover,
+                        width: 35,
+                        height: 35,
+                      )),
                   const Padding(padding: EdgeInsets.only(left: 8)),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.nicknames[index],
+                        widget.followList[index].user.nickname,
                         style: const TextStyle(fontSize: 12),
                       ),
-                      if (widget.introduces[index].isNotEmpty)
+                      if (widget.followList[index].introduce.isNotEmpty)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Padding(padding: EdgeInsets.only(bottom: 8)),
                             Text(
-                              widget.introduces[index],
+                              widget.followList[index].introduce,
                               style: const TextStyle(fontSize: 14),
                             ),
                           ],
@@ -202,7 +180,7 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                 ],
               ),
               widget.tabNum == 0 //팔로워일 경우
-                  ? widget.isfollows[index]
+                  ? widget.followList[index].isFollowing
                       ? InkWell(
                           onTap: () => {
                             showDialog(
@@ -211,7 +189,7 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                                   return CustomSimpleDialog(
                                     title: '팔로워를 삭제하시겠어요?',
                                     message:
-                                        '${widget.nicknames[index]}님은 회원님의 팔로워 리스트에서 삭제된 사실을 알 수 없습니다.',
+                                        '${widget.followList[index].user.nickname}님은 회원님의 팔로워 리스트에서 삭제된 사실을 알 수 없습니다.',
                                     onCancel: () {
                                       Navigator.pop(context);
                                     },
@@ -221,8 +199,9 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                                       );
                                       //팔로워 삭제 api 호출
                                       setState(() {
-                                        widget.isfollows[index] =
-                                            !widget.isfollows[index];
+                                        widget.followList[index].isFollowing =
+                                            !widget
+                                                .followList[index].isFollowing;
                                       });
                                       Navigator.pop(context);
                                     },
@@ -231,7 +210,7 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                           },
                           child: Material(
                             borderRadius: BorderRadius.circular(5),
-                            color: widget.isfollows[index]
+                            color: widget.followList[index].isFollowing
                                 ? AppColor.grayColor1
                                 : AppColor.blueColor1,
                             child: Padding(
@@ -249,18 +228,21 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                   InkWell(
                       onTap: () {
                         setState(() {
-                          widget.isfollows[index] = !widget.isfollows[index];
+                          widget.followList[index].isFollowing =
+                              !widget.followList[index].isFollowing;
                         });
                       },
                       child: Material(
                         borderRadius: BorderRadius.circular(5),
-                        color: widget.isfollows[index]
+                        color: widget.followList[index].isFollowing
                             ? AppColor.grayColor1
                             : AppColor.blueColor1,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
                           child: Text(
-                            widget.isfollows[index] ? '팔로잉' : '팔로우',
+                            widget.followList[index].isFollowing
+                                ? '팔로잉'
+                                : '팔로우',
                             style: TextStyle(
                                 fontSize: 10, color: AppColor.grayColor),
                           ),

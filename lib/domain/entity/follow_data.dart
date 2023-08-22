@@ -7,9 +7,9 @@ part 'follow_data.g.dart';
 class FollowData {
   final UserData user;
   final String introduce;
-  final bool isFollowing;
+  late bool isFollowing;
 
-  const FollowData({
+  FollowData({
     required this.user,
     required this.introduce,
     required this.isFollowing,
