@@ -86,10 +86,16 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
 
   void onPageChanged(int index) {
     if (mounted) {
+      debugPrint(
+          '비디오: _multiVideoPlayProvider.currentIndexs[widget.screenNum] // ${_multiVideoPlayProvider.currentIndexs[widget.screenNum]}');
+      debugPrint('비디오: index // $index');
+      debugPrint(
+          '비디오: _multiVideoPlayProvider.videos[widget.screenNum].length // ${_multiVideoPlayProvider.videos[widget.screenNum].length}');
       setState(() {
         _multiVideoPlayProvider.pauseVideo(widget.screenNum);
 
-        if (!_multiVideoPlayProvider.isLasts[widget.screenNum]) {
+        if (index != _multiVideoPlayProvider.videos[widget.screenNum].length) {
+          //if (!_multiVideoPlayProvider.isLasts[widget.screenNum]) {
           _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
 
           if (widget.screenNum == 0) {
