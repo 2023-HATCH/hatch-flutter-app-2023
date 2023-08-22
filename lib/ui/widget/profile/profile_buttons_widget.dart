@@ -75,6 +75,9 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
                                   _loginProvider.showLoginBottomSheet();
                                 } else {
                                   // 메시지 생성 처리
+                                  // 💛 tip 💛 - 사용하고 지워주세요 💛
+                                  // 프로필 사용자: widget.profileResponse.user
+                                  // 앱에 접속한 사용자: _user!
                                 }
                               },
                               style: OutlinedButton.styleFrom(
