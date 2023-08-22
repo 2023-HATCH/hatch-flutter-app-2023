@@ -117,7 +117,6 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
                                     if (await _followProvider.postFollow(
                                         widget.profileResponse.user.userId)) {
                                       setState(() {
-                                        //isFollowing = true;
                                         _profileProvider.getUserProfile(
                                             widget.profileResponse.user.userId);
                                       });
@@ -151,7 +150,6 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
                                     if (await _followProvider.deleteFollow(
                                         widget.profileResponse.user.userId)) {
                                       setState(() {
-                                        //isFollowing = false;
                                         _profileProvider.getUserProfile(
                                             widget.profileResponse.user.userId);
                                       });

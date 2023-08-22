@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
+import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
-import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class ProfileFollowScreen extends StatefulWidget {
-  ProfileFollowScreen({Key? key, required this.tapNum, required this.index})
+  const ProfileFollowScreen(
+      {Key? key, required this.tapNum, required this.profileResponse})
       : super(key: key);
 
-  int tapNum;
-  final int index;
+  final int tapNum;
+  final ProfileResponse profileResponse;
 
   @override
   State<StatefulWidget> createState() => _ProfileFollowScreenState();
@@ -19,7 +18,6 @@ class ProfileFollowScreen extends StatefulWidget {
 
 class _ProfileFollowScreenState extends State<ProfileFollowScreen>
     with SingleTickerProviderStateMixin {
-  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late TabController _tabController;
 
   List<String> followingProfileList = [
@@ -81,8 +79,6 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
   @override
   void initState() {
     super.initState();
-    _multiVideoPlayProvider =
-        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _tabController =
         TabController(length: 2, vsync: this, initialIndex: widget.tapNum);
   }
@@ -91,9 +87,9 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '_multiVideoPlayProvider.videoList[widget.index].user.nickname',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        title: Text(
+          widget.profileResponse.user.nickname,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -112,9 +108,9 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
           labelColor: Colors.black,
           unselectedLabelColor: AppColor.grayColor3,
           indicatorColor: AppColor.purpleColor,
-          tabs: const [
-            Tab(text: '106  팔로워'),
-            Tab(text: '48.4k  팔로잉'),
+          tabs: [
+            Tab(text: '${widget.profileResponse.profile.followerCount}  팔로워'),
+            Tab(text: '${widget.profileResponse.profile.followingCount}  팔로잉'),
           ],
         ),
       ),
