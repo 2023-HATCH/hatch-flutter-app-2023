@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/data/entity/request/profile_videos_request.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
@@ -234,10 +233,9 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                       left: 8,
                                       child: Row(
                                         children: [
-                                          SvgPicture.asset(
-                                            'assets/icons/ic_profile_heart.svg',
-                                            width: 16,
-                                            height: 16,
+                                          const Icon(
+                                            Icons.play_arrow_rounded,
+                                            size: 16,
                                             color: Colors.white,
                                           ),
                                           const SizedBox(width: 4),
@@ -246,12 +244,12 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                                 ? _profileProvider
                                                     .uploadVideosResponse!
                                                     .videoList[index]
-                                                    .likeCount
+                                                    .viewCount
                                                     .toString()
                                                 : _profileProvider
                                                     .likeVideosResponse!
                                                     .videoList[index]
-                                                    .likeCount
+                                                    .viewCount
                                                     .toString(),
                                             style: const TextStyle(
                                               color: Colors.white,

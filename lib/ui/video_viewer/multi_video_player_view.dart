@@ -9,12 +9,17 @@ import 'package:provider/provider.dart';
 
 class MultiVideoPlayerView extends StatefulWidget {
   const MultiVideoPlayerView(
-      {super.key, required int screenNum, int? initialIndex})
+      {super.key,
+      required int screenNum,
+      int? initialIndex,
+      ValueSetter<int>? setCurrentIndex})
       : screenNum = screenNum,
-        initialIndex = initialIndex;
+        initialIndex = initialIndex,
+        setCurrentIndex = setCurrentIndex;
 
   final int screenNum;
   final int? initialIndex;
+  final ValueSetter<int>? setCurrentIndex;
 
   @override
   State<MultiVideoPlayerView> createState() => _MultiVideoPlayerViewState();
@@ -97,6 +102,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
         if (index != _multiVideoPlayProvider.videos[widget.screenNum].length) {
           //if (!_multiVideoPlayProvider.isLasts[widget.screenNum]) {
           _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
+          if (widget.setCurrentIndex != null) widget.setCurrentIndex!(index);
 
           if (widget.screenNum == 0) {
             if (_multiVideoPlayProvider.videos[widget.screenNum].length -
