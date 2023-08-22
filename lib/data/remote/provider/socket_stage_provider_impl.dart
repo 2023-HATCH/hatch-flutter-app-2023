@@ -279,6 +279,7 @@ class SocketStageProviderImpl extends ChangeNotifier
           destination: AppUrl.socketExitUrl,
           headers: {'x-access-token': token});
       _stompClient?.deactivate();
+      _stompClient = null;
     }
   }
 
