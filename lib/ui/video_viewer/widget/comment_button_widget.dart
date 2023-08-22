@@ -104,9 +104,6 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
         setState(() {
           _commentList = newCommentList?.reversed.toList();
 
-          // commentCount api 완성되면 삭제
-          //_isNotEmptyComment = _commentList != null || _commentList!.isNotEmpty;
-          // commentCount api 완성되면 주석 해제
           _isNotEmptyComment = _multiVideoPlayProvider
                   .videos[widget.screenNum][widget.index].commentCount >
               0;

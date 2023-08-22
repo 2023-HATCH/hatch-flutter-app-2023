@@ -71,14 +71,14 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
             final controller = _multiVideoPlayProvider
                 .videoControllers[widget.screenNum][widget.index];
             if (controller.value.isPlaying) {
-              _multiVideoPlayProvider.pauseVideo(0);
+              _multiVideoPlayProvider.pauseVideo(widget.screenNum);
               isPlaying = false;
               _toggleIconVisibility(true);
               Future.delayed(const Duration(milliseconds: 800), () {
                 _toggleIconVisibility(false);
               });
             } else {
-              _multiVideoPlayProvider.playVideo(0);
+              _multiVideoPlayProvider.playVideo(widget.screenNum);
               isPlaying = true;
               _toggleIconVisibility(true);
               Future.delayed(const Duration(milliseconds: 800), () {
@@ -98,10 +98,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
                 child: Center(
                   child: Icon(
                     isPlaying
-                        ? Icons.play_circle_filled_sharp
-                        : Icons.pause_circle_filled_sharp,
+                        ? Icons.play_circle_filled_rounded
+                        : Icons.pause_circle_filled_rounded,
                     size: 60,
-                    color: const Color.fromARGB(127, 147, 147, 147),
+                    color: const Color.fromARGB(179, 133, 133, 133),
                   ),
                 ),
               );
