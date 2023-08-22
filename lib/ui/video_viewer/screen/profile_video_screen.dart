@@ -174,7 +174,8 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                   height: 55,
                   color: Colors.black,
                   child: Expanded(
-                    child: isMe
+                    child: widget.videoList[currentIndex].user.userId ==
+                            _user!.userId // 본인 영상일 때는 조회수, 다른 사람 영상일 때는 댓글창이 뜨기
                         ? Row(
                             children: <Widget>[
                               const Padding(padding: EdgeInsets.only(left: 18)),
@@ -205,7 +206,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                               ClipRRect(
                                   borderRadius: BorderRadius.circular(50),
                                   child: Image.network(
-                                    widget.profileResponse.user.profileImg ??
+                                    _user!.profileImg ??
                                         'assets/images/charactor_popo_default.png',
                                     loadingBuilder:
                                         (context, child, loadingProgress) {
