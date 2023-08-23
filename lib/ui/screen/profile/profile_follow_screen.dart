@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/remote/provider/follow_provider.dart';
+import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/follow_data.dart';
 import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
@@ -61,9 +62,9 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
           labelColor: Colors.black,
           unselectedLabelColor: AppColor.grayColor3,
           indicatorColor: AppColor.purpleColor,
-          tabs: [
-            Tab(text: '${widget.profileResponse.profile.followerCount}  팔로워'),
-            Tab(text: '${widget.profileResponse.profile.followingCount}  팔로잉'),
+          tabs: const [
+            Tab(text: '팔로워'),
+            Tab(text: ' 팔로잉'),
           ],
         ),
       ),
@@ -79,11 +80,19 @@ class _ProfileFollowScreenState extends State<ProfileFollowScreen>
                         response.followerList.isEmpty
                             ? const Center(child: Text('팔로워한 사용자가 없습니다.'))
                             : FollowListViewWidget(
-                                tabNum: 0, followList: response.followerList),
+                                tabNum: 0,
+                                followList: response.followerList,
+                                profileResponse: widget.profileResponse,
+                                initFollows: _initFollows,
+                              ),
                         response.followingList.isEmpty
-                            ? const Center(child: Text('팔로우한 사용자가 없습니다.'))
+                            ? const Center(child: Text('팔로잉한 사용자가 없습니다.'))
                             : FollowListViewWidget(
-                                tabNum: 1, followList: response.followingList),
+                                tabNum: 1,
+                                followList: response.followingList,
+                                profileResponse: widget.profileResponse,
+                                initFollows: _initFollows,
+                              ),
                       ],
                     )
                   :
@@ -111,16 +120,42 @@ class FollowListViewWidget extends StatefulWidget {
     Key? key,
     required this.tabNum,
     required this.followList,
+    required this.profileResponse,
+    required this.initFollows,
   }) : super(key: key);
 
   final int tabNum;
   final List<FollowData> followList;
+  final ProfileResponse profileResponse;
+  final Future<bool> Function() initFollows;
 
   @override
   State<StatefulWidget> createState() => _FollowListViewWidgetState();
 }
 
 class _FollowListViewWidgetState extends State<FollowListViewWidget> {
+  late FollowProvider _followProvider;
+  late ProfileProvider _profileProvider;
+  late List<bool> isFollowings =
+      List<bool>.filled(widget.followList.length, true);
+
+  @override
+  void initState() {
+    super.initState();
+    _followProvider = Provider.of<FollowProvider>(context, listen: false);
+    _profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    // 프로필 화면 새로고침
+    _profileProvider.getUserProfile(widget.profileResponse.user.userId);
+    widget.initFollows();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -181,7 +216,7 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                   ),
                 ],
               ),
-              widget.tabNum == 0 //팔로워일 경우
+              widget.tabNum == 0 // : 팔로워 탭
                   ? widget.followList[index].isFollowing
                       ? InkWell(
                           onTap: () => {
@@ -189,22 +224,33 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return CustomSimpleDialog(
-                                    title: '팔로워를 삭제하시겠어요?',
+                                    title: '⛔ 팔로워 삭제',
                                     message:
                                         '${widget.followList[index].user.nickname}님은 회원님의 팔로워 리스트에서 삭제된 사실을 알 수 없습니다.',
                                     onCancel: () {
                                       Navigator.pop(context);
                                     },
-                                    onConfirm: () {
-                                      Fluttertoast.showToast(
-                                        msg: '삭제 되었습니다.',
-                                      );
+                                    onConfirm: () async {
                                       //팔로워 삭제 api 호출
-                                      setState(() {
-                                        widget.followList[index].isFollowing =
-                                            !widget
-                                                .followList[index].isFollowing;
-                                      });
+                                      if (widget
+                                          .followList[index].isFollowing) {
+                                        if (await _followProvider.deleteFollow(
+                                            widget.followList[index].user
+                                                .userId)) {
+                                          Fluttertoast.showToast(
+                                            msg: '삭제 되었습니다.',
+                                          );
+                                          setState(() {
+                                            _followProvider.getFollows(widget
+                                                .profileResponse.user.userId);
+                                          });
+                                        } else {
+                                          Fluttertoast.showToast(
+                                            msg: '다시 시도하세요.',
+                                          );
+                                        }
+                                      }
+
                                       Navigator.pop(context);
                                     },
                                   );
@@ -226,25 +272,66 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                           ),
                         )
                       : Container()
-                  : //팔로우일 경우
+                  : // tabNum == 1 : 팔로잉 탭
                   InkWell(
-                      onTap: () {
-                        setState(() {
-                          widget.followList[index].isFollowing =
-                              !widget.followList[index].isFollowing;
-                        });
+                      onTap: () async {
+                        if (isFollowings[index]) {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CustomSimpleDialog(
+                                  title: '⛔ 팔로우 취소',
+                                  message:
+                                      '원하는 경우 ${widget.followList[index].user.nickname}님에게 팔로우를 다시 요청할 수 있습니다.',
+                                  onCancel: () {
+                                    Navigator.pop(context);
+                                  },
+                                  onConfirm: () async {
+                                    //팔로워 삭제 api 호출
+                                    if (isFollowings[index]) {
+                                      if (await _followProvider.deleteFollow(
+                                          widget
+                                              .followList[index].user.userId)) {
+                                        Fluttertoast.showToast(
+                                          msg: '삭제 되었습니다.',
+                                        );
+                                        setState(() {
+                                          isFollowings[index] =
+                                              !isFollowings[index];
+                                        });
+                                      } else {
+                                        Fluttertoast.showToast(
+                                          msg: '다시 시도하세요.',
+                                        );
+                                      }
+                                    }
+
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              });
+                        } else {
+                          if (!isFollowings[index]) {
+                            if (await _followProvider.postFollow(
+                                widget.followList[index].user.userId)) {
+                              setState(() {
+                                isFollowings[index] = !isFollowings[index];
+                              });
+                            } else {
+                              Fluttertoast.showToast(msg: '다시 시도해주세요.');
+                            }
+                          }
+                        }
                       },
                       child: Material(
                         borderRadius: BorderRadius.circular(5),
-                        color: widget.followList[index].isFollowing
+                        color: isFollowings[index]
                             ? AppColor.grayColor1
                             : AppColor.blueColor1,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
                           child: Text(
-                            widget.followList[index].isFollowing
-                                ? '팔로잉'
-                                : '팔로우',
+                            isFollowings[index] ? '팔로잉' : '팔로우',
                             style: TextStyle(
                                 fontSize: 10, color: AppColor.grayColor),
                           ),
