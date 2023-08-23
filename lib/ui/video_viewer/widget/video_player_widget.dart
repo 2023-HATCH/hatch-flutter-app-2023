@@ -6,8 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
-  const VideoPlayerWidget({super.key, required int index}) : index = index;
+  const VideoPlayerWidget(
+      {super.key, required int screenNum, required int index})
+      : screenNum = screenNum,
+        index = index;
 
+  final int screenNum;
   final int index;
 
   @override
@@ -64,17 +68,17 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
       children: <Widget>[
         GestureDetector(
           onTap: () {
-            final controller =
-                _multiVideoPlayProvider.controllers[widget.index];
+            final controller = _multiVideoPlayProvider
+                .videoControllers[widget.screenNum][widget.index];
             if (controller.value.isPlaying) {
-              _multiVideoPlayProvider.pauseVideo();
+              _multiVideoPlayProvider.pauseVideo(widget.screenNum);
               isPlaying = false;
               _toggleIconVisibility(true);
               Future.delayed(const Duration(milliseconds: 800), () {
                 _toggleIconVisibility(false);
               });
             } else {
-              _multiVideoPlayProvider.playVideo();
+              _multiVideoPlayProvider.playVideo(widget.screenNum);
               isPlaying = true;
               _toggleIconVisibility(true);
               Future.delayed(const Duration(milliseconds: 800), () {
@@ -82,7 +86,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
               });
             }
           },
-          child: VideoPlayer(_multiVideoPlayProvider.controllers[widget.index]),
+          child: VideoPlayer(_multiVideoPlayProvider
+              .videoControllers[widget.screenNum][widget.index]),
         ),
         Positioned.fill(
           child: AnimatedBuilder(
@@ -93,18 +98,19 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
                 child: Center(
                   child: Icon(
                     isPlaying
-                        ? Icons.play_circle_filled_sharp
-                        : Icons.pause_circle_filled_sharp,
+                        ? Icons.play_circle_filled_rounded
+                        : Icons.pause_circle_filled_rounded,
                     size: 60,
-                    color: const Color.fromARGB(127, 147, 147, 147),
+                    color: const Color.fromARGB(179, 133, 133, 133),
                   ),
                 ),
               );
             },
           ),
         ),
-        VideoRightFrame(index: widget.index),
+        VideoRightFrame(screenNum: widget.screenNum, index: widget.index),
         VideoUserInfoFrame(
+          screenNum: widget.screenNum,
           index: widget.index,
         ),
       ],

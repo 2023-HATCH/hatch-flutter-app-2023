@@ -7,8 +7,11 @@ import 'package:pocket_pose/ui/video_viewer/widget/share_button_widget.dart';
 import 'package:provider/provider.dart';
 
 class VideoRightFrame extends StatefulWidget {
-  const VideoRightFrame({Key? key, required this.index}) : super(key: key);
+  const VideoRightFrame(
+      {Key? key, required this.screenNum, required this.index})
+      : super(key: key);
 
+  final int screenNum;
   final int index;
 
   @override
@@ -22,7 +25,8 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
   Widget build(BuildContext context) {
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    final video = _multiVideoPlayProvider.videoList[widget.index];
+    final video =
+        _multiVideoPlayProvider.videos[widget.screenNum][widget.index];
 
     return Positioned(
       right: 12,
@@ -32,9 +36,10 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            LikeButtonWidget(index: widget.index),
+            LikeButtonWidget(screenNum: widget.screenNum, index: widget.index),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
             CommentButtonWidget(
+              screenNum: widget.screenNum,
               index: widget.index,
               onRefresh: () {
                 setState(() {});

@@ -5,6 +5,7 @@ import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
+import 'package:pocket_pose/data/remote/provider/follow_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/like_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
@@ -36,6 +37,7 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (_) => LikeProvider()),
     ChangeNotifierProvider(create: (_) => CommentProvider()),
     ChangeNotifierProvider(create: (_) => ProfileProvider()),
+    ChangeNotifierProvider(create: (_) => FollowProvider()),
     ChangeNotifierProvider(create: (_) => ChatProviderImpl()),
     ChangeNotifierProvider(create: (_) => SocketChatProviderImpl()),
     ChangeNotifierProvider(create: (_) => StageProviderImpl()),

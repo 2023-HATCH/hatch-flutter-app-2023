@@ -61,7 +61,7 @@ class _MainScreenState extends State<MainScreen> {
     if (index == 1) {
       _loginProvider.mainContext = context;
       // 프로필 페이지 클릭
-      _multiVideoPlayProvider.pauseVideo();
+      _multiVideoPlayProvider.pauseVideo(0);
 
       if (await _loginProvider.checkAccessToken() == false) {
         // 사용자 토큰이 없는 경우
@@ -81,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
       ];
     } else {
       // 홈 페이지 클릭
-      _multiVideoPlayProvider.playVideo();
+      _multiVideoPlayProvider.playVideo(0);
     }
 
     setState(() {
@@ -91,15 +91,14 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onFloatingButtonClicked() async {
     if (await _loginProvider.checkAccessToken()) {
-      _multiVideoPlayProvider.pauseVideo();
+      _multiVideoPlayProvider.pauseVideo(0);
       _showPoPoStageScreen();
     } else {
       _loginProvider.showLoginBottomSheet();
 
       if (await _loginProvider.checkAccessToken()) {
-        _multiVideoPlayProvider.resetVideoPlayer();
+        _multiVideoPlayProvider.resetVideoPlayer(0);
       }
-      debugPrint('현재 페이지: ${_multiVideoPlayProvider.currentIndex}');
     }
   }
 

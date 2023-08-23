@@ -79,7 +79,7 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
     super.initState();
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    _multiVideoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo(0);
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -87,7 +87,7 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
   void dispose() {
     super.dispose();
 
-    _multiVideoPlayProvider.playVideo();
+    _multiVideoPlayProvider.playVideo(0);
     _tabController.dispose();
   }
 

@@ -12,12 +12,14 @@ import 'package:provider/provider.dart';
 class CommentButtonWidget extends StatefulWidget {
   CommentButtonWidget(
       {super.key,
+      required this.screenNum,
       required this.index,
       required this.onRefresh,
       required this.videoId,
       required this.commentCount,
       required this.childWidget});
 
+  int screenNum;
   int index;
   VoidCallback onRefresh;
   String videoId;
@@ -40,7 +42,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
   bool _isInit = false;
   UserData? user;
   bool _isNotEmptyComment = false;
-  String _profileImg = 'assets/images/charactor_popo_default.png';
+  final String _profileImg = 'assets/images/charactor_popo_default.png';
   String _hintText = '따듯한 말 한마디 남겨 주세요 💛';
   bool isClicked = false;
 
@@ -65,13 +67,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
             setState(() {
               _commentList = newCommentList?.reversed.toList();
 
-              // commentCount api 완성되면 삭제
-              // _isNotEmptyComment =
-              //     _commentList != null || _commentList!.isNotEmpty;
-              // commentCount api 완성되면 주석 해제
-              _isNotEmptyComment =
-                  _multiVideoPlayProvider.videoList[widget.index].commentCount >
-                      0;
+              _isNotEmptyComment = _multiVideoPlayProvider
+                      .videos[widget.screenNum][widget.index].commentCount >
+                  0;
             });
           });
         }
@@ -88,8 +86,6 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
         bottomState(() {
           setState(() {
             user = newUser;
-            _profileImg =
-                user!.profileImg ?? 'assets/images/charactor_popo_default.png';
             _hintText = '${user!.nickname}(으)로 댓글 달기...';
           });
         });
@@ -108,11 +104,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
         setState(() {
           _commentList = newCommentList?.reversed.toList();
 
-          // commentCount api 완성되면 삭제
-          //_isNotEmptyComment = _commentList != null || _commentList!.isNotEmpty;
-          // commentCount api 완성되면 주석 해제
-          _isNotEmptyComment =
-              _multiVideoPlayProvider.videoList[widget.index].commentCount > 0;
+          _isNotEmptyComment = _multiVideoPlayProvider
+                  .videos[widget.screenNum][widget.index].commentCount >
+              0;
         });
       }
     });
@@ -136,8 +130,6 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                       if (mounted)
                         {
                           setState(() {
-                            _profileImg = user!.profileImg ??
-                                'assets/images/charactor_popo_default.png';
                             _hintText = '${user!.nickname}(으)로 댓글 달기...';
                           }),
                         }
@@ -161,7 +153,7 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                     }
 
                     int commentCount = _multiVideoPlayProvider
-                        .videoList[widget.index].commentCount;
+                        .videos[widget.screenNum][widget.index].commentCount;
                     return SizedBox(
                       height: isClicked == false
                           ? 500
@@ -264,39 +256,41 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               50),
-                                                      child: Image.network(
-                                                        _commentList?[index]
-                                                                .user
-                                                                .profileImg ??
-                                                            'assets/images/charactor_popo_default.png',
-                                                        loadingBuilder: (context,
-                                                            child,
-                                                            loadingProgress) {
-                                                          if (loadingProgress ==
-                                                              null) {
-                                                            return child;
-                                                          }
-                                                          return Center(
-                                                            child:
-                                                                CircularProgressIndicator(
-                                                              color: AppColor
-                                                                  .purpleColor,
-                                                            ),
-                                                          );
-                                                        },
-                                                        errorBuilder: (context,
-                                                                error,
-                                                                stackTrace) =>
-                                                            Image.asset(
-                                                          'assets/images/charactor_popo_default.png',
-                                                          fit: BoxFit.cover,
-                                                          width: 35,
-                                                          height: 35,
-                                                        ),
-                                                        fit: BoxFit.cover,
-                                                        width: 35,
-                                                        height: 35,
-                                                      )),
+                                                      child: _commentList?[
+                                                                      index]
+                                                                  .user
+                                                                  .profileImg ==
+                                                              null
+                                                          ? Image.asset(
+                                                              _profileImg,
+                                                              width: 34,
+                                                              height: 34,
+                                                            )
+                                                          : Image.network(
+                                                              _commentList![
+                                                                      index]
+                                                                  .user
+                                                                  .profileImg!,
+                                                              loadingBuilder:
+                                                                  (context,
+                                                                      child,
+                                                                      loadingProgress) {
+                                                                if (loadingProgress ==
+                                                                    null) {
+                                                                  return child;
+                                                                }
+                                                                return Center(
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    color: AppColor
+                                                                        .purpleColor,
+                                                                  ),
+                                                                );
+                                                              },
+                                                              width: 34,
+                                                              height: 34,
+                                                              fit: BoxFit.cover,
+                                                            )),
                                                   const Padding(
                                                       padding: EdgeInsets.only(
                                                           left: 8)),
@@ -377,8 +371,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                         bottomState(() {
                                                           setState(() {
                                                             _multiVideoPlayProvider
-                                                                .videoList[
-                                                                    widget
+                                                                .videos[widget
+                                                                        .screenNum]
+                                                                    [widget
                                                                         .index]
                                                                 .commentCount--;
                                                           });
@@ -485,33 +480,33 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                       ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(50),
-                                          child: Image.network(
-                                            _profileImg ??
-                                                'assets/images/charactor_popo_default.png',
-                                            loadingBuilder: (context, child,
-                                                loadingProgress) {
-                                              if (loadingProgress == null) {
-                                                return child;
-                                              }
-                                              return Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: AppColor.purpleColor,
-                                                ),
-                                              );
-                                            },
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    Image.asset(
-                                              'assets/images/charactor_popo_default.png',
-                                              fit: BoxFit.cover,
-                                              width: 40,
-                                              height: 40,
-                                            ),
-                                            fit: BoxFit.cover,
-                                            width: 40,
-                                            height: 40,
-                                          )),
+                                          child: user == null ||
+                                                  user!.profileImg == null
+                                              ? Image.asset(
+                                                  _profileImg,
+                                                  width: 40,
+                                                  height: 40,
+                                                )
+                                              : Image.network(
+                                                  user!.profileImg!,
+                                                  loadingBuilder: (context,
+                                                      child, loadingProgress) {
+                                                    if (loadingProgress ==
+                                                        null) {
+                                                      return child;
+                                                    }
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        color: AppColor
+                                                            .purpleColor,
+                                                      ),
+                                                    );
+                                                  },
+                                                  width: 40,
+                                                  height: 40,
+                                                  fit: BoxFit.cover,
+                                                )),
                                       const Padding(
                                           padding: EdgeInsets.only(left: 12)),
                                       Expanded(
@@ -594,8 +589,9 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                           bottomState(() {
                                                             setState(() {
                                                               _multiVideoPlayProvider
-                                                                  .videoList[
-                                                                      widget
+                                                                  .videos[widget
+                                                                          .screenNum]
+                                                                      [widget
                                                                           .index]
                                                                   .commentCount++;
                                                             });
@@ -636,8 +632,10 @@ class _CommentButtonWidgetState extends State<CommentButtonWidget> {
                                                             bottomState(() {
                                                               setState(() {
                                                                 _multiVideoPlayProvider
-                                                                    .videoList[
+                                                                    .videos[
                                                                         widget
+                                                                            .screenNum]
+                                                                        [widget
                                                                             .index]
                                                                     .commentCount++;
                                                               });

@@ -5,6 +5,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
@@ -17,14 +18,18 @@ import 'package:provider/provider.dart';
 class ProfileVideoScreen extends StatefulWidget {
   const ProfileVideoScreen(
       {Key? key,
+      required this.screenNum,
       required this.videoList,
       required this.initialIndex,
-      required this.profileResponse})
+      required this.profileResponse,
+      required this.onRefresh})
       : super(key: key);
 
+  final int screenNum;
   final List<VideoData> videoList;
   final int initialIndex;
   final ProfileResponse profileResponse;
+  final VoidCallback onRefresh;
 
   @override
   State<ProfileVideoScreen> createState() => _ProfileVideoScreenState();
@@ -34,15 +39,19 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late VideoProvider _videoProvider;
   late KaKaoLoginProvider _loginProvider;
+  late ProfileProvider _profileProvider;
 
   late UserData? _user;
 
   final TextEditingController _textController = TextEditingController();
   bool isMe = true;
+  late int currentIndex = widget.initialIndex;
 
   @override
   void initState() {
     super.initState();
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
   }
 
   Future<bool> _initUser() async {
@@ -51,28 +60,37 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
       UserData user = await _loginProvider.getUser();
 
       _user = user;
+    } else {
+      _user = null;
     }
 
     return true;
+  }
+
+  void setCurrentIndex(int index) {
+    setState(() {
+      currentIndex = index;
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     _textController.dispose();
-    _multiVideoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo(widget.screenNum);
   }
 
   @override
   Widget build(BuildContext context) {
-    _multiVideoPlayProvider =
-        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _videoProvider = Provider.of<VideoProvider>(context, listen: false);
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: true);
+    _profileProvider = Provider.of<ProfileProvider>(context, listen: true);
 
     return FutureBuilder<bool>(
         future: _initUser(),
         builder: (context, snapshot) {
+          debugPrint(
+              '프로필: snapshot.connectionState ${snapshot.connectionState}');
           if (snapshot.connectionState == ConnectionState.done) {
             return Scaffold(
               appBar: AppBar(
@@ -91,7 +109,9 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                   },
                 ),
                 actions: [
-                  if (isMe) // 본인 영상일때만 보이는 삭제 버튼
+                  if (_user != null &&
+                      widget.videoList[currentIndex].user.userId ==
+                          _user!.userId) // 본인 영상일때만 보이는 삭제 버튼
                     Container(
                       margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
                       child: GestureDetector(
@@ -107,19 +127,32 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                                 onCancel: () {
                                   Navigator.pop(context);
                                 },
-                                onConfirm: () {
-                                  _videoProvider.deleteVideo(
-                                    _multiVideoPlayProvider
-                                        .videoList[_multiVideoPlayProvider
-                                            .currentIndex]
-                                        .uuid,
-                                  );
-                                  Fluttertoast.showToast(
-                                    msg: '영상이 삭제되었습니다.',
-                                  );
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                  //프로필 영상 조회 api 호출
+                                onConfirm: () async {
+                                  // 영상 삭제
+                                  if (await _videoProvider.deleteVideo(
+                                      widget.videoList[currentIndex].uuid)) {
+                                    // 프로필 업데이트
+
+                                    _profileProvider.isVideoLoadingDone = false;
+                                    _profileProvider.uploadVideosResponse =
+                                        null;
+                                    _profileProvider.likeVideosResponse = null;
+
+                                    _multiVideoPlayProvider.resetVideoPlayer(1);
+                                    _multiVideoPlayProvider.resetVideoPlayer(2);
+
+                                    widget.onRefresh();
+                                    Fluttertoast.showToast(
+                                      msg: '영상이 삭제되었습니다.',
+                                    );
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  } else {
+                                    Fluttertoast.showToast(
+                                      msg: '다시 시도하세요.',
+                                    );
+                                    Navigator.pop(context);
+                                  }
                                 },
                               );
                             },
@@ -131,27 +164,36 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
               ),
               extendBodyBehindAppBar: true, //body 위에 appbar
               resizeToAvoidBottomInset: false,
-              body: const MultiVideoPlayerView(screenName: 'my'),
-              // 하나로 만들어야된다.. videoList(required)랑 initialIndex(nullable, null이면 0부터)를 인자로..
-
+              body: MultiVideoPlayerView(
+                screenNum: widget.screenNum,
+                initialIndex: currentIndex,
+                setCurrentIndex: setCurrentIndex,
+              ),
               bottomSheet: Container(
-                height: 55,
+                height: 65,
                 color: Colors.black,
-                child: isMe
+                child: _user != null &&
+                        widget.videoList[currentIndex].user.userId ==
+                            _user!.userId // 본인 영상일 때는 조회수, 다른 사람 영상일 때는 댓글창이 뜨기
                     ? Row(
                         children: <Widget>[
                           const Padding(padding: EdgeInsets.only(left: 18)),
-                          SvgPicture.asset(
-                            'assets/icons/ic_profile_views.svg',
-                            width: 16,
+                          const Icon(
+                            Icons.play_arrow_rounded,
+                            size: 16,
                             color: Colors.grey,
                           ),
-                          const Padding(padding: EdgeInsets.only(left: 18)),
-                          const Expanded(
+                          const Padding(padding: EdgeInsets.only(left: 6)),
+                          const Text(
+                            '조회수',
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                          const Padding(padding: EdgeInsets.only(left: 6)),
+                          Expanded(
                             child: Text(
-                              '조회수 46회',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12),
+                              '${widget.videoList[currentIndex].viewCount.toString()}회',
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 12),
                             ),
                           ),
                         ],
@@ -161,41 +203,39 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                           const Padding(padding: EdgeInsets.only(left: 18)),
                           ClipRRect(
                               borderRadius: BorderRadius.circular(50),
-                              child: Image.network(
-                                widget.profileResponse.user.profileImg ??
-                                    'assets/images/charactor_popo_default.png',
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  }
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      color: AppColor.purpleColor,
-                                    ),
-                                  );
-                                },
-                                width: 34,
-                                height: 34,
-                                fit: BoxFit.cover,
-                              )),
-                          //const Padding(padding: EdgeInsets.only(left: 18)),
+                              child: _user == null || _user!.profileImg == null
+                                  ? Image.asset(
+                                      'assets/images/charactor_popo_default.png',
+                                      width: 34,
+                                      height: 34,
+                                    )
+                                  : Image.network(
+                                      _user!.profileImg!,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            color: AppColor.purpleColor,
+                                          ),
+                                        );
+                                      },
+                                      width: 34,
+                                      height: 34,
+                                      fit: BoxFit.cover,
+                                    )),
                           Expanded(
                             child: CommentButtonWidget(
-                              index: widget.initialIndex,
-                              onRefresh: () {
-                                setState(() {});
-                              },
-                              videoId:
-                                  widget.videoList[widget.initialIndex].uuid,
-                              commentCount: widget
-                                  .videoList[widget.initialIndex].commentCount,
+                              screenNum: widget.screenNum,
+                              index: currentIndex,
+                              onRefresh: () {},
+                              videoId: widget.videoList[currentIndex].uuid,
+                              commentCount:
+                                  widget.videoList[currentIndex].commentCount,
                               childWidget: const SizedBox(
                                 height: 36,
-                                // decoration: BoxDecoration(
-                                //   borderRadius: BorderRadius.circular(30),
-                                //   border: Border.all(color: AppColor.grayColor2),
-                                // ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -203,7 +243,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                                     Padding(padding: EdgeInsets.only(left: 18)),
                                     Expanded(
                                       child: Text(
-                                        '따듯한 말 한마디 남겨주세요!',
+                                        '따듯한 말 한마디 남겨주세요   (❁´◡`❁)',
                                         style: TextStyle(
                                             color: Colors.grey, fontSize: 12),
                                       ),

@@ -75,7 +75,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProfileFollowScreen(
-                            tapNum: 0, index: 0)), // 사용자 index 넘기기
+                            tapNum: 0, profileResponse: profileResponse)),
                   ),
                 ),
                 GestureDetector(
@@ -94,7 +94,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProfileFollowScreen(
-                            tapNum: 1, index: 0)), // 사용자 index 넘기기
+                            tapNum: 1, profileResponse: profileResponse)),
                   ),
                 ),
               ],

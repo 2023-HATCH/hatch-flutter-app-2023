@@ -74,6 +74,8 @@ class ProfileProvider extends ChangeNotifier {
           await ProfileRepository().getUploadVideos(profileVideosRequest);
       _uploadVideosResponse = repositoryResponse;
 
+      // controller랑 future 만들기
+
       notifyListeners();
     } catch (e) {
       debugPrint('ProfileProvider getUploadVideos 에러: $e');

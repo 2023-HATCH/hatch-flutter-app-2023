@@ -51,7 +51,7 @@ class KaKaoLoginProvider extends ChangeNotifier {
         final multiVideoPlayProvider =
             Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
-        multiVideoPlayProvider.resetVideoPlayer();
+        multiVideoPlayProvider.resetVideoPlayer(0);
 
         MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -71,7 +71,7 @@ class KaKaoLoginProvider extends ChangeNotifier {
     final multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
-    multiVideoPlayProvider.resetVideoPlayer();
+    multiVideoPlayProvider.resetVideoPlayer(0);
 
     notifyListeners();
 

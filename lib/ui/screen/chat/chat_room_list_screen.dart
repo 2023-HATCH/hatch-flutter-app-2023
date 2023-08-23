@@ -22,14 +22,14 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
   @override
   void initState() {
     _multiVideoPlayProvider = Provider.of(context, listen: false);
-    _multiVideoPlayProvider.pauseVideo();
+    _multiVideoPlayProvider.pauseVideo(0);
 
     super.initState();
   }
 
   @override
   void dispose() {
-    _multiVideoPlayProvider.playVideo();
+    _multiVideoPlayProvider.playVideo(0);
     super.dispose();
   }
 

@@ -58,7 +58,7 @@ class _UploadButtonWidgetState extends State<UploadButtonWidget> {
                       HomeUploadScreen(uploadFile: videoFile!)),
             );
           } else {
-            _multiVideoPlayProvider.playVideo();
+            _multiVideoPlayProvider.playVideo(0);
 
             ScaffoldMessenger.of(widget.context).showSnackBar(
                 const SnackBar(content: Text('Nothing is selected')));
@@ -126,7 +126,7 @@ class _UploadButtonWidgetState extends State<UploadButtonWidget> {
                 ),
                 InkWell(
                   onTap: () async {
-                    _multiVideoPlayProvider.pauseVideo();
+                    _multiVideoPlayProvider.pauseVideo(0);
                     await Future.delayed(const Duration(
                         milliseconds: 200)); // 비디오 켤 때 버벅거림을 줄이기 위해 delay
 
