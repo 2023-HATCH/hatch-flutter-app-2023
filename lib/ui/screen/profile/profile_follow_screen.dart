@@ -217,61 +217,7 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                 ],
               ),
               widget.tabNum == 0 // : 팔로워 탭
-                  ? widget.followList[index].isFollowing
-                      ? InkWell(
-                          onTap: () => {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return CustomSimpleDialog(
-                                    title: '⛔ 팔로워 삭제',
-                                    message:
-                                        '${widget.followList[index].user.nickname}님은 회원님의 팔로워 리스트에서 삭제된 사실을 알 수 없습니다.',
-                                    onCancel: () {
-                                      Navigator.pop(context);
-                                    },
-                                    onConfirm: () async {
-                                      //팔로워 삭제 api 호출
-                                      if (widget
-                                          .followList[index].isFollowing) {
-                                        if (await _followProvider.deleteFollow(
-                                            widget.followList[index].user
-                                                .userId)) {
-                                          Fluttertoast.showToast(
-                                            msg: '삭제 되었습니다.',
-                                          );
-                                          setState(() {
-                                            _followProvider.getFollows(widget
-                                                .profileResponse.user.userId);
-                                          });
-                                        } else {
-                                          Fluttertoast.showToast(
-                                            msg: '다시 시도하세요.',
-                                          );
-                                        }
-                                      }
-
-                                      Navigator.pop(context);
-                                    },
-                                  );
-                                })
-                          },
-                          child: Material(
-                            borderRadius: BorderRadius.circular(5),
-                            color: widget.followList[index].isFollowing
-                                ? AppColor.grayColor1
-                                : AppColor.blueColor1,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
-                              child: Text(
-                                '삭제',
-                                style: TextStyle(
-                                    fontSize: 10, color: AppColor.grayColor),
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container()
+                  ? Container()
                   : // tabNum == 1 : 팔로잉 탭
                   InkWell(
                       onTap: () async {
@@ -292,9 +238,6 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
                                       if (await _followProvider.deleteFollow(
                                           widget
                                               .followList[index].user.userId)) {
-                                        Fluttertoast.showToast(
-                                          msg: '삭제 되었습니다.',
-                                        );
                                         setState(() {
                                           isFollowings[index] =
                                               !isFollowings[index];
