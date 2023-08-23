@@ -7,6 +7,7 @@ import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/remote/provider/follow_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/remote/provider/kakao_login_provider.dart';
@@ -147,15 +148,38 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
                                     _loginProvider.showLoginBottomSheet();
                                   } else {
                                     // 언팔로우 처리
-                                    if (await _followProvider.deleteFollow(
-                                        widget.profileResponse.user.userId)) {
-                                      setState(() {
-                                        _profileProvider.getUserProfile(
-                                            widget.profileResponse.user.userId);
-                                      });
-                                    } else {
-                                      Fluttertoast.showToast(msg: '다시 시도해주세요.');
-                                    }
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return CustomSimpleDialog(
+                                              title: '⛔ 팔로우 취소',
+                                              message:
+                                                  '원하는 경우 ${widget.profileResponse.user.nickname}님에게 팔로우를 다시 요청할 수 있습니다.',
+                                              onCancel: () {
+                                                Navigator.pop(context);
+                                              },
+                                              onConfirm: () async {
+                                                //팔로워 삭제 api 호출
+                                                if (await _followProvider
+                                                    .deleteFollow(widget
+                                                        .profileResponse
+                                                        .user
+                                                        .userId)) {
+                                                  setState(() {
+                                                    _profileProvider
+                                                        .getUserProfile(widget
+                                                            .profileResponse
+                                                            .user
+                                                            .userId);
+                                                  });
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                    msg: '다시 시도하세요.',
+                                                  );
+                                                }
+                                                Navigator.pop(context);
+                                              });
+                                        });
                                   }
                                 },
                                 style: OutlinedButton.styleFrom(
