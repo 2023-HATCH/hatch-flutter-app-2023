@@ -38,7 +38,9 @@ class VideoUserInfoFrame extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) =>
                               ProfileScreen(userId: user.userId),
-                        ));
+                        )).then((value) {
+                      _multiVideoPlayProvider.playVideo(screenNum);
+                    });
                     _multiVideoPlayProvider.pauseVideo(screenNum);
                   },
                   child: Row(children: <Widget>[
