@@ -135,15 +135,17 @@ class _SearchVideoGridViewState extends State<SearchVideoGridView> {
                             left: 8,
                             child: Row(
                               children: [
-                                SvgPicture.asset(
-                                  'assets/icons/ic_profile_heart.svg',
-                                  width: 16,
-                                  height: 16,
+                                const Icon(
+                                  Icons.play_arrow_rounded,
+                                  size: 16,
+                                  color: Colors.white,
                                 ),
                                 const SizedBox(width: 4),
-                                const Text(
-                                  '1.5k',
-                                  style: TextStyle(
+                                Text(
+                                  _searchProvider.randomVideosResponse!
+                                      .videoList[index].viewCount
+                                      .toString(),
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                   ),
