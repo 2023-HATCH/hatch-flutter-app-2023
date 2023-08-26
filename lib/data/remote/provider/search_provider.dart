@@ -28,6 +28,14 @@ class SearchProvider extends ChangeNotifier {
   bool? get isGetUsersSuccess => _isGetUsersSuccess;
   bool? get isGetRandomVideoSuccess => _isGetRandomVideoSuccess;
 
+  set randomVideosResponse(VideosResponse? value) {
+    _randomVideosResponse = value;
+  }
+
+  set isGetRandomVideoSuccess(bool? value) {
+    _isGetRandomVideoSuccess = value;
+  }
+
   Future<bool> getTags() async {
     try {
       final repositoryResponse = await SearchRepository().getTags();

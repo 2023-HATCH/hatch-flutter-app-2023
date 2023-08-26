@@ -21,14 +21,12 @@ class ProfileVideoScreen extends StatefulWidget {
       required this.screenNum,
       required this.videoList,
       required this.initialIndex,
-      required this.profileResponse,
       required this.onRefresh})
       : super(key: key);
 
   final int screenNum;
   final List<VideoData> videoList;
   final int initialIndex;
-  final ProfileResponse profileResponse;
   final VoidCallback onRefresh;
 
   @override

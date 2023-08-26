@@ -171,9 +171,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                             ProfileVideoScreen(
                                               screenNum: widget._index + 1,
 
-                                              // 내 화면이라면 하단에 보여줄 정보가 필요해서 profileResponse 전송
-                                              profileResponse:
-                                                  widget._profileResponse,
                                               // 업로드 비디오 리스트 전송
                                               videoList: widget._index == 0
                                                   ? _profileProvider

@@ -6,6 +6,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/videos_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
+import 'package:pocket_pose/ui/view/home/search_grid_view.dart';
 import 'package:provider/provider.dart';
 
 class HomeSearchScreen extends StatefulWidget {
@@ -100,55 +101,57 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '검색',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        leading: IconButton(
-          icon: Image.asset(
-            'assets/icons/ic_back.png',
+        appBar: AppBar(
+          title: const Text(
+            '검색',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          SearchTextField(textController: _textController),
-          TabBar(
-            controller: _tabController,
-            labelColor: Colors.black,
-            unselectedLabelColor: AppColor.grayColor3,
-            indicatorColor: AppColor.purpleColor,
-            tabs: const [
-              Tab(text: '계정'),
-              Tab(text: '태그'),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                FollowListViewWidget(
-                  tabNum: 0,
-                  isfollows: followerList,
-                  profiles: followerProfileList,
-                  nicknames: followerNicknameList,
-                  introduces: followerIntroduceList,
-                ),
-                VideoGridView(),
-              ],
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          leading: IconButton(
+            icon: Image.asset(
+              'assets/icons/ic_back.png',
             ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-        ],
-      ),
-    );
+          elevation: 0,
+        ),
+        body: const SearchVideoGridView()
+
+        // Column(
+        //   children: [
+        //     SearchTextField(textController: _textController),
+        //     TabBar(
+        //       controller: _tabController,
+        //       labelColor: Colors.black,
+        //       unselectedLabelColor: AppColor.grayColor3,
+        //       indicatorColor: AppColor.purpleColor,
+        //       tabs: const [
+        //         Tab(text: '계정'),
+        //         Tab(text: '태그'),
+        //       ],
+        //     ),
+        //     Expanded(
+        //       child: TabBarView(
+        //         controller: _tabController,
+        //         children: [
+        //           FollowListViewWidget(
+        //             tabNum: 0,
+        //             isfollows: followerList,
+        //             profiles: followerProfileList,
+        //             nicknames: followerNicknameList,
+        //             introduces: followerIntroduceList,
+        //           ),
+        //           VideoGridView(),
+        //         ],
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        );
   }
 }
 
@@ -173,7 +176,6 @@ class _SearchTextFieldState extends State<SearchTextField> {
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _searchProvider = Provider.of<SearchProvider>(context, listen: false);
-    _searchProvider.getRandomVideos(const VideosRequest(page: 0, size: 5));
   }
 
   Future<bool> getTags() async {
@@ -366,97 +368,6 @@ class _FollowListViewWidgetState extends State<FollowListViewWidget> {
           ),
         );
       },
-    );
-  }
-}
-
-class VideoGridView extends StatelessWidget {
-  VideoGridView({
-    super.key,
-  });
-
-  final List<String> _videoImagePath = [
-    "profile_video_0",
-    "profile_video_1",
-    "profile_video_3",
-    "profile_video_5",
-    "profile_video_0",
-    "profile_video_1",
-    "profile_video_2",
-    "profile_video_3",
-    "profile_video_5",
-    "profile_video_0",
-    "profile_video_1",
-    "profile_video_2",
-    "profile_video_3",
-    "profile_video_5",
-    "profile_video_0",
-    "profile_video_1",
-    "profile_video_2",
-    "profile_video_3",
-    "profile_video_5",
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: MediaQuery.of(context).size.width /
-            MediaQuery.of(context).size.height,
-      ),
-      itemBuilder: (BuildContext context, int index) {
-        return GestureDetector(
-          onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => ProfileVideoScreen(index: index),
-            //   ),
-            // );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.white,
-                width: 1,
-              ),
-            ),
-            child: Stack(
-              children: [
-                Image.asset(
-                  "assets/images/${_videoImagePath[index]}.png",
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
-                Positioned(
-                  bottom: 8,
-                  left: 8,
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/ic_profile_heart.svg',
-                        width: 16,
-                        height: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        '1.5k',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      itemCount: _videoImagePath.length,
     );
   }
 }
