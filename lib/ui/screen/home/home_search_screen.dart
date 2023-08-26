@@ -101,57 +101,80 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            '검색',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          leading: IconButton(
-            icon: Image.asset(
-              'assets/icons/ic_back.png',
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          elevation: 0,
+      appBar: AppBar(
+        title: const Text(
+          '검색',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        body: const SearchVideoGridView()
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        leading: IconButton(
+          icon: Image.asset(
+            'assets/icons/ic_back.png',
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        elevation: 0,
+      ),
+      body: Stack(children: <Widget>[
+        const SearchVideoGridView(),
+        DraggableScrollableSheet(
+          initialChildSize: 0.1,
+          minChildSize: 0.1,
+          maxChildSize: 1.0,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20.0),
+                      topRight: Radius.circular(20.0),
+                    ),
+                  ),
+                  height: MediaQuery.of(context).size.height,
+                  child: SearchTextField(textController: _textController)),
+            );
+          },
+        ),
+      ])
 
-        // Column(
-        //   children: [
-        //     SearchTextField(textController: _textController),
-        //     TabBar(
-        //       controller: _tabController,
-        //       labelColor: Colors.black,
-        //       unselectedLabelColor: AppColor.grayColor3,
-        //       indicatorColor: AppColor.purpleColor,
-        //       tabs: const [
-        //         Tab(text: '계정'),
-        //         Tab(text: '태그'),
-        //       ],
-        //     ),
-        //     Expanded(
-        //       child: TabBarView(
-        //         controller: _tabController,
-        //         children: [
-        //           FollowListViewWidget(
-        //             tabNum: 0,
-        //             isfollows: followerList,
-        //             profiles: followerProfileList,
-        //             nicknames: followerNicknameList,
-        //             introduces: followerIntroduceList,
-        //           ),
-        //           VideoGridView(),
-        //         ],
-        //       ),
-        //     ),
-        //   ],
-        // ),
-        );
+      // Column(
+      //   children: [
+      //     SearchTextField(textController: _textController),
+      //     TabBar(
+      //       controller: _tabController,
+      //       labelColor: Colors.black,
+      //       unselectedLabelColor: AppColor.grayColor3,
+      //       indicatorColor: AppColor.purpleColor,
+      //       tabs: const [
+      //         Tab(text: '계정'),
+      //         Tab(text: '태그'),
+      //       ],
+      //     ),
+      //     Expanded(
+      //       child: TabBarView(
+      //         controller: _tabController,
+      //         children: [
+      //           FollowListViewWidget(
+      //             tabNum: 0,
+      //             isfollows: followerList,
+      //             profiles: followerProfileList,
+      //             nicknames: followerNicknameList,
+      //             introduces: followerIntroduceList,
+      //           ),
+      //           VideoGridView(),
+      //         ],
+      //       ),
+      //     ),
+      //   ],
+      // ),
+      ,
+    );
   }
 }
 
