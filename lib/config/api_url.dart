@@ -27,6 +27,9 @@ class AppUrl {
   static const profileVideoUrl = "$_apiBaseUrl/users/videos";
   static const profileLikeVideoUrl = "$_apiBaseUrl/likes";
 
+  // 검색
+  static const searchTagUrl = "$videoUrl/tags";
+
   // 포포 스테이지
   // 스테이지
   static const _stageUrl = "$_apiBaseUrl/stage";

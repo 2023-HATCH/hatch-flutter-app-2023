@@ -20,17 +20,6 @@ class MultiVideoPlayProvider with ChangeNotifier {
   List<int> currentIndexs = [0, 0, 0, 0];
   List<int> currentPages = [0, 0, 0, 0];
 
-  List<String> tags = [
-    '원어스',
-    '최애의아이',
-    'dancechallenge',
-    'K-pop',
-    '나이트댄서',
-    '띵띵땅땅',
-    '완소 퍼펙트 반장',
-    '토카토카',
-  ];
-
   // 조회수
   final double endVideoViewAmount = 0.2; //20퍼센트 이상 시청했을 경우 조회수 증가
   late BuildContext mainContext;

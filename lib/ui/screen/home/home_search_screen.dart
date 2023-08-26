@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
+import 'package:pocket_pose/data/remote/provider/search_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeSearchScreen extends StatefulWidget {
@@ -15,6 +17,7 @@ class HomeSearchScreen extends StatefulWidget {
 class _HomeSearchScreenState extends State<HomeSearchScreen>
     with SingleTickerProviderStateMixin {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
+
   late TabController _tabController;
   final TextEditingController _textController = TextEditingController();
 
@@ -79,7 +82,9 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
     super.initState();
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
+
     _multiVideoPlayProvider.pauseVideo(0);
+
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -159,96 +164,125 @@ class SearchTextField extends StatefulWidget {
 
 class _SearchTextFieldState extends State<SearchTextField> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
+  late SearchProvider _searchProvider;
 
   @override
   void initState() {
     super.initState();
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    _searchProvider = Provider.of<SearchProvider>(context, listen: false);
+  }
+
+  Future<bool> getTags() async {
+    return await _searchProvider.getTags();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
-      child: Row(
-        children: <Widget>[
-          const Padding(padding: EdgeInsets.only(left: 18)),
-          Expanded(
-            child: Container(
-              height: 30,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColor.grayColor4,
-              ),
+    return FutureBuilder<bool>(
+      future: getTags(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (_searchProvider.tagResponse != null) {
+            return SizedBox(
+              height: 40,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Padding(padding: EdgeInsets.only(left: 14)),
-                  SvgPicture.asset(
-                    'assets/icons/ic_home_search.svg',
-                    color: Colors.grey,
-                    width: 14,
-                  ),
-                  const Padding(padding: EdgeInsets.only(left: 8)),
+                children: <Widget>[
+                  const Padding(padding: EdgeInsets.only(left: 18)),
                   Expanded(
-                      child: TypeAheadField(
-                    textFieldConfiguration: TextFieldConfiguration(
-                      controller: widget._textController,
-                      decoration: const InputDecoration(
-                        hintText: '검색',
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                        labelStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                        border: InputBorder.none,
+                    child: Container(
+                      height: 30,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColor.grayColor4,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Padding(padding: EdgeInsets.only(left: 14)),
+                          SvgPicture.asset(
+                            'assets/icons/ic_home_search.svg',
+                            color: Colors.grey,
+                            width: 14,
+                          ),
+                          const Padding(padding: EdgeInsets.only(left: 8)),
+                          Expanded(
+                              child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                              controller: widget._textController,
+                              decoration: const InputDecoration(
+                                hintText: '검색',
+                                hintStyle:
+                                    TextStyle(color: Colors.grey, fontSize: 14),
+                                labelStyle:
+                                    TextStyle(color: Colors.grey, fontSize: 14),
+                                border: InputBorder.none,
+                              ),
+                            ),
+                            suggestionsCallback: (pattern) async {
+                              return _searchProvider.tagResponse!.where(
+                                  (item) => item
+                                      .toLowerCase()
+                                      .contains(pattern.toLowerCase()));
+                            },
+                            itemBuilder: (context, suggestion) {
+                              return ListTile(
+                                title: Text(
+                                  suggestion,
+                                  style: TextStyle(
+                                    color: AppColor.grayColor,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            },
+                            onSuggestionSelected: (suggestion) {
+                              widget._textController.text = suggestion;
+
+                              // 검색 처리 api 호출
+                            },
+                            noItemsFoundBuilder: (context) {
+                              return GestureDetector(
+                                child: ListTile(
+                                  leading: const Icon(Icons.search),
+                                  title: Text(
+                                    widget._textController.text,
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                onTap: () {
+                                  // 검색 처리 api 호출
+                                  FocusScope.of(context).unfocus();
+                                },
+                              );
+                            },
+                          )),
+                          const Padding(padding: EdgeInsets.only(left: 14)),
+                        ],
                       ),
                     ),
-                    suggestionsCallback: (pattern) async {
-                      return _multiVideoPlayProvider.tags.where((item) =>
-                          item.toLowerCase().contains(pattern.toLowerCase()));
-                    },
-                    itemBuilder: (context, suggestion) {
-                      return ListTile(
-                        title: Text(
-                          suggestion,
-                          style: TextStyle(
-                            color: AppColor.grayColor,
-                            fontSize: 14,
-                          ),
-                        ),
-                      );
-                    },
-                    onSuggestionSelected: (suggestion) {
-                      widget._textController.text = suggestion;
-
-                      // 검색 처리 api 호출
-                    },
-                    noItemsFoundBuilder: (context) {
-                      return GestureDetector(
-                        child: ListTile(
-                          leading: const Icon(Icons.search),
-                          title: Text(
-                            widget._textController.text,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          // 검색 처리 api 호출
-                          FocusScope.of(context).unfocus();
-                        },
-                      );
-                    },
-                  )),
-                  const Padding(padding: EdgeInsets.only(left: 14)),
+                  ),
+                  const Padding(padding: EdgeInsets.only(left: 18)),
                 ],
               ),
-            ),
-          ),
-          const Padding(padding: EdgeInsets.only(left: 18)),
-        ],
-      ),
+            );
+          } else {
+            //검색 로딩 인디케이터
+            return CircularProgressIndicator(
+              color: AppColor.purpleColor,
+            );
+          }
+        } else {
+          //검색 로딩 인디케이터
+          return CircularProgressIndicator(
+            color: AppColor.purpleColor,
+          );
+        }
+      },
     );
   }
 }
