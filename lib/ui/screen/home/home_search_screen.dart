@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/entity/request/videos_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
 import 'package:provider/provider.dart';
@@ -241,6 +242,9 @@ class _SearchTextFieldState extends State<SearchTextField> {
                               widget._textController.text = suggestion;
 
                               // 검색 처리 api 호출
+                              debugPrint('태그: $suggestion');
+                              _searchProvider.getTagVideos(suggestion,
+                                  const VideosRequest(page: 0, size: 3));
                             },
                             noItemsFoundBuilder: (context) {
                               return GestureDetector(

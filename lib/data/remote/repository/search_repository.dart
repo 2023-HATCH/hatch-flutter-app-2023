@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/response/follow_list_response.dart';
+import 'package:pocket_pose/data/entity/response/videos_response.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/follow_data.dart';
+
+import '../../../domain/entity/video_data.dart';
+import '../../entity/request/videos_request.dart';
 
 class SearchRepository {
   KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
 
   Future<List<String>> getTags() async {
-    final url = Uri.parse(AppUrl.searchTagUrl);
+    final url = Uri.parse(AppUrl.searchTagsUrl);
 
     final headers = <String, String>{
       'Content-Type': 'application/json;charset=UTF-8',
@@ -32,61 +36,104 @@ class SearchRepository {
     }
   }
 
-  Future<bool> postFollow(String userId) async {
-    final url = Uri.parse('${AppUrl.followUrl}/$userId');
+  Future<VideosResponse> getTagVideos(
+      String tag, VideosRequest searchVideosRequest) async {
+    final url = Uri.parse(AppUrl.searchTagVideoUrl).replace(queryParameters: {
+      'tag': tag,
+      'page': searchVideosRequest.page.toString(),
+      'size': searchVideosRequest.size.toString(),
+    });
 
     await loginProvider.checkAccessToken();
 
     final accessToken = loginProvider.accessToken;
     final refreshToken = loginProvider.refreshToken;
 
-    final headers = <String, String>{
+    final headers = {
       'Content-Type': 'application/json;charset=UTF-8',
       if (accessToken != null && refreshToken != null)
         "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
     };
 
-    final response = await http.post(url, headers: headers);
-    final json = jsonDecode(utf8.decode(response.bodyBytes));
+    final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      debugPrint("팔로우 등록 성공! json: $json");
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      debugPrint("태그 검색 비디오 목록 조회 성공! json: $json");
+
+      final List<dynamic> videoListJson = json['data']['videoList'];
+      final List<VideoData> videoList = videoListJson
+          .map((videoJson) => VideoData.fromJson(videoJson))
+          .toList();
+
+      final bool isLast = json['data']['isLast'];
 
       loginProvider.updateToken(response.headers);
 
-      return true;
+      return VideosResponse(
+        videoList: videoList,
+        isLast: isLast,
+      );
     } else {
-      debugPrint('팔로우 등록 실패 json $json');
-      return false;
+      throw Exception('태그 검색 비디오 목록 조회 실패');
     }
   }
 
-  Future<bool> deleteFollow(String userId) async {
-    final url = Uri.parse('${AppUrl.followUrl}/$userId');
+  // Future<bool> postFollow(String userId) async {
+  //   final url = Uri.parse('${AppUrl.followUrl}/$userId');
 
-    await loginProvider.checkAccessToken();
+  //   await loginProvider.checkAccessToken();
 
-    final accessToken = loginProvider.accessToken;
-    final refreshToken = loginProvider.refreshToken;
+  //   final accessToken = loginProvider.accessToken;
+  //   final refreshToken = loginProvider.refreshToken;
 
-    final headers = <String, String>{
-      'Content-Type': 'application/json;charset=UTF-8',
-      if (accessToken != null && refreshToken != null)
-        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
-    };
+  //   final headers = <String, String>{
+  //     'Content-Type': 'application/json;charset=UTF-8',
+  //     if (accessToken != null && refreshToken != null)
+  //       "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+  //   };
 
-    final response = await http.delete(url, headers: headers);
-    final json = jsonDecode(utf8.decode(response.bodyBytes));
+  //   final response = await http.post(url, headers: headers);
+  //   final json = jsonDecode(utf8.decode(response.bodyBytes));
 
-    if (response.statusCode == 200) {
-      debugPrint("팔로우 삭제 성공! json: $json");
+  //   if (response.statusCode == 200) {
+  //     debugPrint("팔로우 등록 성공! json: $json");
 
-      loginProvider.updateToken(response.headers);
+  //     loginProvider.updateToken(response.headers);
 
-      return true;
-    } else {
-      debugPrint('팔로우 삭제 실패 json $json');
-      return false;
-    }
-  }
+  //     return true;
+  //   } else {
+  //     debugPrint('팔로우 등록 실패 json $json');
+  //     return false;
+  //   }
+  // }
+
+  // Future<bool> deleteFollow(String userId) async {
+  //   final url = Uri.parse('${AppUrl.followUrl}/$userId');
+
+  //   await loginProvider.checkAccessToken();
+
+  //   final accessToken = loginProvider.accessToken;
+  //   final refreshToken = loginProvider.refreshToken;
+
+  //   final headers = <String, String>{
+  //     'Content-Type': 'application/json;charset=UTF-8',
+  //     if (accessToken != null && refreshToken != null)
+  //       "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+  //   };
+
+  //   final response = await http.delete(url, headers: headers);
+  //   final json = jsonDecode(utf8.decode(response.bodyBytes));
+
+  //   if (response.statusCode == 200) {
+  //     debugPrint("팔로우 삭제 성공! json: $json");
+
+  //     loginProvider.updateToken(response.headers);
+
+  //     return true;
+  //   } else {
+  //     debugPrint('팔로우 삭제 실패 json $json');
+  //     return false;
+  //   }
+  // }
 }
