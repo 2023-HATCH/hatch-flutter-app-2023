@@ -136,7 +136,7 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
                       topRight: Radius.circular(20.0),
                     ),
                   ),
-                  height: MediaQuery.of(context).size.height,
+                  height: MediaQuery.of(context).size.height - 70,
                   child: SearchTextField(textController: _textController)),
             );
           },
@@ -212,97 +212,130 @@ class _SearchTextFieldState extends State<SearchTextField> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (_searchProvider.tagResponse != null) {
-            return SizedBox(
-              height: 40,
-              child: Row(
-                children: <Widget>[
-                  const Padding(padding: EdgeInsets.only(left: 18)),
-                  Expanded(
-                    child: Container(
-                      height: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColor.grayColor4,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Padding(padding: EdgeInsets.only(left: 14)),
-                          SvgPicture.asset(
-                            'assets/icons/ic_home_search.svg',
-                            color: Colors.grey,
-                            width: 14,
-                          ),
-                          const Padding(padding: EdgeInsets.only(left: 8)),
-                          Expanded(
-                              child: TypeAheadField(
-                            textFieldConfiguration: TextFieldConfiguration(
-                              controller: widget._textController,
-                              decoration: const InputDecoration(
-                                hintText: '검색',
-                                hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 14),
-                                labelStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 14),
-                                border: InputBorder.none,
-                              ),
+            return //Padding(
+                //padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+                //child:
+                Column(
+              children: [
+                // Container(
+                //   decoration: const BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.only(
+                //       topLeft: Radius.circular(20.0),
+                //       topRight: Radius.circular(20.0),
+                //     ),
+                //   ),
+                //   height: 40,
+                //   child:
+                const Padding(padding: EdgeInsets.only(bottom: 14)),
+                Row(
+                  children: <Widget>[
+                    const Padding(padding: EdgeInsets.only(left: 18)),
+                    Expanded(
+                      child: Container(
+                        height: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: AppColor.grayColor4,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Padding(padding: EdgeInsets.only(left: 14)),
+                            SvgPicture.asset(
+                              'assets/icons/ic_home_search.svg',
+                              color: Colors.grey,
+                              width: 14,
                             ),
-                            suggestionsCallback: (pattern) async {
-                              return _searchProvider.tagResponse!.where(
-                                  (item) => item
-                                      .toLowerCase()
-                                      .contains(pattern.toLowerCase()));
-                            },
-                            itemBuilder: (context, suggestion) {
-                              return ListTile(
-                                title: Text(
-                                  suggestion,
-                                  style: TextStyle(
-                                    color: AppColor.grayColor,
-                                    fontSize: 14,
-                                  ),
+                            const Padding(padding: EdgeInsets.only(left: 8)),
+                            Expanded(
+                                child: TypeAheadField(
+                              textFieldConfiguration: TextFieldConfiguration(
+                                controller: widget._textController,
+                                decoration: const InputDecoration(
+                                  hintText: '검색',
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 14),
+                                  labelStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 14),
+                                  border: InputBorder.none,
                                 ),
-                              );
-                            },
-                            onSuggestionSelected: (suggestion) {
-                              widget._textController.text = suggestion;
-
-                              // 검색 처리 api 호출
-                              // 태그 검색 api 호출
-                              debugPrint('태그: $suggestion');
-                              _searchProvider.getTagSearch(suggestion,
-                                  const VideosRequest(page: 0, size: 3));
-
-                              // 유저 검색 api 호출
-                              _searchProvider.getUserSearch(suggestion);
-                            },
-                            noItemsFoundBuilder: (context) {
-                              return GestureDetector(
-                                child: ListTile(
-                                  leading: const Icon(Icons.search),
+                              ),
+                              suggestionsCallback: (pattern) async {
+                                return _searchProvider.tagResponse!.where(
+                                    (item) => item
+                                        .toLowerCase()
+                                        .contains(pattern.toLowerCase()));
+                              },
+                              itemBuilder: (context, suggestion) {
+                                return ListTile(
                                   title: Text(
-                                    widget._textController.text,
-                                    style: const TextStyle(
-                                      color: Colors.grey,
+                                    suggestion,
+                                    style: TextStyle(
+                                      color: AppColor.grayColor,
                                       fontSize: 14,
                                     ),
                                   ),
-                                ),
-                                onTap: () {
-                                  // 검색 처리 api 호출
-                                  FocusScope.of(context).unfocus();
-                                },
-                              );
-                            },
-                          )),
-                          const Padding(padding: EdgeInsets.only(left: 14)),
-                        ],
+                                );
+                              },
+                              onSuggestionSelected: (suggestion) {
+                                widget._textController.text = suggestion;
+
+                                // 검색 처리 api 호출
+                                // 태그 검색 api 호출
+                                debugPrint('태그: $suggestion');
+                                _searchProvider.getTagSearch(suggestion,
+                                    const VideosRequest(page: 0, size: 3));
+
+                                // 유저 검색 api 호출
+                                _searchProvider.getUserSearch(suggestion);
+                              },
+                              noItemsFoundBuilder: (context) {
+                                return GestureDetector(
+                                  child: ListTile(
+                                    leading: const Icon(Icons.search),
+                                    title: Text(
+                                      widget._textController.text,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    // 검색 처리 api 호출
+                                    FocusScope.of(context).unfocus();
+                                  },
+                                );
+                              },
+                            )),
+                            const Padding(padding: EdgeInsets.only(left: 14)),
+                          ],
+                        ),
                       ),
                     ),
+                    const Padding(padding: EdgeInsets.only(left: 18)),
+                  ],
+                ),
+                // ),
+                Flexible(
+                  child: ListView.builder(
+                    itemCount: _searchProvider.tagResponse!.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(
+                          _searchProvider.tagResponse![index],
+                          style: TextStyle(
+                            color: AppColor.grayColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  const Padding(padding: EdgeInsets.only(left: 18)),
-                ],
-              ),
+                )
+              ],
+              // ),
             );
           } else {
             //검색 로딩 인디케이터
