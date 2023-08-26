@@ -173,6 +173,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _searchProvider = Provider.of<SearchProvider>(context, listen: false);
+    _searchProvider.getRandomVideos(const VideosRequest(page: 0, size: 5));
   }
 
   Future<bool> getTags() async {

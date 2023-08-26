@@ -60,7 +60,7 @@ class SearchRepository {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("태그 검색 비디오 목록 조회 성공! json: $json");
+      debugPrint("검색 태그 검색 비디오 목록 조회 성공! json: $json");
 
       final List<dynamic> videoListJson = json['data']['videoList'];
       final List<VideoData> videoList = videoListJson
@@ -76,7 +76,7 @@ class SearchRepository {
         isLast: isLast,
       );
     } else {
-      throw Exception('태그 검색 비디오 목록 조회 실패');
+      throw Exception('검색 태그 검색 비디오 목록 조회 실패');
     }
   }
 
@@ -92,7 +92,7 @@ class SearchRepository {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("유저 검색 성공! json: $json");
+      debugPrint("검색 사용자 검색 성공! json: $json");
 
       final List<dynamic> userDataJson = json['data']['userList'];
       final List<UserData> userDataList =
@@ -100,65 +100,49 @@ class SearchRepository {
 
       return userDataList;
     } else {
-      throw Exception('태그 목록 조회 실패');
+      throw Exception('검색 사용자 검색 실패');
     }
   }
 
-  // Future<bool> postFollow(String userId) async {
-  //   final url = Uri.parse('${AppUrl.followUrl}/$userId');
+  Future<VideosResponse> getRandomVideos(VideosRequest videosRequest) async {
+    final url =
+        Uri.parse('${AppUrl.videoUrl}/random').replace(queryParameters: {
+      'page': videosRequest.page.toString(),
+      'size': videosRequest.size.toString(),
+    });
 
-  //   await loginProvider.checkAccessToken();
+    await loginProvider.checkAccessToken();
 
-  //   final accessToken = loginProvider.accessToken;
-  //   final refreshToken = loginProvider.refreshToken;
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
-  //   final headers = <String, String>{
-  //     'Content-Type': 'application/json;charset=UTF-8',
-  //     if (accessToken != null && refreshToken != null)
-  //       "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
-  //   };
+    final headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      if (accessToken != null && refreshToken != null)
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+    };
 
-  //   final response = await http.post(url, headers: headers);
-  //   final json = jsonDecode(utf8.decode(response.bodyBytes));
+    final response = await http.get(url, headers: headers);
 
-  //   if (response.statusCode == 200) {
-  //     debugPrint("팔로우 등록 성공! json: $json");
+    if (response.statusCode == 200) {
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      debugPrint("검색 랜덤 비디오 목록 조회 성공! json: $json");
 
-  //     loginProvider.updateToken(response.headers);
+      final List<dynamic> videoListJson = json['data']['videoList'];
+      final List<VideoData> videoList = videoListJson
+          .map((videoJson) => VideoData.fromJson(videoJson))
+          .toList();
 
-  //     return true;
-  //   } else {
-  //     debugPrint('팔로우 등록 실패 json $json');
-  //     return false;
-  //   }
-  // }
+      final bool isLast = json['data']['isLast'];
 
-  // Future<bool> deleteFollow(String userId) async {
-  //   final url = Uri.parse('${AppUrl.followUrl}/$userId');
+      loginProvider.updateToken(response.headers);
 
-  //   await loginProvider.checkAccessToken();
-
-  //   final accessToken = loginProvider.accessToken;
-  //   final refreshToken = loginProvider.refreshToken;
-
-  //   final headers = <String, String>{
-  //     'Content-Type': 'application/json;charset=UTF-8',
-  //     if (accessToken != null && refreshToken != null)
-  //       "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
-  //   };
-
-  //   final response = await http.delete(url, headers: headers);
-  //   final json = jsonDecode(utf8.decode(response.bodyBytes));
-
-  //   if (response.statusCode == 200) {
-  //     debugPrint("팔로우 삭제 성공! json: $json");
-
-  //     loginProvider.updateToken(response.headers);
-
-  //     return true;
-  //   } else {
-  //     debugPrint('팔로우 삭제 실패 json $json');
-  //     return false;
-  //   }
-  // }
+      return VideosResponse(
+        videoList: videoList,
+        isLast: isLast,
+      );
+    } else {
+      throw Exception('검색 랜덤 비디오 목록 조회 실패');
+    }
+  }
 }

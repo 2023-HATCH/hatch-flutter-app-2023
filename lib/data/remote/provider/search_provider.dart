@@ -11,23 +11,22 @@ class SearchProvider extends ChangeNotifier {
   List<String>? _tagsResponse;
   VideosResponse? _tagVideosResponse;
   List<UserData>? _usersResponse;
+  VideosResponse? _randomVideosResponse;
 
   bool? _isGetTagsSuccess;
   bool? _isGetTagVideosSuccess;
   bool? _isGetUsersSuccess;
-  // bool? _isPostSuccess;
-  // bool? _isDeleteSuccess;
+  bool? _isGetRandomVideoSuccess;
 
   List<String>? get tagResponse => _tagsResponse;
   VideosResponse? get tagVideosResponse => _tagVideosResponse;
   List<UserData>? get usersResponse => _usersResponse;
+  VideosResponse? get randomVideosResponse => _randomVideosResponse;
 
   bool? get isGetSuccess => _isGetTagsSuccess;
   bool? get isGetTagVideosSuccess => _isGetTagVideosSuccess;
   bool? get isGetUsersSuccess => _isGetUsersSuccess;
-
-  // bool? get isPostSuccess => _isPostSuccess;
-  // bool? get isDeleteSuccess => _isDeleteSuccess;
+  bool? get isGetRandomVideoSuccess => _isGetRandomVideoSuccess;
 
   Future<bool> getTags() async {
     try {
@@ -67,24 +66,16 @@ class SearchProvider extends ChangeNotifier {
     return _isGetUsersSuccess ?? false;
   }
 
-  // Future<bool> postFollow(String userId) async {
-  //   try {
-  //     _isPostSuccess = await FollowRepository().postFollow(userId);
+  Future<bool> getRandomVideos(VideosRequest videosRequest) async {
+    try {
+      final repositoryResponse =
+          await SearchRepository().getRandomVideos(videosRequest);
+      _randomVideosResponse = repositoryResponse;
 
-  //     notifyListeners();
-  //   } catch (e) {
-  //     debugPrint('FollowRepository postFollow 에러: $e');
-  //   }
-  //   return _isPostSuccess ?? false;
-  // }
-
-  // Future<bool> deleteFollow(String userId) async {
-  //   try {
-  //     _isDeleteSuccess = await FollowRepository().deleteFollow(userId);
-  //   } catch (e) {
-  //     debugPrint('FollowRepository deleteFollow 에러: $e');
-  //   }
-
-  //   return _isDeleteSuccess ?? false;
-  // }
+      _isGetRandomVideoSuccess = true;
+    } catch (e) {
+      debugPrint('VideoProvider getVideos 에러: $e');
+    }
+    return _isGetRandomVideoSuccess ?? false;
+  }
 }
