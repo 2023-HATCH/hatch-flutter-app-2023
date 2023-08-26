@@ -7,6 +7,7 @@ import 'package:pocket_pose/data/entity/response/follow_list_response.dart';
 import 'package:pocket_pose/data/entity/response/videos_response.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/follow_data.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 
 import '../../../domain/entity/video_data.dart';
 import '../../entity/request/videos_request.dart';
@@ -36,7 +37,7 @@ class SearchRepository {
     }
   }
 
-  Future<VideosResponse> getTagVideos(
+  Future<VideosResponse> getTagSearch(
       String tag, VideosRequest searchVideosRequest) async {
     final url = Uri.parse(AppUrl.searchTagVideoUrl).replace(queryParameters: {
       'tag': tag,
@@ -76,6 +77,30 @@ class SearchRepository {
       );
     } else {
       throw Exception('태그 검색 비디오 목록 조회 실패');
+    }
+  }
+
+  Future<List<UserData>> getUserSearch(String key) async {
+    final url =
+        Uri.parse(AppUrl.searchUserUrl).replace(queryParameters: {'key': key});
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json;charset=UTF-8',
+    };
+
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      debugPrint("유저 검색 성공! json: $json");
+
+      final List<dynamic> userDataJson = json['data']['userList'];
+      final List<UserData> userDataList =
+          userDataJson.map((userJson) => UserData.fromJson(userJson)).toList();
+
+      return userDataList;
+    } else {
+      throw Exception('태그 목록 조회 실패');
     }
   }
 

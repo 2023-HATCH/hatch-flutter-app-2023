@@ -242,9 +242,13 @@ class _SearchTextFieldState extends State<SearchTextField> {
                               widget._textController.text = suggestion;
 
                               // 검색 처리 api 호출
+                              // 태그 검색 api 호출
                               debugPrint('태그: $suggestion');
-                              _searchProvider.getTagVideos(suggestion,
+                              _searchProvider.getTagSearch(suggestion,
                                   const VideosRequest(page: 0, size: 3));
+
+                              // 유저 검색 api 호출
+                              _searchProvider.getUserSearch(suggestion);
                             },
                             noItemsFoundBuilder: (context) {
                               return GestureDetector(

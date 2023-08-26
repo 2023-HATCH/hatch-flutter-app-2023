@@ -30,6 +30,7 @@ class AppUrl {
   // 검색
   static const searchTagsUrl = "$videoUrl/tags";
   static const searchTagVideoUrl = "$videoUrl/search";
+  static const searchUserUrl = "$_apiBaseUrl/users/search";
 
   // 포포 스테이지
   // 스테이지
