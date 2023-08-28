@@ -73,8 +73,11 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
 
     _multiVideoPlayProvider.playVideo(0);
     _searchProvider.isGetRandomVideoSuccess = false;
+    _searchProvider.isGetTagVideosSuccess = false;
     _searchProvider.randomVideosResponse = null;
+    _searchProvider.tagVideosResponse = null;
     _multiVideoPlayProvider.resetVideoPlayer(3);
+    _multiVideoPlayProvider.resetVideoPlayer(4);
   }
 
   @override
