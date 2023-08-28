@@ -28,7 +28,6 @@ class _SearchViewState extends State<SearchView> {
                 MaterialPageRoute(
                     builder: (context) => ProfileVideoScreen(
                           screenNum: 3, // 검색 페이지
-
                           // 업로드 비디오 리스트 전송
                           videoList: widget.videoList,
                           // 처음에 열 페이지 전송

@@ -28,7 +28,6 @@ class _SearchDetailViewState extends State<SearchDetailView>
     // 유저 검색 api 호출
     final value2 = await _searchProvider.getUserSearch(widget.value);
 
-    debugPrint('value1: $value1, value2: $value2');
     return value1 && value2;
   }
 

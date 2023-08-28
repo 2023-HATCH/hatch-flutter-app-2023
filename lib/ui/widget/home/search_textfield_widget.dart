@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
+import 'package:pocket_pose/ui/widget/loader/search_textfield_loader.dart';
 import 'package:provider/provider.dart';
 
 import '../../../config/app_color.dart';
@@ -201,19 +202,12 @@ class _SearchTextFieldWidgetState extends State<SearchTextFieldWidget> {
                   height: 8,
                 ),
               ],
-              // ),
             );
           } else {
-            //검색 로딩 인디케이터
-            return CircularProgressIndicator(
-              color: AppColor.purpleColor,
-            );
+            return const SearchTextFieldLoader();
           }
         } else {
-          //검색 로딩 인디케이터
-          return CircularProgressIndicator(
-            color: AppColor.purpleColor,
-          );
+          return const SearchTextFieldLoader();
         }
       },
     );
