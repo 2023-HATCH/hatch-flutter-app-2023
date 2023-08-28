@@ -120,16 +120,10 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
                                     .randomVideosResponse!.videoList))
                   ]);
                 } else {
-                  //검색 로딩 인디케이터
-                  return CircularProgressIndicator(
-                    color: AppColor.purpleColor,
-                  );
+                  return Container(color: Colors.white);
                 }
               } else {
-                //검색 로딩 인디케이터
-                return CircularProgressIndicator(
-                  color: AppColor.purpleColor,
-                );
+                return Container(color: Colors.white);
               }
             }));
   }
