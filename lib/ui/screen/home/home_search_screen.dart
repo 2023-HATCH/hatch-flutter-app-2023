@@ -112,6 +112,7 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
                           ))
                         : Flexible(
                             child: SearchView(
+                                screenNum: 3,
                                 videoList: _searchProvider
                                     .randomVideosResponse!.videoList))
                   ]);

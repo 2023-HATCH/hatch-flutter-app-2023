@@ -17,6 +17,7 @@ class SearchProvider extends ChangeNotifier {
   bool? _isGetTagVideosSuccess;
   bool? _isGetUsersSuccess;
   bool? _isGetRandomVideoSuccess;
+  bool _isVideoLoadingDone = false;
 
   List<String>? get tagResponse => _tagsResponse;
   VideosResponse? get tagVideosResponse => _tagVideosResponse;
@@ -27,6 +28,7 @@ class SearchProvider extends ChangeNotifier {
   bool? get isGetTagVideosSuccess => _isGetTagVideosSuccess;
   bool? get isGetUsersSuccess => _isGetUsersSuccess;
   bool? get isGetRandomVideoSuccess => _isGetRandomVideoSuccess;
+  bool get isVideoLoadingDone => _isVideoLoadingDone;
 
   set randomVideosResponse(VideosResponse? value) {
     _randomVideosResponse = value;
@@ -34,6 +36,18 @@ class SearchProvider extends ChangeNotifier {
 
   set isGetRandomVideoSuccess(bool? value) {
     _isGetRandomVideoSuccess = value;
+  }
+
+  set tagVideosResponse(VideosResponse? value) {
+    _tagVideosResponse = value;
+  }
+
+  set isGetTagVideosSuccess(bool? value) {
+    _isGetTagVideosSuccess = value;
+  }
+
+  set isVideoLoadingDone(bool value) {
+    _isVideoLoadingDone = value;
   }
 
   Future<bool> getTags() async {

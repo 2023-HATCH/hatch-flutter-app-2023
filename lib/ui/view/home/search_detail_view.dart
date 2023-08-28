@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/videos_request.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
 import 'package:pocket_pose/ui/view/home/search_view.dart';
 import 'package:pocket_pose/ui/view/home/user_list_view.dart';
@@ -20,30 +21,69 @@ class _SearchDetailViewState extends State<SearchDetailView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late SearchProvider _searchProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   Future<bool> _initContent() async {
-    // 태그 검색 api 호출
-    final value1 = await _searchProvider.getTagSearch(
-        widget.value, const VideosRequest(page: 0, size: 3));
-    // 유저 검색 api 호출
-    final value2 = await _searchProvider.getUserSearch(widget.value);
+    if (mounted) {
+      if (!_searchProvider.isVideoLoadingDone) {
+        // 태그 검색 api 호출
+        debugPrint(
+            '1: 프로필 현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[4]}');
 
-    return value1 && value2;
+        _searchProvider
+            .getTagSearch(
+                widget.value,
+                VideosRequest(
+                    page: _multiVideoPlayProvider.currentPages[4], size: 100))
+            .then((value) {
+          final response = _searchProvider.tagVideosResponse;
+
+          if (mounted) {
+            if (response != null) {
+              setState(() {
+                if (response.videoList.isNotEmpty) {
+                  _multiVideoPlayProvider.addVideos(4, response.videoList);
+                }
+                if (response.isLast) {
+                  _multiVideoPlayProvider.isLasts[4] = true;
+                  return;
+                }
+              });
+            }
+          }
+
+          _multiVideoPlayProvider.currentPages[4]++;
+          debugPrint(
+              '1: 프로필 다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[4]}');
+        });
+
+        // 유저 검색 api 호출
+        await _searchProvider.getUserSearch(widget.value);
+
+        _searchProvider.isVideoLoadingDone = true;
+      }
+    }
+    return _searchProvider.tagVideosResponse != null &&
+        _searchProvider.usersResponse != null;
   }
 
   @override
   void initState() {
     super.initState();
-
     _tabController = TabController(length: 2, vsync: this);
     _searchProvider = Provider.of<SearchProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
   }
 
   @override
   void dispose() {
     super.dispose();
-
     _tabController.dispose();
+
+    _searchProvider.isVideoLoadingDone = false;
+
+    _multiVideoPlayProvider.resetVideoPlayer(4);
   }
 
   @override
@@ -79,6 +119,7 @@ class _SearchDetailViewState extends State<SearchDetailView>
                                   _searchProvider
                                       .tagVideosResponse!.videoList.isNotEmpty
                               ? SearchView(
+                                  screenNum: 4,
                                   videoList: _searchProvider
                                       .tagVideosResponse!.videoList)
                               :

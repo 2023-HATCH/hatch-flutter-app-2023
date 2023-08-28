@@ -4,8 +4,10 @@ import 'package:pocket_pose/ui/video_viewer/screen/profile_video_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SearchView extends StatefulWidget {
-  const SearchView({super.key, required this.videoList});
+  const SearchView(
+      {super.key, required this.screenNum, required this.videoList});
 
+  final int screenNum;
   final List<VideoData> videoList;
   @override
   State<SearchView> createState() => _SearchViewState();
@@ -27,7 +29,7 @@ class _SearchViewState extends State<SearchView> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ProfileVideoScreen(
-                          screenNum: 3, // 검색 페이지
+                          screenNum: widget.screenNum, // 검색 페이지
                           // 업로드 비디오 리스트 전송
                           videoList: widget.videoList,
                           // 처음에 열 페이지 전송

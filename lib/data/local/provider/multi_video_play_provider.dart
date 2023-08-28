@@ -8,17 +8,23 @@ import '../../remote/provider/video_provider.dart';
 class MultiVideoPlayProvider with ChangeNotifier {
   final int pageSize = 3;
 
-  // 홈: 0, 업로드: 1, 좋아요: 2, 검색 3
-  late List<List<VideoPlayerController>> videoControllers = [[], [], [], []];
-  late List<List<Future<void>>> videoFutures = [[], [], [], []];
+  // 홈: 0, 업로드: 1, 좋아요: 2, 검색: 3, 태그 검색: 4
+  late List<List<VideoPlayerController>> videoControllers = [
+    [],
+    [],
+    [],
+    [],
+    []
+  ];
+  late List<List<Future<void>>> videoFutures = [[], [], [], [], []];
   late List<PageController> pageControllers =
-      List.generate(4, (_) => PageController());
+      List.generate(5, (_) => PageController());
 
-  List<List<VideoData>> videos = [[], [], [], []];
-  List<bool> loadings = [false, false, false, false];
-  List<bool> isLasts = [false, false, false, false];
-  List<int> currentIndexs = [0, 0, 0, 0];
-  List<int> currentPages = [0, 0, 0, 0];
+  List<List<VideoData>> videos = [[], [], [], [], []];
+  List<bool> loadings = [false, false, false, false, false];
+  List<bool> isLasts = [false, false, false, false, false];
+  List<int> currentIndexs = [0, 0, 0, 0, 0];
+  List<int> currentPages = [0, 0, 0, 0, 0];
 
   // 조회수
   final double endVideoViewAmount = 0.2; //20퍼센트 이상 시청했을 경우 조회수 증가
