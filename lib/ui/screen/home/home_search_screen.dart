@@ -119,28 +119,33 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
         ),
         elevation: 0,
       ),
-      body: Stack(children: <Widget>[
-        const SearchVideoGridView(),
-        DraggableScrollableSheet(
-          initialChildSize: 0.1,
-          minChildSize: 0.1,
-          maxChildSize: 1.0,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
-                    ),
-                  ),
-                  height: MediaQuery.of(context).size.height - 70,
-                  child: SearchTextField(textController: _textController)),
-            );
-          },
+      body: Column(children: <Widget>[
+        SearchTextField(
+          textController: _textController,
         ),
+        const Flexible(child: SearchVideoGridView()),
+        // DraggableScrollableSheet(
+        //   initialChildSize: 0.12,
+        //   minChildSize: 0.12,
+        //   maxChildSize: 1.0,
+        //   builder: (BuildContext context, ScrollController scrollController) {
+        //     return SingleChildScrollView(
+        //       controller: scrollController,
+        //       child: Container(
+        //           decoration: const BoxDecoration(
+        //             color: Colors.white,
+        //             borderRadius: BorderRadius.only(
+        //               topLeft: Radius.circular(20.0),
+        //               topRight: Radius.circular(20.0),
+        //             ),
+        //           ),
+        //           height: MediaQuery.of(context).size.height - 70,
+        //           child: SearchTextField(
+        //             textController: _textController,
+        //           )),
+        //     );
+        //   },
+        // ),
       ])
 
       // Column(
@@ -179,9 +184,10 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
 }
 
 class SearchTextField extends StatefulWidget {
-  const SearchTextField(
-      {super.key, required TextEditingController textController})
-      : _textController = textController;
+  const SearchTextField({
+    super.key,
+    required TextEditingController textController,
+  }) : _textController = textController;
 
   final TextEditingController _textController;
 
@@ -192,6 +198,7 @@ class SearchTextField extends StatefulWidget {
 class _SearchTextFieldState extends State<SearchTextField> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late SearchProvider _searchProvider;
+  late List<String> searchresult = [];
 
   @override
   void initState() {
@@ -202,7 +209,10 @@ class _SearchTextFieldState extends State<SearchTextField> {
   }
 
   Future<bool> getTags() async {
-    return await _searchProvider.getTags();
+    bool end = await _searchProvider.getTags();
+    searchresult = _searchProvider.tagResponse!;
+
+    return end;
   }
 
   @override
@@ -217,48 +227,79 @@ class _SearchTextFieldState extends State<SearchTextField> {
                 //child:
                 Column(
               children: [
-                // Container(
-                //   decoration: const BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.only(
-                //       topLeft: Radius.circular(20.0),
-                //       topRight: Radius.circular(20.0),
-                //     ),
-                //   ),
-                //   height: 40,
-                //   child:
-                const Padding(padding: EdgeInsets.only(bottom: 14)),
+                const SizedBox(
+                  height: 4,
+                ),
                 Row(
                   children: <Widget>[
                     const Padding(padding: EdgeInsets.only(left: 18)),
                     Expanded(
-                      child: Container(
-                        height: 30,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: AppColor.grayColor4,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Padding(padding: EdgeInsets.only(left: 14)),
-                            SvgPicture.asset(
-                              'assets/icons/ic_home_search.svg',
-                              color: Colors.grey,
-                              width: 14,
-                            ),
-                            const Padding(padding: EdgeInsets.only(left: 8)),
-                            Expanded(
-                                child: TypeAheadField(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                              child: SizedBox(
+                            height: 35,
+                            child: TypeAheadField(
                               textFieldConfiguration: TextFieldConfiguration(
                                 controller: widget._textController,
-                                decoration: const InputDecoration(
-                                  hintText: '검색',
-                                  hintStyle: TextStyle(
+                                decoration: InputDecoration(
+                                  hintText: '계정 또는 태그로 검색하세요',
+                                  hintStyle: const TextStyle(
                                       color: Colors.grey, fontSize: 14),
-                                  labelStyle: TextStyle(
+                                  labelStyle: const TextStyle(
                                       color: Colors.grey, fontSize: 14),
-                                  border: InputBorder.none,
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 0),
+                                  suffixIcon: InkWell(
+                                    onTap: () {
+                                      widget._textController.clear();
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 10,
+                                      ),
+                                      child: Icon(
+                                        Icons.clear_rounded,
+                                        size: 18,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                  prefixIcon: const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 10,
+                                    ),
+                                    child: Icon(
+                                      Icons.search_rounded,
+                                      size: 18,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(15),
+                                    ),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: AppColor.purpleColor,
+                                    ),
+                                  ),
+                                  disabledBorder: InputBorder.none,
+                                  //border: InputBorder.none,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(15),
+                                    ),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: AppColor.grayColor4,
+                                    ),
+                                  ),
+                                  fillColor: AppColor.grayColor4, // 배경색 설정
+                                  filled: true, // 배경색 채우기 활성화
                                 ),
                               ),
                               suggestionsCallback: (pattern) async {
@@ -269,6 +310,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
                               },
                               itemBuilder: (context, suggestion) {
                                 return ListTile(
+                                  leading: const Icon(Icons.tag_rounded),
                                   title: Text(
                                     suggestion,
                                     style: TextStyle(
@@ -308,32 +350,38 @@ class _SearchTextFieldState extends State<SearchTextField> {
                                   },
                                 );
                               },
-                            )),
-                            const Padding(padding: EdgeInsets.only(left: 14)),
-                          ],
-                        ),
+                            ),
+                          )),
+                        ],
                       ),
                     ),
                     const Padding(padding: EdgeInsets.only(left: 18)),
                   ],
                 ),
                 // ),
-                Flexible(
-                  child: ListView.builder(
-                    itemCount: _searchProvider.tagResponse!.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(
-                          _searchProvider.tagResponse![index],
-                          style: TextStyle(
-                            color: AppColor.grayColor,
-                            fontSize: 14,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                )
+                // Flexible(
+                //   child: searchresult.isNotEmpty
+                //       ? ListView.builder(
+                //           itemCount: searchresult.length,
+                //           itemBuilder: (context, index) {
+                //             return ListTile(
+                //               title: Text(
+                //                 searchresult[index],
+                //                 style: TextStyle(
+                //                   color: AppColor.grayColor,
+                //                   fontSize: 14,
+                //                 ),
+                //               ),
+                //             );
+                //           },
+                //         )
+                //       : const Center(
+                //           child: Text('없습니다.'),
+                //         ),
+                // )
+                const SizedBox(
+                  height: 8,
+                ),
               ],
               // ),
             );
