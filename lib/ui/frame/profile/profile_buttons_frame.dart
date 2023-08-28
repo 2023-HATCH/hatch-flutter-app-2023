@@ -7,7 +7,7 @@ import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/remote/provider/follow_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
-import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
+import 'package:pocket_pose/ui/widget/custom_simple_dialog_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/remote/provider/kakao_login_provider.dart';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/comment_button_widget.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/like_button_widget.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/share_button_widget.dart';
+import 'package:pocket_pose/ui/view/home/comment_button_view.dart';
+import 'package:pocket_pose/ui/widget/video/like_button_widget.dart';
+import 'package:pocket_pose/ui/widget/video/share_button_widget.dart';
 import 'package:provider/provider.dart';
 
 class VideoRightFrame extends StatefulWidget {
@@ -38,7 +38,7 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
           children: <Widget>[
             LikeButtonWidget(screenNum: widget.screenNum, index: widget.index),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
-            CommentButtonWidget(
+            CommentButtonView(
               screenNum: widget.screenNum,
               index: widget.index,
               onRefresh: () {

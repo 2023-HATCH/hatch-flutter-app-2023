@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
-import 'package:pocket_pose/ui/screen/profile/profile_follow_screen.dart';
-import 'package:pocket_pose/ui/widget/profile/profile_buttons_widget.dart';
+import 'package:pocket_pose/ui/screen/profile/follow_tab_screen.dart';
+import 'package:pocket_pose/ui/frame/profile/profile_buttons_frame.dart';
 
 // ignore: must_be_immutable
 class ProfileUserInfoWidget extends StatelessWidget {
@@ -74,7 +74,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ProfileFollowScreen(
+                        builder: (context) => FollowTabScreen(
                             tapNum: 0, profileResponse: profileResponse)),
                   ),
                 ),
@@ -93,7 +93,7 @@ class ProfileUserInfoWidget extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ProfileFollowScreen(
+                        builder: (context) => FollowTabScreen(
                             tapNum: 1, profileResponse: profileResponse)),
                   ),
                 ),

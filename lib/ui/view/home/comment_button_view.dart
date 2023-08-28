@@ -9,8 +9,8 @@ import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class CommentButtonWidget extends StatefulWidget {
-  CommentButtonWidget(
+class CommentButtonView extends StatefulWidget {
+  CommentButtonView(
       {super.key,
       required this.screenNum,
       required this.index,
@@ -27,10 +27,10 @@ class CommentButtonWidget extends StatefulWidget {
   Widget childWidget;
 
   @override
-  State<CommentButtonWidget> createState() => _CommentButtonWidgetState();
+  State<CommentButtonView> createState() => _CommentButtonViewState();
 }
 
-class _CommentButtonWidgetState extends State<CommentButtonWidget> {
+class _CommentButtonViewState extends State<CommentButtonView> {
   final TextEditingController _textController = TextEditingController();
   late KaKaoLoginProvider _loginProvider;
   late final CommentProvider _commentProvider =
