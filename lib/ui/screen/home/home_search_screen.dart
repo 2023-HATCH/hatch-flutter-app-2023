@@ -6,7 +6,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/videos_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
-import 'package:pocket_pose/ui/screen/home/home_search_detail_screen.dart';
+import 'package:pocket_pose/ui/view/home/search_detail_view.dart';
 import 'package:pocket_pose/ui/view/home/search_grid_view.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +23,13 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
     with SingleTickerProviderStateMixin {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
 
-  late TabController _tabController;
+  bool isSearched = false;
+
+  void setScreen(bool value) {
+    setState(() {
+      isSearched = value;
+    });
+  }
 
   @override
   void initState() {
@@ -32,8 +38,6 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
 
     _multiVideoPlayProvider.pauseVideo(0);
-
-    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -41,7 +45,6 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
     super.dispose();
 
     _multiVideoPlayProvider.playVideo(0);
-    _tabController.dispose();
   }
 
   @override
@@ -65,9 +68,11 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
         ),
         elevation: 0,
       ),
-      body: const Column(children: <Widget>[
-        SearchTextFieldWidget(),
-        Flexible(child: SearchVideoGridView()),
+      body: Column(children: <Widget>[
+        SearchTextFieldWidget(setScreen: setScreen),
+        isSearched
+            ? const Flexible(child: SearchDetailView())
+            : const Flexible(child: SearchView())
       ]),
     );
   }

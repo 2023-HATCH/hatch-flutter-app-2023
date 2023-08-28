@@ -9,15 +9,15 @@ import '../../../config/app_color.dart';
 import '../../../data/entity/request/videos_request.dart';
 import '../../../data/remote/provider/search_provider.dart';
 
-class SearchVideoGridView extends StatefulWidget {
-  const SearchVideoGridView({
+class SearchView extends StatefulWidget {
+  const SearchView({
     super.key,
   });
   @override
-  State<SearchVideoGridView> createState() => _SearchVideoGridViewState();
+  State<SearchView> createState() => _SearchViewState();
 }
 
-class _SearchVideoGridViewState extends State<SearchVideoGridView> {
+class _SearchViewState extends State<SearchView> {
   late SearchProvider _searchProvider;
   late MultiVideoPlayProvider _multiVideoPlayProvider;
 

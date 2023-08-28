@@ -9,14 +9,14 @@ import 'package:pocket_pose/data/remote/provider/search_provider.dart';
 import 'package:pocket_pose/ui/view/home/search_grid_view.dart';
 import 'package:provider/provider.dart';
 
-class HomeSearchDetailScreen extends StatefulWidget {
-  const HomeSearchDetailScreen({Key? key}) : super(key: key);
+class SearchDetailView extends StatefulWidget {
+  const SearchDetailView({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _HomeSearchDetailScreenState();
+  State<StatefulWidget> createState() => _SearchDetailViewState();
 }
 
-class _HomeSearchDetailScreenState extends State<HomeSearchDetailScreen>
+class _SearchDetailViewState extends State<SearchDetailView>
     with SingleTickerProviderStateMixin {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
 
@@ -173,7 +173,7 @@ class _HomeSearchDetailScreenState extends State<HomeSearchDetailScreen>
                         nicknames: followerNicknameList,
                         introduces: followerIntroduceList,
                       ),
-                      const SearchVideoGridView(),
+                      const SearchView(),
                     ],
                   ),
                 ),
