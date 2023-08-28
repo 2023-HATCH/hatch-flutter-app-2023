@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
-import 'package:pocket_pose/ui/view/home/search_detail_view.dart';
 import 'package:provider/provider.dart';
 
 import '../../../config/app_color.dart';
@@ -123,9 +122,11 @@ class _SearchTextFieldWidgetState extends State<SearchTextFieldWidget> {
                                     onSubmitted: (value) {
                                       // 🔅 키보드에서 submit (1/3)
                                       if (_textController.text.isNotEmpty) {
-                                        widget._setScreen(true);
+                                        widget._setScreen(
+                                            true, _textController.text);
                                       } else {
-                                        widget._setScreen(false);
+                                        widget._setScreen(
+                                            false, _textController.text);
                                         Fluttertoast.showToast(
                                             msg: '검색어를 입력하세요');
                                       }
@@ -135,9 +136,11 @@ class _SearchTextFieldWidgetState extends State<SearchTextFieldWidget> {
                                     // 🔅 태그 리스트 중 선택 (2/3)
                                     _textController.text = suggestion;
                                     if (_textController.text.isNotEmpty) {
-                                      widget._setScreen(true);
+                                      widget._setScreen(
+                                          true, _textController.text);
                                     } else {
-                                      widget._setScreen(false);
+                                      widget._setScreen(
+                                          false, _textController.text);
                                       Fluttertoast.showToast(msg: '검색어를 입력하세요');
                                     }
                                   },
@@ -156,9 +159,11 @@ class _SearchTextFieldWidgetState extends State<SearchTextFieldWidget> {
                                       onTap: () {
                                         // 🔅 태그 목록에 없는 검색어 선택 (3/3)
                                         if (_textController.text.isNotEmpty) {
-                                          widget._setScreen(true);
+                                          widget._setScreen(
+                                              true, _textController.text);
                                         } else {
-                                          widget._setScreen(false);
+                                          widget._setScreen(
+                                              false, _textController.text);
                                           Fluttertoast.showToast(
                                               msg: '검색어를 입력하세요');
                                         }

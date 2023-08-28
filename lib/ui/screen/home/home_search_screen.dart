@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/videos_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
 import 'package:pocket_pose/ui/view/home/search_detail_view.dart';
-import 'package:pocket_pose/ui/view/home/search_grid_view.dart';
+import 'package:pocket_pose/ui/view/home/search_view.dart';
 import 'package:provider/provider.dart';
 
 import '../../widget/home/search_textfield_widget.dart';
@@ -22,13 +19,43 @@ class HomeSearchScreen extends StatefulWidget {
 class _HomeSearchScreenState extends State<HomeSearchScreen>
     with SingleTickerProviderStateMixin {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
+  late SearchProvider _searchProvider;
 
-  bool isSearched = false;
+  bool _isSearched = false;
+  String _value = "";
 
-  void setScreen(bool value) {
+  void setScreen(bool isSearched, String value) {
     setState(() {
-      isSearched = value;
+      _isSearched = isSearched;
+      _value = value;
     });
+  }
+
+  Future<bool> _initVideo() async {
+    if (mounted) {
+      if (_searchProvider.isGetRandomVideoSuccess == null ||
+          !_searchProvider.isGetRandomVideoSuccess!) {
+        await _searchProvider
+            .getRandomVideos(VideosRequest(
+                page: _multiVideoPlayProvider.currentPages[3], size: 100))
+            .then((value) {
+          final response = _searchProvider.randomVideosResponse;
+
+          if (response != null) {
+            setState(() {
+              if (response.videoList.isNotEmpty) {
+                _multiVideoPlayProvider.addVideos(3, response.videoList);
+              }
+              if (response.isLast) {
+                _multiVideoPlayProvider.isLasts[3] = true;
+              }
+            });
+          }
+        });
+      }
+      return true;
+    }
+    return true;
   }
 
   @override
@@ -36,7 +63,7 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
     super.initState();
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
-
+    _searchProvider = Provider.of<SearchProvider>(context, listen: false);
     _multiVideoPlayProvider.pauseVideo(0);
   }
 
@@ -45,35 +72,61 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
     super.dispose();
 
     _multiVideoPlayProvider.playVideo(0);
+    _searchProvider.isGetRandomVideoSuccess = false;
+    _searchProvider.randomVideosResponse = null;
+    _multiVideoPlayProvider.resetVideoPlayer(3);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '검색',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        leading: IconButton(
-          icon: Image.asset(
-            'assets/icons/ic_back.png',
+        appBar: AppBar(
+          title: const Text(
+            '검색',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          leading: IconButton(
+            icon: Image.asset(
+              'assets/icons/ic_back.png',
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          elevation: 0,
         ),
-        elevation: 0,
-      ),
-      body: Column(children: <Widget>[
-        SearchTextFieldWidget(setScreen: setScreen),
-        isSearched
-            ? const Flexible(child: SearchDetailView())
-            : const Flexible(child: SearchView())
-      ]),
-    );
+        body: FutureBuilder<bool>(
+            future: _initVideo(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (_searchProvider.randomVideosResponse != null) {
+                  return Column(children: <Widget>[
+                    SearchTextFieldWidget(setScreen: setScreen),
+                    _isSearched
+                        ? Flexible(
+                            child: SearchDetailView(
+                            value: _value,
+                          ))
+                        : Flexible(
+                            child: SearchView(
+                                videoList: _searchProvider
+                                    .randomVideosResponse!.videoList))
+                  ]);
+                } else {
+                  //검색 로딩 인디케이터
+                  return CircularProgressIndicator(
+                    color: AppColor.purpleColor,
+                  );
+                }
+              } else {
+                //검색 로딩 인디케이터
+                return CircularProgressIndicator(
+                  color: AppColor.purpleColor,
+                );
+              }
+            }));
   }
 }
