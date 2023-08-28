@@ -1,7 +1,7 @@
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 import '../../remote/provider/video_provider.dart';
 
@@ -9,7 +9,7 @@ class MultiVideoPlayProvider with ChangeNotifier {
   final int pageSize = 3;
 
   // 홈: 0, 업로드: 1, 좋아요: 2, 검색: 3, 태그 검색: 4
-  late List<List<VideoPlayerController>> videoControllers = [
+  late List<List<CachedVideoPlayerController>> videoControllers = [
     [],
     [],
     [],
@@ -43,7 +43,7 @@ class MultiVideoPlayProvider with ChangeNotifier {
     for (final video in newVideoList) {
       debugPrint('페이지: 비디오 로딩중');
       videoControllers[screenNum]
-          .add(VideoPlayerController.network(video.videoUrl));
+          .add(CachedVideoPlayerController.network(video.videoUrl));
 
       videoFutures[screenNum]
           .add(videoControllers[screenNum].last.initialize().then((value) {

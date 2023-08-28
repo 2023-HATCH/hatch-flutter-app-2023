@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
@@ -10,7 +11,6 @@ import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/upload/custom_tag_text_field_controller.dart';
 import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 class HomeUploadScreen extends StatefulWidget {
   const HomeUploadScreen({super.key, required this.uploadFile});
@@ -22,7 +22,7 @@ class HomeUploadScreen extends StatefulWidget {
 
 class _HomeUploadScreenState extends State<HomeUploadScreen> {
   final TextEditingController _titleTextController = TextEditingController();
-  VideoPlayerController? _videoPlayerController;
+  CachedVideoPlayerController? _videoPlayerController;
   late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   late CustomTagTextFieldController _tagController;
@@ -52,7 +52,8 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
 
   Future _initVideoPlayer() async {
     if (_videoPlayerController == null) {
-      _videoPlayerController = VideoPlayerController.file(widget.uploadFile);
+      _videoPlayerController =
+          CachedVideoPlayerController.file(widget.uploadFile);
       await _videoPlayerController!.initialize();
       await _videoPlayerController!.setLooping(true);
       await _videoPlayerController!.play();
@@ -95,7 +96,7 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 3, 0, 0),
-              child: VideoPlayer(_videoPlayerController!),
+              child: CachedVideoPlayer(_videoPlayerController!),
             ),
             Padding(
               padding: EdgeInsets.only(

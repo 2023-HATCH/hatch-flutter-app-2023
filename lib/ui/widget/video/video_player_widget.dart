@@ -1,9 +1,9 @@
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/ui/frame/video/video_right_frame.dart';
 import 'package:pocket_pose/ui/frame/video/video_user_info_frame.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget(
@@ -86,7 +86,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
               });
             }
           },
-          child: VideoPlayer(_multiVideoPlayProvider
+          child: CachedVideoPlayer(_multiVideoPlayProvider
               .videoControllers[widget.screenNum][widget.index]),
         ),
         Positioned.fill(
