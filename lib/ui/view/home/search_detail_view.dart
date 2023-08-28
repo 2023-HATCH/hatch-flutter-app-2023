@@ -5,9 +5,9 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
 import 'package:pocket_pose/ui/view/home/search_view.dart';
 import 'package:pocket_pose/ui/view/home/user_list_view.dart';
-import 'package:pocket_pose/ui/widget/loader/user_list_loader.dart';
+import 'package:pocket_pose/ui/loader/user_list_loader.dart';
 import 'package:provider/provider.dart';
-import '../../screen/follow_tab_screen.dart';
+import '../../screen/profile/follow_tab_screen.dart';
 
 class SearchDetailView extends StatefulWidget {
   const SearchDetailView({Key? key, required this.value}) : super(key: key);

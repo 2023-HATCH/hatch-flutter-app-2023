@@ -4,7 +4,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
-import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
+import 'package:pocket_pose/ui/widget/custom_simple_dialog_widget.dart';
 import 'package:provider/provider.dart';
 
 class ProfileSettingScreen extends StatefulWidget {

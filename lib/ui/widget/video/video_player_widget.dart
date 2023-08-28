@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
-import 'package:pocket_pose/ui/video_viewer/video_right_frame.dart';
-import 'package:pocket_pose/ui/video_viewer/video_user_info_frame.dart';
+import 'package:pocket_pose/ui/frame/video/video_right_frame.dart';
+import 'package:pocket_pose/ui/frame/video/video_user_info_frame.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 

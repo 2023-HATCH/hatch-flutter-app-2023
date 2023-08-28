@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
-import 'package:pocket_pose/ui/widget/loader/search_textfield_loader.dart';
+import 'package:pocket_pose/ui/loader/search_textfield_loader.dart';
 import 'package:provider/provider.dart';
 
 import '../../../config/app_color.dart';

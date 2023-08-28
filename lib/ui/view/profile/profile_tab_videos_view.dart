@@ -3,8 +3,8 @@ import 'package:pocket_pose/data/entity/request/profile_videos_request.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
-import 'package:pocket_pose/ui/video_viewer/screen/profile_video_screen.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/profile_video_skeleton_loader_widget.dart';
+import 'package:pocket_pose/ui/screen/profile/profile_video_detail_screen.dart';
+import 'package:pocket_pose/ui/loader/profile_video_skeleton_loader.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
-import 'package:pocket_pose/ui/video_viewer/screen/profile_video_screen.dart';
+import 'package:pocket_pose/ui/screen/profile/profile_video_detail_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SearchView extends StatefulWidget {

@@ -5,10 +5,10 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/profile_tab_videos_widget.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/profile_tapbar_widget.dart';
+import 'package:pocket_pose/ui/view/profile/profile_tab_videos_view.dart';
+import 'package:pocket_pose/ui/widget/profile/profile_tapbar_widget.dart';
 
-import 'package:pocket_pose/ui/widget/profile/profile_user_info_widget.dart';
+import 'package:pocket_pose/ui/view/profile/profile_user_info_widget.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable

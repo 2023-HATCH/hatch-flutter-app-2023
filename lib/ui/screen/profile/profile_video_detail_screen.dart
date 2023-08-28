@@ -9,10 +9,10 @@ import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
-import 'package:pocket_pose/ui/video_viewer/multi_video_player_view.dart';
-import 'package:pocket_pose/ui/video_viewer/widget/comment_button_widget.dart';
-import 'package:pocket_pose/ui/widget/music_spinner_widget.dart';
-import 'package:pocket_pose/ui/widget/profile/custom_simple_dialog.dart';
+import 'package:pocket_pose/ui/view/video/multi_video_player_view.dart';
+import 'package:pocket_pose/ui/view/home/comment_button_view.dart';
+import 'package:pocket_pose/ui/loader/music_spinner_loader.dart';
+import 'package:pocket_pose/ui/widget/custom_simple_dialog_widget.dart';
 import 'package:provider/provider.dart';
 
 class ProfileVideoScreen extends StatefulWidget {
@@ -225,7 +225,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                                       fit: BoxFit.cover,
                                     )),
                           Expanded(
-                            child: CommentButtonWidget(
+                            child: CommentButtonView(
                               screenNum: widget.screenNum,
                               index: currentIndex,
                               onRefresh: () {},
