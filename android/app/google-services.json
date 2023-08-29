@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "362925676787",
+    "project_id": "poket-pose",
+    "storage_bucket": "poket-pose.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362925676787:android:d867916660915a53813f86",
+        "android_client_info": {
+          "package_name": "com.example.pocketpose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "362925676787-69ibno1on7ltskkbta4bu6vk72g342ju.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAka6I1flS9pNf9h7VI1eMjtH-YMBDsV5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362925676787-69ibno1on7ltskkbta4bu6vk72g342ju.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

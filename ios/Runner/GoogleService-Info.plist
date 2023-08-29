@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>362925676787-5pa90752u4d6dmmimkobr2fk7lakeedu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.362925676787-5pa90752u4d6dmmimkobr2fk7lakeedu</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAvM_1nxbDRn9zkAqPYQm048cYwM_8gSBY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>362925676787</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.pocketPose</string>
+	<key>PROJECT_ID</key>
+	<string>poket-pose</string>
+	<key>STORAGE_BUCKET</key>
+	<string>poket-pose.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:362925676787:ios:8a5dee8589f3b17b813f86</string>
+</dict>
+</plist>
