@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/entity/response/follow_list_response.dart';
 import 'package:pocket_pose/data/remote/repository/follow_repository.dart';
 import 'package:pocket_pose/data/remote/repository/search_repository.dart';
+import 'package:pocket_pose/domain/entity/search_user_data.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 
 import '../../entity/request/videos_request.dart';
@@ -10,7 +11,7 @@ import '../../entity/response/videos_response.dart';
 class SearchProvider extends ChangeNotifier {
   List<String>? _tagsResponse;
   VideosResponse? _tagVideosResponse;
-  List<UserData>? _usersResponse;
+  List<SearchUserData>? _usersResponse;
   VideosResponse? _randomVideosResponse;
 
   bool? _isGetTagsSuccess;
@@ -21,7 +22,7 @@ class SearchProvider extends ChangeNotifier {
 
   List<String>? get tagResponse => _tagsResponse;
   VideosResponse? get tagVideosResponse => _tagVideosResponse;
-  List<UserData>? get usersResponse => _usersResponse;
+  List<SearchUserData>? get usersResponse => _usersResponse;
   VideosResponse? get randomVideosResponse => _randomVideosResponse;
 
   bool? get isGetSuccess => _isGetTagsSuccess;
