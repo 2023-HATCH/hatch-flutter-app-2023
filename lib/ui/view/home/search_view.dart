@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_video_detail_screen.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SearchView extends StatefulWidget {
@@ -25,19 +26,33 @@ class _SearchViewState extends State<SearchView> {
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
           onTap: () {
+            PageRouteWithSlideAnimation pageRouteWithAnimation =
+                PageRouteWithSlideAnimation(ProfileVideoScreen(
+              screenNum: widget.screenNum, // 검색 페이지
+              // 업로드 비디오 리스트 전송
+              videoList: widget.videoList,
+              // 처음에 열 페이지 전송
+              initialIndex: index,
+              onRefresh: () {
+                setState(() {});
+              },
+            ));
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ProfileVideoScreen(
-                          screenNum: widget.screenNum, // 검색 페이지
-                          // 업로드 비디오 리스트 전송
-                          videoList: widget.videoList,
-                          // 처음에 열 페이지 전송
-                          initialIndex: index,
-                          onRefresh: () {
-                            setState(() {});
-                          },
-                        )));
+                context, pageRouteWithAnimation.fadeInFadeOutRoute());
+
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) => ProfileVideoScreen(
+            //               screenNum: widget.screenNum, // 검색 페이지
+            //               // 업로드 비디오 리스트 전송
+            //               videoList: widget.videoList,
+            //               // 처음에 열 페이지 전송
+            //               initialIndex: index,
+            //               onRefresh: () {
+            //                 setState(() {});
+            //               },
+            //             )));
           },
           child: Container(
             decoration: BoxDecoration(
