@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/profile_edit_request.dart';
@@ -50,22 +49,13 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
     _textControllers = [
       TextEditingController(
-        text: widget.profileResponse.profile.introduce == null ||
-                widget.profileResponse.profile.introduce == ''
-            ? '자기소개'
-            : widget.profileResponse.profile.introduce,
+        text: widget.profileResponse.profile.introduce,
       ),
       TextEditingController(
-        text: widget.profileResponse.profile.instagramId == null ||
-                widget.profileResponse.profile.instagramId == ''
-            ? 'Instagram'
-            : widget.profileResponse.profile.instagramId,
+        text: widget.profileResponse.profile.instagramId,
       ),
       TextEditingController(
-        text: widget.profileResponse.profile.twitterId == null ||
-                widget.profileResponse.profile.twitterId == ''
-            ? 'Twitter'
-            : widget.profileResponse.profile.twitterId,
+        text: widget.profileResponse.profile.twitterId,
       ),
     ];
 
@@ -205,29 +195,16 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                         ? Colors.black
                         : widget.profileResponse.profile.introduce == null ||
                                 widget.profileResponse.profile.introduce == ''
-                            ? Colors.black12
-                            : Colors.black45,
+                            ? Colors.grey
+                            : Colors.black,
                     fontSize: 14,
                   ),
                   onTap: () {
                     if (!_isClickeds[0]) {
                       setState(() {
-                        _textControllers[0].text =
-                            (widget.profileResponse.profile.introduce == null ||
-                                    widget.profileResponse.profile.introduce ==
-                                        ''
-                                ? '자기소개'
-                                : widget.profileResponse.profile.introduce)!;
-
                         _isClickeds[0] = true;
                       });
                     }
-                    Future.delayed(Duration.zero, () {
-                      _textControllers[0].selection =
-                          TextSelection.fromPosition(
-                        TextPosition(offset: _textControllers[0].text.length),
-                      );
-                    });
                   },
                 ),
               ),
@@ -295,32 +272,15 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                               .instagramId ==
                                           ''
                                   ? Colors.black12
-                                  : Colors.black45,
+                                  : Colors.black,
                           fontSize: 14,
                         ),
                         onTap: () {
                           if (!_isClickeds[1]) {
                             setState(() {
-                              _textControllers[1].text =
-                                  (widget.profileResponse.profile.instagramId ==
-                                              null ||
-                                          widget.profileResponse.profile
-                                                  .instagramId ==
-                                              ''
-                                      ? 'Instagram'
-                                      : widget.profileResponse.profile
-                                          .instagramId)!;
-
                               _isClickeds[1] = true;
                             });
                           }
-                          Future.delayed(Duration.zero, () {
-                            _textControllers[1].selection =
-                                TextSelection.fromPosition(
-                              TextPosition(
-                                  offset: _textControllers[1].text.length),
-                            );
-                          });
                         },
                       ),
                     ),
@@ -365,31 +325,15 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                               .twitterId ==
                                           ''
                                   ? Colors.black12
-                                  : Colors.black45,
+                                  : Colors.black,
                           fontSize: 14,
                         ),
                         onTap: () {
                           if (!_isClickeds[2]) {
                             setState(() {
-                              _textControllers[2].text = (widget.profileResponse
-                                              .profile.twitterId ==
-                                          null ||
-                                      widget.profileResponse.profile
-                                              .twitterId ==
-                                          ''
-                                  ? 'Twitter'
-                                  : widget.profileResponse.profile.twitterId)!;
-
                               _isClickeds[2] = true;
                             });
                           }
-                          Future.delayed(Duration.zero, () {
-                            _textControllers[2].selection =
-                                TextSelection.fromPosition(
-                              TextPosition(
-                                  offset: _textControllers[2].text.length),
-                            );
-                          });
                         },
                       ),
                     ),
