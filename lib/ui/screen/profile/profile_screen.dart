@@ -8,7 +8,7 @@ import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/view/profile/profile_tab_videos_view.dart';
 import 'package:pocket_pose/ui/widget/profile/profile_tapbar_widget.dart';
 
-import 'package:pocket_pose/ui/view/profile/profile_user_info_widget.dart';
+import 'package:pocket_pose/ui/view/profile/profile_user_info_view.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable

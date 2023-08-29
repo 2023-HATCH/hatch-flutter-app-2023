@@ -1,8 +1,8 @@
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
-import 'package:pocket_pose/ui/frame/video/video_right_frame.dart';
-import 'package:pocket_pose/ui/frame/video/video_user_info_frame.dart';
+import 'package:pocket_pose/ui/view/video/video_user_info_view.dart';
+import 'package:pocket_pose/ui/view/video/video_right_view.dart';
 import 'package:provider/provider.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
