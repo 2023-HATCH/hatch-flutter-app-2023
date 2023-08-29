@@ -65,6 +65,7 @@ class _SearchDetailViewState extends State<SearchDetailView>
         _searchProvider.isVideoLoadingDone = true;
       }
     }
+
     return _searchProvider.tagVideosResponse != null &&
         _searchProvider.usersResponse != null;
   }
@@ -106,9 +107,10 @@ class _SearchDetailViewState extends State<SearchDetailView>
         FutureBuilder<bool>(
             future: _initContent(),
             builder: (context, snapshot) {
+              debugPrint('검색: ${snapshot.connectionState}');
               if (snapshot.connectionState == ConnectionState.done) {
                 loading++;
-                if (loading >= 2) {
+                if (loading >= 1) {
                   return Expanded(
                       child: TabBarView(
                     controller: _tabController,

@@ -7,6 +7,7 @@ import 'package:pocket_pose/data/entity/response/follow_list_response.dart';
 import 'package:pocket_pose/data/entity/response/videos_response.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/follow_data.dart';
+import 'package:pocket_pose/domain/entity/search_user_data.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 
 import '../../../domain/entity/video_data.dart';
@@ -80,7 +81,7 @@ class SearchRepository {
     }
   }
 
-  Future<List<UserData>> getUserSearch(String key) async {
+  Future<List<SearchUserData>> getUserSearch(String key) async {
     final url =
         Uri.parse(AppUrl.searchUserUrl).replace(queryParameters: {'key': key});
 
@@ -94,11 +95,12 @@ class SearchRepository {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("검색 사용자 검색 성공! json: $json");
 
-      final List<dynamic> userDataJson = json['data']['userList'];
-      final List<UserData> userDataList =
-          userDataJson.map((userJson) => UserData.fromJson(userJson)).toList();
+      final List<dynamic> searchUserDataJson = json['data']['userList'];
+      final List<SearchUserData> searchUserDataList = searchUserDataJson
+          .map((userJson) => SearchUserData.fromJson(userJson))
+          .toList();
 
-      return userDataList;
+      return searchUserDataList;
     } else {
       throw Exception('검색 사용자 검색 실패');
     }

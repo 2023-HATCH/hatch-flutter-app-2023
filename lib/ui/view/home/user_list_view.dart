@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/domain/entity/search_user_data.dart';
 
 class UserListView extends StatefulWidget {
   const UserListView({Key? key, required this.userList}) : super(key: key);
 
-  final List<UserData> userList;
+  final List<SearchUserData> userList;
 
   @override
   State<StatefulWidget> createState() => _UserListViewState();
@@ -40,7 +40,7 @@ class _UserListViewState extends State<UserListView> {
                   ClipRRect(
                       borderRadius: BorderRadius.circular(50),
                       child: Image.network(
-                        widget.userList[index].profileImg!,
+                        widget.userList[index].user.profileImg!,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return Center(
@@ -65,21 +65,21 @@ class _UserListViewState extends State<UserListView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.userList[index].nickname,
+                        widget.userList[index].user.nickname,
                         style: const TextStyle(fontSize: 12),
                       ),
-                      // 자기소개
-                      // if (widget.followList[index].introduce.isNotEmpty)
-                      //   Column(
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     children: [
-                      //       const Padding(padding: EdgeInsets.only(bottom: 8)),
-                      //       Text(
-                      //         widget.followList[index].introduce,
-                      //         style: const TextStyle(fontSize: 14),
-                      //       ),
-                      //     ],
-                      //   ),
+                      //자기소개
+                      if (widget.userList[index].introduce.isNotEmpty)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(padding: EdgeInsets.only(bottom: 8)),
+                            Text(
+                              widget.userList[index].introduce,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ],

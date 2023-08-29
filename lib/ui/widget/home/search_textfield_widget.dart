@@ -61,6 +61,7 @@ class _SearchTextFieldWidgetState extends State<SearchTextFieldWidget> {
                                   textFieldConfiguration:
                                       TextFieldConfiguration(
                                     controller: _textController,
+                                    cursorColor: Colors.black,
                                     decoration: InputDecoration(
                                       hintText: '계정 또는 태그로 검색하세요',
                                       hintStyle: const TextStyle(
