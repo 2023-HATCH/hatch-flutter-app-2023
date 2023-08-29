@@ -181,9 +181,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               ),
               const SizedBox(height: 50.0),
               SizedBox(
-                height: 36,
+                height: 54,
                 child: TextField(
+                  maxLength: 10,
                   decoration: InputDecoration(
+                    labelText: '자기소개',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -232,18 +234,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               const SizedBox(
                 height: 8,
               ),
-              Row(
-                children: [
-                  SvgPicture.asset('assets/icons/ic_profile_edit_warning.svg'),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  Text(
-                    '10자 이내로 입력해 주세요.',
-                    style: TextStyle(color: AppColor.grayColor3, fontSize: 10),
-                  ),
-                ],
-              ),
               const SizedBox(height: 30.0),
               Row(
                 children: [
@@ -276,9 +266,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   const SizedBox(width: 18.0),
                   Expanded(
                     child: SizedBox(
-                      height: 36,
+                      height: 54,
                       child: TextField(
+                        maxLength: 20,
                         decoration: InputDecoration(
+                          labelText: 'Instagram',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
@@ -344,9 +336,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   const SizedBox(width: 18.0),
                   Expanded(
                     child: SizedBox(
-                      height: 36,
+                      height: 54,
                       child: TextField(
+                        maxLength: 20,
                         decoration: InputDecoration(
+                          labelText: 'Twitter',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
