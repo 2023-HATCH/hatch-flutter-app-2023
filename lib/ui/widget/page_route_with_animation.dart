@@ -42,7 +42,7 @@ class PageRouteWithSlideAnimation {
         Animation<double> secondaryAnimation,
         Widget child,
       ) {
-        var begin = const Offset(1.0, 0.0);
+        var begin = const Offset(-1.0, 0.0);
         var end = Offset.zero;
         var curve = Curves.ease;
         var tween =
