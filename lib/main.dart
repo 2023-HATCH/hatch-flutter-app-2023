@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
@@ -30,6 +31,10 @@ Future<void> main() async {
   cameras = await availableCameras();
 
   bool showOnBoarding = await LocalPrefProvider().getShowOnBoarding();
+
+  Firebase.apps.length;
+
+  await Firebase.initializeApp();
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => MultiVideoPlayProvider()),
