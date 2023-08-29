@@ -39,20 +39,6 @@ class _SearchViewState extends State<SearchView> {
             ));
             Navigator.push(
                 context, pageRouteWithAnimation.fadeInFadeOutRoute());
-
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => ProfileVideoScreen(
-            //               screenNum: widget.screenNum, // 검색 페이지
-            //               // 업로드 비디오 리스트 전송
-            //               videoList: widget.videoList,
-            //               // 처음에 열 페이지 전송
-            //               initialIndex: index,
-            //               onRefresh: () {
-            //                 setState(() {});
-            //               },
-            //             )));
           },
           child: Container(
             decoration: BoxDecoration(
