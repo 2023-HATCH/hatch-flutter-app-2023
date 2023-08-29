@@ -66,7 +66,7 @@ class PageRouteWithSlideAnimation {
         Animation<double> secondaryAnimation,
         Widget child,
       ) {
-        var begin = 0.0;
+        var begin = 0.5;
         var end = 1.0;
         var curve = Curves.ease;
         var tween =
