@@ -9,6 +9,7 @@ import 'package:pocket_pose/ui/screen/home/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
 import 'package:pocket_pose/ui/widget/not_login_widget.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
@@ -103,11 +104,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _showPoPoStageScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => PoPoStageScreen(getIndex: getIndex)),
-    );
+    PageRouteWithSlideAnimation pageRouteWithAnimation =
+        PageRouteWithSlideAnimation(PoPoStageScreen(getIndex: getIndex));
+    Navigator.push(context, pageRouteWithAnimation.fadeInFadeOutRoute());
   }
 
   @override
