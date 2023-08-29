@@ -4,6 +4,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_edit_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_setting_screen.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 
 class ProfileTapbarWidget extends StatelessWidget {
   const ProfileTapbarWidget({
@@ -44,11 +45,11 @@ class ProfileTapbarWidget extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
+                  PageRouteWithSlideAnimation pageRouteWithAnimation =
+                      PageRouteWithSlideAnimation(
+                          ProfileEditScreen(profileResponse: profileResponse));
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProfileEditScreen(
-                              profileResponse: profileResponse)));
+                      context, pageRouteWithAnimation.slideRitghtToLeft());
                 },
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
@@ -57,11 +58,10 @@ class ProfileTapbarWidget extends StatelessWidget {
               ),
               InkWell(
                 onTap: () {
+                  PageRouteWithSlideAnimation pageRouteWithAnimation =
+                      PageRouteWithSlideAnimation(const ProfileSettingScreen());
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfileSettingScreen()),
-                  );
+                      context, pageRouteWithAnimation.slideRitghtToLeft());
                 },
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
@@ -90,11 +90,11 @@ class ProfileTapbarWidget extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
+                      PageRouteWithSlideAnimation pageRouteWithAnimation =
+                          PageRouteWithSlideAnimation(ProfileEditScreen(
+                              profileResponse: profileResponse));
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ProfileEditScreen(
-                                  profileResponse: profileResponse)));
+                          context, pageRouteWithAnimation.slideRitghtToLeft());
                     },
                     child: Container(
                       margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
@@ -104,11 +104,11 @@ class ProfileTapbarWidget extends StatelessWidget {
                   ),
                   InkWell(
                     onTap: () {
+                      PageRouteWithSlideAnimation pageRouteWithAnimation =
+                          PageRouteWithSlideAnimation(
+                              const ProfileSettingScreen());
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProfileSettingScreen()),
-                      );
+                          context, pageRouteWithAnimation.slideRitghtToLeft());
                     },
                     child: Container(
                       margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
