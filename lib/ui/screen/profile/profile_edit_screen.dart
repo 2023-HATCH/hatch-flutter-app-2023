@@ -93,30 +93,56 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text(
-          '프로필 편집',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        leading: IconButton(
-          icon: Image.asset(
-            'assets/icons/ic_back.png',
+          title: const Text(
+            '프로필 편집',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(
-            height: 2.0,
-            color: AppColor.purpleColor,
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          leading: IconButton(
+            icon: Image.asset(
+              'assets/icons/ic_back.png',
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-        ),
-      ),
+          elevation: 0,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(2.0),
+            child: Container(
+              height: 2.0,
+              color: AppColor.purpleColor,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isButtonEnabled()
+                  ? () {
+                      // 버튼 클릭시 프로필 수정
+
+                      _profileProvider.patchProfile(ProfileEditRequest(
+                          introduce: _textControllers[0].text,
+                          instagramId: _textControllers[1].text,
+                          twitterId: _textControllers[2].text));
+
+                      Fluttertoast.showToast(msg: '수정되었습니다!');
+                      // profileResponse 새로고침
+                      _profileProvider.isGetProfilDone = false;
+                      Navigator.pop(context);
+                    }
+                  : null,
+              child: Text(
+                '수정',
+                style: TextStyle(
+                  color: isButtonEnabled()
+                      ? AppColor.purpleColor
+                      : AppColor.purpleColor3,
+                ),
+              ),
+            ),
+          ]),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(35, 50, 35, 0),
@@ -154,14 +180,22 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 ),
               ),
               const SizedBox(height: 50.0),
-              Container(
+              SizedBox(
                 height: 36,
-                padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColor.grayColor2),
-                ),
                 child: TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColor.grayColor4),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColor.purpleColor3),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
                   controller: _textControllers[0],
                   cursorColor: Colors.black,
                   style: TextStyle(
@@ -193,9 +227,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       );
                     });
                   },
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
                 ),
               ),
               const SizedBox(
@@ -244,14 +275,23 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   ),
                   const SizedBox(width: 18.0),
                   Expanded(
-                    child: Container(
+                    child: SizedBox(
                       height: 36,
-                      padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColor.grayColor2),
-                      ),
                       child: TextField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColor.grayColor4),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColor.purpleColor3),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
                         controller: _textControllers[1],
                         cursorColor: Colors.black,
                         style: TextStyle(
@@ -290,9 +330,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                             );
                           });
                         },
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                        ),
                       ),
                     ),
                   ),
@@ -306,14 +343,23 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   ),
                   const SizedBox(width: 18.0),
                   Expanded(
-                    child: Container(
+                    child: SizedBox(
                       height: 36,
-                      padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColor.grayColor2),
-                      ),
                       child: TextField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColor.grayColor4),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColor.purpleColor3),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
                         controller: _textControllers[2],
                         cursorColor: Colors.black,
                         style: TextStyle(
@@ -351,54 +397,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                             );
                           });
                         },
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 150,
-              ),
+              const SizedBox(height: 50.0),
             ],
           ),
-        ),
-      ),
-      bottomSheet: Padding(
-        padding: const EdgeInsets.fromLTRB(35, 0, 35, 20),
-        child: Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: isButtonEnabled()
-                    ? () {
-                        // 버튼 클릭시 프로필 수정
-
-                        _profileProvider.patchProfile(ProfileEditRequest(
-                            introduce: _textControllers[0].text,
-                            instagramId: _textControllers[1].text,
-                            twitterId: _textControllers[2].text));
-
-                        Fluttertoast.showToast(msg: '수정되었습니다!');
-                        // profileResponse 새로고침
-                        _profileProvider.isGetProfilDone = false;
-                        Navigator.pop(context);
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isButtonEnabled()
-                      ? AppColor.purpleColor
-                      : AppColor.grayColor3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                ),
-                child: const Text('확인'),
-              ),
-            ),
-          ],
         ),
       ),
     );
