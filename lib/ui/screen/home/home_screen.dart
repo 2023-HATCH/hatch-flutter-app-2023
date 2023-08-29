@@ -9,6 +9,7 @@ import 'package:pocket_pose/ui/screen/chat/chat_room_list_screen.dart';
 import 'package:pocket_pose/ui/screen/home/home_search_screen.dart';
 import 'package:pocket_pose/ui/view/video/multi_video_player_view.dart';
 import 'package:pocket_pose/ui/widget/home/upload_button_widget.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -65,14 +66,15 @@ class _HomeScreenState extends State<HomeScreen> {
               context: context,
             ),
             GestureDetector(
-              child: Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-                  child: SvgPicture.asset('assets/icons/ic_home_search.svg')),
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const HomeSearchScreen())),
-            ),
+                child: Container(
+                    margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+                    child: SvgPicture.asset('assets/icons/ic_home_search.svg')),
+                onTap: () {
+                  PageRouteWithSlideAnimation pageRouteWithAnimation =
+                      PageRouteWithSlideAnimation(const HomeSearchScreen());
+                  Navigator.push(
+                      context, pageRouteWithAnimation.slideRitghtToLeft());
+                }),
           ],
         ),
         extendBodyBehindAppBar: true, //body 위에 appbar
@@ -81,9 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showChatScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ChatRoomListScreen()),
-    );
+    {
+      PageRouteWithSlideAnimation pageRouteWithAnimation =
+          PageRouteWithSlideAnimation(const ChatRoomListScreen());
+      Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
+    }
   }
 }

@@ -5,6 +5,7 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -33,12 +34,12 @@ class VideoUserInfoFrame extends StatelessWidget {
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
+                    PageRouteWithSlideAnimation pageRouteWithAnimation =
+                        PageRouteWithSlideAnimation(
+                            ProfileScreen(userId: user.userId));
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ProfileScreen(userId: user.userId),
-                        )).then((value) {
+                            context, pageRouteWithAnimation.slideLeftToRight())
+                        .then((value) {
                       _multiVideoPlayProvider.playVideo(screenNum);
                     });
                     _multiVideoPlayProvider.pauseVideo(screenNum);

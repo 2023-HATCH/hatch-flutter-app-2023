@@ -5,6 +5,7 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_video_detail_screen.dart';
 import 'package:pocket_pose/ui/loader/profile_video_skeleton_loader.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -164,28 +165,29 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
                                   ),
                             child: GestureDetector(
                               onTap: () {
+                                PageRouteWithSlideAnimation
+                                    pageRouteWithAnimation =
+                                    PageRouteWithSlideAnimation(
+                                        ProfileVideoScreen(
+                                  screenNum: widget._index + 1,
+
+                                  // 업로드 비디오 리스트 전송
+                                  videoList: widget._index == 0
+                                      ? _profileProvider
+                                          .uploadVideosResponse!.videoList
+                                      : _profileProvider
+                                          .likeVideosResponse!.videoList,
+
+                                  // 처음에 열 페이지 전송
+                                  initialIndex: index,
+                                  onRefresh: () {
+                                    setState(() {});
+                                  },
+                                ));
                                 Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            ProfileVideoScreen(
-                                              screenNum: widget._index + 1,
-
-                                              // 업로드 비디오 리스트 전송
-                                              videoList: widget._index == 0
-                                                  ? _profileProvider
-                                                      .uploadVideosResponse!
-                                                      .videoList
-                                                  : _profileProvider
-                                                      .likeVideosResponse!
-                                                      .videoList,
-
-                                              // 처음에 열 페이지 전송
-                                              initialIndex: index,
-                                              onRefresh: () {
-                                                setState(() {});
-                                              },
-                                            )));
+                                    pageRouteWithAnimation
+                                        .fadeInFadeOutRoute());
                               },
                               child: Container(
                                 decoration: BoxDecoration(
