@@ -36,39 +36,31 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 7),
-              child: LikeButtonWidget(
-                  screenNum: widget.screenNum, index: widget.index),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 7, 14, 7),
-              child: CommentButtonView(
-                screenNum: widget.screenNum,
-                index: widget.index,
-                onRefresh: () {
-                  setState(() {});
-                },
-                videoId: video.uuid,
-                commentCount: video.commentCount,
-                childWidget: Column(
-                  children: <Widget>[
-                    SvgPicture.asset(
-                      'assets/icons/ic_home_comment.svg',
-                    ),
-                    const Padding(padding: EdgeInsets.only(bottom: 2)),
-                    Text(
-                      '${video.commentCount}',
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                  ],
-                ),
+            LikeButtonWidget(screenNum: widget.screenNum, index: widget.index),
+            const Padding(padding: EdgeInsets.only(bottom: 14)),
+            CommentButtonView(
+              screenNum: widget.screenNum,
+              index: widget.index,
+              onRefresh: () {
+                setState(() {});
+              },
+              videoId: video.uuid,
+              commentCount: video.commentCount,
+              childWidget: Column(
+                children: <Widget>[
+                  SvgPicture.asset(
+                    'assets/icons/ic_home_comment.svg',
+                  ),
+                  const Padding(padding: EdgeInsets.only(bottom: 2)),
+                  Text(
+                    '${video.commentCount}',
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(14, 7, 14, 7),
-              child: ShareButtonWidget(),
-            )
+            const Padding(padding: EdgeInsets.only(bottom: 14)),
+            const ShareButtonWidget()
           ],
         ),
       ),
