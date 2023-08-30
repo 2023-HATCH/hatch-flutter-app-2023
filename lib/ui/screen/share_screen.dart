@@ -11,12 +11,14 @@ class ShareScreen extends StatefulWidget {
 class _ShareScreenState extends State<ShareScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
         extendBody: true,
         backgroundColor: Colors.blue,
-        body: Text(
-          "임시 공유화면",
-          style: TextStyle(color: Colors.white),
+        body: Center(
+          child: Text(
+            "임시 공유화면\n video uuid: ${widget.videoUuid}",
+            style: const TextStyle(color: Colors.white),
+          ),
         ));
   }
 }

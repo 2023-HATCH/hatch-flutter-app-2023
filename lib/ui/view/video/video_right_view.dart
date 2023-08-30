@@ -60,7 +60,9 @@ class _VideoRightFrameState extends State<VideoRightFrame> {
               ),
             ),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
-            const ShareButtonWidget()
+            ShareButtonWidget(
+              videoData: video,
+            )
           ],
         ),
       ),
