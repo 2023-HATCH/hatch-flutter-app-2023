@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ShareScreen extends StatefulWidget {
-  const ShareScreen({Key? key}) : super(key: key);
+  final String videoUuid;
+  const ShareScreen({Key? key, required this.videoUuid}) : super(key: key);
 
   @override
   State<ShareScreen> createState() => _ShareScreenState();

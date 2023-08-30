@@ -1,8 +1,6 @@
 import 'dart:developer';
 
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/route_manager.dart';
 import 'package:pocket_pose/config/firebase/i_dynamic_link.dart';
 import 'package:pocket_pose/ui/screen/share_screen.dart';
@@ -48,16 +46,10 @@ class DynamicLink extends IDynamicLink {
 
   // 앱 실행 중 리다이렉션
   void _redirectScreen(PendingDynamicLinkData dynamicLinkData) {
-    Fluttertoast.showToast(
-      msg: "공유타고 들어옴",
-      toastLength: Toast.LENGTH_SHORT,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.black,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-
-    Get.to(() => const ShareScreen());
+    String videoUuid = dynamicLinkData.link.path.split('/').last;
+    Get.to(() => ShareScreen(
+          videoUuid: videoUuid,
+        ));
   }
 
   @override
