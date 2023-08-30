@@ -47,6 +47,13 @@ class _CameraViewState extends State<CameraView> {
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
   // 5초 카운트다운 텍스트
   bool _countdownVisibility = false;
+  final List<String> _countdownSVG = [
+    'assets/icons/ic_countdown_1.png',
+    'assets/icons/ic_countdown_2.png',
+    'assets/icons/ic_countdown_3.png',
+    'assets/icons/ic_countdown_4.png',
+    'assets/icons/ic_countdown_5.png',
+  ];
   int _seconds = 5;
   Timer? _timer;
   AssetsAudioPlayer? _assetsAudioPlayer;
@@ -104,9 +111,10 @@ class _CameraViewState extends State<CameraView> {
 
   void _onEnter() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      AudioPlayerUtil()
-          .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl);
-
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
       // 플레이 상태인 경우
       if (!widget.isResultState) {
         // 중간임장인 경우
@@ -256,10 +264,10 @@ class _CameraViewState extends State<CameraView> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Visibility(
-          visible: _countdownVisibility,
-          child: Text('$_seconds',
-              style: const TextStyle(fontSize: 72, color: Colors.white)),
-        )
+            visible: _countdownVisibility,
+            child: (6 > _seconds) && (_seconds > 0)
+                ? Image.asset(_countdownSVG[_seconds - 1])
+                : Container())
       ],
     );
   }
@@ -276,10 +284,15 @@ class _CameraViewState extends State<CameraView> {
             'assets/icons/ic_music_note_small.svg',
           ),
           const SizedBox(width: 8.0),
-          Text(
-            '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
-            style: const TextStyle(fontSize: 10, color: Colors.white),
-          ),
+          (_socketStageProvider.catchMusicData != null)
+              ? Text(
+                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
+                )
+              : Text(
+                  '${_stageProvider.music?.singer} - ${_stageProvider.music?.title}',
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
+                ),
         ],
       ),
     );
