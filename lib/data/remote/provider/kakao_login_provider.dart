@@ -68,20 +68,25 @@ class KaKaoLoginProvider extends ChangeNotifier {
   }
 
   void signOut() async {
-    debugPrint('카카오톡 로그아웃');
-    removeAccessToken();
-    removeFCMToken();
-    debugPrint('FCM: FCM 토큰 지우기 성공');
+    debugPrint('카카오톡 로그아웃 시도');
+
+    if (await KaKaoLoginRepository().logout()) {
+      removeAccessToken();
+      removeFCMToken();
+
+      Fluttertoast.showToast(
+        msg: '성공적으로 로그아웃 되었습니다.',
+      );
+    } else {
+      Fluttertoast.showToast(msg: '로그아웃 실패했습니다. 다시 시도 하세요.');
+    }
+
     final multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
     multiVideoPlayProvider.resetVideoPlayer(0);
 
     notifyListeners();
-
-    Fluttertoast.showToast(
-      msg: '성공적으로 로그아웃 되었습니다.',
-    );
   }
 
   Future<void> _login(String kakaoAccessToken) async {
@@ -90,16 +95,22 @@ class KaKaoLoginProvider extends ChangeNotifier {
           vapidKey:
               "BGIFfDEvFQXrQ9dyfyFDZZ0T1d-A-88SU-aTaS744Xigeu9NoNogwWjqHuY8hBFW5LGcMPmoQRrlnxzD");
 
-      debugPrint('FCM: 토큰 얻기 성공! $fcmToken');
+      if (fcmToken == null) {
+        debugPrint('FCM: 토큰 얻기 실패');
+        Fluttertoast.showToast(
+          msg: '로그인 실패했습니다. 다시 시도 하세요.',
+        );
+      } else {
+        debugPrint('FCM: 토큰 얻기 성공');
+        final repositoryResponse =
+            await KaKaoLoginRepository().login(kakaoAccessToken, fcmToken);
+        _response = repositoryResponse;
 
-      final repositoryResponse = await KaKaoLoginRepository()
-          .login(kakaoAccessToken, fcmToken ?? "FCM: flutter fcm 토큰 얻기 실패");
-      _response = repositoryResponse;
-
-      storeAccessToken(
-          repositoryResponse.accessToken, repositoryResponse.refreshToken);
-      storeUser(repositoryResponse.user);
-      storeFCMToken(fcmToken ?? "FCM: flutter fcm 토큰 얻기 실패");
+        storeAccessToken(
+            repositoryResponse.accessToken, repositoryResponse.refreshToken);
+        storeUser(repositoryResponse.user);
+        storeFCMToken(fcmToken);
+      }
 
       notifyListeners();
     } catch (e) {
@@ -154,18 +165,20 @@ class KaKaoLoginProvider extends ChangeNotifier {
   Future<void> storeFCMToken(String fcmToken) async {
     await _storage.write(key: _fcmTokenKey, value: fcmToken);
 
+    debugPrint('FCM 토큰 저장 성공!: ${await _storage.read(key: _fcmTokenKey)}');
     notifyListeners();
   }
 
-  Future<String> getFCMToken() async {
+  Future<String?> getFCMToken() async {
     final fcmToken = await _storage.read(key: _fcmTokenKey);
 
-    return fcmToken ?? "flutter getFCMToken 오류";
+    return fcmToken;
   }
 
   Future<void> removeFCMToken() async {
     await _storage.delete(key: _fcmTokenKey);
 
+    debugPrint('FCM 토큰 삭제 성공!: ${await _storage.read(key: _fcmTokenKey)}');
     notifyListeners();
   }
 
