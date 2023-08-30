@@ -8,8 +8,6 @@ import 'package:pocket_pose/data/entity/response/videos_response.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/follow_data.dart';
 import 'package:pocket_pose/domain/entity/search_user_data.dart';
-import 'package:pocket_pose/domain/entity/user_data.dart';
-
 import '../../../domain/entity/video_data.dart';
 import '../../entity/request/videos_request.dart';
 
