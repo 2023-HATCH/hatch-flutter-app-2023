@@ -7,6 +7,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/video_upload_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_upload_provider_impl.dart';
+import 'package:pocket_pose/ui/loader/upload_spinner_loader.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/upload/custom_tag_text_field_controller.dart';
 import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
@@ -120,7 +121,7 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
                 child: SizedBox(
                     width: 50,
                     height: 50,
-                    child: Center(child: CircularProgressIndicator())),
+                    child: Center(child: UploadSpinner())),
               ),
             ),
           ],

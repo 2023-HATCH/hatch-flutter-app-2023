@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/remote/provider/follow_provider.dart';
+import 'package:pocket_pose/ui/loader/user_list_loader.dart';
 import 'package:pocket_pose/ui/view/profile/follow_user_list_view.dart';
 import 'package:provider/provider.dart';
 
@@ -93,20 +94,9 @@ class _FollowTabScreenState extends State<FollowTabScreen>
                               ),
                       ],
                     )
-                  :
-                  // 프로필 목록 로딩 인디케이터
-                  Center(
-                      child: CircularProgressIndicator(
-                        color: AppColor.purpleColor,
-                      ),
-                    );
+                  : Container(color: Colors.white);
             } else {
-              // 프로필 목록 로딩 인디케이터
-              return Center(
-                child: CircularProgressIndicator(
-                  color: AppColor.purpleColor,
-                ),
-              );
+              return Container(color: Colors.white);
             }
           }),
     );
