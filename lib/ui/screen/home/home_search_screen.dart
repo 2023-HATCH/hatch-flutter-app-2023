@@ -107,19 +107,22 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (_searchProvider.randomVideosResponse != null) {
-                  return Column(children: <Widget>[
-                    SearchTextFieldWidget(setScreen: setScreen),
-                    _isSearched
-                        ? Flexible(
-                            child: SearchDetailView(
-                            value: _value,
-                          ))
-                        : Flexible(
-                            child: SearchView(
-                                screenNum: 3,
-                                videoList: _searchProvider
-                                    .randomVideosResponse!.videoList))
-                  ]);
+                  return Container(
+                    color: Colors.white,
+                    child: Column(children: <Widget>[
+                      SearchTextFieldWidget(setScreen: setScreen),
+                      _isSearched
+                          ? Flexible(
+                              child: SearchDetailView(
+                              value: _value,
+                            ))
+                          : Flexible(
+                              child: SearchView(
+                                  screenNum: 3,
+                                  videoList: _searchProvider
+                                      .randomVideosResponse!.videoList))
+                    ]),
+                  );
                 } else {
                   return Container(color: Colors.white);
                 }
