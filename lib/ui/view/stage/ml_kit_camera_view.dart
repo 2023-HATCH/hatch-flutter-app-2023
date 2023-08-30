@@ -104,11 +104,11 @@ class _CameraViewState extends State<CameraView> {
 
   void _onEnter() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      AudioPlayerUtil()
+          .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl);
+
       // 플레이 상태인 경우
       if (!widget.isResultState) {
-        AudioPlayerUtil()
-            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl);
-
         // 중간임장인 경우
         if (_stageProvider.stageCurTime != null) {
           // 중간 입장한 초부터 시작
@@ -134,8 +134,6 @@ class _CameraViewState extends State<CameraView> {
       }
       // 결과 상태인 경우
       else {
-        AudioPlayerUtil().setMusicUrl(
-            "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3");
         // 중간임장인 경우
         if (_stageProvider.stageCurTime != null) {
           // 중간 입장한 초부터 시작
