@@ -79,9 +79,10 @@ class ProfileTapbarWidget extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 child: Container(
-                  margin: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-                  child: Image.asset(
-                    'assets/icons/ic_back.png',
+                  margin: const EdgeInsets.fromLTRB(16, 40, 0, 0),
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: AppColor.purpleColor,
                   ),
                 ),
               ),

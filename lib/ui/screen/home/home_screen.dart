@@ -65,16 +65,17 @@ class _HomeScreenState extends State<HomeScreen> {
             UploadButtonWidget(
               context: context,
             ),
-            GestureDetector(
-                child: Container(
-                    margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-                    child: SvgPicture.asset('assets/icons/ic_home_search.svg')),
-                onTap: () {
-                  PageRouteWithSlideAnimation pageRouteWithAnimation =
-                      PageRouteWithSlideAnimation(const HomeSearchScreen());
-                  Navigator.push(
-                      context, pageRouteWithAnimation.slideRitghtToLeft());
-                }),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+              child: GestureDetector(
+                  child: SvgPicture.asset('assets/icons/ic_home_search.svg'),
+                  onTap: () {
+                    PageRouteWithSlideAnimation pageRouteWithAnimation =
+                        PageRouteWithSlideAnimation(const HomeSearchScreen());
+                    Navigator.push(
+                        context, pageRouteWithAnimation.slideRitghtToLeft());
+                  }),
+            ),
           ],
         ),
         extendBodyBehindAppBar: true, //body 위에 appbar
