@@ -3,11 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pocket_pose/data/entity/request/chat_room_request.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
+import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/follow_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 import 'package:pocket_pose/ui/widget/custom_simple_dialog_widget.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/remote/provider/kakao_login_provider.dart';
@@ -28,6 +32,7 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
   late KaKaoLoginProvider _loginProvider;
   late FollowProvider _followProvider;
   late ProfileProvider _profileProvider;
+  late ChatProviderImpl _chatProvider;
   UserData? _user;
   int loading = 0;
   bool isLogin = false;
@@ -52,6 +57,7 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
     _followProvider = Provider.of<FollowProvider>(context, listen: false);
     _profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
   }
 
   @override
@@ -84,10 +90,7 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
                                 if (!isLogin) {
                                   _loginProvider.showLoginBottomSheet();
                                 } else {
-                                  // 메시지 생성 처리
-                                  // 💛 tip 💛 - 사용하고 지워주세요 💛
-                                  // 프로필 사용자: widget.profileResponse.user
-                                  // 앱에 접속한 사용자: _user!
+                                  _startChat();
                                 }
                               },
                               style: OutlinedButton.styleFrom(
@@ -259,5 +262,23 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
             return Container();
           }
         });
+  }
+
+  _startChat() async {
+    // // 채팅방 생성
+    var result = await _chatProvider.putChatRoom(
+        ChatRoomRequest(opponentUserId: widget.profileResponse.user.userId));
+
+    // 채팅 상세 화면으로 이동
+    _showChatDetailScreen(result.data.chatRoomId);
+  }
+
+  _showChatDetailScreen(String chatRoomId) {
+    PageRouteWithSlideAnimation pageRouteWithAnimation =
+        PageRouteWithSlideAnimation(ChatDetailScreen(
+      chatRoomId: chatRoomId,
+      opponentUserNickName: widget.profileResponse.user.nickname,
+    ));
+    Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
   }
 }

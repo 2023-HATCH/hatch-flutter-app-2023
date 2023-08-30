@@ -32,8 +32,6 @@ Future<void> main() async {
 
   bool showOnBoarding = await LocalPrefProvider().getShowOnBoarding();
 
-  Firebase.apps.length;
-
   await Firebase.initializeApp();
 
   runApp(MultiProvider(providers: [

@@ -28,14 +28,18 @@ class ChatRoomListItemWidget extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(50),
-                child: Image.asset(
-                  (chatRoom.opponentUser.profileImg == null)
-                      ? 'assets/images/charactor_popo_default.png'
-                      : chatRoom.opponentUser.profileImg!,
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.contain,
-                ),
+                child: (chatRoom.opponentUser.profileImg == null)
+                    ? Image.asset(
+                        'assets/images/charactor_popo_default.png',
+                        width: 40,
+                        height: 40,
+                      )
+                    : Image.network(
+                        chatRoom.opponentUser.profileImg!,
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                      ),
               ),
               const SizedBox(
                 width: 14,
