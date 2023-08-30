@@ -19,9 +19,13 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen>
+    with SingleTickerProviderStateMixin {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late KaKaoLoginProvider _loginProvider;
+
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
 
   int _bottomNavIndex = 0;
   bool isLogin = false;
@@ -43,6 +47,14 @@ class _MainScreenState extends State<MainScreen> {
     _multiVideoPlayProvider.mainContext = context;
 
     _initIsLoginAndScreens();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   Future<void> _initIsLoginAndScreens() async {
@@ -91,6 +103,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onFloatingButtonClicked() async {
+    _animationController.forward().then((_) {
+      _animationController.reverse();
+    });
+
     if (await _loginProvider.checkAccessToken()) {
       _multiVideoPlayProvider.pauseVideo(0);
       _showPoPoStageScreen();
@@ -119,8 +135,14 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: Colors.black,
         splashColor: AppColor.mainPurpleColor,
         onPressed: _onFloatingButtonClicked,
-        child: SvgPicture.asset(
-          'assets/icons/ic_bottom_popo.svg',
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: SvgPicture.asset('assets/icons/ic_bottom_popo.svg'),
+            );
+          },
         ),
       ),
       resizeToAvoidBottomInset: false,
