@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
@@ -162,30 +163,29 @@ class _ProfileScreenState extends State<ProfileScreen>
                   : Container(
                       color: Colors.white,
                       child: Center(
-                        child: CircularProgressIndicator(
-                          color: AppColor.purpleColor,
-                        ),
-                      ),
+                          child: SpinKitPumpingHeart(
+                        color: Colors.pink[100],
+                        size: 50.0,
+                      )),
                     );
             } else {
               return Container(
                 color: Colors.white,
                 child: Center(
-                  child: CircularProgressIndicator(
-                    color: AppColor.purpleColor,
-                  ),
-                ),
+                    child: SpinKitPumpingHeart(
+                  color: Colors.pink[100],
+                  size: 50.0,
+                )),
               );
             }
           } else {
-            // 로딩 인디케이터 수정
             return Container(
               color: Colors.white,
               child: Center(
-                child: CircularProgressIndicator(
-                  color: AppColor.purpleColor,
-                ),
-              ),
+                  child: SpinKitPumpingHeart(
+                color: Colors.pink[100],
+                size: 50.0,
+              )),
             );
           }
         });
