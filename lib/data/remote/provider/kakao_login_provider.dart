@@ -169,10 +169,10 @@ class KaKaoLoginProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> getFCMToken() async {
+  Future<String> getFCMToken() async {
     final fcmToken = await _storage.read(key: _fcmTokenKey);
 
-    return fcmToken;
+    return fcmToken ?? '';
   }
 
   Future<void> removeFCMToken() async {
