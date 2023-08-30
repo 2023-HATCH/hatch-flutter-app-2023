@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/domain/entity/chat_room_list_item.dart';
 import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 
 class ChatRoomListItemWidget extends StatelessWidget {
   final ChatRoomListItem chatRoom;
@@ -13,14 +14,12 @@ class ChatRoomListItemWidget extends StatelessWidget {
     return SafeArea(
       child: InkWell(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatDetailScreen(
-                      chatRoomId: chatRoom.chatRoomId,
-                      opponentUserNickName: chatRoom.opponentUser.nickname,
-                    )),
-          );
+          PageRouteWithSlideAnimation pageRouteWithAnimation =
+              PageRouteWithSlideAnimation(ChatDetailScreen(
+            chatRoomId: chatRoom.chatRoomId,
+            opponentUserNickName: chatRoom.opponentUser.nickname,
+          ));
+          Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 14, 24, 14),
