@@ -9,6 +9,9 @@ class AppUrl {
   // 로그인 & 회원가입
   static const signInSignUpUrl = "$_apiBaseUrl/auth/login?type=kakao";
 
+  // 로그아웃
+  static const logOutUrl = "$_apiBaseUrl/auth/logout?type=kakao";
+
   // 비디오
   static const videoUrl = "$_apiBaseUrl/videos";
 
