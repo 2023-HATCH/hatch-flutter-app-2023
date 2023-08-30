@@ -6,7 +6,7 @@ part 'search_user_data.g.dart';
 @JsonSerializable()
 class SearchUserData {
   final UserData user;
-  final String introduce;
+  final String? introduce;
 
   SearchUserData({
     required this.user,
