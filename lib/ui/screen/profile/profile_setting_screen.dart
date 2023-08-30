@@ -37,8 +37,9 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         leading: IconButton(
-          icon: Image.asset(
-            'assets/icons/ic_back.png',
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColor.purpleColor,
           ),
           onPressed: () {
             Navigator.pop(context);

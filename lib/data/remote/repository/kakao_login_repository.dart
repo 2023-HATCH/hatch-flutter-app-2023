@@ -10,13 +10,15 @@ import 'package:pocket_pose/domain/entity/user_data.dart';
 class KaKaoLoginRepository {
   KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
 
-  Future<KaKaoLoginResponse> login(String kakaoAccessToken) async {
+  Future<KaKaoLoginResponse> login(
+      String kakaoAccessToken, String fcmToken) async {
     final url = Uri.parse(AppUrl.signInSignUpUrl);
     final headers = {
       'Content-Type': 'application/json;charset=UTF-8',
     };
     final body = jsonEncode({
       'kakaoAccessToken': kakaoAccessToken,
+      'fcmNotificationToken': fcmToken
     });
 
     final response = await http.post(url, headers: headers, body: body);
@@ -24,7 +26,7 @@ class KaKaoLoginRepository {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("json: $json");
+      debugPrint("로그인 성공! json: $json");
 
       final user = UserData(
         userId: json['data']['userId'],
@@ -45,6 +47,35 @@ class KaKaoLoginRepository {
       );
     } else {
       throw Exception('Login failed');
+    }
+  }
+
+  Future<bool> logout() async {
+    final url = Uri.parse(AppUrl.logOutUrl);
+
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json;charset=UTF-8',
+      if (accessToken != null && refreshToken != null)
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+    };
+
+    final response = await http.delete(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      debugPrint("로그아웃 성공! json: $json");
+
+      loginProvider.updateToken(response.headers);
+
+      return true;
+    } else {
+      debugPrint('카카오톡 로그인 실패');
+      return false;
     }
   }
 }

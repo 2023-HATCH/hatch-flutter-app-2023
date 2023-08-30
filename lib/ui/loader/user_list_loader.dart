@@ -21,8 +21,8 @@ class UserListLoader extends StatelessWidget {
             children: [
               Container(
                 color: Colors.yellow,
-                height: 50,
-                width: 50,
+                height: 40,
+                width: 40,
               ),
               const SizedBox(width: 14),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -30,13 +30,13 @@ class UserListLoader extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(14),
                   color: AppColor.blueColor2,
-                  height: 15,
+                  height: 10,
                   width: 100,
                 ),
                 const SizedBox(height: 14),
                 Container(
                   color: Colors.pink,
-                  height: 15,
+                  height: 10,
                   width: 200,
                 ),
               ])
@@ -48,22 +48,22 @@ class UserListLoader extends StatelessWidget {
             children: [
               Container(
                 color: Colors.yellow,
-                height: 50,
-                width: 50,
+                height: 40,
+                width: 40,
               ),
               const SizedBox(width: 14),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 const SizedBox(height: 2),
                 Container(
                   padding: const EdgeInsets.all(14),
-                  color: Colors.pink,
-                  height: 15,
+                  color: AppColor.blueColor2,
+                  height: 10,
                   width: 100,
                 ),
                 const SizedBox(height: 14),
                 Container(
                   color: Colors.pink,
-                  height: 15,
+                  height: 10,
                   width: 200,
                 ),
               ])
@@ -75,22 +75,22 @@ class UserListLoader extends StatelessWidget {
             children: [
               Container(
                 color: Colors.yellow,
-                height: 50,
-                width: 50,
+                height: 40,
+                width: 40,
               ),
               const SizedBox(width: 14),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 const SizedBox(height: 2),
                 Container(
                   padding: const EdgeInsets.all(14),
-                  color: Colors.pink,
-                  height: 15,
+                  color: AppColor.blueColor2,
+                  height: 10,
                   width: 100,
                 ),
                 const SizedBox(height: 14),
                 Container(
                   color: Colors.pink,
-                  height: 15,
+                  height: 10,
                   width: 200,
                 ),
               ])

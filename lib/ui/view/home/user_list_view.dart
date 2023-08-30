@@ -69,13 +69,13 @@ class _UserListViewState extends State<UserListView> {
                         style: const TextStyle(fontSize: 12),
                       ),
                       //자기소개
-                      if (widget.userList[index].introduce.isNotEmpty)
+                      if (widget.userList[index].introduce != null)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Padding(padding: EdgeInsets.only(bottom: 8)),
                             Text(
-                              widget.userList[index].introduce,
+                              widget.userList[index].introduce!,
                               style: const TextStyle(fontSize: 14),
                             ),
                           ],
