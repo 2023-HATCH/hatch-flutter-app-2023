@@ -10,13 +10,15 @@ import 'package:pocket_pose/domain/entity/user_data.dart';
 class KaKaoLoginRepository {
   KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
 
-  Future<KaKaoLoginResponse> login(String kakaoAccessToken) async {
+  Future<KaKaoLoginResponse> login(
+      String kakaoAccessToken, String fcmToken) async {
     final url = Uri.parse(AppUrl.signInSignUpUrl);
     final headers = {
       'Content-Type': 'application/json;charset=UTF-8',
     };
     final body = jsonEncode({
       'kakaoAccessToken': kakaoAccessToken,
+      'fcmNotificationToken': fcmToken
     });
 
     final response = await http.post(url, headers: headers, body: body);

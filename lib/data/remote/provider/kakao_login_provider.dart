@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -18,6 +19,7 @@ const _userUserIdKey = 'userUserId';
 const _userNicknameKey = 'userNickname';
 const _userProfileImgKey = 'userProfileImg';
 const _userEmailKey = 'userEmail';
+const _fcmTokenKey = 'fcmToken';
 
 class KaKaoLoginProvider extends ChangeNotifier {
   String? _accessToken;
@@ -68,6 +70,8 @@ class KaKaoLoginProvider extends ChangeNotifier {
   void signOut() async {
     debugPrint('카카오톡 로그아웃');
     removeAccessToken();
+    removeFCMToken();
+    debugPrint('FCM: FCM 토큰 지우기 성공');
     final multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
@@ -82,13 +86,21 @@ class KaKaoLoginProvider extends ChangeNotifier {
 
   Future<void> _login(String kakaoAccessToken) async {
     try {
-      final repositoryResponse =
-          await KaKaoLoginRepository().login(kakaoAccessToken);
+      var fcmToken = await FirebaseMessaging.instance.getToken(
+          vapidKey:
+              "BGIFfDEvFQXrQ9dyfyFDZZ0T1d-A-88SU-aTaS744Xigeu9NoNogwWjqHuY8hBFW5LGcMPmoQRrlnxzD");
+
+      debugPrint('FCM: 토큰 얻기 성공! $fcmToken');
+
+      final repositoryResponse = await KaKaoLoginRepository()
+          .login(kakaoAccessToken, fcmToken ?? "FCM: flutter fcm 토큰 얻기 실패");
       _response = repositoryResponse;
 
       storeAccessToken(
           repositoryResponse.accessToken, repositoryResponse.refreshToken);
       storeUser(repositoryResponse.user);
+      storeFCMToken(fcmToken ?? "FCM: flutter fcm 토큰 얻기 실패");
+
       notifyListeners();
     } catch (e) {
       debugPrint('Error logging in: $e');
@@ -137,6 +149,24 @@ class KaKaoLoginProvider extends ChangeNotifier {
         nickname: nickname ?? '',
         profileImg: profileImg ?? '',
         email: email ?? '');
+  }
+
+  Future<void> storeFCMToken(String fcmToken) async {
+    await _storage.write(key: _fcmTokenKey, value: fcmToken);
+
+    notifyListeners();
+  }
+
+  Future<String> getFCMToken() async {
+    final fcmToken = await _storage.read(key: _fcmTokenKey);
+
+    return fcmToken ?? "flutter getFCMToken 오류";
+  }
+
+  Future<void> removeFCMToken() async {
+    await _storage.delete(key: _fcmTokenKey);
+
+    notifyListeners();
   }
 
   Future<void> removeAccessToken() async {
