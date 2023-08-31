@@ -203,7 +203,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
 
   Widget musicTitleContainer(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(70, 11, 70, 11),
+      padding: const EdgeInsets.fromLTRB(60, 11, 60, 11),
       child: Container(
         decoration: BoxDecoration(
             border: Border.all(
