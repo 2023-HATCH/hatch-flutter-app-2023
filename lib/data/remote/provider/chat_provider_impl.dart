@@ -6,6 +6,7 @@ import 'package:pocket_pose/data/entity/request/chat_room_request.dart';
 import 'package:pocket_pose/data/entity/response/chat_detail_list_response.dart';
 import 'package:pocket_pose/data/entity/response/chat_room_list_response.dart';
 import 'package:pocket_pose/data/entity/response/chat_room_response.dart';
+import 'package:pocket_pose/data/entity/response/chat_search_user_list_response.dart';
 import 'package:pocket_pose/data/remote/repository/chat_repository_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_room_list_item.dart';
 import 'package:pocket_pose/domain/provider/chat_provider.dart';
@@ -41,5 +42,11 @@ class ChatProviderImpl extends ChangeNotifier implements ChatProvider {
   Future<BaseResponse<ChatDetailListResponse>> getChatDetailList(
       String chatRoomId, int page) async {
     return await _chatRepository.getChatDetailList(chatRoomId, page);
+  }
+
+  @override
+  Future<BaseResponse<ChatSearchUserListResponse>>
+      getChatSearchUserList() async {
+    return await _chatRepository.getChatSearchUserList();
   }
 }
