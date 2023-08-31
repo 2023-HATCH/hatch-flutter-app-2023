@@ -11,7 +11,10 @@ import 'package:provider/provider.dart';
 import '../../../config/app_color.dart';
 
 class ChatSearchUserTextFieldWidget extends StatefulWidget {
-  const ChatSearchUserTextFieldWidget({Key? key}) : super(key: key);
+  const ChatSearchUserTextFieldWidget(
+      {Key? key, required this.showChatDetailScreen})
+      : super(key: key);
+  final Function showChatDetailScreen;
 
   @override
   State<StatefulWidget> createState() => _ChatSearchUserTextFieldWidgetState();
@@ -155,7 +158,10 @@ class _ChatSearchUserTextFieldWidgetState
                                 },
                                 itemBuilder: (context, suggestion) {
                                   return ChatSearchUserListItemWidget(
-                                      chatUser: suggestion);
+                                    chatUser: suggestion,
+                                    showChatDetailScreen:
+                                        widget.showChatDetailScreen,
+                                  );
                                 },
                               )),
                         ),

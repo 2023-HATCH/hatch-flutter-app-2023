@@ -3,27 +3,27 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/chat_room_request.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_user_list_item.dart';
-import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
-import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 class ChatSearchUserListItemWidget extends StatelessWidget {
   final ChatUserListItem chatUser;
+  final Function showChatDetailScreen;
 
-  const ChatSearchUserListItemWidget({super.key, required this.chatUser});
+  const ChatSearchUserListItemWidget(
+      {super.key, required this.chatUser, required this.showChatDetailScreen});
 
   @override
   Widget build(BuildContext context) {
     var chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
 
-    showChatDetailScreen(String chatRoomId) {
-      PageRouteWithSlideAnimation pageRouteWithAnimation =
-          PageRouteWithSlideAnimation(ChatDetailScreen(
-        chatRoomId: chatRoomId,
-        opponentUserNickName: chatUser.nickname,
-      ));
-      Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
-    }
+    // showChatDetailScreen(String chatRoomId) {
+    //   PageRouteWithSlideAnimation pageRouteWithAnimation =
+    //       PageRouteWithSlideAnimation(ChatDetailScreen(
+    //     chatRoomId: chatRoomId,
+    //     opponentUserNickName: chatUser.nickname,
+    //   ));
+    //   Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
+    // }
 
     return SafeArea(
       child: InkWell(
@@ -33,7 +33,7 @@ class ChatSearchUserListItemWidget extends StatelessWidget {
               .putChatRoom(ChatRoomRequest(opponentUserId: chatUser.userId));
 
           // 채팅 상세 화면으로 이동
-          showChatDetailScreen(result.data.chatRoomId);
+          showChatDetailScreen(result.data.chatRoomId, chatUser.nickname);
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 14, 24, 14),
@@ -72,7 +72,7 @@ class ChatSearchUserListItemWidget extends StatelessWidget {
                     height: 6,
                   ),
                   SizedBox(
-                    width: 250,
+                    width: 200,
                     child: Text(
                       chatUser.introduce ?? "",
                       style:
