@@ -238,25 +238,55 @@ class _CameraViewState extends State<CameraView> {
 
   // 플레이 화면: 플레이어 3명 스켈레톤 보임
   Widget _liveFeedBodyPlay() {
-    return Row(
-      children: [
-        Expanded(
-            flex: 4,
-            child: (widget.customPaintLeft != null)
-                ? SizedBox(height: 200, child: widget.customPaintLeft!)
-                : Container()),
-        Expanded(
-            flex: 4,
-            child: (widget.customPaintMid != null)
-                ? SizedBox(height: 200, child: widget.customPaintMid!)
-                : Container()),
-        Expanded(
-            flex: 3,
-            child: (widget.customPaintRight != null)
-                ? SizedBox(height: 150, child: widget.customPaintRight!)
-                : Container()),
-      ],
-    );
+    switch (_socketStageProvider.players.length) {
+      case 1:
+        return Row(
+          children: [
+            Expanded(flex: 2, child: Container()),
+            Expanded(
+                flex: 4,
+                child: (widget.customPaintMid != null)
+                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                    : Container()),
+            Expanded(flex: 2, child: Container()),
+          ],
+        );
+      case 2:
+        return Row(
+          children: [
+            Expanded(
+                flex: 1,
+                child: (widget.customPaintLeft != null)
+                    ? SizedBox(height: 200, child: widget.customPaintLeft!)
+                    : Container()),
+            Expanded(
+                flex: 1,
+                child: (widget.customPaintMid != null)
+                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                    : Container()),
+          ],
+        );
+      default:
+        return Row(
+          children: [
+            Expanded(
+                flex: 4,
+                child: (widget.customPaintLeft != null)
+                    ? SizedBox(height: 200, child: widget.customPaintLeft!)
+                    : Container()),
+            Expanded(
+                flex: 4,
+                child: (widget.customPaintMid != null)
+                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                    : Container()),
+            Expanded(
+                flex: 3,
+                child: (widget.customPaintRight != null)
+                    ? SizedBox(height: 150, child: widget.customPaintRight!)
+                    : Container()),
+          ],
+        );
+    }
   }
 
   Column buildCountdownWidget() {

@@ -106,6 +106,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   List<StagePlayerInfoListItem> get playerInfos => _playerInfos;
   StageTalkListItem? get talk => _talk;
 
+  List<StagePlayerListItem> get players => _players;
   SocketType get stageType => _stageType;
   bool get isConnect => _isConnect;
   bool get isSubscribe => _isSubscribe;
