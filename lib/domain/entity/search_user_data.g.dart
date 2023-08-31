@@ -8,7 +8,7 @@ part of 'search_user_data.dart';
 
 SearchUserData _$SearchUserDataFromJson(Map<String, dynamic> json) =>
     SearchUserData(
-      user: UserData.fromJson(json),
+      user: UserData.fromJson(json['user'] as Map<String, dynamic>),
       introduce: json['introduce'] as String?,
     );
 
