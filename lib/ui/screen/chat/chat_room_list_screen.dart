@@ -5,6 +5,7 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_room_list_item.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_room_list_item_widget.dart';
+import 'package:pocket_pose/ui/widget/chat/chat_search_user_textfield_widget.dart';
 import 'package:provider/provider.dart';
 
 class ChatRoomListScreen extends StatefulWidget {
@@ -45,6 +46,10 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
             color: AppColor.purpleColor,
             height: 3,
           ),
+          const SizedBox(
+            height: 8,
+          ),
+          const ChatSearchUserTextFieldWidget(),
           FutureBuilder(
             future: _chatProvider.getChatRoomList(),
             builder: (context, snapshot) {

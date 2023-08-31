@@ -9,14 +9,17 @@ import 'package:pocket_pose/data/entity/response/chat_room_response.dart';
 import 'package:pocket_pose/data/entity/response/chat_search_user_list_response.dart';
 import 'package:pocket_pose/data/remote/repository/chat_repository_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_room_list_item.dart';
+import 'package:pocket_pose/domain/entity/chat_user_list_item.dart';
 import 'package:pocket_pose/domain/provider/chat_provider.dart';
 
 class ChatProviderImpl extends ChangeNotifier implements ChatProvider {
   final ChatRepositoryImpl _chatRepository = ChatRepositoryImpl();
 
   final List<ChatRoomListItem> _chatRooms = [];
+  List<ChatUserListItem> _userList = [];
 
   List<ChatRoomListItem> get chatRooms => _chatRooms;
+  List<ChatUserListItem> get userList => _userList;
 
   setChatRooms(List<ChatRoomListItem> list) {
     _chatRooms.addAll(list);
@@ -47,6 +50,8 @@ class ChatProviderImpl extends ChangeNotifier implements ChatProvider {
   @override
   Future<BaseResponse<ChatSearchUserListResponse>>
       getChatSearchUserList() async {
-    return await _chatRepository.getChatSearchUserList();
+    var response = await _chatRepository.getChatSearchUserList();
+    _userList = response.data.userList;
+    return response;
   }
 }
