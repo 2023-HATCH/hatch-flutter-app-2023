@@ -10,6 +10,7 @@ import 'package:pocket_pose/data/entity/request/chat_room_request.dart';
 import 'package:pocket_pose/data/entity/response/chat_detail_list_response.dart';
 import 'package:pocket_pose/data/entity/response/chat_room_list_response.dart';
 import 'package:pocket_pose/data/entity/response/chat_room_response.dart';
+import 'package:pocket_pose/data/entity/response/chat_search_user_list_response.dart';
 import 'package:pocket_pose/domain/repository/chat_repository.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -88,6 +89,34 @@ class ChatRepositoryImpl implements ChatRepository {
       var responseJson = BaseResponse<ChatDetailListResponse>.fromJson(
           response.data,
           ChatDetailListResponse.fromJson(response.data['data']));
+
+      return responseJson;
+    } catch (e) {
+      debugPrint("mmm ChatProviderImpl catch: ${e.toString()}");
+    }
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<BaseResponse<ChatSearchUserListResponse>>
+      getChatSearchUserList() async {
+    const storage = FlutterSecureStorage();
+    const storageKey = 'kakaoAccessToken';
+    const refreshTokenKey = 'kakaoRefreshToken';
+    String accessToken = await storage.read(key: storageKey) ?? "";
+    String refreshToken = await storage.read(key: refreshTokenKey) ?? "";
+
+    var dio = Dio();
+    try {
+      dio.options.headers = {
+        "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
+      };
+      dio.options.contentType = "application/json";
+      var response = await dio.get(AppUrl.chatSearchUserListUrl);
+
+      var responseJson = BaseResponse<ChatSearchUserListResponse>.fromJson(
+          response.data,
+          ChatSearchUserListResponse.fromJson(response.data['data']));
 
       return responseJson;
     } catch (e) {
