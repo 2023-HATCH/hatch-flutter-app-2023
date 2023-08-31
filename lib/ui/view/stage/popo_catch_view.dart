@@ -83,12 +83,45 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
                   painter: CatchCountDownPainter(),
                 ),
               ),
-              _buildCatchButton(),
+              Stack(
+                children: [
+                  _buildCatchProgressBar(),
+                  _buildCatchButton(),
+                ],
+              ),
             ],
           ),
         ),
         const Flexible(flex: 1, child: SizedBox(height: 60.0 + 150.0)),
       ],
+    );
+  }
+
+  Center _buildCatchButton() {
+    return Center(
+      child: InkWell(
+        onTap: () {
+          _playClickSound();
+          _stageProvider.getStageCatch();
+        },
+        borderRadius: const BorderRadius.all(
+          Radius.circular(30.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          child: Text(
+            '캐치!',
+            style: TextStyle(
+              fontSize: 24,
+              color: Colors.white,
+              shadows: [
+                for (double i = 1; i < 6; i++)
+                  Shadow(color: AppColor.blueColor3, blurRadius: 5 * i)
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -108,35 +141,17 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     }
   }
 
-  SizedBox _buildCatchButton() {
-    return SizedBox(
-      width: 100,
-      height: 45,
-      child: SemicircularIndicator(
-        progress: (_catchCountDown > 1) ? 1 : _catchCountDown,
-        color: Colors.yellow,
-        bottomPadding: 0,
-        strokeWidth: 2,
-        backgroundColor: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            _playClickSound();
-            _stageProvider.getStageCatch();
-          },
-          borderRadius: const BorderRadius.all(
-            Radius.circular(20.0),
-          ),
-          child: Text(
-            '캐치!',
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.white,
-              shadows: [
-                for (double i = 1; i < 6; i++)
-                  Shadow(color: AppColor.blueColor3, blurRadius: 5 * i)
-              ],
-            ),
-          ),
+  Widget _buildCatchProgressBar() {
+    return Center(
+      child: SizedBox(
+        width: 100,
+        height: 45,
+        child: SemicircularIndicator(
+          progress: (_catchCountDown > 1) ? 1 : _catchCountDown,
+          color: Colors.yellow,
+          bottomPadding: 0,
+          strokeWidth: 2,
+          backgroundColor: Colors.transparent,
         ),
       ),
     );
@@ -188,7 +203,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
 
   Widget musicTitleContainer(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(70, 11, 70, 11),
+      padding: const EdgeInsets.fromLTRB(60, 11, 60, 11),
       child: Container(
         decoration: BoxDecoration(
             border: Border.all(

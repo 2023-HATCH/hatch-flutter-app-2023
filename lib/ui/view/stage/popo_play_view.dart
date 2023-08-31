@@ -80,46 +80,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     // 카메라뷰 보이기
     return Stack(
       children: [
-        Positioned(
-          top: 115,
-          left: 35,
-          right: 35,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              if (widget.players.length > 1)
-                getProfile(widget.players[1].profileImg,
-                    widget.players[1].nickname, StagePlayScore.good)
-              else
-                Visibility(
-                    visible: false,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: getProfile(null, "", StagePlayScore.none)),
-              if (widget.players.isNotEmpty)
-                getProfile(widget.players[0].profileImg,
-                    widget.players[0].nickname, StagePlayScore.perfect)
-              else
-                Visibility(
-                    visible: false,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: getProfile(null, "", StagePlayScore.none)),
-              if (widget.players.length > 2)
-                getProfile(widget.players[2].profileImg,
-                    widget.players[2].nickname, StagePlayScore.excellent)
-              else
-                Visibility(
-                    visible: false,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: getProfile(null, "", StagePlayScore.none)),
-            ],
-          ),
-        ),
+        _buildPlayerProfile(),
         CameraView(
           isResultState: widget.isResultState,
           // 스켈레톤 그려주는 객체 전달
@@ -135,6 +96,57 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         ),
       ],
     );
+  }
+
+  Positioned _buildPlayerProfile() {
+    switch (_socketStageProvider.players.length) {
+      case 1:
+        return Positioned(
+          top: 115,
+          left: 100,
+          right: 100,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              getProfile(widget.players[0].profileImg,
+                  widget.players[0].nickname, StagePlayScore.perfect),
+            ],
+          ),
+        );
+
+      case 2:
+        return Positioned(
+          top: 115,
+          left: 65,
+          right: 65,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              getProfile(widget.players[1].profileImg,
+                  widget.players[1].nickname, StagePlayScore.good),
+              getProfile(widget.players[0].profileImg,
+                  widget.players[0].nickname, StagePlayScore.perfect),
+            ],
+          ),
+        );
+      default:
+        return Positioned(
+          top: 115,
+          left: 35,
+          right: 35,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              getProfile(widget.players[1].profileImg,
+                  widget.players[1].nickname, StagePlayScore.good),
+              getProfile(widget.players[0].profileImg,
+                  widget.players[0].nickname, StagePlayScore.perfect),
+              getProfile(widget.players[2].profileImg,
+                  widget.players[2].nickname, StagePlayScore.excellent),
+            ],
+          ),
+        );
+    }
   }
 
   @override

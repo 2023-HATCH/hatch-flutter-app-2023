@@ -1,4 +1,5 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -112,14 +113,19 @@ class _MainScreenState extends State<MainScreen>
       _showPoPoStageScreen();
     } else {
       _loginProvider.showLoginBottomSheet();
-
       if (await _loginProvider.checkAccessToken()) {
         _multiVideoPlayProvider.resetVideoPlayer(0);
       }
     }
   }
 
+  void _playClickSound() {
+    AssetsAudioPlayer.newPlayer()
+        .open(Audio("assets/audios/sound_catch_click.mp3"));
+  }
+
   void _showPoPoStageScreen() {
+    _playClickSound();
     PageRouteWithSlideAnimation pageRouteWithAnimation =
         PageRouteWithSlideAnimation(PoPoStageScreen(getIndex: getIndex));
     Navigator.push(context, pageRouteWithAnimation.fadeInFadeOutRoute());

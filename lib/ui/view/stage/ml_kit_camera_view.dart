@@ -47,6 +47,13 @@ class _CameraViewState extends State<CameraView> {
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
   // 5초 카운트다운 텍스트
   bool _countdownVisibility = false;
+  final List<String> _countdownSVG = [
+    'assets/icons/ic_countdown_1.png',
+    'assets/icons/ic_countdown_2.png',
+    'assets/icons/ic_countdown_3.png',
+    'assets/icons/ic_countdown_4.png',
+    'assets/icons/ic_countdown_5.png',
+  ];
   int _seconds = 5;
   Timer? _timer;
   AssetsAudioPlayer? _assetsAudioPlayer;
@@ -104,11 +111,12 @@ class _CameraViewState extends State<CameraView> {
 
   void _onEnter() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
       // 플레이 상태인 경우
       if (!widget.isResultState) {
-        AudioPlayerUtil()
-            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl);
-
         // 중간임장인 경우
         if (_stageProvider.stageCurTime != null) {
           // 중간 입장한 초부터 시작
@@ -134,8 +142,6 @@ class _CameraViewState extends State<CameraView> {
       }
       // 결과 상태인 경우
       else {
-        AudioPlayerUtil().setMusicUrl(
-            "https://popo2023.s3.ap-northeast-2.amazonaws.com/effect/Happyhappy.mp3");
         // 중간임장인 경우
         if (_stageProvider.stageCurTime != null) {
           // 중간 입장한 초부터 시작
@@ -232,25 +238,55 @@ class _CameraViewState extends State<CameraView> {
 
   // 플레이 화면: 플레이어 3명 스켈레톤 보임
   Widget _liveFeedBodyPlay() {
-    return Row(
-      children: [
-        Expanded(
-            flex: 4,
-            child: (widget.customPaintLeft != null)
-                ? SizedBox(height: 200, child: widget.customPaintLeft!)
-                : Container()),
-        Expanded(
-            flex: 4,
-            child: (widget.customPaintMid != null)
-                ? SizedBox(height: 200, child: widget.customPaintMid!)
-                : Container()),
-        Expanded(
-            flex: 3,
-            child: (widget.customPaintRight != null)
-                ? SizedBox(height: 150, child: widget.customPaintRight!)
-                : Container()),
-      ],
-    );
+    switch (_socketStageProvider.players.length) {
+      case 1:
+        return Row(
+          children: [
+            Expanded(flex: 2, child: Container()),
+            Expanded(
+                flex: 4,
+                child: (widget.customPaintMid != null)
+                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                    : Container()),
+            Expanded(flex: 2, child: Container()),
+          ],
+        );
+      case 2:
+        return Row(
+          children: [
+            Expanded(
+                flex: 1,
+                child: (widget.customPaintLeft != null)
+                    ? SizedBox(height: 200, child: widget.customPaintLeft!)
+                    : Container()),
+            Expanded(
+                flex: 1,
+                child: (widget.customPaintMid != null)
+                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                    : Container()),
+          ],
+        );
+      default:
+        return Row(
+          children: [
+            Expanded(
+                flex: 4,
+                child: (widget.customPaintLeft != null)
+                    ? SizedBox(height: 200, child: widget.customPaintLeft!)
+                    : Container()),
+            Expanded(
+                flex: 4,
+                child: (widget.customPaintMid != null)
+                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                    : Container()),
+            Expanded(
+                flex: 3,
+                child: (widget.customPaintRight != null)
+                    ? SizedBox(height: 150, child: widget.customPaintRight!)
+                    : Container()),
+          ],
+        );
+    }
   }
 
   Column buildCountdownWidget() {
@@ -258,10 +294,10 @@ class _CameraViewState extends State<CameraView> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Visibility(
-          visible: _countdownVisibility,
-          child: Text('$_seconds',
-              style: const TextStyle(fontSize: 72, color: Colors.white)),
-        )
+            visible: _countdownVisibility,
+            child: (6 > _seconds) && (_seconds > 0)
+                ? Image.asset(_countdownSVG[_seconds - 1])
+                : Container())
       ],
     );
   }
@@ -278,10 +314,15 @@ class _CameraViewState extends State<CameraView> {
             'assets/icons/ic_music_note_small.svg',
           ),
           const SizedBox(width: 8.0),
-          Text(
-            '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
-            style: const TextStyle(fontSize: 10, color: Colors.white),
-          ),
+          (_socketStageProvider.catchMusicData != null)
+              ? Text(
+                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
+                )
+              : Text(
+                  '${_stageProvider.music?.singer} - ${_stageProvider.music?.title}',
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
+                ),
         ],
       ),
     );
