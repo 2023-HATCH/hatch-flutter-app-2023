@@ -19,10 +19,10 @@ import 'package:pocket_pose/domain/entity/stage_player_info_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
 import 'package:pocket_pose/domain/provider/socket_stage_provider.dart';
-import 'package:pocket_pose/ui/view/popo_catch_view.dart';
-import 'package:pocket_pose/ui/view/popo_play_view.dart';
-import 'package:pocket_pose/ui/view/popo_result_view.dart';
-import 'package:pocket_pose/ui/view/popo_wait_view.dart';
+import 'package:pocket_pose/ui/view/stage/popo_catch_view.dart';
+import 'package:pocket_pose/ui/view/stage/popo_play_view.dart';
+import 'package:pocket_pose/ui/view/stage/popo_result_view.dart';
+import 'package:pocket_pose/ui/view/stage/popo_wait_view.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
@@ -106,6 +106,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   List<StagePlayerInfoListItem> get playerInfos => _playerInfos;
   StageTalkListItem? get talk => _talk;
 
+  List<StagePlayerListItem> get players => _players;
   SocketType get stageType => _stageType;
   bool get isConnect => _isConnect;
   bool get isSubscribe => _isSubscribe;

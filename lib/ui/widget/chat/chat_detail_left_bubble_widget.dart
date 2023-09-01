@@ -142,7 +142,10 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
     var temp = timeStamp.split(' ');
     temp = temp[1].split(':');
     var ampm = int.parse(temp[0]) < 12 ? "오전" : "오후";
-    var hour = (ampm == "오후") ? int.parse(temp[0].toString()) - 12 : temp[0];
+    var hourTemp = (int.parse(temp[0].toString()) - 12 == 0)
+        ? 12
+        : int.parse(temp[0].toString()) - 12;
+    var hour = (ampm == "오후") ? hourTemp : temp[0];
     return "$ampm $hour:${temp[1]}";
   }
 

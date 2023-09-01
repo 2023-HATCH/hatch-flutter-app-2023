@@ -1,7 +1,9 @@
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:pocket_pose/config/firebase/dynamic_link_util.dart';
 import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
@@ -16,6 +18,7 @@ import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_talk_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
+import 'package:pocket_pose/firebase_options.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/screen/on_boarding_screen.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +35,10 @@ Future<void> main() async {
 
   bool showOnBoarding = await LocalPrefProvider().getShowOnBoarding();
 
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  DynamicLinkUtil().setup();
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => MultiVideoPlayProvider()),
@@ -60,7 +66,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'GmarketSans'),
       themeMode: ThemeMode.system,

@@ -59,6 +59,7 @@ class AppUrl {
 
   // 채팅
   static const _chatUrl = "$_apiBaseUrl/chats";
+  static const chatSearchUserListUrl = "$_apiBaseUrl/users/all";
   static const chatRoomUrl = "$_chatUrl/rooms";
   static const socketSubscribeChatUrl = "/topic/chats/rooms";
   static const socketChatkUrl = "/app/chats/messages";

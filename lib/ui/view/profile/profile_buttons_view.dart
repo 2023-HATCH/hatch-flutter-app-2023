@@ -267,7 +267,7 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
   }
 
   _startChat() async {
-    // // 채팅방 생성
+    // 채팅방 생성
     var result = await _chatProvider.putChatRoom(
         ChatRoomRequest(opponentUserId: widget.profileResponse.user.userId));
 

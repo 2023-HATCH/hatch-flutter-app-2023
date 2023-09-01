@@ -4,7 +4,10 @@ import 'package:pocket_pose/data/entity/response/chat_room_list_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/chat_room_list_item.dart';
+import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 import 'package:pocket_pose/ui/widget/chat/chat_room_list_item_widget.dart';
+import 'package:pocket_pose/ui/widget/chat/chat_search_user_textfield_widget.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 class ChatRoomListScreen extends StatefulWidget {
@@ -45,6 +48,11 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
             color: AppColor.purpleColor,
             height: 3,
           ),
+          const SizedBox(
+            height: 8,
+          ),
+          ChatSearchUserTextFieldWidget(
+              showChatDetailScreen: showChatDetailScreen),
           FutureBuilder(
             future: _chatProvider.getChatRoomList(),
             builder: (context, snapshot) {
@@ -109,5 +117,17 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
         ),
       ),
     );
+  }
+
+  showChatDetailScreen(String chatRoomId, String nickname) {
+    PageRouteWithSlideAnimation pageRouteWithAnimation =
+        PageRouteWithSlideAnimation(ChatDetailScreen(
+      chatRoomId: chatRoomId,
+      opponentUserNickName: nickname,
+    ));
+    Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft())
+        .then((value) {
+      setState(() {});
+    });
   }
 }
