@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/remote/provider/follow_provider.dart';
-import 'package:pocket_pose/ui/loader/user_list_loader.dart';
 import 'package:pocket_pose/ui/view/profile/follow_user_list_view.dart';
 import 'package:provider/provider.dart';
 

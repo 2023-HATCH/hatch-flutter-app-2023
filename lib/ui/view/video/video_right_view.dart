@@ -15,7 +15,7 @@ class VideoRightFrame extends StatefulWidget {
   final int index;
 
   @override
-  _VideoRightFrameState createState() => _VideoRightFrameState();
+  State<VideoRightFrame> createState() => _VideoRightFrameState();
 }
 
 class _VideoRightFrameState extends State<VideoRightFrame> {

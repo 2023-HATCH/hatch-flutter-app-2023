@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
@@ -41,7 +43,6 @@ class _FollowUserListViewState extends State<FollowUserListView> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
 
     // 프로필 화면 새로고침
