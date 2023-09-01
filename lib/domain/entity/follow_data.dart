@@ -6,7 +6,7 @@ part 'follow_data.g.dart';
 @JsonSerializable()
 class FollowData {
   final UserData user;
-  final String introduce;
+  late String? introduce;
   late bool isFollowing;
 
   FollowData({

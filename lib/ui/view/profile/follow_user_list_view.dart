@@ -95,13 +95,13 @@ class _FollowUserListViewState extends State<FollowUserListView> {
                         widget.followList[index].user.nickname,
                         style: const TextStyle(fontSize: 12),
                       ),
-                      if (widget.followList[index].introduce.isNotEmpty)
+                      if (widget.followList[index].introduce != null)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Padding(padding: EdgeInsets.only(bottom: 8)),
                             Text(
-                              widget.followList[index].introduce,
+                              widget.followList[index].introduce!,
                               style: const TextStyle(fontSize: 14),
                             ),
                           ],
