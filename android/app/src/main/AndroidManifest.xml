@@ -56,6 +56,18 @@
                     android:host="hatch2023pocketpose.page.link"
                     android:scheme="https"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- 카카오톡 공유, 카카오톡 메시지 -->
+                <data android:host="kakaolink"
+                    android:scheme="kakaof03a21b3fa588715cb55730113dea1ab" />
+                <!-- 카카오스토리 -->
+                <data android:host="kakaostory"
+                    android:scheme="kakaof03a21b3fa588715cb55730113dea1ab" />
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
