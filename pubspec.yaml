@@ -33,6 +33,7 @@ dependencies:
   json_annotation: ^4.8.0
   change_app_package_name: ^1.1.0
   kakao_flutter_sdk_user: ^1.4.3
+  kakao_flutter_sdk_share: ^1.4.1
   package_info_plus: ^4.0.2
   flutter_secure_storage: ^8.0.0
   flutter_spinkit: ^5.2.0
