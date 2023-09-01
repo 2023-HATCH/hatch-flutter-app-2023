@@ -2,12 +2,20 @@ import 'dart:developer';
 
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:get/route_manager.dart';
-import 'package:pocket_pose/config/firebase/i_dynamic_link.dart';
 import 'package:pocket_pose/ui/screen/share_screen.dart';
 import 'package:uni_links/uni_links.dart';
 
-class DynamicLink extends IDynamicLink {
-  @override
+class DynamicLink {
+  static final DynamicLink _dynamicLink = DynamicLink._internal();
+
+  factory DynamicLink() {
+    return _dynamicLink;
+  }
+
+  DynamicLink._internal() {
+    setup();
+  }
+
   Future<bool> setup() async {
     bool isExistDynamicLink = await _getInitialDynamicLink();
     _addListener();
@@ -52,7 +60,6 @@ class DynamicLink extends IDynamicLink {
         ));
   }
 
-  @override
   Future<String> getShortLink(String uuid) async {
     String dynamicLinkPrefix = 'https://hatch2023pocketpose.page.link';
     final dynamicLinkParams = DynamicLinkParameters(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/config/firebase/dynamic_link_util.dart';
+import 'package:pocket_pose/config/share/dynamic_link.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -44,8 +44,7 @@ class _ShareButtonWidgetState extends State<ShareButtonWidget> {
                     onTap: () async {
                       Navigator.of(context).pop();
                       Share.share(
-                        await DynamicLinkUtil()
-                            .getShortLink(widget.videoData.uuid),
+                        await DynamicLink().getShortLink(widget.videoData.uuid),
                       );
                     },
                     child: Padding(
