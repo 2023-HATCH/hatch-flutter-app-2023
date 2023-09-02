@@ -32,13 +32,11 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   bool isNotBottomNavi = false;
 
-  late TabController _tabController;
   int loading = 0;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     _userId = widget.userId;
 
     _multiVideoPlayProvider =
@@ -79,7 +77,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void dispose() {
     super.dispose();
-    _tabController.dispose();
 
     // 프로필 정보 삭제
     _profileProvider.profileResponse = null;
@@ -111,49 +108,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ProfileUserInfoWidget(
                                   profileResponse:
                                       _profileProvider.profileResponse!),
+                              const SizedBox(
+                                height: 14,
+                              )
                             ],
-                          ),
-                        ),
-                        SliverAppBar(
-                          pinned: true,
-                          backgroundColor: AppColor.whiteColor,
-                          toolbarHeight: 0.0,
-                          bottom: TabBar(
-                            controller: _tabController,
-                            tabs: [
-                              Tab(
-                                icon: _tabController.index == 0
-                                    ? SvgPicture.asset(
-                                        'assets/icons/ic_profile_list_select.svg')
-                                    : SvgPicture.asset(
-                                        'assets/icons/ic_profile_list_unselect.svg'),
-                              ),
-                              Tab(
-                                icon: _tabController.index == 1
-                                    ? SvgPicture.asset(
-                                        'assets/icons/ic_heart_select.svg')
-                                    : SvgPicture.asset(
-                                        'assets/icons/ic_heart_unselect.svg'),
-                              ),
-                            ],
-                            indicator: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: AppColor.purpleColor,
-                                  width: 3.0,
-                                ),
-                              ),
-                            ),
-                            onTap: (index) {
-                              debugPrint("Selected Tab: $index");
-                              setState(
-                                  () {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
-                            },
                           ),
                         ),
                         ProfileTabVideosWidget(
-                          index: _tabController.index,
-                          tabController: _tabController,
                           profileResponse: _profileProvider.profileResponse!,
                         ),
                       ],
