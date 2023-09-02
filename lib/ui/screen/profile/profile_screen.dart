@@ -12,14 +12,13 @@ import 'package:pocket_pose/ui/widget/profile/profile_tapbar_widget.dart';
 import 'package:pocket_pose/ui/view/profile/profile_user_info_view.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({
+  const ProfileScreen({
     this.userId,
     Key? key,
   }) : super(key: key);
 
-  String? userId;
+  final String? userId;
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -82,6 +81,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.dispose();
     _tabController.dispose();
 
+    // 프로필 정보 삭제
+    _profileProvider.profileResponse = null;
     _profileProvider.isGetProfilDone = false;
   }
 
@@ -95,89 +96,77 @@ class _ProfileScreenState extends State<ProfileScreen>
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done ||
               snapshot.connectionState == ConnectionState.waiting) {
-            loading++;
-            if (loading >= 4) {
-              return _profileProvider.profileResponse != null
-                  ? Scaffold(
-                      body: CustomScrollView(
-                        slivers: <Widget>[
-                          SliverToBoxAdapter(
-                            child: Column(
-                              children: [
-                                ProfileTapbarWidget(
+            return _profileProvider.profileResponse != null
+                ? Scaffold(
+                    body: CustomScrollView(
+                      slivers: <Widget>[
+                        SliverToBoxAdapter(
+                          child: Column(
+                            children: [
+                              ProfileTapbarWidget(
+                                profileResponse:
+                                    _profileProvider.profileResponse!,
+                                isNotBottomNavi: isNotBottomNavi,
+                              ),
+                              ProfileUserInfoWidget(
                                   profileResponse:
-                                      _profileProvider.profileResponse!,
-                                  isNotBottomNavi: isNotBottomNavi,
-                                ),
-                                ProfileUserInfoWidget(
-                                    profileResponse:
-                                        _profileProvider.profileResponse!),
-                              ],
-                            ),
+                                      _profileProvider.profileResponse!),
+                            ],
                           ),
-                          SliverAppBar(
-                            pinned: true,
-                            backgroundColor: AppColor.whiteColor,
-                            toolbarHeight: 0.0,
-                            bottom: TabBar(
-                              controller: _tabController,
-                              tabs: [
-                                Tab(
-                                  icon: _tabController.index == 0
-                                      ? SvgPicture.asset(
-                                          'assets/icons/ic_profile_list_select.svg')
-                                      : SvgPicture.asset(
-                                          'assets/icons/ic_profile_list_unselect.svg'),
-                                ),
-                                Tab(
-                                  icon: _tabController.index == 1
-                                      ? SvgPicture.asset(
-                                          'assets/icons/ic_heart_select.svg')
-                                      : SvgPicture.asset(
-                                          'assets/icons/ic_heart_unselect.svg'),
-                                ),
-                              ],
-                              indicator: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: AppColor.purpleColor,
-                                    width: 3.0,
-                                  ),
+                        ),
+                        SliverAppBar(
+                          pinned: true,
+                          backgroundColor: AppColor.whiteColor,
+                          toolbarHeight: 0.0,
+                          bottom: TabBar(
+                            controller: _tabController,
+                            tabs: [
+                              Tab(
+                                icon: _tabController.index == 0
+                                    ? SvgPicture.asset(
+                                        'assets/icons/ic_profile_list_select.svg')
+                                    : SvgPicture.asset(
+                                        'assets/icons/ic_profile_list_unselect.svg'),
+                              ),
+                              Tab(
+                                icon: _tabController.index == 1
+                                    ? SvgPicture.asset(
+                                        'assets/icons/ic_heart_select.svg')
+                                    : SvgPicture.asset(
+                                        'assets/icons/ic_heart_unselect.svg'),
+                              ),
+                            ],
+                            indicator: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: AppColor.purpleColor,
+                                  width: 3.0,
                                 ),
                               ),
-                              onTap: (index) {
-                                debugPrint("Selected Tab: $index");
-                                setState(
-                                    () {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
-                              },
                             ),
+                            onTap: (index) {
+                              debugPrint("Selected Tab: $index");
+                              setState(
+                                  () {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
+                            },
                           ),
-                          ProfileTabVideosWidget(
-                            index: _tabController.index,
-                            tabController: _tabController,
-                            profileResponse: _profileProvider.profileResponse!,
-                          ),
-                        ],
-                      ),
-                    )
-                  : Container(
-                      color: Colors.white,
-                      child: Center(
-                          child: SpinKitPumpingHeart(
-                        color: Colors.pink[100],
-                        size: 50.0,
-                      )),
-                    );
-            } else {
-              return Container(
-                color: Colors.white,
-                child: Center(
-                    child: SpinKitPumpingHeart(
-                  color: Colors.pink[100],
-                  size: 50.0,
-                )),
-              );
-            }
+                        ),
+                        ProfileTabVideosWidget(
+                          index: _tabController.index,
+                          tabController: _tabController,
+                          profileResponse: _profileProvider.profileResponse!,
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(
+                    color: Colors.white,
+                    child: Center(
+                        child: SpinKitPumpingHeart(
+                      color: Colors.pink[100],
+                      size: 50.0,
+                    )),
+                  );
           } else {
             return Container(
               color: Colors.white,
