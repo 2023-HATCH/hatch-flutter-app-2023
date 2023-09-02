@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_getters_setters
+
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/entity/request/profile_edit_request.dart';
 import 'package:pocket_pose/data/entity/request/profile_videos_request.dart';

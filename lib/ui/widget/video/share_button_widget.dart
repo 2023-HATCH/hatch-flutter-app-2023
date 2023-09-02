@@ -120,8 +120,7 @@ class _ShareButtonWidgetState extends State<ShareButtonWidget> {
       borderRadius: const BorderRadius.all(
         Radius.circular(90.0),
       ),
-      child:
-          Container(child: SvgPicture.asset('assets/icons/ic_home_share.svg')),
+      child: SvgPicture.asset('assets/icons/ic_home_share.svg'),
     );
   }
 }

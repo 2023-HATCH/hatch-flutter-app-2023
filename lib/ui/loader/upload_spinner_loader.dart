@@ -10,7 +10,7 @@ class UploadSpinner extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _UploadSpinnerState createState() => _UploadSpinnerState();
+  State<UploadSpinner> createState() => _UploadSpinnerState();
 }
 
 class _UploadSpinnerState extends State<UploadSpinner> {

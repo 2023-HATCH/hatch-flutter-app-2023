@@ -7,15 +7,13 @@ import 'package:provider/provider.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget(
-      {super.key, required int screenNum, required int index})
-      : screenNum = screenNum,
-        index = index;
+      {super.key, required this.screenNum, required this.index});
 
   final int screenNum;
   final int index;
 
   @override
-  _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget>

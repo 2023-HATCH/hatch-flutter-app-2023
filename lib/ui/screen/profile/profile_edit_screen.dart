@@ -12,7 +12,7 @@ class ProfileEditScreen extends StatefulWidget {
   final ProfileResponse profileResponse;
 
   @override
-  _ProfileEditScreenState createState() => _ProfileEditScreenState();
+  State<ProfileEditScreen> createState() => _ProfileEditScreenState();
 }
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {

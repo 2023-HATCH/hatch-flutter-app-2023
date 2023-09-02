@@ -1,9 +1,8 @@
+// ignore_for_file: unnecessary_getters_setters
+
 import 'package:flutter/material.dart';
-import 'package:pocket_pose/data/entity/response/follow_list_response.dart';
-import 'package:pocket_pose/data/remote/repository/follow_repository.dart';
 import 'package:pocket_pose/data/remote/repository/search_repository.dart';
 import 'package:pocket_pose/domain/entity/search_user_data.dart';
-import 'package:pocket_pose/domain/entity/user_data.dart';
 
 import '../../entity/request/videos_request.dart';
 import '../../entity/response/videos_response.dart';

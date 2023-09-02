@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
@@ -151,9 +153,6 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                       _initUser(bottomState);
                       _isInit = true;
                     }
-
-                    int commentCount = _multiVideoPlayProvider
-                        .videos[widget.screenNum][widget.index].commentCount;
                     return SizedBox(
                       height: isClicked == false
                           ? 500

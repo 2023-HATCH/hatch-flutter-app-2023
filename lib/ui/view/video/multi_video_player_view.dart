@@ -10,12 +10,9 @@ import 'package:provider/provider.dart';
 class MultiVideoPlayerView extends StatefulWidget {
   const MultiVideoPlayerView(
       {super.key,
-      required int screenNum,
-      int? initialIndex,
-      ValueSetter<int>? setCurrentIndex})
-      : screenNum = screenNum,
-        initialIndex = initialIndex,
-        setCurrentIndex = setCurrentIndex;
+      required this.screenNum,
+      this.initialIndex,
+      this.setCurrentIndex});
 
   final int screenNum;
   final int? initialIndex;
