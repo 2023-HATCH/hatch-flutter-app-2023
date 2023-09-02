@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/share/dynamic_link.dart';
+import 'package:pocket_pose/config/share/kakao_link_with_dynamic_link.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -77,9 +79,40 @@ class _ShareButtonWidgetState extends State<ShareButtonWidget> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {
-                      // getVideo(ImageSource.camera);
+                    onTap: () async {
                       Navigator.of(context).pop();
+                      // 카카오톡 실행 가능 여부 확인
+                      bool isKakaoTalkSharingAvailable = await ShareClient
+                          .instance
+                          .isKakaoTalkSharingAvailable();
+
+                      if (isKakaoTalkSharingAvailable) {
+                        try {
+                          Uri uri = await ShareClient.instance.shareDefault(
+                              template:
+                                  KakaoLinkWithDynamicLink().buildFeedTemplate(
+                            widget.videoData,
+                            await DynamicLink()
+                                .getShortLink(widget.videoData.uuid),
+                          ));
+                          await ShareClient.instance.launchKakaoTalk(uri);
+                        } catch (error) {
+                          debugPrint('mmm 카카오톡 공유 실패 $error');
+                        }
+                      } else {
+                        try {
+                          Uri shareUrl = await WebSharerClient.instance
+                              .makeDefaultUrl(
+                                  template: KakaoLinkWithDynamicLink()
+                                      .buildFeedTemplate(
+                                          widget.videoData,
+                                          await DynamicLink().getShortLink(
+                                              widget.videoData.uuid)));
+                          await launchBrowserTab(shareUrl, popupOpen: true);
+                        } catch (error) {
+                          debugPrint('mmm 카카오톡 공유 실패 $error');
+                        }
+                      }
                     },
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),

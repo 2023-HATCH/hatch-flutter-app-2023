@@ -26,11 +26,15 @@ class DynamicLink {
   // 앱 종료 후 리다이랙션
   Future<bool> _getInitialDynamicLink() async {
     final String? deepLink = await getInitialLink();
+    print("mmm deep 종로 후:$deepLink");
 
     if (deepLink != null) {
-      PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
-          .instance
-          .getDynamicLink(Uri.parse(deepLink));
+      var link = (deepLink.contains("fromKakao"))
+          ? "https://hatch2023pocketpose.page.link/${deepLink.substring(deepLink.length - 4)}"
+          : deepLink;
+
+      PendingDynamicLinkData? dynamicLinkData =
+          await FirebaseDynamicLinks.instance.getDynamicLink(Uri.parse(link));
 
       if (dynamicLinkData != null) {
         _redirectScreen(dynamicLinkData);
@@ -53,11 +57,31 @@ class DynamicLink {
   }
 
   // 앱 실행 중 리다이렉션
-  void _redirectScreen(PendingDynamicLinkData dynamicLinkData) {
-    String videoUuid = dynamicLinkData.link.path.split('/').last;
-    Get.to(() => ShareScreen(
-          videoUuid: videoUuid,
-        ));
+  void _redirectScreen(PendingDynamicLinkData dynamicLinkData) async {
+    String dynamicLink = dynamicLinkData.link.toString();
+
+    // 카카오 공유로부터 리다이렉션
+    if (dynamicLink.contains("fromKakao")) {
+      var link =
+          "https://hatch2023pocketpose.page.link/${dynamicLink.substring(dynamicLink.length - 4)}";
+
+      await FirebaseDynamicLinks.instance
+          .getDynamicLink(Uri.parse(link))
+          .then((value) {
+        String videoUuid = value!.link.path.split('/').last;
+        Get.to(() => ShareScreen(
+              videoUuid: videoUuid,
+            ));
+        return null;
+      });
+    }
+    // 링크 공유로부터 리다이렉션
+    else {
+      String videoUuid = dynamicLinkData.link.path.split('/').last;
+      Get.to(() => ShareScreen(
+            videoUuid: videoUuid,
+          ));
+    }
   }
 
   Future<String> getShortLink(String uuid) async {
