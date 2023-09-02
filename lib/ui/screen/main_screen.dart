@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/config/share/dynamic_link.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/home/home_screen.dart';
@@ -65,6 +66,14 @@ class _MainScreenState extends State<MainScreen>
     super.dispose();
 
     WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 카카오 공유 + 앱 실행 중에 리다이랙션 시 필요
+    if (state == AppLifecycleState.resumed) {
+      DynamicLink().setup();
+    }
   }
 
   Future<void> _initIsLoginAndScreens() async {

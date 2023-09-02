@@ -26,7 +26,6 @@ class DynamicLink {
   // 앱 종료 후 리다이랙션
   Future<bool> _getInitialDynamicLink() async {
     final String? deepLink = await getInitialLink();
-    print("mmm deep 종로 후:$deepLink");
 
     if (deepLink != null) {
       var link = (deepLink.contains("fromKakao"))
