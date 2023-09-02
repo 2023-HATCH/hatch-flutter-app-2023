@@ -42,6 +42,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _multiVideoPlayProvider.pauseVideo(0);
+
+    _multiVideoPlayProvider.isOpenProfile = true;
   }
 
   Future<bool> _initUser() async {
@@ -81,6 +83,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     // 프로필 정보 삭제
     _profileProvider.profileResponse = null;
     _profileProvider.isGetProfilDone = false;
+
+    _multiVideoPlayProvider.isOpenProfile = false;
   }
 
   @override

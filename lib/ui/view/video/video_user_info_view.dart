@@ -34,14 +34,21 @@ class VideoUserInfoFrame extends StatelessWidget {
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
-                    PageRouteWithSlideAnimation pageRouteWithAnimation =
-                        PageRouteWithSlideAnimation(
-                            ProfileScreen(userId: user.userId));
-                    Navigator.push(
-                            context, pageRouteWithAnimation.slideLeftToRight())
-                        .then((value) {
-                      _multiVideoPlayProvider.playVideo(screenNum);
-                    });
+                    if (_multiVideoPlayProvider.isOpenProfile == false) {
+                      _multiVideoPlayProvider.isOpenProfile = true;
+                      PageRouteWithSlideAnimation pageRouteWithAnimation =
+                          PageRouteWithSlideAnimation(
+                              ProfileScreen(userId: user.userId));
+                      Navigator.push(context,
+                              pageRouteWithAnimation.slideLeftToRight())
+                          .then((value) {
+                        _multiVideoPlayProvider.isOpenProfile = false;
+                        _multiVideoPlayProvider.playVideo(screenNum);
+                      });
+                    } else {
+                      Navigator.pop(context);
+                    }
+
                     _multiVideoPlayProvider.pauseVideo(screenNum);
                   },
                   child: Row(children: <Widget>[
