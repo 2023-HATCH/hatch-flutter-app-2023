@@ -10,7 +10,7 @@ import 'package:pocket_pose/domain/repository/share_repository.dart';
 
 class ShareRepositoryImpl implements ShareRepository {
   @override
-  Future<BaseResponse<ShareResponse>> putChatRoom(String videoId) async {
+  Future<BaseResponse<ShareResponse>> getVideoDetail(String videoId) async {
     const storage = FlutterSecureStorage();
     const storageKey = 'kakaoAccessToken';
     const refreshTokenKey = 'kakaoRefreshToken';
