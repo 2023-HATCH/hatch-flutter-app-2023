@@ -124,9 +124,8 @@ class MultiVideoPlayProvider with ChangeNotifier {
     if (currentIndexs[screenNum] >= 0 &&
         currentIndexs[screenNum] < videoControllers[screenNum].length) {
       videoControllers[screenNum][currentIndexs[screenNum]].pause();
-
-      WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void resetVideoPlayer(int screenNum) {

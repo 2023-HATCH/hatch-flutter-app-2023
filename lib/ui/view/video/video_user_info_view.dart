@@ -9,19 +9,28 @@ import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class VideoUserInfoFrame extends StatelessWidget {
-  VideoUserInfoFrame({super.key, required this.screenNum, required this.index});
+class VideoUserInfoView extends StatefulWidget {
+  const VideoUserInfoView(
+      {super.key, required this.screenNum, required this.index});
 
-  late MultiVideoPlayProvider _multiVideoPlayProvider;
   final int screenNum;
   final int index;
+
+  @override
+  State<VideoUserInfoView> createState() => _VideoUserInfoViewState();
+}
+
+class _VideoUserInfoViewState extends State<VideoUserInfoView> {
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   @override
   Widget build(BuildContext context) {
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    UserData user = _multiVideoPlayProvider.videos[screenNum][index].user;
-    VideoData video = _multiVideoPlayProvider.videos[screenNum][index];
+    UserData user =
+        _multiVideoPlayProvider.videos[widget.screenNum][widget.index].user;
+    VideoData video =
+        _multiVideoPlayProvider.videos[widget.screenNum][widget.index];
 
     return Positioned(
         bottom: 110,
@@ -36,6 +45,11 @@ class VideoUserInfoFrame extends StatelessWidget {
                   onTap: () {
                     if (_multiVideoPlayProvider.isOpenProfile == false) {
                       _multiVideoPlayProvider.isOpenProfile = true;
+
+                      debugPrint('비디오 스크린 넘:::: ${widget.screenNum}');
+
+                      _multiVideoPlayProvider.pauseVideo(widget.screenNum);
+
                       PageRouteWithSlideAnimation pageRouteWithAnimation =
                           PageRouteWithSlideAnimation(
                               ProfileScreen(userId: user.userId));
@@ -43,13 +57,12 @@ class VideoUserInfoFrame extends StatelessWidget {
                               pageRouteWithAnimation.slideLeftToRight())
                           .then((value) {
                         _multiVideoPlayProvider.isOpenProfile = false;
-                        _multiVideoPlayProvider.playVideo(screenNum);
+                        _multiVideoPlayProvider.playVideo(widget.screenNum);
                       });
                     } else {
                       Navigator.pop(context);
                     }
-
-                    _multiVideoPlayProvider.pauseVideo(screenNum);
+                    _multiVideoPlayProvider.pauseVideo(widget.screenNum);
                   },
                   child: Row(children: <Widget>[
                     ClipRRect(

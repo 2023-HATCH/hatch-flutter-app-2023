@@ -117,7 +117,9 @@ class _SearchDetailViewState extends State<SearchDetailView>
                       _searchProvider.usersResponse != null &&
                               _searchProvider.usersResponse!.isNotEmpty
                           ? UserListView(
-                              userList: _searchProvider.usersResponse!)
+                              userList: _searchProvider.usersResponse!,
+                              multiVideoPlayProvider: _multiVideoPlayProvider,
+                            )
                           : const Center(child: Text('검색된 결과가 없습니다.')),
                       _searchProvider.tagVideosResponse != null &&
                               _searchProvider

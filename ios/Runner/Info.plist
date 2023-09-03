@@ -12,6 +12,13 @@
 				</array>
 			</dict>
 		</array>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<!-- 카카오톡으로 로그인 -->
+			<string>kakaof03a21b3fa588715cb55730113dea1ab</string>
+			<!-- 카카오톡 공유 -->
+			<string>kakaof03a21b3fa588715cb55730113dea1ab</string>
+		</array>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>$(PRODUCT_NAME) 사진첩 접근 권한</string>
 		<key>NSCameraUsageDescription</key>
