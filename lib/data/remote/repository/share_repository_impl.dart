@@ -23,7 +23,7 @@ class ShareRepositoryImpl implements ShareRepository {
         "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
       };
       dio.options.contentType = "application/json";
-      var response = await dio.put('${AppUrl.videoUrl}/$videoId');
+      var response = await dio.get('${AppUrl.videoUrl}/$videoId');
 
       var responseJson = BaseResponse<ShareResponse>.fromJson(
           response.data, ShareResponse.fromJson(response.data['data']));
