@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screen_recording/flutter_screen_recording.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
@@ -11,9 +15,12 @@ import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/user_list_item.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/ui/screen/home/home_upload_screen.dart';
+import 'package:pocket_pose/ui/widget/custom_simple_dialog_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
+import 'package:pocket_pose/ui/widget/video/video_upload_dialog.dart';
 import 'package:provider/provider.dart';
 
 class PoPoStageScreen extends StatefulWidget {
@@ -170,6 +177,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
+    bool isRecording = false;
+
     return AppBar(
       centerTitle: true,
       title: const Text(
@@ -194,7 +203,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       actions: [
         TextButton(
           onPressed: () async {
-            bool isRecording = await FlutterScreenRecording.startRecordScreen(
+            isRecording = await FlutterScreenRecording.startRecordScreen(
               "my_screen_recording",
               titleNotification: "Recording Screen",
               messageNotification: "Tap to stop recording",
@@ -214,8 +223,37 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         TextButton(
           onPressed: () async {
             debugPrint('녹화 종료');
-            String path = await FlutterScreenRecording.stopRecordScreen;
-            debugPrint('녹화 파일 경로: $path');
+            String recordedPath = await FlutterScreenRecording.stopRecordScreen;
+            debugPrint('녹화 파일 경로: $recordedPath');
+
+            // test
+            isRecording = true;
+            recordedPath = "dd";
+
+            if (isRecording && recordedPath.isNotEmpty) {
+              File recordedFile = File(recordedPath);
+              // 업로드 다이얼로그 생성
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return VideoUploadDialog(
+                      title: '📸 업로드',
+                      message: '방금 진행한 ⭐ 포포 플레이 영상 ⭐을 커뮤니티에 업로드 하시겠습니까?',
+                      file: recordedFile,
+                      onCancel: () {
+                        Navigator.pop(context);
+                      },
+                      onConfirm: () async {
+                        // 업로드 스크린 생성
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomeUploadScreen(
+                                    uploadFile: recordedFile)));
+                      });
+                },
+              );
+            }
           },
           child: const Text(
             "Stop",
