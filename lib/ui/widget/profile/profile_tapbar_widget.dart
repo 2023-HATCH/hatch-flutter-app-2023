@@ -4,6 +4,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_edit_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_setting_screen.dart';
+import 'package:pocket_pose/ui/view/video/share_video_play_view.dart';
 import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 
 class ProfileTapbarWidget extends StatelessWidget {
@@ -89,6 +90,22 @@ class ProfileTapbarWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // 공유 페이지 테스트
+                  InkWell(
+                    onTap: () {
+                      PageRouteWithSlideAnimation pageRouteWithAnimation =
+                          PageRouteWithSlideAnimation(
+                        const ShareVideoPlayeView(),
+                      );
+                      Navigator.push(
+                          context, pageRouteWithAnimation.slideRitghtToLeft());
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
+                      child: SvgPicture.asset(
+                          'assets/icons/ic_profile_setting.svg'),
+                    ),
+                  ),
                   InkWell(
                     onTap: () {
                       PageRouteWithSlideAnimation pageRouteWithAnimation =
@@ -116,7 +133,7 @@ class ProfileTapbarWidget extends StatelessWidget {
                       child: SvgPicture.asset(
                           'assets/icons/ic_profile_setting.svg'),
                     ),
-                  )
+                  ),
                 ],
               ),
             ],

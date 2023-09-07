@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/share_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/video_data.dart';
+import 'package:pocket_pose/ui/view/video/share_video_play_view.dart';
+import 'package:pocket_pose/ui/view/video/video_play_view.dart';
 import 'package:provider/provider.dart';
 
 class ShareScreen extends StatefulWidget {
@@ -12,12 +17,25 @@ class ShareScreen extends StatefulWidget {
 
 class _ShareScreenState extends State<ShareScreen> {
   late ShareProviderImpl _shareProvider;
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
+  late VideoData _video;
 
   @override
   void initState() {
     _shareProvider = Provider.of<ShareProviderImpl>(context, listen: false);
     super.initState();
     _shareProvider = Provider.of<ShareProviderImpl>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+  }
+
+  Future<bool> _initVideo() async {
+    _video = await _shareProvider.getVideoDetail(widget.videoUuid);
+
+    if (mounted) {
+      _multiVideoPlayProvider.addVideo(5, _video);
+    }
+    return true;
   }
 
   @override
@@ -25,32 +43,16 @@ class _ShareScreenState extends State<ShareScreen> {
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.blue,
-      body: FutureBuilder(
-        future: _shareProvider.getVideoDetail(widget.videoUuid),
+      body: FutureBuilder<bool>(
+        future: _initVideo(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  snapshot.data!.data.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  '${snapshot.data!.data.user.nickname} / ${snapshot.data!.data.tag}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+          if (snapshot.connectionState == ConnectionState.done) {
+            return const ShareVideoPlayeView();
+          } else {
+            return Center(
+              child: CircularProgressIndicator(color: AppColor.purpleColor),
             );
           }
-          return const Text("로딩");
         },
       ),
     );

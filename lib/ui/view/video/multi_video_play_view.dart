@@ -3,7 +3,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/request/videos_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
-import 'package:pocket_pose/ui/widget/video/video_player_widget.dart';
+import 'package:pocket_pose/ui/view/video/video_play_view.dart';
 import 'package:pocket_pose/ui/loader/music_spinner_loader.dart';
 import 'package:provider/provider.dart';
 
@@ -188,7 +188,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
                           // 비디오가 준비된 경우
                           _multiVideoPlayProvider.loadings[widget.screenNum] =
                               true;
-                          return VideoPlayerWidget(
+                          return VideoPlayView(
                             screenNum: widget.screenNum,
                             index: index,
                           ); // 비디오 플레이어 생성
@@ -201,7 +201,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
                           _multiVideoPlayProvider.loadings[widget.screenNum] =
                               true;
                           return Stack(children: [
-                            VideoPlayerWidget(
+                            VideoPlayView(
                               screenNum: widget.screenNum,
                               index: index,
                             ),
@@ -285,7 +285,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
                         // 비디오가 준비된 경우
                         _multiVideoPlayProvider.loadings[widget.screenNum] =
                             true;
-                        return VideoPlayerWidget(
+                        return VideoPlayView(
                           screenNum: widget.screenNum,
                           index: index,
                         ); // 비디오 플레이어 생성
@@ -297,7 +297,7 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
                         _multiVideoPlayProvider.loadings[widget.screenNum] =
                             true;
                         return Stack(children: [
-                          VideoPlayerWidget(
+                          VideoPlayView(
                             screenNum: widget.screenNum,
                             index: index,
                           ),

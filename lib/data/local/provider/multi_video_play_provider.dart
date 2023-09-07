@@ -8,23 +8,24 @@ import '../../remote/provider/video_provider.dart';
 class MultiVideoPlayProvider with ChangeNotifier {
   final int pageSize = 3;
 
-  // 홈: 0, 업로드: 1, 좋아요: 2, 검색: 3, 태그 검색: 4
+  // 홈: 0, 업로드: 1, 좋아요: 2, 검색: 3, 태그 검색: 4, 공유: 5
   late List<List<CachedVideoPlayerController>> videoControllers = [
+    [],
     [],
     [],
     [],
     [],
     []
   ];
-  late List<List<Future<void>>> videoFutures = [[], [], [], [], []];
+  late List<List<Future<void>>> videoFutures = [[], [], [], [], [], []];
   late List<PageController> pageControllers =
-      List.generate(5, (_) => PageController());
+      List.generate(6, (_) => PageController());
 
-  List<List<VideoData>> videos = [[], [], [], [], []];
-  List<bool> loadings = [false, false, false, false, false];
-  List<bool> isLasts = [false, false, false, false, false];
-  List<int> currentIndexs = [0, 0, 0, 0, 0];
-  List<int> currentPages = [0, 0, 0, 0, 0];
+  List<List<VideoData>> videos = [[], [], [], [], [], []];
+  List<bool> loadings = [false, false, false, false, false, false];
+  List<bool> isLasts = [false, false, false, false, false, false];
+  List<int> currentIndexs = [0, 0, 0, 0, 0, 0];
+  List<int> currentPages = [0, 0, 0, 0, 0, 0];
 
   bool isOpenProfile = false;
 
@@ -36,6 +37,30 @@ class MultiVideoPlayProvider with ChangeNotifier {
   Duration _videoDuration = Duration.zero;
   List<bool> getAddView = List.generate(200, (index) => false);
   List<bool> videoEnd = List.generate(200, (index) => false);
+
+  void addVideo(int screenNum, VideoData newVideo) {
+    debugPrint('비디오 스크린 번호: $screenNum');
+    videos[screenNum].add(newVideo);
+
+    // Add VideoPlayer Controller
+    videoControllers[screenNum]
+        .add(CachedVideoPlayerController.network(newVideo.videoUrl));
+
+    videoFutures[screenNum]
+        .add(videoControllers[screenNum].last.initialize().then((value) {
+      videoControllers[screenNum][currentIndexs[screenNum]]
+          .setLooping(true); // 영상 무한 반복
+      videoControllers[screenNum][currentIndexs[screenNum]]
+          .setVolume(1.0); // 볼륨 설정
+
+      if (screenNum == 0) {
+        playVideo(screenNum);
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
+      debugPrint('페이지: 비디오 로딩 하나끝');
+    }));
+  }
 
   void addVideos(int screenNum, List<VideoData> newVideoList) {
     debugPrint('비디오 스크린 번호: $screenNum');
