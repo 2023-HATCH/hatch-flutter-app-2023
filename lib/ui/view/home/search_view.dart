@@ -26,6 +26,7 @@ class _SearchViewState extends State<SearchView> {
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
           onTap: () {
+            debugPrint('비디오 스크린 넘: ${widget.screenNum}');
             PageRouteWithSlideAnimation pageRouteWithAnimation =
                 PageRouteWithSlideAnimation(ProfileVideoScreen(
               screenNum: widget.screenNum, // 검색 페이지

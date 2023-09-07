@@ -7,7 +7,7 @@ part of 'follow_data.dart';
 // **************************************************************************
 
 FollowData _$FollowDataFromJson(Map<String, dynamic> json) => FollowData(
-      user: UserData.fromJson(json['user'] as Map<String, dynamic>),
+      user: UserData.fromJson(json),
       introduce: json['introduce'] as String?,
       isFollowing: json['isFollowing'] as bool,
     );

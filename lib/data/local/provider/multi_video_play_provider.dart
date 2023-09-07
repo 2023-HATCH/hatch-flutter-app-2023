@@ -26,6 +26,8 @@ class MultiVideoPlayProvider with ChangeNotifier {
   List<int> currentIndexs = [0, 0, 0, 0, 0];
   List<int> currentPages = [0, 0, 0, 0, 0];
 
+  bool isOpenProfile = false;
+
   // 조회수
   final double endVideoViewAmount = 0.2; //20퍼센트 이상 시청했을 경우 조회수 증가
   late BuildContext mainContext;
@@ -122,9 +124,8 @@ class MultiVideoPlayProvider with ChangeNotifier {
     if (currentIndexs[screenNum] >= 0 &&
         currentIndexs[screenNum] < videoControllers[screenNum].length) {
       videoControllers[screenNum][currentIndexs[screenNum]].pause();
-
-      WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void resetVideoPlayer(int screenNum) {

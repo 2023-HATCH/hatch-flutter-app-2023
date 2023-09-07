@@ -26,6 +26,10 @@ class ProfileProvider extends ChangeNotifier {
   bool get isGetProfilDone => _isGetProfilDone;
   bool get isVideoLoadingDone => _isVideoLoadingDone;
 
+  set profileResponse(ProfileResponse? value) {
+    _profileResponse = value;
+  }
+
   set isGetProfilDone(bool value) {
     _isGetProfilDone = value;
   }

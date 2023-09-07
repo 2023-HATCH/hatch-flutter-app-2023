@@ -8,6 +8,8 @@ import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/comment_data.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -251,45 +253,60 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50),
-                                                      child: _commentList?[
-                                                                      index]
-                                                                  .user
-                                                                  .profileImg ==
-                                                              null
-                                                          ? Image.asset(
-                                                              _profileImg,
-                                                              width: 34,
-                                                              height: 34,
-                                                            )
-                                                          : Image.network(
-                                                              _commentList![
-                                                                      index]
-                                                                  .user
-                                                                  .profileImg!,
-                                                              loadingBuilder:
-                                                                  (context,
-                                                                      child,
-                                                                      loadingProgress) {
-                                                                if (loadingProgress ==
-                                                                    null) {
-                                                                  return child;
-                                                                }
-                                                                return Center(
-                                                                  child:
-                                                                      CircularProgressIndicator(
-                                                                    color: AppColor
-                                                                        .purpleColor,
-                                                                  ),
-                                                                );
-                                                              },
-                                                              width: 34,
-                                                              height: 34,
-                                                              fit: BoxFit.cover,
-                                                            )),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      PageRouteWithSlideAnimation
+                                                          pageRouteWithAnimation =
+                                                          PageRouteWithSlideAnimation(
+                                                              ProfileScreen(
+                                                                  userId: user!
+                                                                      .userId));
+                                                      Navigator.push(
+                                                          context,
+                                                          pageRouteWithAnimation
+                                                              .slideLeftToRight());
+                                                    },
+                                                    child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(50),
+                                                        child: _commentList?[
+                                                                        index]
+                                                                    .user
+                                                                    .profileImg ==
+                                                                null
+                                                            ? Image.asset(
+                                                                _profileImg,
+                                                                width: 34,
+                                                                height: 34,
+                                                              )
+                                                            : Image.network(
+                                                                _commentList![
+                                                                        index]
+                                                                    .user
+                                                                    .profileImg!,
+                                                                loadingBuilder:
+                                                                    (context,
+                                                                        child,
+                                                                        loadingProgress) {
+                                                                  if (loadingProgress ==
+                                                                      null) {
+                                                                    return child;
+                                                                  }
+                                                                  return Center(
+                                                                    child:
+                                                                        CircularProgressIndicator(
+                                                                      color: AppColor
+                                                                          .purpleColor,
+                                                                    ),
+                                                                  );
+                                                                },
+                                                                width: 34,
+                                                                height: 34,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              )),
+                                                  ),
                                                   const Padding(
                                                       padding: EdgeInsets.only(
                                                           left: 8)),
@@ -298,13 +315,28 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      Text(
-                                                        _commentList?[index]
-                                                                .user
-                                                                .nickname ??
-                                                            '',
-                                                        style: const TextStyle(
-                                                            fontSize: 12),
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          PageRouteWithSlideAnimation
+                                                              pageRouteWithAnimation =
+                                                              PageRouteWithSlideAnimation(
+                                                                  ProfileScreen(
+                                                                      userId: user!
+                                                                          .userId));
+                                                          Navigator.push(
+                                                              context,
+                                                              pageRouteWithAnimation
+                                                                  .slideLeftToRight());
+                                                        },
+                                                        child: Text(
+                                                          _commentList?[index]
+                                                                  .user
+                                                                  .nickname ??
+                                                              '',
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 12),
+                                                        ),
                                                       ),
                                                       const Padding(
                                                           padding:
