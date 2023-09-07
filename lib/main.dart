@@ -13,6 +13,7 @@ import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/like_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
+import 'package:pocket_pose/data/remote/provider/share_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
@@ -54,6 +55,7 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (_) => StageProviderImpl()),
     ChangeNotifierProvider(create: (_) => SocketStageProviderImpl()),
     ChangeNotifierProvider(create: (_) => StageTalkProviderImpl()),
+    ChangeNotifierProvider(create: (_) => ShareProviderImpl()),
   ], child: MyApp(showOnBoarding: showOnBoarding)));
 }
 
