@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_recording/flutter_screen_recording.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
@@ -191,6 +192,36 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         ),
       ),
       actions: [
+        TextButton(
+          onPressed: () async {
+            bool isRecording = await FlutterScreenRecording.startRecordScreen(
+              "my_screen_recording",
+              titleNotification: "Recording Screen",
+              messageNotification: "Tap to stop recording",
+            );
+
+            if (isRecording) {
+              debugPrint("녹화가 시작되었습니다.");
+            } else {
+              debugPrint("녹화 시작에 실패했습니다.");
+            }
+          },
+          child: const Text(
+            "Start",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            debugPrint('녹화 종료');
+            String path = await FlutterScreenRecording.stopRecordScreen;
+            debugPrint('녹화 파일 경로: $path');
+          },
+          child: const Text(
+            "Stop",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
         _buildUserCountWidget(),
       ],
     );
