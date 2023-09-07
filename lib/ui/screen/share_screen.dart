@@ -4,7 +4,6 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/share_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:pocket_pose/ui/view/video/share_video_play_view.dart';
-import 'package:pocket_pose/ui/view/video/video_play_view.dart';
 import 'package:provider/provider.dart';
 
 class ShareScreen extends StatefulWidget {
@@ -36,6 +35,13 @@ class _ShareScreenState extends State<ShareScreen> {
       _multiVideoPlayProvider.addVideo(5, _video);
     }
     return true;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _multiVideoPlayProvider.resetVideoPlayer(5);
   }
 
   @override
