@@ -296,10 +296,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   Future<bool> permission() async {
-    await [Permission.camera, Permission.storage].request();
+    await [Permission.camera, Permission.storage, Permission.microphone]
+        .request();
 
     if (await Permission.camera.isGranted &&
-        await Permission.storage.isGranted) {
+        await Permission.storage.isGranted &&
+        await Permission.microphone.isGranted) {
       goHomepage();
       return Future.value(true);
     } else {
