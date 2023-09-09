@@ -33,7 +33,7 @@
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
-              />
+              />         
             <meta-data
               android:name="com.google.firebase.messaging.default_notification_channel_id"
               android:value="high_importance_channel"
@@ -74,6 +74,17 @@
                     android:scheme="kakaof03a21b3fa588715cb55730113dea1ab" />
             </intent-filter>
         </activity>
+         <!-- scheduled notifications 화면에 출력할려면 추가 -->
+            <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+            <!--재부팅시,업데이트시,재시작시 -->
+            <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+                <intent-filter>
+                    <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                    <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                    <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                    <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+                    </intent-filter>
+            </receiver>   
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
