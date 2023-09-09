@@ -2,22 +2,22 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_response.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/entity/response/stage_enter_response.dart';
 import 'package:pocket_pose/data/entity/response/stage_user_list_response.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/repository/stage_repository.dart';
 
 class StageRepositoryImpl implements StageRepository {
+  KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
+
   @override
   Future<BaseResponse<StageUserListResponse>> getUserList() async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    const refreshTokenKey = 'kakaoRefreshToken';
-    String accessToken = await storage.read(key: storageKey) ?? "";
-    String refreshToken = await storage.read(key: refreshTokenKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
     var dio = Dio();
     try {
@@ -39,11 +39,9 @@ class StageRepositoryImpl implements StageRepository {
   @override
   Future<BaseResponse<StageEnterResponse>> getStageEnter(
       StageEnterRequest request) async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    const refreshTokenKey = 'kakaoRefreshToken';
-    String accessToken = await storage.read(key: storageKey) ?? "";
-    String refreshToken = await storage.read(key: refreshTokenKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
     var dio = Dio();
     try {
@@ -66,11 +64,9 @@ class StageRepositoryImpl implements StageRepository {
 
   @override
   Future<void> getStageCatch() async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    const refreshTokenKey = 'kakaoRefreshToken';
-    String accessToken = await storage.read(key: storageKey) ?? "";
-    String refreshToken = await storage.read(key: refreshTokenKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
 
     var dio = Dio();
     try {
