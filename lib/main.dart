@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/route_manager.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:pocket_pose/config/fcm/notification_service.dart';
 import 'package:pocket_pose/config/share/dynamic_link.dart';
 import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
@@ -44,74 +42,10 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await notificationService.init();
   DynamicLink().setup();
-  // 푸시알림 설정
-  var initializationSettingsAndroid =
-      const AndroidInitializationSettings('@mipmap/ic_launcher');
-  var initializationSettingsIOS = const DarwinInitializationSettings();
-  var initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse: (NotificationResponse details) async {
-      // 푸시알림 클릭 시 동작
-      if (details.payload != null) {
-        try {
-          Map<String, dynamic> notificationPayload =
-              jsonDecode(details.payload!);
-          switch (notificationPayload['type']) {
-            case "SEND_CHAT_MESSAGE":
-              Get.to(
-                  transition: Transition.rightToLeft,
-                  () => ChatDetailScreen(
-                        chatRoomId: notificationPayload['chatRoomId'],
-                        opponentUserNickName: notificationPayload['title'],
-                      ));
-              break;
-          }
-        } catch (error) {
-          debugPrint('mmm Notification payload error $error');
-        }
-      }
-    },
-  );
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true, badge: true, sound: true);
-  await FirebaseMessaging.instance.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'popo_notification', 'popo_notification',
-      description: 'popo 알림', importance: Importance.max);
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    RemoteNotification? notification = message.notification;
-    if (message.notification != null) {
-      message.data.putIfAbsent('title', () => notification?.title);
-      flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification?.title,
-          notification?.body,
-          payload: jsonEncode(message.data),
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channelDescription: channel.description,
-            ),
-          ));
-    }
+  FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    setNotificationHandler(message.data);
   });
 
   runApp(MultiProvider(providers: [
@@ -148,5 +82,24 @@ class MyApp extends StatelessWidget {
       home: showOnBoarding ? const OnBoardingScreen() : const MainScreen(),
       navigatorKey: navigatorKey,
     );
+  }
+}
+
+void setNotificationHandler(Map<String, dynamic>? map) async {
+  if (map != null) {
+    try {
+      switch (map['type']) {
+        case "SEND_CHAT_MESSAGE":
+          Get.to(
+              transition: Transition.rightToLeft,
+              () => ChatDetailScreen(
+                    chatRoomId: map['chatRoomId'],
+                    opponentUserNickName: map['opponentUserNickname'],
+                  ));
+          break;
+      }
+    } catch (error) {
+      debugPrint('mmm Notification payload error $error');
+    }
   }
 }
