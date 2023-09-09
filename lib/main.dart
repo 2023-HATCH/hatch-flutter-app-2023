@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -22,6 +24,7 @@ import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_talk_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/firebase_options.dart';
+import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/screen/on_boarding_screen.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +46,37 @@ Future<void> main() async {
   );
   DynamicLink().setup();
   // 푸시알림 설정
+  var initializationSettingsAndroid =
+      const AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationSettingsIOS = const DarwinInitializationSettings();
+  var initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse details) async {
+      // 푸시알림 클릭 시 동작
+      if (details.payload != null) {
+        try {
+          Map<String, dynamic> notificationPayload =
+              jsonDecode(details.payload!);
+          switch (notificationPayload['type']) {
+            case "SEND_CHAT_MESSAGE":
+              Get.to(
+                  transition: Transition.rightToLeft,
+                  () => ChatDetailScreen(
+                        chatRoomId: notificationPayload['chatRoomId'],
+                        opponentUserNickName: notificationPayload['title'],
+                      ));
+              break;
+          }
+        } catch (error) {
+          debugPrint('mmm Notification payload error $error');
+        }
+      }
+    },
+  );
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true, badge: true, sound: true);
   await FirebaseMessaging.instance.requestPermission(
@@ -57,8 +91,6 @@ Future<void> main() async {
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'popo_notification', 'popo_notification',
       description: 'popo 알림', importance: Importance.max);
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
@@ -66,13 +98,19 @@ Future<void> main() async {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     RemoteNotification? notification = message.notification;
     if (message.notification != null) {
+      message.data.putIfAbsent('title', () => notification?.title);
       flutterLocalNotificationsPlugin.show(
           notification.hashCode,
           notification?.title,
           notification?.body,
+          payload: jsonEncode(message.data),
           NotificationDetails(
-              android: AndroidNotificationDetails(channel.id, channel.name,
-                  channelDescription: channel.description)));
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+            ),
+          ));
     }
   });
 
