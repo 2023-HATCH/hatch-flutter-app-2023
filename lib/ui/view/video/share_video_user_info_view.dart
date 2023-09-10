@@ -37,7 +37,7 @@ class _ShareVideoUserInfoViewState extends State<ShareVideoUserInfoView> {
         left: 20,
         child: SizedBox(
           //color: Colors.green,
-          width: 300,
+          width: 270,
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[

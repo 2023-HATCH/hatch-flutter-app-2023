@@ -30,7 +30,7 @@ class _ShareVideoRightViewState extends State<ShareVideoRightView> {
 
     return Positioned(
       right: 12,
-      bottom: 30,
+      bottom: 40,
       child: SizedBox(
         width: 60,
         child: Column(

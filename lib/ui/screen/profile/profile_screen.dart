@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';

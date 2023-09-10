@@ -7,10 +7,7 @@ import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/ui/screen/chat/chat_room_list_screen.dart';
 
 import 'package:pocket_pose/ui/screen/home/home_search_screen.dart';
-import 'package:pocket_pose/ui/screen/share_screen.dart';
 import 'package:pocket_pose/ui/view/video/multi_video_play_view.dart';
-import 'package:pocket_pose/ui/view/video/share_video_play_view.dart';
-import 'package:pocket_pose/ui/view/video/video_play_view.dart';
 import 'package:pocket_pose/ui/widget/home/upload_button_widget.dart';
 import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
@@ -55,23 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.transparent, //appBar 투명색
           elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
           actions: [
-            // 공유 페이지 테스트
-            InkWell(
-              onTap: () {
-                PageRouteWithSlideAnimation pageRouteWithAnimation =
-                    PageRouteWithSlideAnimation(
-                  const ShareScreen(
-                    videoUuid: "44de7bec-2bbd-43a7-ab56-ee0f31106da5",
-                  ),
-                );
-                Navigator.push(
-                    context, pageRouteWithAnimation.slideRitghtToLeft());
-              },
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(0, 36, 14, 0),
-                child: SvgPicture.asset('assets/icons/ic_profile_setting.svg'),
-              ),
-            ),
             GestureDetector(
                 onTap: () async {
                   if (await _loginProvider.checkAccessToken()) {
