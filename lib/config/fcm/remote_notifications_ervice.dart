@@ -27,12 +27,5 @@ class RemoteNotificationService {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       setNotificationHandler(message.data);
     });
-
-    // FirebaseMessaging.onBackgroundMessage((message) {
-
-    //     setNotificationHandler(message.data);
-
-    //   return Future.value();
-    // });
   }
 }
