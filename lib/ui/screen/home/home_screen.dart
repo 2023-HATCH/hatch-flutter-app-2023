@@ -30,10 +30,27 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
     _loginProvider.mainContext = context;
+
+    debugPrint('홈! 실행된');
+    debugPrint('홈! 실행 ${_multiVideoPlayProvider.videoControllers[0].length}');
+
+    if (_multiVideoPlayProvider.videoControllers[0].isNotEmpty) {
+      setState(() {
+        _multiVideoPlayProvider.playVideo(0);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('홈! 실행된');
+    debugPrint('홈! 실행 ${_multiVideoPlayProvider.videoControllers[0].length}');
+
+    if (_multiVideoPlayProvider.videoControllers[0].isNotEmpty) {
+      _multiVideoPlayProvider.playVideo(0);
+      setState(() {});
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: GestureDetector(

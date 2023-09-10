@@ -139,7 +139,7 @@ class _MainScreenState extends State<MainScreen>
 
   void _playClickSound() {
     AssetsAudioPlayer.newPlayer()
-        .open(Audio("assets/audios/sound_catch_click.mp3"));
+        .open(Audio("assets/audios/sound_popo_click.mp3"));
   }
 
   void _showPoPoStageScreen() {
