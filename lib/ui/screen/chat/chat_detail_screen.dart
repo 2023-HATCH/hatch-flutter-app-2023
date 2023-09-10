@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
@@ -23,6 +24,7 @@ class ChatDetailScreen extends StatefulWidget {
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late SocketChatProviderImpl _socketChatProvider;
   late ChatProviderImpl _chatProvider;
   late KaKaoLoginProvider _loginProvider;
@@ -44,6 +46,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.initState();
 
     _initUserId();
+
+    _multiVideoPlayProvider = Provider.of(context, listen: false);
+    _multiVideoPlayProvider.pauseVideo(0);
+
     _scrollController.addListener(_scrollListener);
 
     // 선택한 채팅방 채팅메세지 조회
@@ -61,6 +67,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void dispose() {
     super.dispose();
 
+    _multiVideoPlayProvider.playVideo(0);
     _scrollController.dispose();
   }
 
