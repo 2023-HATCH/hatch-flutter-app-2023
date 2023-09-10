@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/entity/base_response.dart';
 import 'package:pocket_pose/data/entity/response/chat_room_list_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
@@ -20,7 +21,7 @@ class ChatRoomListScreen extends StatefulWidget {
 class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late ChatProviderImpl _chatProvider;
-  Future<ChatRoomListResponse>? chatList;
+  Future<BaseResponse<ChatRoomListResponse>>? chatList;
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
   @override
   Widget build(BuildContext context) {
     _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
+    chatList = _chatProvider.getChatRoomList();
 
     return Scaffold(
       appBar: _buildAppBar(context),
@@ -54,7 +56,7 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
           ChatSearchUserTextFieldWidget(
               showChatDetailScreen: showChatDetailScreen),
           FutureBuilder(
-            future: _chatProvider.getChatRoomList(),
+            future: chatList,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Expanded(
@@ -90,7 +92,10 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
       itemCount: chatRooms.length,
       itemBuilder: (context, index) {
         final chatRoom = chatRooms[index];
-        return ChatRoomListItemWidget(chatRoom: chatRoom);
+        return ChatRoomListItemWidget(
+          chatRoom: chatRoom,
+          showChatDetailScreen: showChatDetailScreen,
+        );
       },
       separatorBuilder: (context, index) => const SizedBox(
         width: 40,
@@ -127,7 +132,9 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
     ));
     Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft())
         .then((value) {
-      setState(() {});
+      setState(() {
+        chatList = _chatProvider.getChatRoomList();
+      });
     });
   }
 }
