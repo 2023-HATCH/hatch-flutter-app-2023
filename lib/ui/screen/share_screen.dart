@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
@@ -9,6 +10,7 @@ import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:pocket_pose/ui/loader/music_spinner_loader.dart';
+import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/view/video/share_video_play_view.dart';
 import 'package:pocket_pose/ui/widget/custom_simple_dialog_widget.dart';
 import 'package:provider/provider.dart';
@@ -61,8 +63,14 @@ class _ShareScreenState extends State<ShareScreen> {
             Icons.arrow_back_ios_new_rounded,
             color: AppColor.purpleColor,
           ),
-          onPressed: () {
-            Navigator.pop(context);
+          onPressed: () async {
+            _multiVideoPlayProvider.resetVideoPlayer(0);
+
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const MainScreen()),
+              (route) => false,
+            );
           },
         ),
         elevation: 0,
