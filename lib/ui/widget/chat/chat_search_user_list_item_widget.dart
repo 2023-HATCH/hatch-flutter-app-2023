@@ -16,15 +16,6 @@ class ChatSearchUserListItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
 
-    // showChatDetailScreen(String chatRoomId) {
-    //   PageRouteWithSlideAnimation pageRouteWithAnimation =
-    //       PageRouteWithSlideAnimation(ChatDetailScreen(
-    //     chatRoomId: chatRoomId,
-    //     opponentUserNickName: chatUser.nickname,
-    //   ));
-    //   Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
-    // }
-
     return SafeArea(
       child: InkWell(
         onTap: () async {

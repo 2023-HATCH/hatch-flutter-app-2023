@@ -1,8 +1,10 @@
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:pocket_pose/config/fcm/notification_service.dart';
 import 'package:pocket_pose/config/share/dynamic_link.dart';
 import 'package:pocket_pose/data/local/provider/local_pref_provider.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
@@ -20,6 +22,7 @@ import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_talk_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/firebase_options.dart';
+import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/screen/on_boarding_screen.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +42,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await notificationService.init();
   DynamicLink().setup();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => MultiVideoPlayProvider()),
@@ -76,4 +81,29 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
     );
   }
+}
+
+void setNotificationHandler(Map<String, dynamic>? map) async {
+  if (map != null) {
+    try {
+      switch (map['type']) {
+        case "SEND_CHAT_MESSAGE":
+          Get.to(
+              transition: Transition.rightToLeft,
+              () => ChatDetailScreen(
+                    chatRoomId: map['chatRoomId'],
+                    opponentUserNickName: map['opponentUserNickname'],
+                  ));
+          break;
+      }
+    } catch (error) {
+      debugPrint('mmm Notification payload error $error');
+    }
+  }
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("mmm ${message.data}");
+  await Firebase.initializeApp()
+      .then((_) => setNotificationHandler(message.data));
 }
