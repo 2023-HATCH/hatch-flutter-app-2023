@@ -116,7 +116,7 @@ class ProfileTapbarWidget extends StatelessWidget {
                       child: SvgPicture.asset(
                           'assets/icons/ic_profile_setting.svg'),
                     ),
-                  )
+                  ),
                 ],
               ),
             ],

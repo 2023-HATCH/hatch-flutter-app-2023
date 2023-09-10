@@ -1,37 +1,45 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocket_pose/config/api_url.dart';
-import 'package:pocket_pose/data/entity/base_response.dart';
-import 'package:pocket_pose/data/entity/response/share_response.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+import 'package:pocket_pose/domain/entity/video_data.dart';
 import 'package:pocket_pose/domain/repository/share_repository.dart';
 
 class ShareRepositoryImpl implements ShareRepository {
+  KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
+
   @override
-  Future<BaseResponse<ShareResponse>> getVideoDetail(String videoId) async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    const refreshTokenKey = 'kakaoRefreshToken';
-    String accessToken = await storage.read(key: storageKey) ?? "";
-    String refreshToken = await storage.read(key: refreshTokenKey) ?? "";
+  Future<VideoData> getVideoDetail(String videoId) async {
+    final url = Uri.parse('${AppUrl.videoUrl}/$videoId');
 
-    var dio = Dio();
-    try {
-      dio.options.headers = {
+    await loginProvider.checkAccessToken();
+
+    final accessToken = loginProvider.accessToken;
+    final refreshToken = loginProvider.refreshToken;
+
+    final headers = <String, String>{
+      'Content-Type': 'application/json;charset=UTF-8',
+      if (accessToken != null && refreshToken != null)
         "cookie": "x-access-token=$accessToken;x-refresh-token=$refreshToken"
-      };
-      dio.options.contentType = "application/json";
-      var response = await dio.get('${AppUrl.videoUrl}/$videoId');
+    };
 
-      var responseJson = BaseResponse<ShareResponse>.fromJson(
-          response.data, ShareResponse.fromJson(response.data['data']));
+    final response = await http.get(url, headers: headers);
 
-      return responseJson;
-    } catch (e) {
-      debugPrint("mmm ShareRepositoryImpl catch: ${e.toString()}");
+    if (response.statusCode == 200) {
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      debugPrint("공유 비디오 조회 성공! json: $json");
+
+      final dynamic videoJson = json['data'];
+      final VideoData videoData = VideoData.fromJson(videoJson);
+
+      loginProvider.updateToken(response.headers);
+
+      return videoData;
+    } else {
+      throw Exception('공유 비디오 조회 실패');
     }
-    throw UnimplementedError();
   }
 }

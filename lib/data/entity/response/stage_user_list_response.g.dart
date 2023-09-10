@@ -6,6 +6,7 @@ part of 'stage_user_list_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+// ignore: unused_element
 StageUserListResponse _$StageUserListResponseFromJson(
         Map<String, dynamic> json) =>
     StageUserListResponse(

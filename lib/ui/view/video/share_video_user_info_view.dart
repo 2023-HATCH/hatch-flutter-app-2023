@@ -9,18 +9,18 @@ import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class VideoUserInfoView extends StatefulWidget {
-  const VideoUserInfoView(
+class ShareVideoUserInfoView extends StatefulWidget {
+  const ShareVideoUserInfoView(
       {super.key, required this.screenNum, required this.index});
 
   final int screenNum;
   final int index;
 
   @override
-  State<VideoUserInfoView> createState() => _VideoUserInfoViewState();
+  State<ShareVideoUserInfoView> createState() => _ShareVideoUserInfoViewState();
 }
 
-class _VideoUserInfoViewState extends State<VideoUserInfoView> {
+class _ShareVideoUserInfoViewState extends State<ShareVideoUserInfoView> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
 
   @override
@@ -33,7 +33,7 @@ class _VideoUserInfoViewState extends State<VideoUserInfoView> {
         _multiVideoPlayProvider.videos[widget.screenNum][widget.index];
 
     return Positioned(
-        bottom: 110,
+        bottom: 40,
         left: 20,
         child: SizedBox(
           //color: Colors.green,

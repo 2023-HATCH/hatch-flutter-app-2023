@@ -1,27 +1,26 @@
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
-import 'package:pocket_pose/ui/view/video/video_right_view.dart';
-import 'package:pocket_pose/ui/view/video/video_user_info_view.dart';
+import 'package:pocket_pose/ui/view/video/share_video_right_view.dart';
+import 'package:pocket_pose/ui/view/video/share_video_user_info_view.dart';
 import 'package:provider/provider.dart';
 
-class VideoPlayerWidget extends StatefulWidget {
-  const VideoPlayerWidget(
-      {super.key, required this.screenNum, required this.index});
-
-  final int screenNum;
-  final int index;
+class ShareVideoPlayeView extends StatefulWidget {
+  const ShareVideoPlayeView({super.key});
 
   @override
-  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+  State<ShareVideoPlayeView> createState() => _VideoPlayerWidgetState();
 }
 
-class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
+class _VideoPlayerWidgetState extends State<ShareVideoPlayeView>
     with SingleTickerProviderStateMixin {
   bool isPlaying = false;
   bool isIconVisible = false;
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late AnimationController _animationController;
+
+  final int screenNum = 5;
+  final int index = 0;
 
   @override
   void initState() {
@@ -66,17 +65,17 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
       children: <Widget>[
         GestureDetector(
           onTap: () {
-            final controller = _multiVideoPlayProvider
-                .videoControllers[widget.screenNum][widget.index];
+            final controller =
+                _multiVideoPlayProvider.videoControllers[screenNum][index];
             if (controller.value.isPlaying) {
-              _multiVideoPlayProvider.pauseVideo(widget.screenNum);
+              _multiVideoPlayProvider.pauseVideo(screenNum);
               isPlaying = false;
               _toggleIconVisibility(true);
               Future.delayed(const Duration(milliseconds: 800), () {
                 _toggleIconVisibility(false);
               });
             } else {
-              _multiVideoPlayProvider.playVideo(widget.screenNum);
+              _multiVideoPlayProvider.playVideo(screenNum);
               isPlaying = true;
               _toggleIconVisibility(true);
               Future.delayed(const Duration(milliseconds: 800), () {
@@ -84,8 +83,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
               });
             }
           },
-          child: CachedVideoPlayer(_multiVideoPlayProvider
-              .videoControllers[widget.screenNum][widget.index]),
+          child: CachedVideoPlayer(
+              _multiVideoPlayProvider.videoControllers[screenNum][index]),
         ),
         Positioned.fill(
           child: AnimatedBuilder(
@@ -106,10 +105,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
             },
           ),
         ),
-        VideoRightFrame(screenNum: widget.screenNum, index: widget.index),
-        VideoUserInfoView(
-          screenNum: widget.screenNum,
-          index: widget.index,
+        ShareVideoRightView(screenNum: screenNum, index: index),
+        ShareVideoUserInfoView(
+          screenNum: screenNum,
+          index: index,
         ),
       ],
     );

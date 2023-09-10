@@ -1,6 +1,5 @@
-import 'package:pocket_pose/data/entity/base_response.dart';
-import 'package:pocket_pose/data/entity/response/share_response.dart';
+import 'package:pocket_pose/domain/entity/video_data.dart';
 
 abstract class ShareRepository {
-  Future<BaseResponse<ShareResponse>> getVideoDetail(String videoId);
+  Future<VideoData> getVideoDetail(String videoId);
 }
