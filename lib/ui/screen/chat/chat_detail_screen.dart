@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
@@ -67,7 +68,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void dispose() {
     super.dispose();
 
-    _multiVideoPlayProvider.playVideo(0);
     _scrollController.dispose();
   }
 
@@ -90,21 +90,26 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     // 소켓 반응 처리
     _onSocketResponse();
 
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      backgroundColor: AppColor.purpleColor3,
-      body: Column(
-        children: [
-          Container(
-            color: AppColor.purpleColor,
-            height: 3,
-          ),
-          _buildChatsArea(),
-          const SizedBox(
-            height: 10,
-          ),
-          _buildChatTextField(context),
-        ],
+    return GestureDetector(
+      onHorizontalDragStart: (details) {
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(context),
+        backgroundColor: AppColor.purpleColor3,
+        body: Column(
+          children: [
+            Container(
+              color: AppColor.purpleColor,
+              height: 3,
+            ),
+            _buildChatsArea(),
+            const SizedBox(
+              height: 10,
+            ),
+            _buildChatTextField(context),
+          ],
+        ),
       ),
     );
   }

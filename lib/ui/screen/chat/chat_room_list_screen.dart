@@ -42,46 +42,51 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
     _chatProvider = Provider.of<ChatProviderImpl>(context, listen: false);
     chatList = _chatProvider.getChatRoomList();
 
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      body: Column(
-        children: [
-          Container(
-            color: AppColor.purpleColor,
-            height: 3,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          ChatSearchUserTextFieldWidget(
-              showChatDetailScreen: showChatDetailScreen),
-          FutureBuilder(
-            future: chatList,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Expanded(
-                  child: ((snapshot.data?.data.chatRooms ?? []).isEmpty)
-                      ? Center(
-                          child: Text(
-                            "아직 채팅이 없습니다.🥲\n '메시지' 버튼을 눌러 채팅을 시작해보세요!",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColor.grayColor,
+    return GestureDetector(
+      onHorizontalDragStart: (details) {
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(context),
+        body: Column(
+          children: [
+            Container(
+              color: AppColor.purpleColor,
+              height: 3,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            ChatSearchUserTextFieldWidget(
+                showChatDetailScreen: showChatDetailScreen),
+            FutureBuilder(
+              future: chatList,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Expanded(
+                    child: ((snapshot.data?.data.chatRooms ?? []).isEmpty)
+                        ? Center(
+                            child: Text(
+                              "아직 채팅이 없습니다.🥲\n '메시지' 버튼을 눌러 채팅을 시작해보세요!",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColor.grayColor,
+                              ),
                             ),
-                          ),
-                        )
-                      : buildChatList(snapshot.data?.data.chatRooms ?? []),
+                          )
+                        : buildChatList(snapshot.data?.data.chatRooms ?? []),
+                  );
+                }
+                return const Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 );
-              }
-              return const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
