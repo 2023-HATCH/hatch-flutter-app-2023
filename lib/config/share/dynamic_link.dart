@@ -61,6 +61,9 @@ class DynamicLink {
 
     // 카카오 공유로부터 리다이렉션
     if (dynamicLink.contains("fromKakao")) {
+      // 실행중인 영상 있는지 확인
+      //
+
       var link =
           "https://hatch2023pocketpose.page.link/${dynamicLink.substring(dynamicLink.length - 4)}";
 

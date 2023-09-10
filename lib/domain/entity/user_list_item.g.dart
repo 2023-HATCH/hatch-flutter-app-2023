@@ -6,6 +6,7 @@ part of 'user_list_item.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+// ignore: unused_element
 UserListItem _$UserListItemFromJson(Map<String, dynamic> json) => UserListItem(
       json['userId'] as String,
       json['nickname'] as String,

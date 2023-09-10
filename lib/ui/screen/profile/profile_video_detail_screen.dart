@@ -10,7 +10,7 @@ import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
-import 'package:pocket_pose/ui/view/video/multi_video_player_view.dart';
+import 'package:pocket_pose/ui/view/video/multi_video_play_view.dart';
 import 'package:pocket_pose/ui/view/home/comment_button_view.dart';
 import 'package:pocket_pose/ui/loader/music_spinner_loader.dart';
 import 'package:pocket_pose/ui/widget/custom_simple_dialog_widget.dart';
