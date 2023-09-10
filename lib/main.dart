@@ -44,9 +44,7 @@ Future<void> main() async {
   );
   await notificationService.init();
   DynamicLink().setup();
-  FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    setNotificationHandler(message.data);
-  });
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => MultiVideoPlayProvider()),
@@ -102,4 +100,10 @@ void setNotificationHandler(Map<String, dynamic>? map) async {
       debugPrint('mmm Notification payload error $error');
     }
   }
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("mmm ${message.data}");
+  await Firebase.initializeApp()
+      .then((_) => setNotificationHandler(message.data));
 }

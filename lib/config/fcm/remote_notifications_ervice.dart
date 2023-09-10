@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pocket_pose/config/fcm/notification_service.dart';
+import 'package:pocket_pose/main.dart';
 
 class RemoteNotificationService {
   RemoteNotificationService() {
@@ -22,5 +23,16 @@ class RemoteNotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       notificationService.showForegroundNotifications(message);
     });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      setNotificationHandler(message.data);
+    });
+
+    // FirebaseMessaging.onBackgroundMessage((message) {
+
+    //     setNotificationHandler(message.data);
+
+    //   return Future.value();
+    // });
   }
 }

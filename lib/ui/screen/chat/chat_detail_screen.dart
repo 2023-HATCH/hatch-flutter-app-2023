@@ -28,7 +28,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   late SocketChatProviderImpl _socketChatProvider;
   late ChatProviderImpl _chatProvider;
   late KaKaoLoginProvider _loginProvider;
-  late String _userId;
+  String _userId = "";
   bool _isEnter = false;
   int _page = 1;
   String? _curDate;
