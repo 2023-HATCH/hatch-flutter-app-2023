@@ -54,7 +54,7 @@ class _VideoUserInfoViewState extends State<VideoUserInfoView> {
                           PageRouteWithSlideAnimation(
                               ProfileScreen(userId: user.userId));
                       Navigator.push(context,
-                              pageRouteWithAnimation.slideLeftToRight())
+                              pageRouteWithAnimation.slideRitghtToLeft())
                           .then((value) {
                         _multiVideoPlayProvider.isOpenProfile = false;
                         _multiVideoPlayProvider.playVideo(widget.screenNum);

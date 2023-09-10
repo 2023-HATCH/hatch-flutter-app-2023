@@ -91,56 +91,64 @@ class _ProfileScreenState extends State<ProfileScreen>
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: true);
     _profileProvider = Provider.of<ProfileProvider>(context, listen: true);
 
-    return FutureBuilder(
-        future: _initUser(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done ||
-              snapshot.connectionState == ConnectionState.waiting) {
-            return _profileProvider.profileResponse != null
-                ? Scaffold(
-                    body: CustomScrollView(
-                      slivers: <Widget>[
-                        SliverToBoxAdapter(
-                          child: Column(
-                            children: [
-                              ProfileTapbarWidget(
-                                profileResponse:
-                                    _profileProvider.profileResponse!,
-                                isNotBottomNavi: isNotBottomNavi,
-                              ),
-                              ProfileUserInfoWidget(
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
+          Navigator.of(context).pop();
+        }
+      },
+      child: FutureBuilder(
+          future: _initUser(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return _profileProvider.profileResponse != null
+                  ? Scaffold(
+                      body: CustomScrollView(
+                        slivers: <Widget>[
+                          SliverToBoxAdapter(
+                            child: Column(
+                              children: [
+                                ProfileTapbarWidget(
                                   profileResponse:
-                                      _profileProvider.profileResponse!),
-                              const SizedBox(
-                                height: 14,
-                              )
-                            ],
+                                      _profileProvider.profileResponse!,
+                                  isNotBottomNavi: isNotBottomNavi,
+                                ),
+                                ProfileUserInfoWidget(
+                                    profileResponse:
+                                        _profileProvider.profileResponse!),
+                                const SizedBox(
+                                  height: 14,
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        ProfileTabVideosWidget(
-                          profileResponse: _profileProvider.profileResponse!,
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(
-                    color: Colors.white,
-                    child: Center(
-                        child: SpinKitPumpingHeart(
-                      color: Colors.pink[100],
-                      size: 50.0,
-                    )),
-                  );
-          } else {
-            return Container(
-              color: Colors.white,
-              child: Center(
-                  child: SpinKitPumpingHeart(
-                color: Colors.pink[100],
-                size: 50.0,
-              )),
-            );
-          }
-        });
+                          ProfileTabVideosWidget(
+                            profileResponse: _profileProvider.profileResponse!,
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      color: Colors.white,
+                      child: Center(
+                          child: SpinKitPumpingHeart(
+                        color: Colors.pink[100],
+                        size: 50.0,
+                      )),
+                    );
+            } else {
+              return Container(
+                color: Colors.white,
+                child: Center(
+                    child: SpinKitPumpingHeart(
+                  color: Colors.pink[100],
+                  size: 50.0,
+                )),
+              );
+            }
+          }),
+    );
   }
 }

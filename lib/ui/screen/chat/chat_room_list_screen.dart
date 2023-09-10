@@ -43,8 +43,11 @@ class _ChatListRoomScreenState extends State<ChatRoomListScreen> {
     chatList = _chatProvider.getChatRoomList();
 
     return GestureDetector(
-      onHorizontalDragStart: (details) {
-        Navigator.pop(context);
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
+          Navigator.of(context).pop();
+        }
       },
       child: Scaffold(
         appBar: _buildAppBar(context),

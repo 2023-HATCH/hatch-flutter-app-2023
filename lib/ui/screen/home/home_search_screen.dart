@@ -82,53 +82,61 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            '검색',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: AppColor.purpleColor,
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              '검색',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppColor.purpleColor,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            elevation: 0,
           ),
-          elevation: 0,
-        ),
-        body: FutureBuilder<bool>(
-            future: _initVideo(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (_searchProvider.randomVideosResponse != null) {
-                  return Container(
-                    color: Colors.white,
-                    child: Column(children: <Widget>[
-                      SearchTextFieldWidget(setScreen: setScreen),
-                      _isSearched
-                          ? Flexible(
-                              child: SearchDetailView(
-                              value: _value,
-                            ))
-                          : Flexible(
-                              child: SearchView(
-                                  screenNum: 3,
-                                  videoList: _searchProvider
-                                      .randomVideosResponse!.videoList))
-                    ]),
-                  );
+          body: FutureBuilder<bool>(
+              future: _initVideo(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (_searchProvider.randomVideosResponse != null) {
+                    return Container(
+                      color: Colors.white,
+                      child: Column(children: <Widget>[
+                        SearchTextFieldWidget(setScreen: setScreen),
+                        _isSearched
+                            ? Flexible(
+                                child: SearchDetailView(
+                                value: _value,
+                              ))
+                            : Flexible(
+                                child: SearchView(
+                                    screenNum: 3,
+                                    videoList: _searchProvider
+                                        .randomVideosResponse!.videoList))
+                      ]),
+                    );
+                  } else {
+                    return Container(color: Colors.white);
+                  }
                 } else {
                   return Container(color: Colors.white);
                 }
-              } else {
-                return Container(color: Colors.white);
-              }
-            }));
+              })),
+    );
   }
 }

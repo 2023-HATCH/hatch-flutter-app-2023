@@ -48,6 +48,12 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
+          Navigator.of(context).pop();
+        }
+      },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(

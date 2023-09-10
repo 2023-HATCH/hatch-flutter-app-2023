@@ -281,6 +281,6 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
       chatRoomId: chatRoomId,
       opponentUserNickName: widget.profileResponse.user.nickname,
     ));
-    Navigator.push(context, pageRouteWithAnimation.slideLeftToRight());
+    Navigator.push(context, pageRouteWithAnimation.slideRitghtToLeft());
   }
 }
