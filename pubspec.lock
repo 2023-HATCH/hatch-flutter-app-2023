@@ -503,7 +503,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_foreground_task:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_foreground_task
       sha256: "501d34957ade7c159b3d44832428a4ed9b2b6ffcff17817f0522a7b7229fcb6c"

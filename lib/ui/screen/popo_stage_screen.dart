@@ -4,19 +4,19 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_screen_recording/flutter_screen_recording.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
+import 'package:pocket_pose/data/local/service/popo_foreground_service.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/user_list_item.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/screen/home/home_upload_screen.dart';
-import 'package:pocket_pose/ui/widget/custom_simple_dialog_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
@@ -203,6 +203,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       actions: [
         TextButton(
           onPressed: () async {
+            // 포그라운드 서비스 시작
+            await PoPoForegroundService.startService();
+
             isRecording = await FlutterScreenRecording.startRecordScreen(
               "my_screen_recording",
               titleNotification: "Recording Screen",
@@ -223,12 +226,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         TextButton(
           onPressed: () async {
             debugPrint('녹화 종료');
+            // 포그라운드 서비스 종료
+            await PoPoForegroundService.stopService();
             String recordedPath = await FlutterScreenRecording.stopRecordScreen;
             debugPrint('녹화 파일 경로: $recordedPath');
 
             // test
-            isRecording = true;
-            recordedPath = "dd";
+            // isRecording = true;
+            // recordedPath = "dd";
 
             if (isRecording && recordedPath.isNotEmpty) {
               File recordedFile = File(recordedPath);

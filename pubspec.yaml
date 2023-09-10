@@ -57,6 +57,7 @@ dependencies:
   flutter_local_notifications: ^15.1.1
   flutter_screen_recording: ^2.0.9
   video_thumbnail: ^0.5.3
+  flutter_foreground_task: ^6.1.1 
 
 dev_dependencies:
   flutter_test:
