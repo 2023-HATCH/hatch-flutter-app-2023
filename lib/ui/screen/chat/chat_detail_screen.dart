@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';

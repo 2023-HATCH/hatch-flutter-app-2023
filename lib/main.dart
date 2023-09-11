@@ -25,6 +25,7 @@ import 'package:pocket_pose/firebase_options.dart';
 import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/screen/on_boarding_screen.dart';
+import 'package:pocket_pose/ui/screen/share_screen.dart';
 import 'package:provider/provider.dart';
 
 // 카메라 목록 변수
@@ -95,6 +96,14 @@ void setNotificationHandler(Map<String, dynamic>? map) async {
                     opponentUserNickName: map['opponentUserNickname'],
                   ));
           break;
+        case "ADD_COMMENT":
+          Get.to(
+              transition: Transition.rightToLeft,
+              () => ShareScreen(
+                    videoUuid: map['videoId'],
+                    commentId: map['commentId'],
+                  ));
+          break;
       }
     } catch (error) {
       debugPrint('mmm Notification payload error $error');
@@ -103,7 +112,7 @@ void setNotificationHandler(Map<String, dynamic>? map) async {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("mmm ${message.data}");
+  debugPrint("mmm ${message.data}");
   await Firebase.initializeApp()
       .then((_) => setNotificationHandler(message.data));
 }

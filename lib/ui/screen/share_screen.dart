@@ -10,7 +10,9 @@ import 'package:provider/provider.dart';
 
 class ShareScreen extends StatefulWidget {
   final String videoUuid;
-  const ShareScreen({Key? key, required this.videoUuid}) : super(key: key);
+  final String? commentId;
+  const ShareScreen({Key? key, required this.videoUuid, this.commentId})
+      : super(key: key);
 
   @override
   State<ShareScreen> createState() => _ShareScreenState();
@@ -76,7 +78,8 @@ class _ShareScreenState extends State<ShareScreen> {
         future: _initVideo(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return const ShareVideoPlayeView();
+            final isopenComment = widget.commentId != null ? true : false;
+            return ShareVideoPlayeView(isopenComment: isopenComment);
           } else {
             return const MusicSpinner();
           }
