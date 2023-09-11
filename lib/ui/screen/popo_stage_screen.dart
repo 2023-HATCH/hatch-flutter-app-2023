@@ -36,6 +36,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
+    print("mmm rebuild");
 
     // 입장
     _popoStageEnter();
@@ -54,37 +55,42 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Container(
-            // 플레이, 결과 상태에 따라 배경화면 변경
-            decoration: _buildBackgroundImage(),
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              extendBodyBehindAppBar: true,
-              backgroundColor: Colors.transparent,
-              appBar: _buildAppBar(context),
-              body: Stack(
-                children: [
-                  Navigator(
-                    key: _socketStageProvider.navigatorKey,
-                    initialRoute: socketTypeList[0],
-                    onGenerateRoute: _socketStageProvider.onGenerateRoute,
+        body: Selector<SocketStageProviderImpl, SocketType>(
+          selector: (_, socketProvider) => socketProvider.stageType,
+          builder: (context, stageType, _) {
+            return Container(
+                // 플레이, 결과 상태에 따라 배경화면 변경
+                decoration: _buildBackgroundImage(stageType),
+                child: Scaffold(
+                  resizeToAvoidBottomInset: false,
+                  extendBodyBehindAppBar: true,
+                  backgroundColor: Colors.transparent,
+                  appBar: _buildAppBar(context),
+                  body: Stack(
+                    children: [
+                      Navigator(
+                        key: _socketStageProvider.navigatorKey,
+                        initialRoute: socketTypeList[0],
+                        onGenerateRoute: _socketStageProvider.onGenerateRoute,
+                      ),
+                      const Positioned(
+                        bottom: 68,
+                        left: 0,
+                        right: 0,
+                        child: StageLiveTalkListWidget(),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: StageLiveChatBarWidget(
+                            nickName: _userData?.nickname ?? ""),
+                      ),
+                    ],
                   ),
-                  const Positioned(
-                    bottom: 68,
-                    left: 0,
-                    right: 0,
-                    child: StageLiveTalkListWidget(),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: StageLiveChatBarWidget(
-                        nickName: _userData?.nickname ?? ""),
-                  ),
-                ],
-              ),
-            )),
+                ));
+          },
+        ),
       ),
     );
   }
@@ -139,14 +145,16 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       });
     }
 
-    // 실시간 사용자 숫자
-    if (_socketStageProvider.isUserCountChange) {
-      _socketStageProvider.setIsUserCountChange(false);
-      _stageProvider.getUserList();
-    }
+    // // 실시간 사용자 숫자
+    // if (_socketStageProvider.isUserCountChange) {
+    //   print("mmm 1");
+    //   _socketStageProvider.setIsUserCountChange(false);
+    //   _stageProvider.getUserList();
+    // }
 
     // 실시간 채팅
     if (_socketStageProvider.isTalk) {
+      print("mmm 2");
       _socketStageProvider.setIsTalk(false);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _stageProvider.addTalk(_socketStageProvider.talk!);
@@ -155,6 +163,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
     // 실시간 반응
     if (_socketStageProvider.isReaction) {
+      print("mmm 3");
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _socketStageProvider.setIsReaction(false);
         _stageProvider.setIsClicked(true);
@@ -163,13 +172,29 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     }
   }
 
-  BoxDecoration _buildBackgroundImage() {
+  BoxDecoration _buildBackgroundImage(SocketType type) {
+    String bgImage;
+    switch (type) {
+      case SocketType.WAIT:
+        bgImage = 'assets/images/bg_popo_wait.png';
+        break;
+      case SocketType.CATCH_START:
+      case SocketType.PLAY_START:
+        bgImage = 'assets/images/bg_popo_comm.png';
+        break;
+      case SocketType.MVP_START:
+        bgImage = 'assets/images/bg_popo_result.png';
+        break;
+      default:
+        bgImage = 'assets/images/bg_popo_comm.png';
+        break;
+    }
+    print("mmm 배경 $type");
+
     return BoxDecoration(
       image: DecorationImage(
         fit: BoxFit.cover,
-        image: AssetImage((_socketStageProvider.isMVPStart)
-            ? 'assets/images/bg_popo_result.png'
-            : 'assets/images/bg_popo_comm.png'),
+        image: AssetImage(bgImage),
       ),
     );
   }
@@ -202,32 +227,39 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  Container _buildUserCountWidget() {
-    return Container(
-      margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
-      child: OutlinedButton.icon(
-        onPressed: () async {
-          await _stageProvider.getUserList();
-          _showUserListDialog(_stageProvider.userList);
+  Widget _buildUserCountWidget() {
+    return Selector<SocketStageProviderImpl, int>(
+        selector: (context, socketProvider) => socketProvider.userCount,
+        shouldRebuild: (prev, next) {
+          return true;
         },
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0),
-          ),
-          side: const BorderSide(
-            color: Colors.white,
-            width: 1.0,
-          ),
-        ),
-        icon: SvgPicture.asset(
-          'assets/icons/ic_users.svg',
-        ),
-        label: Text(
-          '${_socketStageProvider.userCount}',
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-    );
+        builder: (context, data, child) {
+          return Container(
+            margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                await _stageProvider.getUserList();
+                _showUserListDialog(_stageProvider.userList);
+              },
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                side: const BorderSide(
+                  color: Colors.white,
+                  width: 1.0,
+                ),
+              ),
+              icon: SvgPicture.asset(
+                'assets/icons/ic_users.svg',
+              ),
+              label: Text(
+                '$data',
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          );
+        });
   }
 
   Future<dynamic> _showUserListDialog(List<UserListItem> userList) {

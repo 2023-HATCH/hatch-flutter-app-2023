@@ -14,6 +14,7 @@ import 'package:pocket_pose/data/entity/socket_response/send_skeleton_response.d
 import 'package:pocket_pose/data/entity/socket_response/stage_mvp_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
+import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/stage_music_data.dart';
 import 'package:pocket_pose/domain/entity/stage_player_info_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
@@ -72,6 +73,7 @@ final socketTypeList = [
 class SocketStageProviderImpl extends ChangeNotifier
     implements SocketStageProvider {
   final _navigatorKey = GlobalKey<NavigatorState>();
+  KaKaoLoginProvider loginProvider = KaKaoLoginProvider();
 
   String? _userId;
   StompClient? _stompClient;
@@ -87,12 +89,10 @@ class SocketStageProviderImpl extends ChangeNotifier
   Map<PoseLandmarkType, PoseLandmark>? player2;
   Map<PoseLandmarkType, PoseLandmark>? mvpSkeleton;
 
-  SocketType _stageType = SocketType.WAIT;
+  SocketType _socketType = SocketType.WAIT;
   bool _isConnect = false;
-  bool _isSubscribe = false;
   bool _isTalk = false;
   bool _isReaction = false;
-  bool _isUserCountChange = false;
   bool _isCatchMidEnter = false;
   bool _isReCatch = false;
   bool _isPlaySkeletonChange = false;
@@ -107,18 +107,14 @@ class SocketStageProviderImpl extends ChangeNotifier
   StageTalkListItem? get talk => _talk;
 
   List<StagePlayerListItem> get players => _players;
-  SocketType get stageType => _stageType;
+  SocketType get stageType => _socketType;
   bool get isConnect => _isConnect;
-  bool get isSubscribe => _isSubscribe;
   bool get isTalk => _isTalk;
   bool get isReaction => _isReaction;
-  bool get isUserCountChange => _isUserCountChange;
   bool get isCatchMidEnter => _isCatchMidEnter;
   bool get isReCatch => _isReCatch;
   bool get isPlaySkeletonChange => _isPlaySkeletonChange;
   bool get isMVPSkeletonChange => _isMVPSkeletonChange;
-
-  bool get isMVPStart => stageType == SocketType.MVP_START;
 
   setUserId(String id) {
     _userId = id;
@@ -136,16 +132,6 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsConnect(bool value) {
     _isConnect = value;
-    notifyListeners();
-  }
-
-  setIsSubscribe(bool value) {
-    _isSubscribe = value;
-    notifyListeners();
-  }
-
-  setIsUserCountChange(bool value) {
-    _isUserCountChange = value;
     if (value) notifyListeners();
   }
 
@@ -181,9 +167,8 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   @override
   void connectWebSocket() async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    String token = await storage.read(key: storageKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken ?? "";
 
     _stompClient = StompClient(
         config: StompConfig(
@@ -191,8 +176,8 @@ class SocketStageProviderImpl extends ChangeNotifier
       onConnect: (frame) {
         setIsConnect(true);
       },
-      stompConnectHeaders: {'x-access-token': token},
-      webSocketConnectHeaders: {'x-access-token': token},
+      stompConnectHeaders: {'x-access-token': accessToken},
+      webSocketConnectHeaders: {'x-access-token': accessToken},
       onDebugMessage: (p0) => debugPrint("popo socket: $p0"),
     ));
     _stompClient!.activate();
@@ -204,7 +189,6 @@ class SocketStageProviderImpl extends ChangeNotifier
         destination: AppUrl.socketSubscribeStageUrl,
         callback: (StompFrame frame) {
           if (frame.body != null) {
-            setIsSubscribe(true);
             // stage 상태 변경
             var socketResponse = BaseSocketResponse.fromJson(
                 jsonDecode(frame.body.toString()), null);
@@ -293,7 +277,6 @@ class SocketStageProviderImpl extends ChangeNotifier
                 jsonDecode(frame.body.toString())['data']));
 
         setUserCount(socketResponse.data!.userCount);
-        setIsUserCountChange(true);
         break;
       case SocketType.TALK_MESSAGE:
         var socketResponse = BaseSocketResponse<TalkMessageResponse>.fromJson(
@@ -317,8 +300,8 @@ class SocketStageProviderImpl extends ChangeNotifier
             CatchStartResponse.fromJson(
                 jsonDecode(frame.body.toString())['data']));
         _catchMusicData = socketResponse.data?.music;
-        _stageType = response.type;
-        setStageView(_stageType);
+        _socketType = response.type;
+        setStageView(_socketType);
         break;
       case SocketType.CATCH_END:
         var socketResponse = BaseSocketResponse<CatchEndResponse>.fromJson(
@@ -372,8 +355,8 @@ class SocketStageProviderImpl extends ChangeNotifier
         _mvp = _players.firstWhere((element) =>
             element.playerNum == socketResponse.data?.mvpPlayerNum);
         _playerInfos = socketResponse.data?.playerInfos ?? [];
-        _stageType = response.type;
-        setStageView(_stageType);
+        _socketType = response.type;
+        setStageView(_socketType);
         break;
       case SocketType.MVP_SKELETON:
         var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
@@ -394,8 +377,8 @@ class SocketStageProviderImpl extends ChangeNotifier
         break;
 
       default:
-        _stageType = response.type;
-        setStageView(_stageType);
+        _socketType = response.type;
+        setStageView(_socketType);
     }
   }
 
@@ -405,7 +388,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   }
 
   MaterialPageRoute onGenerateRoute(RouteSettings setting) {
-    var stageType = SocketType.values.byName(setting.name ?? "WAIT");
     switch (stageType) {
       case SocketType.STAGE_ROUTINE_STOP:
       case SocketType.WAIT:
@@ -419,7 +401,7 @@ class SocketStageProviderImpl extends ChangeNotifier
       case SocketType.PLAY_START:
         return MaterialPageRoute<dynamic>(
             builder: (context) => PoPoPlayView(
-                  isResultState: _stageType == SocketType.MVP_START,
+                  isResultState: _socketType == SocketType.MVP_START,
                   players: _players,
                   userId: _userId,
                 ));
@@ -429,12 +411,12 @@ class SocketStageProviderImpl extends ChangeNotifier
         return (_mvp != null)
             ? MaterialPageRoute<dynamic>(
                 builder: (context) => PoPoResultView(
-                    isResultState: _stageType == SocketType.MVP_START,
+                    isResultState: _socketType == SocketType.MVP_START,
                     mvp: _mvp,
                     userId: _userId!))
             : MaterialPageRoute<dynamic>(
                 builder: (context) => PoPoResultView(
-                    isResultState: _stageType == SocketType.MVP_START,
+                    isResultState: _socketType == SocketType.MVP_START,
                     userId: _userId!));
       default:
         return MaterialPageRoute<dynamic>(

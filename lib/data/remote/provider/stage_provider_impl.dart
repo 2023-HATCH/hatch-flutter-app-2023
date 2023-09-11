@@ -33,10 +33,10 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
     if (isClicked) notifyListeners();
   }
 
-  void addTalkList(List<StageTalkListItem> list) {
-    _talkList.addAll(list);
-    notifyListeners();
-  }
+  // void addTalkList(List<StageTalkListItem> list) {
+  //   _talkList.addAll(list);
+  //   notifyListeners();
+  // }
 
   void addTalk(StageTalkListItem talk) {
     _talkList.insert(0, talk);
@@ -60,8 +60,7 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
     var response = await _stageRepository.getStageEnter(request);
     _stageCurSecond = response.data.statusElapsedTime;
     _music = response.data.currentMusic;
-
-    addTalkList(response.data.talkMessageData.messages ?? []);
+    _talkList.addAll(response.data.talkMessageData.messages ?? []);
 
     notifyListeners();
 
