@@ -258,9 +258,13 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                                                 .user
                                                                 .userId));
                                             Navigator.push(
-                                                context,
-                                                pageRouteWithAnimation
-                                                    .slideRitghtToLeft());
+                                                    context,
+                                                    pageRouteWithAnimation
+                                                        .slideRitghtToLeft())
+                                                .then((value) {
+                                              _multiVideoPlayProvider
+                                                  .playVideo(0);
+                                            });
                                           },
                                           child: ClipRRect(
                                               borderRadius:
@@ -316,9 +320,13 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                                                     .user
                                                                     .userId));
                                                 Navigator.push(
-                                                    context,
-                                                    pageRouteWithAnimation
-                                                        .slideRitghtToLeft());
+                                                        context,
+                                                        pageRouteWithAnimation
+                                                            .slideRitghtToLeft())
+                                                    .then((value) {
+                                                  _multiVideoPlayProvider
+                                                      .playVideo(0);
+                                                });
                                               },
                                               child: Text(
                                                 _commentList?[index]
