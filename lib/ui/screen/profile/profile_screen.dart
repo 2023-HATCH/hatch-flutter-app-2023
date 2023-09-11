@@ -93,7 +93,11 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     return GestureDetector(
       onHorizontalDragUpdate: (details) {
-        if (details.primaryDelta! > 10) {
+        if (_profileProvider.profileResponse != null &&
+            (_profileProvider.profileResponse!.profile.isMe &&
+                    isNotBottomNavi ||
+                !_profileProvider.profileResponse!.profile.isMe) &&
+            details.primaryDelta! > 10) {
           // 왼쪽에서 오른쪽으로 드래그했을 때 pop
           Navigator.of(context).pop();
         }
