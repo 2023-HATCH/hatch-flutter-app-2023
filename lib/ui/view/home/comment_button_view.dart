@@ -253,11 +253,14 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                                 pageRouteWithAnimation =
                                                 PageRouteWithSlideAnimation(
                                                     ProfileScreen(
-                                                        userId: user!.userId));
+                                                        userId:
+                                                            _commentList?[index]
+                                                                .user
+                                                                .userId));
                                             Navigator.push(
                                                 context,
                                                 pageRouteWithAnimation
-                                                    .slideLeftToRight());
+                                                    .slideRitghtToLeft());
                                           },
                                           child: ClipRRect(
                                               borderRadius:
@@ -308,11 +311,14 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                                     PageRouteWithSlideAnimation(
                                                         ProfileScreen(
                                                             userId:
-                                                                user!.userId));
+                                                                _commentList?[
+                                                                        index]
+                                                                    .user
+                                                                    .userId));
                                                 Navigator.push(
                                                     context,
                                                     pageRouteWithAnimation
-                                                        .slideLeftToRight());
+                                                        .slideRitghtToLeft());
                                               },
                                               child: Text(
                                                 _commentList?[index]
