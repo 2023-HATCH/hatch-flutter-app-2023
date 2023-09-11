@@ -33,8 +33,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _multiVideoPlayProvider =
-        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
@@ -95,6 +93,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   void initState() {
     super.initState();
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _initUser();
   }
 
