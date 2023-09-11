@@ -249,22 +249,25 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                       children: [
                                         GestureDetector(
                                           onTap: () {
-                                            PageRouteWithSlideAnimation
-                                                pageRouteWithAnimation =
-                                                PageRouteWithSlideAnimation(
-                                                    ProfileScreen(
-                                                        userId:
-                                                            _commentList?[index]
-                                                                .user
-                                                                .userId));
-                                            Navigator.push(
-                                                    context,
-                                                    pageRouteWithAnimation
-                                                        .slideRitghtToLeft())
-                                                .then((value) {
-                                              _multiVideoPlayProvider
-                                                  .playVideo(0);
-                                            });
+                                            // _multiVideoPlayProvider
+                                            //     .pauseVideo(widget.screenNum);
+                                            // PageRouteWithSlideAnimation
+                                            //     pageRouteWithAnimation =
+                                            //     PageRouteWithSlideAnimation(
+                                            //         ProfileScreen(
+                                            //             userId:
+                                            //                 _commentList?[index]
+                                            //                     .user
+                                            //                     .userId));
+
+                                            // Navigator.push(
+                                            //         context,
+                                            //         pageRouteWithAnimation
+                                            //             .slideRitghtToLeft())
+                                            //     .then((value) {
+                                            //   _multiVideoPlayProvider
+                                            //       .playVideo(widget.screenNum);
+                                            // });
                                           },
                                           child: ClipRRect(
                                               borderRadius:
@@ -310,23 +313,27 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                           children: [
                                             GestureDetector(
                                               onTap: () {
-                                                PageRouteWithSlideAnimation
-                                                    pageRouteWithAnimation =
-                                                    PageRouteWithSlideAnimation(
-                                                        ProfileScreen(
-                                                            userId:
-                                                                _commentList?[
-                                                                        index]
-                                                                    .user
-                                                                    .userId));
-                                                Navigator.push(
-                                                        context,
-                                                        pageRouteWithAnimation
-                                                            .slideRitghtToLeft())
-                                                    .then((value) {
-                                                  _multiVideoPlayProvider
-                                                      .playVideo(0);
-                                                });
+                                                // _multiVideoPlayProvider
+                                                //     .pauseVideo(
+                                                //         widget.screenNum);
+                                                // PageRouteWithSlideAnimation
+                                                //     pageRouteWithAnimation =
+                                                //     PageRouteWithSlideAnimation(
+                                                //         ProfileScreen(
+                                                //             userId:
+                                                //                 _commentList?[
+                                                //                         index]
+                                                //                     .user
+                                                //                     .userId));
+                                                // Navigator.push(
+                                                //         context,
+                                                //         pageRouteWithAnimation
+                                                //             .slideRitghtToLeft())
+                                                //     .then((value) {
+                                                //   _multiVideoPlayProvider
+                                                //       .playVideo(
+                                                //           widget.screenNum);
+                                                // });
                                               },
                                               child: Text(
                                                 _commentList?[index]
