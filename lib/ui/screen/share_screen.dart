@@ -59,13 +59,22 @@ class _ShareScreenState extends State<ShareScreen> {
             color: AppColor.purpleColor,
           ),
           onPressed: () async {
-            _multiVideoPlayProvider.resetVideoPlayer(0);
+            if (widget.commentId != null) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MainScreen(index: 1)),
+                (route) => false,
+              );
+            } else {
+              _multiVideoPlayProvider.resetVideoPlayer(0);
 
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const MainScreen()),
-              (route) => false,
-            );
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const MainScreen()),
+                (route) => false,
+              );
+            }
           },
         ),
         elevation: 0,

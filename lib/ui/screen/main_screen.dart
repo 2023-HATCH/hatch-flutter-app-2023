@@ -15,7 +15,8 @@ import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final int? index;
+  const MainScreen({Key? key, this.index}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -29,7 +30,7 @@ class _MainScreenState extends State<MainScreen>
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
-  int _bottomNavIndex = 0;
+  late int _bottomNavIndex = widget.index ?? 0;
   bool isLogin = false;
 
   int getIndex() {
