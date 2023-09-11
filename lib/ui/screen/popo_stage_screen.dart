@@ -145,22 +145,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       });
     }
 
-    // // 실시간 사용자 숫자
-    // if (_socketStageProvider.isUserCountChange) {
-    //   print("mmm 1");
-    //   _socketStageProvider.setIsUserCountChange(false);
-    //   _stageProvider.getUserList();
-    // }
-
-    // 실시간 채팅
-    if (_socketStageProvider.isTalk) {
-      print("mmm 2");
-      _socketStageProvider.setIsTalk(false);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _stageProvider.addTalk(_socketStageProvider.talk!);
-      });
-    }
-
     // 실시간 반응
     if (_socketStageProvider.isReaction) {
       print("mmm 3");
