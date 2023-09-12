@@ -70,7 +70,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   @override
   Widget build(BuildContext context) {
     _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
 
     if (_socketStageProvider.isPlaySkeletonChange) {
       _socketStageProvider.setIsPlaySkeletonChange(false);
@@ -85,9 +85,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         CameraView(
           isResultState: widget.isResultState,
           // 스켈레톤 그려주는 객체 전달
-          customPaintLeft: null, // _customPaintLeft,
-          customPaintMid: null, // _customPaintMid,
-          customPaintRight: null, // _customPaintRight,
+          customPaintLeft: _customPaintLeft,
+          customPaintMid: _customPaintMid,
+          customPaintRight: _customPaintRight,
           // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
           onImage: (inputImage) {
             if (_isPlayer) {

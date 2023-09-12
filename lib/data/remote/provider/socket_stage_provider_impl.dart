@@ -37,6 +37,7 @@ enum SocketType {
   CATCH_END_RESTART,
   CATCH_END,
   PLAY_START,
+  MID_SCORE,
   PLAY_SKELETON,
   PLAY_END,
   MVP_START,
@@ -46,7 +47,6 @@ enum SocketType {
   STAGE_ROUTINE_STOP,
   TALK_MESSAGE,
   TALK_REACTION,
-
   CHAT_MESSAGE,
 }
 
@@ -59,6 +59,7 @@ final socketTypeList = [
   "CATCH_END_RESTART",
   "CATCH_END",
   "PLAY_START",
+  "MID_SCORE",
   "PLAY_SKELETON",
   "PLAY_END",
   "MVP_START",
@@ -333,6 +334,8 @@ class SocketStageProviderImpl extends ChangeNotifier
             break;
         }
         setIsPlaySkeletonChange(true);
+        break;
+      case SocketType.MID_SCORE:
         break;
       case SocketType.PLAY_END:
         player0 = null;
