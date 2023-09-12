@@ -75,9 +75,9 @@ class _ShareScreenState extends State<ShareScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: AppColor.purpleColor,
+              color: Colors.white,
             ),
             onPressed: () async {
               if (widget.commentId != null) {
