@@ -12,10 +12,12 @@ import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
+    this.isNavigation,
     this.userId,
     Key? key,
   }) : super(key: key);
 
+  final bool? isNavigation;
   final String? userId;
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -27,8 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   late ProfileProvider _profileProvider;
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late String? _userId;
-
-  bool isNotBottomNavi = false;
 
   int loading = 0;
 
@@ -56,9 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen>
           setState(() {
             if (_userId != null) {
               // navigation이 아닌 곳에서 자신의 프로필을 조회한 경우
-              if (_userId == user.userId) {
-                isNotBottomNavi = true;
-              }
+              // if (_userId == user.userId) {
+              //   isNotBottomNavi = true;
+              // }
             }
             _userId ??= user.userId;
           });
@@ -94,9 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen>
     return GestureDetector(
       onHorizontalDragUpdate: (details) {
         if (_profileProvider.profileResponse != null &&
-            (_profileProvider.profileResponse!.profile.isMe &&
-                    isNotBottomNavi ||
-                !_profileProvider.profileResponse!.profile.isMe) &&
+            (!_profileProvider.profileResponse!.profile.isMe ||
+                _profileProvider.profileResponse!.profile.isMe &&
+                    (widget.isNavigation == null || !widget.isNavigation!)) &&
             details.primaryDelta! > 10) {
           // 왼쪽에서 오른쪽으로 드래그했을 때 pop
           Navigator.of(context).pop();
@@ -117,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ProfileTapbarWidget(
                                   profileResponse:
                                       _profileProvider.profileResponse!,
-                                  isNotBottomNavi: isNotBottomNavi,
+                                  isBottomNavi: widget.isNavigation ?? false,
                                 ),
                                 ProfileUserInfoWidget(
                                     profileResponse:
