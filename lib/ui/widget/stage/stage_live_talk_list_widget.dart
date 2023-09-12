@@ -19,6 +19,7 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
   final ScrollController _scrollController = ScrollController();
   late StageTalkProviderImpl _talkProvider;
   late StageProviderImpl _stageProvider;
+  late SocketStageProviderImpl _socketStageProvider;
   var _page = 1;
 
   @override
@@ -39,6 +40,9 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
   @override
   Widget build(BuildContext context) {
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: true);
+    print("mmm talk list build");
 
     return _buildStageChatList(_stageProvider.talkList);
   }
@@ -52,6 +56,7 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
         builder: (context, talk, child) {
           if (talk != null) {
             _stageProvider.addTalk(talk);
+            _socketStageProvider.setTalk(null);
           }
           return Container(
             decoration: BoxDecoration(

@@ -35,7 +35,6 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
 
   void addTalk(StageTalkListItem talk) {
     _talkList.insert(0, talk);
-    // notifyListeners();
   }
 
   @override

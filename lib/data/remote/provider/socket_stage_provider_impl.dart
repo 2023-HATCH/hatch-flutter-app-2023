@@ -91,7 +91,6 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   SocketType _socketType = SocketType.WAIT;
   bool _isConnect = false;
-  // bool _isTalk = false;
   bool _isReaction = false;
   bool _isCatchMidEnter = false;
   bool _isReCatch = false;
@@ -109,7 +108,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   List<StagePlayerListItem> get players => _players;
   SocketType get stageType => _socketType;
   bool get isConnect => _isConnect;
-  // bool get isTalk => _isTalk;
   bool get isReaction => _isReaction;
   bool get isCatchMidEnter => _isCatchMidEnter;
   bool get isReCatch => _isReCatch;
@@ -120,9 +118,9 @@ class SocketStageProviderImpl extends ChangeNotifier
     _userId = id;
   }
 
-  setTalk(StageTalkListItem value) {
+  setTalk(StageTalkListItem? value) {
     _talk = value;
-    notifyListeners();
+    if (value != null) notifyListeners();
   }
 
   setUserCount(int value) {
@@ -154,11 +152,6 @@ class SocketStageProviderImpl extends ChangeNotifier
     _isMVPSkeletonChange = value;
     if (value) notifyListeners();
   }
-
-  // setIsTalk(bool value) {
-  //   _isTalk = value;
-  //   if (value) notifyListeners();
-  // }
 
   setIsReaction(bool value) {
     _isReaction = value;
@@ -289,7 +282,6 @@ class SocketStageProviderImpl extends ChangeNotifier
             sender: socketResponse.data!.sender);
 
         setTalk(talk);
-        // setIsTalk(true);
         break;
       case SocketType.TALK_REACTION:
         setIsReaction(true);
