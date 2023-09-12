@@ -85,181 +85,197 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
     _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: true);
     _profileProvider = Provider.of<ProfileProvider>(context, listen: true);
 
-    return FutureBuilder<bool>(
-        future: _initUser(),
-        builder: (context, snapshot) {
-          debugPrint(
-              '프로필: snapshot.connectionState ${snapshot.connectionState}');
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text(
-                  "PoPo",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                backgroundColor: Colors.transparent, //appBar 투명색
-                elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
-                leading: IconButton(
-                  icon: SvgPicture.asset(
-                    'assets/icons/ic_stage_back_white.svg',
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
+          Navigator.of(context).pop();
+        }
+      },
+      child: FutureBuilder<bool>(
+          future: _initUser(),
+          builder: (context, snapshot) {
+            debugPrint(
+                '프로필: snapshot.connectionState ${snapshot.connectionState}');
+            if (snapshot.connectionState == ConnectionState.done) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text(
+                    "PoPo",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                actions: [
-                  if (_user != null &&
-                      widget.videoList[currentIndex].user.userId ==
-                          _user!.userId) // 본인 영상일때만 보이는 삭제 버튼
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-                      child: GestureDetector(
-                        child: SvgPicture.asset(
-                            'assets/icons/ic_profile_trash.svg'),
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return CustomSimpleDialog(
-                                title: '⛔ 삭제',
-                                message: '영상을 삭제 하시겠습니까?',
-                                onCancel: () {
-                                  Navigator.pop(context);
-                                },
-                                onConfirm: () async {
-                                  // 영상 삭제
-                                  if (await _videoProvider.deleteVideo(
-                                      widget.videoList[currentIndex].uuid)) {
-                                    // 프로필 업데이트
-
-                                    _profileProvider.isVideoLoadingDone = false;
-                                    _profileProvider.uploadVideosResponse =
-                                        null;
-                                    _profileProvider.likeVideosResponse = null;
-
-                                    _multiVideoPlayProvider.resetVideoPlayer(1);
-                                    _multiVideoPlayProvider.resetVideoPlayer(2);
-
-                                    widget.onRefresh();
-                                    Fluttertoast.showToast(
-                                      msg: '영상이 삭제되었습니다.',
-                                    );
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                  } else {
-                                    Fluttertoast.showToast(
-                                      msg: '다시 시도하세요.',
-                                    );
-                                    Navigator.pop(context);
-                                  }
-                                },
-                              );
-                            },
-                          );
-                        },
-                      ),
+                  backgroundColor: Colors.transparent, //appBar 투명색
+                  elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
+                  leading: IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/icons/ic_stage_back_white.svg',
                     ),
-                ],
-              ),
-              extendBodyBehindAppBar: true, //body 위에 appbar
-              resizeToAvoidBottomInset: false,
-              body: MultiVideoPlayerView(
-                screenNum: widget.screenNum,
-                initialIndex: currentIndex,
-                setCurrentIndex: setCurrentIndex,
-              ),
-              bottomSheet: Container(
-                height: 65,
-                color: Colors.black,
-                child: _user != null &&
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  actions: [
+                    if (_user != null &&
                         widget.videoList[currentIndex].user.userId ==
-                            _user!.userId // 본인 영상일 때는 조회수, 다른 사람 영상일 때는 댓글창이 뜨기
-                    ? Row(
-                        children: <Widget>[
-                          const Padding(padding: EdgeInsets.only(left: 18)),
-                          const Icon(
-                            Icons.play_arrow_rounded,
-                            size: 16,
-                            color: Colors.grey,
-                          ),
-                          const Padding(padding: EdgeInsets.only(left: 6)),
-                          const Text(
-                            '조회수',
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
-                          const Padding(padding: EdgeInsets.only(left: 6)),
-                          Expanded(
-                            child: Text(
-                              '${widget.videoList[currentIndex].viewCount.toString()}회',
-                              style: const TextStyle(
-                                  color: Colors.grey, fontSize: 12),
+                            _user!.userId) // 본인 영상일때만 보이는 삭제 버튼
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+                        child: GestureDetector(
+                          child: SvgPicture.asset(
+                              'assets/icons/ic_profile_trash.svg'),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CustomSimpleDialog(
+                                  title: '⛔ 삭제',
+                                  message: '영상을 삭제 하시겠습니까?',
+                                  onCancel: () {
+                                    Navigator.pop(context);
+                                  },
+                                  onConfirm: () async {
+                                    // 영상 삭제
+                                    if (await _videoProvider.deleteVideo(
+                                        widget.videoList[currentIndex].uuid)) {
+                                      // 프로필 업데이트
+
+                                      _profileProvider.isVideoLoadingDone =
+                                          false;
+                                      _profileProvider.uploadVideosResponse =
+                                          null;
+                                      _profileProvider.likeVideosResponse =
+                                          null;
+
+                                      _multiVideoPlayProvider
+                                          .resetVideoPlayer(1);
+                                      _multiVideoPlayProvider
+                                          .resetVideoPlayer(2);
+
+                                      widget.onRefresh();
+                                      Fluttertoast.showToast(
+                                        msg: '영상이 삭제되었습니다.',
+                                      );
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    } else {
+                                      Fluttertoast.showToast(
+                                        msg: '다시 시도하세요.',
+                                      );
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+                extendBodyBehindAppBar: true, //body 위에 appbar
+                resizeToAvoidBottomInset: false,
+                body: MultiVideoPlayerView(
+                  screenNum: widget.screenNum,
+                  initialIndex: currentIndex,
+                  setCurrentIndex: setCurrentIndex,
+                ),
+                bottomSheet: Container(
+                  height: 65,
+                  color: Colors.black,
+                  child: _user != null &&
+                          widget.videoList[currentIndex].user.userId ==
+                              _user!
+                                  .userId // 본인 영상일 때는 조회수, 다른 사람 영상일 때는 댓글창이 뜨기
+                      ? Row(
+                          children: <Widget>[
+                            const Padding(padding: EdgeInsets.only(left: 18)),
+                            const Icon(
+                              Icons.play_arrow_rounded,
+                              size: 16,
+                              color: Colors.grey,
                             ),
-                          ),
-                        ],
-                      )
-                    : Row(
-                        children: <Widget>[
-                          const Padding(padding: EdgeInsets.only(left: 18)),
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: _user == null || _user!.profileImg == null
-                                  ? Image.asset(
-                                      'assets/images/charactor_popo_default.png',
-                                      width: 34,
-                                      height: 34,
-                                    )
-                                  : Image.network(
-                                      _user!.profileImg!,
-                                      loadingBuilder:
-                                          (context, child, loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        }
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            color: AppColor.purpleColor,
-                                          ),
-                                        );
-                                      },
-                                      width: 34,
-                                      height: 34,
-                                      fit: BoxFit.cover,
-                                    )),
-                          Expanded(
-                            child: CommentButtonView(
-                              screenNum: widget.screenNum,
-                              index: currentIndex,
-                              onRefresh: () {},
-                              videoId: widget.videoList[currentIndex].uuid,
-                              commentCount:
-                                  widget.videoList[currentIndex].commentCount,
-                              childWidget: const SizedBox(
-                                height: 36,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Padding(padding: EdgeInsets.only(left: 18)),
-                                    Expanded(
-                                      child: Text(
-                                        '따듯한 말 한마디 남겨주세요   (❁´◡`❁)',
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 12),
+                            const Padding(padding: EdgeInsets.only(left: 6)),
+                            const Text(
+                              '조회수',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12),
+                            ),
+                            const Padding(padding: EdgeInsets.only(left: 6)),
+                            Expanded(
+                              child: Text(
+                                '${widget.videoList[currentIndex].viewCount.toString()}회',
+                                style: const TextStyle(
+                                    color: Colors.grey, fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          children: <Widget>[
+                            const Padding(padding: EdgeInsets.only(left: 18)),
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: _user == null ||
+                                        _user!.profileImg == null
+                                    ? Image.asset(
+                                        'assets/images/charactor_popo_default.png',
+                                        width: 34,
+                                        height: 34,
+                                      )
+                                    : Image.network(
+                                        _user!.profileImg!,
+                                        loadingBuilder:
+                                            (context, child, loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            return child;
+                                          }
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              color: AppColor.purpleColor,
+                                            ),
+                                          );
+                                        },
+                                        width: 34,
+                                        height: 34,
+                                        fit: BoxFit.cover,
+                                      )),
+                            Expanded(
+                              child: CommentButtonView(
+                                screenNum: widget.screenNum,
+                                index: currentIndex,
+                                onRefresh: () {},
+                                videoId: widget.videoList[currentIndex].uuid,
+                                commentCount:
+                                    widget.videoList[currentIndex].commentCount,
+                                childWidget: const SizedBox(
+                                  height: 36,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                          padding: EdgeInsets.only(left: 18)),
+                                      Expanded(
+                                        child: Text(
+                                          '따듯한 말 한마디 남겨주세요   (❁´◡`❁)',
+                                          style: TextStyle(
+                                              color: Colors.grey, fontSize: 12),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const Padding(padding: EdgeInsets.only(left: 18)),
-                        ],
-                      ),
-              ),
-            );
-          } else {
-            return const MusicSpinner();
-          }
-        });
+                            const Padding(padding: EdgeInsets.only(left: 18)),
+                          ],
+                        ),
+                ),
+              );
+            } else {
+              return const MusicSpinner();
+            }
+          }),
+    );
   }
 }

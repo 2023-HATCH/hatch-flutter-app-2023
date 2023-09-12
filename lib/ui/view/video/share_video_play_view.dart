@@ -6,7 +6,8 @@ import 'package:pocket_pose/ui/view/video/share_video_user_info_view.dart';
 import 'package:provider/provider.dart';
 
 class ShareVideoPlayeView extends StatefulWidget {
-  const ShareVideoPlayeView({super.key});
+  final bool isopenComment;
+  const ShareVideoPlayeView({super.key, required this.isopenComment});
 
   @override
   State<ShareVideoPlayeView> createState() => _VideoPlayerWidgetState();
@@ -105,7 +106,10 @@ class _VideoPlayerWidgetState extends State<ShareVideoPlayeView>
             },
           ),
         ),
-        ShareVideoRightView(screenNum: screenNum, index: index),
+        ShareVideoRightView(
+            screenNum: screenNum,
+            index: index,
+            isopenComment: widget.isopenComment),
         ShareVideoUserInfoView(
           screenNum: screenNum,
           index: index,

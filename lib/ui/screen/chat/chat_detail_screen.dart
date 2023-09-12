@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_chat_request.dart';
+import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/chat_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
@@ -23,10 +24,11 @@ class ChatDetailScreen extends StatefulWidget {
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
+  late MultiVideoPlayProvider _multiVideoPlayProvider;
   late SocketChatProviderImpl _socketChatProvider;
   late ChatProviderImpl _chatProvider;
   late KaKaoLoginProvider _loginProvider;
-  late String _userId;
+  String _userId = "";
   bool _isEnter = false;
   int _page = 1;
   String? _curDate;
@@ -44,6 +46,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.initState();
 
     _initUserId();
+
+    _multiVideoPlayProvider = Provider.of(context, listen: false);
+    _multiVideoPlayProvider.pauseVideo(0);
+
     _scrollController.addListener(_scrollListener);
 
     // 선택한 채팅방 채팅메세지 조회
@@ -83,21 +89,29 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     // 소켓 반응 처리
     _onSocketResponse();
 
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      backgroundColor: AppColor.purpleColor3,
-      body: Column(
-        children: [
-          Container(
-            color: AppColor.purpleColor,
-            height: 3,
-          ),
-          _buildChatsArea(),
-          const SizedBox(
-            height: 10,
-          ),
-          _buildChatTextField(context),
-        ],
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(context),
+        backgroundColor: AppColor.purpleColor3,
+        body: Column(
+          children: [
+            Container(
+              color: AppColor.purpleColor,
+              height: 3,
+            ),
+            _buildChatsArea(),
+            const SizedBox(
+              height: 10,
+            ),
+            _buildChatTextField(context),
+          ],
+        ),
       ),
     );
   }

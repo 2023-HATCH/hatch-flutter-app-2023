@@ -15,7 +15,8 @@ import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final int? index;
+  const MainScreen({Key? key, this.index}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -29,14 +30,17 @@ class _MainScreenState extends State<MainScreen>
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
-  int _bottomNavIndex = 0;
+  late int _bottomNavIndex = widget.index ?? 0;
   bool isLogin = false;
 
   int getIndex() {
     return _bottomNavIndex;
   }
 
-  List<Widget> _screens = [const HomeScreen(), const ProfileScreen()];
+  List<Widget> _screens = [
+    const HomeScreen(),
+    const ProfileScreen(isNavigation: true)
+  ];
 
   @override
   void initState() {
@@ -83,7 +87,9 @@ class _MainScreenState extends State<MainScreen>
       setState(() {
         _screens = [
           const HomeScreen(),
-          isLogin ? const ProfileScreen() : const NotLoginWidget(),
+          isLogin
+              ? const ProfileScreen(isNavigation: true)
+              : const NotLoginWidget(),
         ];
       });
     }
@@ -101,7 +107,9 @@ class _MainScreenState extends State<MainScreen>
         isLogin = false;
         _screens = [
           const HomeScreen(),
-          isLogin ? const ProfileScreen() : const NotLoginWidget(),
+          isLogin
+              ? const ProfileScreen(isNavigation: true)
+              : const NotLoginWidget(),
         ];
       } else {
         isLogin = true;
@@ -109,7 +117,9 @@ class _MainScreenState extends State<MainScreen>
 
       _screens = [
         const HomeScreen(),
-        isLogin ? const ProfileScreen() : const NotLoginWidget(),
+        isLogin
+            ? const ProfileScreen(isNavigation: true)
+            : const NotLoginWidget(),
       ];
     } else {
       // 홈 페이지 클릭
@@ -139,7 +149,7 @@ class _MainScreenState extends State<MainScreen>
 
   void _playClickSound() {
     AssetsAudioPlayer.newPlayer()
-        .open(Audio("assets/audios/sound_catch_click.mp3"));
+        .open(Audio("assets/audios/sound_popo_click.mp3"));
   }
 
   void _showPoPoStageScreen() {

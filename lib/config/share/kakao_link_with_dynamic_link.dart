@@ -34,7 +34,9 @@ class KakaoLinkWithDynamicLink {
             'https://github.com/2023-HATCH/hatch-flutter-app-2023/assets/61674991/5f67a84c-f834-4214-86ed-873cc599f31b'),
       ),
       social: Social(
-          likeCount: videoData.likeCount, viewCount: videoData.viewCount),
+          likeCount: videoData.likeCount,
+          viewCount: videoData.viewCount,
+          commentCount: videoData.commentCount),
     );
   }
 }

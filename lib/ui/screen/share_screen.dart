@@ -10,7 +10,9 @@ import 'package:provider/provider.dart';
 
 class ShareScreen extends StatefulWidget {
   final String videoUuid;
-  const ShareScreen({Key? key, required this.videoUuid}) : super(key: key);
+  final String? commentId;
+  const ShareScreen({Key? key, required this.videoUuid, this.commentId})
+      : super(key: key);
 
   @override
   State<ShareScreen> createState() => _ShareScreenState();
@@ -49,14 +51,17 @@ class _ShareScreenState extends State<ShareScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColor.purpleColor,
-          ),
-          onPressed: () async {
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          if (widget.commentId != null) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MainScreen(index: 1)),
+              (route) => false,
+            );
+          } else {
             _multiVideoPlayProvider.resetVideoPlayer(0);
 
             Navigator.pushAndRemoveUntil(
@@ -64,23 +69,52 @@ class _ShareScreenState extends State<ShareScreen> {
               MaterialPageRoute(builder: (context) => const MainScreen()),
               (route) => false,
             );
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              if (widget.commentId != null) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MainScreen(index: 1)),
+                  (route) => false,
+                );
+              } else {
+                _multiVideoPlayProvider.resetVideoPlayer(0);
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                  (route) => false,
+                );
+              }
+            },
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+        ),
+        extendBody: true,
+        backgroundColor: Colors.black,
+        extendBodyBehindAppBar: true,
+        body: FutureBuilder<bool>(
+          future: _initVideo(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              final isopenComment = widget.commentId != null ? true : false;
+              return ShareVideoPlayeView(isopenComment: isopenComment);
+            } else {
+              return const MusicSpinner();
+            }
           },
         ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      extendBody: true,
-      backgroundColor: Colors.black,
-      extendBodyBehindAppBar: true,
-      body: FutureBuilder<bool>(
-        future: _initVideo(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return const ShareVideoPlayeView();
-          } else {
-            return const MusicSpinner();
-          }
-        },
       ),
     );
   }

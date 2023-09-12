@@ -7,8 +7,12 @@ import 'package:pocket_pose/ui/widget/video/share_button_widget.dart';
 import 'package:provider/provider.dart';
 
 class ShareVideoRightView extends StatefulWidget {
+  final bool isopenComment;
   const ShareVideoRightView(
-      {Key? key, required this.screenNum, required this.index})
+      {Key? key,
+      required this.screenNum,
+      required this.index,
+      required this.isopenComment})
       : super(key: key);
 
   final int screenNum;
@@ -39,6 +43,7 @@ class _ShareVideoRightViewState extends State<ShareVideoRightView> {
             LikeButtonWidget(screenNum: widget.screenNum, index: widget.index),
             const Padding(padding: EdgeInsets.only(bottom: 14)),
             CommentButtonView(
+              isopenComment: widget.isopenComment,
               screenNum: widget.screenNum,
               index: widget.index,
               onRefresh: () {
