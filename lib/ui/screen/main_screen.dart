@@ -37,7 +37,10 @@ class _MainScreenState extends State<MainScreen>
     return _bottomNavIndex;
   }
 
-  List<Widget> _screens = [const HomeScreen(), const ProfileScreen()];
+  List<Widget> _screens = [
+    const HomeScreen(),
+    const ProfileScreen(isNavigation: true)
+  ];
 
   @override
   void initState() {
@@ -84,7 +87,9 @@ class _MainScreenState extends State<MainScreen>
       setState(() {
         _screens = [
           const HomeScreen(),
-          isLogin ? const ProfileScreen() : const NotLoginWidget(),
+          isLogin
+              ? const ProfileScreen(isNavigation: true)
+              : const NotLoginWidget(),
         ];
       });
     }
@@ -102,7 +107,9 @@ class _MainScreenState extends State<MainScreen>
         isLogin = false;
         _screens = [
           const HomeScreen(),
-          isLogin ? const ProfileScreen() : const NotLoginWidget(),
+          isLogin
+              ? const ProfileScreen(isNavigation: true)
+              : const NotLoginWidget(),
         ];
       } else {
         isLogin = true;
@@ -110,7 +117,9 @@ class _MainScreenState extends State<MainScreen>
 
       _screens = [
         const HomeScreen(),
-        isLogin ? const ProfileScreen() : const NotLoginWidget(),
+        isLogin
+            ? const ProfileScreen(isNavigation: true)
+            : const NotLoginWidget(),
       ];
     } else {
       // 홈 페이지 클릭

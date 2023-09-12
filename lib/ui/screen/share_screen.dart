@@ -54,8 +54,22 @@ class _ShareScreenState extends State<ShareScreen> {
     return GestureDetector(
       onHorizontalDragUpdate: (details) {
         if (details.primaryDelta! > 10) {
-          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
-          Navigator.of(context).pop();
+          if (widget.commentId != null) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MainScreen(index: 1)),
+              (route) => false,
+            );
+          } else {
+            _multiVideoPlayProvider.resetVideoPlayer(0);
+
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const MainScreen()),
+              (route) => false,
+            );
+          }
         }
       },
       child: Scaffold(

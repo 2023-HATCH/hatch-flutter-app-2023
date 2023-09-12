@@ -10,11 +10,11 @@ class ProfileTapbarWidget extends StatelessWidget {
   const ProfileTapbarWidget({
     super.key,
     required this.profileResponse,
-    required this.isNotBottomNavi,
+    required this.isBottomNavi,
   });
 
   final ProfileResponse profileResponse;
-  final bool isNotBottomNavi;
+  final bool isBottomNavi;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class ProfileTapbarWidget extends StatelessWidget {
           children: [
             Visibility(
               visible: !profileResponse.profile.isMe ||
-                  (profileResponse.profile.isMe && isNotBottomNavi),
+                  (profileResponse.profile.isMe && !isBottomNavi),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
