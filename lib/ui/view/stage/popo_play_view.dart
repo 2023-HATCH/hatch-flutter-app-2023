@@ -25,24 +25,17 @@ class PoPoPlayView extends StatefulWidget {
 }
 
 class _PoPoPlayViewState extends State<PoPoPlayView> {
-  bool _isPlayer = false;
   int _playerNum = -1;
-
-  late SocketStageProviderImpl _socketStageProvider;
 
   @override
   void initState() {
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: false);
-
     for (var player in widget.players) {
       if (player.userId == widget.userId) {
-        _isPlayer = true;
         _playerNum = player.playerNum!;
       }
     }
 
-    if (_isPlayer) {
+    if (_playerNum != -1) {
       Fluttertoast.showToast(
         msg: "캐치 성공!",
         toastLength: Toast.LENGTH_SHORT,
@@ -65,7 +58,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       children: [
         _buildPlayerProfile(),
         MlKitCameraPlayView(
-          isPlayer: _isPlayer,
           playerNum: _playerNum,
         ),
       ],
@@ -73,7 +65,10 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   }
 
   Positioned _buildPlayerProfile() {
-    switch (_socketStageProvider.players.length) {
+    var players =
+        context.select<SocketStageProviderImpl, List<StagePlayerListItem>>(
+            (provider) => provider.players);
+    switch (players.length) {
       case 1:
         return Positioned(
           top: 115,

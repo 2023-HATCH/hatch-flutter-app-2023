@@ -22,13 +22,11 @@ class MlKitCameraPlayView extends StatefulWidget {
   const MlKitCameraPlayView({
     Key? key,
     this.initialDirection = CameraLensDirection.back,
-    required this.isPlayer,
     required this.playerNum,
   }) : super(key: key);
   // 카메라 렌즈 방향 변수
   final CameraLensDirection initialDirection;
   // 플레이어인지 확인하는 변수
-  final bool isPlayer;
   final int playerNum;
 
   @override
@@ -110,7 +108,7 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
     }
 
     // 플레이어이면서 카메라 실행 가능하면 포즈 추출 시작
-    if (widget.isPlayer && _cameraIndex != -1) {
+    if (widget.playerNum != -1 && _cameraIndex != -1) {
       _startLiveFeed();
     }
 
