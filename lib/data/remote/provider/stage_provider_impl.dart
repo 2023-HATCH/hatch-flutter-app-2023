@@ -17,7 +17,6 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
   final List<StageTalkListItem> _talkList = [];
   final List<UserListItem> _userList = [];
   late double? _stageCurSecond;
-  bool _isClicked = false;
   StageMusicData? _music;
 
   List<StageTalkListItem> get talkList => _talkList;
@@ -25,8 +24,6 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
   double? get stageCurTime => _stageCurSecond;
   StageMusicData? get music => _music;
 
-  bool get isClicked => _isClicked;
-  setIsClicked(bool value) => _isClicked = value;
   setStageCurSecondNULL() => _stageCurSecond = null;
 
   void addTalk(StageTalkListItem talk) {

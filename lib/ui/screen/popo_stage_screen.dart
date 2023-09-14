@@ -125,8 +125,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   void _onSocketResponse() {
     var isConnect = context.select<SocketStageProviderImpl, bool>(
         (provider) => provider.isConnect);
-    var isReaction = context.select<SocketStageProviderImpl, bool>(
-        (provider) => provider.isReaction);
 
     // 입장 완료 후 구독
     if (isConnect) {
@@ -143,12 +141,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           })
           .then((_) => _socketStageProvider.setStageView(stageType))
           .then((_) => _socketStageProvider.onSubscribe());
-    }
-
-    // 실시간 반응
-    if (isReaction) {
-      _socketStageProvider.setIsReaction(false);
-      _stageProvider.setIsClicked(true);
     }
   }
 
