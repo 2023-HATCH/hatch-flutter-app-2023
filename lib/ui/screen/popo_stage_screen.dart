@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_screen_recording/flutter_screen_recording.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
@@ -183,8 +182,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
-    bool isRecording = false;
-
     return AppBar(
       centerTitle: true,
       title: const Text(
@@ -212,16 +209,16 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             // 포그라운드 서비스 시작
             await PoPoForegroundService.startService();
 
-            isRecording = await FlutterScreenRecording.startRecordScreen(
-              "my_screen_recording",
+            final isRecording = await FlutterScreenRecording.startRecordScreen(
+              "녹화: my_screen_recording",
               titleNotification: "Recording Screen",
               messageNotification: "Tap to stop recording",
             );
 
             if (isRecording) {
-              debugPrint("녹화가 시작되었습니다.");
+              debugPrint("녹화: 녹화가 시작되었습니다.");
             } else {
-              debugPrint("녹화 시작에 실패했습니다.");
+              debugPrint("녹화: 녹화 시작에 실패했습니다.");
             }
           },
           child: const Text(
@@ -231,17 +228,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         ),
         TextButton(
           onPressed: () async {
-            debugPrint('녹화 종료');
+            debugPrint('녹화: 녹화 종료');
             // 포그라운드 서비스 종료
             await PoPoForegroundService.stopService();
             String recordedPath = await FlutterScreenRecording.stopRecordScreen;
-            debugPrint('녹화 파일 경로: $recordedPath');
+            debugPrint('녹화: 녹화 파일 경로: $recordedPath');
 
-            // test
-            // isRecording = true;
-            // recordedPath = "dd";
-
-            if (isRecording && recordedPath.isNotEmpty) {
+            if (recordedPath.isNotEmpty) {
               File recordedFile = File(recordedPath);
               // 업로드 다이얼로그 생성
               showDialog(
@@ -264,6 +257,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                       });
                 },
               );
+            } else {
+              debugPrint('녹화: 녹화된 영상이 없습니다.');
             }
           },
           child: const Text(

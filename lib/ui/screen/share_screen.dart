@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/share_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
