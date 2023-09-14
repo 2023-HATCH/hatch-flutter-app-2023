@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
-import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
 import 'package:provider/provider.dart';
 
@@ -28,14 +25,8 @@ class PoPoPlayView extends StatefulWidget {
 }
 
 class _PoPoPlayViewState extends State<PoPoPlayView> {
-  // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
-  final PoseDetector _poseDetector =
-      PoseDetector(options: PoseDetectorOptions());
-  bool _canProcess = true;
-  bool _isBusy = false;
   bool _isPlayer = false;
   int _playerNum = -1;
-  int _frameNum = 0;
 
   late SocketStageProviderImpl _socketStageProvider;
 
@@ -75,12 +66,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         _buildPlayerProfile(),
         MlKitCameraPlayView(
           isPlayer: _isPlayer,
-          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-          onImage: (inputImage) {
-            if (_isPlayer) {
-              processImage(inputImage);
-            }
-          },
+          playerNum: _playerNum,
         ),
       ],
     );
@@ -135,13 +121,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           ),
         );
     }
-  }
-
-  @override
-  void dispose() async {
-    _canProcess = false;
-    _poseDetector.close();
-    super.dispose();
   }
 
   Column getProfile(String? profileImg, String nickName, StagePlayScore score) {
@@ -221,37 +200,5 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         ),
       ),
     );
-  }
-
-  // 카메라에서 실시간으로 받아온 이미지 처리: 스켈레톤 전송
-  Future<void> processImage(InputImage inputImage) async {
-    if (!_canProcess) return;
-    if (_isBusy) return;
-    _isBusy = true;
-
-    // poseDetector에서 추출된 포즈 가져오기
-    List<Pose> poses = await _poseDetector.processImage(inputImage);
-    // 소켓에 스켈레톤 전송
-    for (final pose in poses) {
-      Map<String, StageSkeletonPoseLandmark> resultMap = {};
-
-      pose.landmarks.forEach((key, value) {
-        var poseLandmark = StageSkeletonPoseLandmark(
-            type: value.type.index,
-            x: value.x,
-            y: value.y,
-            z: value.z,
-            likelihood: value.likelihood);
-
-        resultMap[key.index.toString()] = poseLandmark;
-      });
-
-      var resuest = SendSkeletonRequest(
-          playerNum: _playerNum, frameNum: _frameNum, skeleton: resultMap);
-      _socketStageProvider.sendPlaySkeleton(resuest);
-    }
-    _frameNum++;
-
-    _isBusy = false;
   }
 }
