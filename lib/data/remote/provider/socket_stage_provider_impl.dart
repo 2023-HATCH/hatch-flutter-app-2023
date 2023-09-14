@@ -141,7 +141,7 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsReCatch(bool value) {
     _isReCatch = value;
-    notifyListeners();
+    if (value) notifyListeners();
   }
 
   setIsPlaySkeletonChange(bool value) {

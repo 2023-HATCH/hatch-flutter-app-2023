@@ -6,6 +6,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_music_data.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_catch_music_info_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_catch_progressbar_widget.dart';
 import 'package:provider/provider.dart';
@@ -32,19 +33,23 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
 
     _onMidEnter();
 
+    var isReCatch = context.select<SocketStageProviderImpl, bool>(
+        (provider) => provider.isReCatch);
+    var catchMusicData =
+        context.select<SocketStageProviderImpl, StageMusicData?>(
+            (provider) => provider.catchMusicData);
+
     // 캐치 재진행 토스트
-    if (_socketStageProvider.isReCatch) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _socketStageProvider.setIsReCatch(false);
-        Fluttertoast.showToast(
-          msg: "캐치를 아무도 안 했어요...😢",
-          toastLength: Toast.LENGTH_SHORT,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      });
+    if (isReCatch) {
+      _socketStageProvider.setIsReCatch(false);
+      Fluttertoast.showToast(
+        msg: "캐치를 아무도 안 했어요...😢",
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
 
     return Column(
@@ -66,7 +71,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
               const SizedBox(height: 10.0),
               StageCatchMusicInfoWidget(
                   musicInfo:
-                      '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
+                      '${catchMusicData?.singer} - ${catchMusicData?.title}',
                   milliseconds: _milliseconds),
               const SizedBox(height: 10.0),
               Flexible(
@@ -83,7 +88,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
               Stack(
                 children: [
                   StageCatchProgressbarWidget(milliseconds: _milliseconds),
-                  // _buildCatchProgressBar(),
                   _buildCatchButton(),
                 ],
               ),
@@ -124,18 +128,18 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   }
 
   void _onMidEnter() {
-    if (_socketStageProvider.isCatchMidEnter) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _socketStageProvider.setIsCatchMidEnter(false);
-        // 중간임장인 경우
-        if (_stageProvider.stageCurTime != null) {
-          // 중간 입장한 초부터 시작
-          setState(() {
-            _milliseconds = (_stageProvider.stageCurTime! / 1000000).round();
-          });
-          _stageProvider.setStageCurSecondNULL();
-        }
-      });
+    var isCatchMidEnter = context.select<SocketStageProviderImpl, bool>(
+        (provider) => provider.isCatchMidEnter);
+    if (isCatchMidEnter) {
+      _socketStageProvider.setIsCatchMidEnter(false);
+      // 중간임장인 경우
+      if (_stageProvider.stageCurTime != null) {
+        // 중간 입장한 초부터 시작
+        setState(() {
+          _milliseconds = (_stageProvider.stageCurTime! / 1000000).round();
+        });
+        _stageProvider.setStageCurSecondNULL();
+      }
     }
   }
 
