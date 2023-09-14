@@ -7,6 +7,8 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/share/dynamic_link.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/screen/home/home_screen.dart';
 import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
@@ -26,6 +28,7 @@ class _MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late KaKaoLoginProvider _loginProvider;
+  late SocketStageProviderImpl _socketStageProvider;
 
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -51,6 +54,9 @@ class _MainScreenState extends State<MainScreen>
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
     _multiVideoPlayProvider.mainContext = context;
+
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
 
     _initIsLoginAndScreens();
 
@@ -138,7 +144,7 @@ class _MainScreenState extends State<MainScreen>
 
     if (await _loginProvider.checkAccessToken()) {
       _multiVideoPlayProvider.pauseVideo(0);
-      _showPoPoStageScreen();
+      _readyPoPoStageScreen();
     } else {
       _loginProvider.showLoginBottomSheet();
       if (await _loginProvider.checkAccessToken()) {
@@ -152,10 +158,21 @@ class _MainScreenState extends State<MainScreen>
         .open(Audio("assets/audios/sound_popo_click.mp3"));
   }
 
-  void _showPoPoStageScreen() {
+  void _readyPoPoStageScreen() async {
+    UserData userData = await _loginProvider.getUser();
+    _socketStageProvider.setUserId(userData.userId);
+    _playClickSound();
+
+    _showPoPoStageScreen(userData.userId);
+  }
+
+  void _showPoPoStageScreen(String userId) {
     _playClickSound();
     PageRouteWithSlideAnimation pageRouteWithAnimation =
-        PageRouteWithSlideAnimation(PoPoStageScreen(getIndex: getIndex));
+        PageRouteWithSlideAnimation(PoPoStageScreen(
+      getIndex: getIndex,
+      userId: userId,
+    ));
     Navigator.push(context, pageRouteWithAnimation.fadeInFadeOutRoute());
   }
 

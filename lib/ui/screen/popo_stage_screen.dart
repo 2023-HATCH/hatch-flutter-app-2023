@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
-import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/user_list_item.dart';
@@ -16,8 +15,10 @@ import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
 class PoPoStageScreen extends StatefulWidget {
-  const PoPoStageScreen({super.key, required this.getIndex()});
+  const PoPoStageScreen(
+      {super.key, required this.getIndex(), required this.userId});
   final Function getIndex;
+  final String userId;
 
   @override
   State<PoPoStageScreen> createState() => _PoPoStageScreenState();
@@ -28,7 +29,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
-  late KaKaoLoginProvider _loginProvider;
   UserData? _userData;
 
   @override
@@ -97,10 +97,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void initState() {
     super.initState();
-    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    _initUser();
   }
 
   @override
@@ -169,7 +167,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         bgImage = 'assets/images/bg_popo_result.png';
         break;
       default:
-        bgImage = 'assets/images/bg_popo_comm.png';
+        bgImage = 'assets/images/bg_popo_wait.png';
         break;
     }
 
@@ -307,14 +305,5 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         );
       },
     );
-  }
-
-  _initUser() async {
-    UserData userData = await _loginProvider.getUser();
-    _socketStageProvider.setUserId(userData.userId);
-
-    setState(() {
-      _userData = userData;
-    });
   }
 }

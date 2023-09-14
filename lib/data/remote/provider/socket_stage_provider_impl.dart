@@ -127,11 +127,15 @@ class SocketStageProviderImpl extends ChangeNotifier
   setUserCount(int value) {
     _userCount = value;
     notifyListeners();
+    print("mmm socket setUserCount noti");
   }
 
   setIsConnect(bool value) {
     _isConnect = value;
-    if (value) notifyListeners();
+    if (value) {
+      notifyListeners();
+      print("mmm socket setIsConnect noti");
+    }
   }
 
   setIsCatchMidEnter(bool value) {

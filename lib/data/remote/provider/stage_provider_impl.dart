@@ -53,6 +53,7 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
     _talkList.addAll(response.data.talkMessageData.messages ?? []);
 
     notifyListeners();
+    print("mmm pro getStageEnter noti");
 
     return response;
   }
