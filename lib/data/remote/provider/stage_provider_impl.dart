@@ -29,10 +29,6 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
   setIsClicked(bool value) => _isClicked = value;
   setStageCurSecondNULL() => _stageCurSecond = null;
 
-  void toggleIsLeft() {
-    if (isClicked) notifyListeners();
-  }
-
   void addTalk(StageTalkListItem talk) {
     _talkList.insert(0, talk);
   }

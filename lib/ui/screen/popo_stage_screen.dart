@@ -43,56 +43,55 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     // 소켓 반응 처리
     _onSocketResponse();
 
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      onHorizontalDragUpdate: (details) {
-        if (details.primaryDelta! > 10) {
-          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
-          Navigator.of(context).pop();
-        }
-      },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Selector<SocketStageProviderImpl, SocketType>(
-          selector: (_, socketProvider) => socketProvider.stageType,
-          builder: (context, stageType, _) {
-            return Container(
-                // 플레이, 결과 상태에 따라 배경화면 변경
-                decoration: _buildBackgroundImage(stageType),
-                child: Scaffold(
-                  resizeToAvoidBottomInset: false,
-                  extendBodyBehindAppBar: true,
-                  backgroundColor: Colors.transparent,
-                  appBar: _buildAppBar(context),
-                  body: Stack(
-                    children: [
-                      Navigator(
-                        key: _socketStageProvider.navigatorKey,
-                        initialRoute: socketTypeList[0],
-                        onGenerateRoute: _socketStageProvider.onGenerateRoute,
+    return Selector<SocketStageProviderImpl, SocketType>(
+        selector: (_, socketProvider) => socketProvider.stageType,
+        builder: (context, stageType, _) {
+          return GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              onHorizontalDragUpdate: (details) {
+                if (details.primaryDelta! > 10) {
+                  // 왼쪽에서 오른쪽으로 드래그했을 때 pop
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                body: Container(
+                    // 플레이, 결과 상태에 따라 배경화면 변경
+                    decoration: _buildBackgroundImage(stageType),
+                    child: Scaffold(
+                      resizeToAvoidBottomInset: false,
+                      extendBodyBehindAppBar: true,
+                      backgroundColor: Colors.transparent,
+                      appBar: _buildAppBar(context),
+                      body: Stack(
+                        children: [
+                          Navigator(
+                            key: _socketStageProvider.navigatorKey,
+                            initialRoute: socketTypeList[0],
+                            onGenerateRoute:
+                                _socketStageProvider.onGenerateRoute,
+                          ),
+                          const Positioned(
+                            bottom: 68,
+                            left: 0,
+                            right: 0,
+                            child: StageLiveTalkListWidget(),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: StageLiveChatBarWidget(
+                                nickName: _userData?.nickname ?? ""),
+                          ),
+                        ],
                       ),
-                      const Positioned(
-                        bottom: 68,
-                        left: 0,
-                        right: 0,
-                        child: StageLiveTalkListWidget(),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: StageLiveChatBarWidget(
-                            nickName: _userData?.nickname ?? ""),
-                      ),
-                    ],
-                  ),
-                ));
-          },
-        ),
-      ),
-    );
+                    )),
+              ));
+        });
   }
 
   @override
@@ -127,32 +126,32 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   }
 
   void _onSocketResponse() {
-    if (_socketStageProvider.isConnect) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        SocketType stageType = SocketType.WAIT;
-        _socketStageProvider.setIsConnect(false);
-        _stageProvider
-            .getStageEnter(StageEnterRequest(page: 0, size: 10))
-            .then((value) {
-              stageType = SocketType.values.byName(value.data.stageStatus);
-              _socketStageProvider.setUserCount(value.data.userCount);
-              if (stageType == SocketType.CATCH) {
-                _socketStageProvider.setIsCatchMidEnter(true);
-              }
-            })
-            .then((_) => _socketStageProvider.setStageView(stageType))
-            .then((_) => _socketStageProvider.onSubscribe());
-      });
+    var isConnect = context.select<SocketStageProviderImpl, bool>(
+        (provider) => provider.isConnect);
+    var isReaction = context.select<SocketStageProviderImpl, bool>(
+        (provider) => provider.isReaction);
+
+    // 입장 완료 후 구독
+    if (isConnect) {
+      SocketType stageType = SocketType.WAIT;
+      _socketStageProvider.setIsConnect(false);
+      _stageProvider
+          .getStageEnter(StageEnterRequest(page: 0, size: 10))
+          .then((value) {
+            stageType = SocketType.values.byName(value.data.stageStatus);
+            _socketStageProvider.setUserCount(value.data.userCount);
+            if (stageType == SocketType.CATCH) {
+              _socketStageProvider.setIsCatchMidEnter(true);
+            }
+          })
+          .then((_) => _socketStageProvider.setStageView(stageType))
+          .then((_) => _socketStageProvider.onSubscribe());
     }
 
     // 실시간 반응
-    if (_socketStageProvider.isReaction) {
-      print("mmm 3");
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _socketStageProvider.setIsReaction(false);
-        _stageProvider.setIsClicked(true);
-        _stageProvider.toggleIsLeft();
-      });
+    if (isReaction) {
+      _socketStageProvider.setIsReaction(false);
+      _stageProvider.setIsClicked(true);
     }
   }
 
@@ -173,7 +172,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         bgImage = 'assets/images/bg_popo_comm.png';
         break;
     }
-    print("mmm 배경 $type");
 
     return BoxDecoration(
       image: DecorationImage(
