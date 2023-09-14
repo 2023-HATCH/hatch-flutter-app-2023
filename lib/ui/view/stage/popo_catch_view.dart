@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,8 +6,8 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_catch_progressbar_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:semicircle_indicator/semicircle_indicator.dart';
 import 'dart:math' as math;
 
 class PoPoCatchView extends StatefulWidget {
@@ -22,8 +20,6 @@ class PoPoCatchView extends StatefulWidget {
 class _PoPoCatchViewState extends State<PoPoCatchView>
     with SingleTickerProviderStateMixin {
   int _milliseconds = 0;
-  double _catchCountDown = 0.0;
-  Timer? _timer;
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
   late StageProviderImpl _stageProvider;
@@ -86,7 +82,8 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
               ),
               Stack(
                 children: [
-                  _buildCatchProgressBar(),
+                  StageCatchProgressbarWidget(milliseconds: _milliseconds),
+                  // _buildCatchProgressBar(),
                   _buildCatchButton(),
                 ],
               ),
@@ -142,28 +139,11 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     }
   }
 
-  Widget _buildCatchProgressBar() {
-    return Center(
-      child: SizedBox(
-        width: 100,
-        height: 45,
-        child: SemicircularIndicator(
-          progress: (_catchCountDown > 1) ? 1 : _catchCountDown,
-          color: Colors.yellow,
-          bottomPadding: 0,
-          strokeWidth: 2,
-          backgroundColor: Colors.transparent,
-        ),
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
 
     AudioPlayerUtil().stop();
-    _startTimer();
 
     _animationController = AnimationController(
       vsync: this,
@@ -176,29 +156,9 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     _animationController.forward();
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
-      if (_milliseconds >= 3000) {
-        _stopTimer();
-      } else {
-        if (mounted) {
-          setState(() {
-            _milliseconds = _milliseconds + 10;
-            _catchCountDown = _milliseconds / 3000;
-          });
-        }
-      }
-    });
-  }
-
-  void _stopTimer() {
-    _timer?.cancel();
-  }
-
   @override
   void dispose() {
     _animationController.dispose();
-    _stopTimer();
     super.dispose();
   }
 
