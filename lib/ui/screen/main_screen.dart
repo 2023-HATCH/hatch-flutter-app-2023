@@ -163,15 +163,15 @@ class _MainScreenState extends State<MainScreen>
     _socketStageProvider.setUserId(userData.userId);
     _playClickSound();
 
-    _showPoPoStageScreen(userData.userId);
+    _showPoPoStageScreen(userData);
   }
 
-  void _showPoPoStageScreen(String userId) {
+  void _showPoPoStageScreen(UserData userData) {
     _playClickSound();
     PageRouteWithSlideAnimation pageRouteWithAnimation =
         PageRouteWithSlideAnimation(PoPoStageScreen(
       getIndex: getIndex,
-      userId: userId,
+      userData: userData,
     ));
     Navigator.push(context, pageRouteWithAnimation.fadeInFadeOutRoute());
   }

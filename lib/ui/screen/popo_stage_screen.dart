@@ -16,9 +16,9 @@ import 'package:provider/provider.dart';
 
 class PoPoStageScreen extends StatefulWidget {
   const PoPoStageScreen(
-      {super.key, required this.getIndex(), required this.userId});
+      {super.key, required this.getIndex(), required this.userData});
   final Function getIndex;
-  final String userId;
+  final UserData userData;
 
   @override
   State<PoPoStageScreen> createState() => _PoPoStageScreenState();
@@ -29,7 +29,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
-  UserData? _userData;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +84,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                             left: 0,
                             right: 0,
                             child: StageLiveChatBarWidget(
-                                nickName: _userData?.nickname ?? ""),
+                                nickName: widget.userData.nickname),
                           ),
                         ],
                       ),

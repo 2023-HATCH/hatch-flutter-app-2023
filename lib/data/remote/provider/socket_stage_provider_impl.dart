@@ -95,7 +95,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isReaction = false;
   bool _isCatchMidEnter = false;
   bool _isReCatch = false;
-  bool _isPlaySkeletonChange = false;
+  final bool _isPlaySkeletonChange = false;
   bool _isMVPSkeletonChange = false;
 
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
@@ -145,11 +145,6 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsReCatch(bool value) {
     _isReCatch = value;
-    if (value) notifyListeners();
-  }
-
-  setIsPlaySkeletonChange(bool value) {
-    _isPlaySkeletonChange = value;
     if (value) notifyListeners();
   }
 
@@ -329,15 +324,17 @@ class SocketStageProviderImpl extends ChangeNotifier
         switch (socketResponse.data?.playerNum) {
           case 0:
             player0 = temp;
+            notifyListeners();
             break;
           case 1:
             player1 = temp;
+            notifyListeners();
             break;
           case 2:
             player2 = temp;
+            notifyListeners();
             break;
         }
-        setIsPlaySkeletonChange(true);
         break;
       case SocketType.MID_SCORE:
         break;
@@ -382,11 +379,13 @@ class SocketStageProviderImpl extends ChangeNotifier
   }
 
   setStageView(SocketType stageType) {
+    print("mmm setStateView: ${stageType.name}");
     _navigatorKey.currentState?.pop();
     _navigatorKey.currentState?.pushNamed(socketTypeList[stageType.index]);
   }
 
   MaterialPageRoute onGenerateRoute(RouteSettings setting) {
+    print("mmm onGenerateRoute");
     switch (stageType) {
       case SocketType.STAGE_ROUTINE_STOP:
       case SocketType.WAIT:
