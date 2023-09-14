@@ -34,6 +34,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
+    print("mmm catch rebuild");
 
     _onMidEnter();
 
