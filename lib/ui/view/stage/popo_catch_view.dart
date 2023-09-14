@@ -6,6 +6,7 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_catch_music_info_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_catch_progressbar_widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
@@ -17,11 +18,8 @@ class PoPoCatchView extends StatefulWidget {
   State<StatefulWidget> createState() => _PoPoCatchViewState();
 }
 
-class _PoPoCatchViewState extends State<PoPoCatchView>
-    with SingleTickerProviderStateMixin {
+class _PoPoCatchViewState extends State<PoPoCatchView> {
   int _milliseconds = 0;
-  late AnimationController _animationController;
-  late Animation<double> _opacityAnimation;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
@@ -66,8 +64,10 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 10.0),
-              musicTitleContainer(
-                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}'),
+              StageCatchMusicInfoWidget(
+                  musicInfo:
+                      '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
+                  milliseconds: _milliseconds),
               const SizedBox(height: 10.0),
               Flexible(
                 child: SvgPicture.asset(
@@ -144,61 +144,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     super.initState();
 
     AudioPlayerUtil().stop();
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-
-    _opacityAnimation =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  Widget musicTitleContainer(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(60, 11, 60, 11),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(
-                color: Colors.white, width: 3.0, style: BorderStyle.solid),
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              for (double i = 1; i < 5; i++)
-                BoxShadow(
-                    color: AppColor.yellowColor,
-                    blurStyle: BlurStyle.outer,
-                    blurRadius: 3 * i)
-            ]),
-        child: AnimatedOpacity(
-          opacity: _opacityAnimation.value,
-          duration: const Duration(milliseconds: 300),
-          child: Padding(
-            padding: const EdgeInsets.all(11.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset(
-                  'assets/icons/ic_music_note_big.svg',
-                ),
-                const SizedBox(width: 8.0),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   void _playClickSound() {
