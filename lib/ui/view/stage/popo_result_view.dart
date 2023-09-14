@@ -8,7 +8,7 @@ import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dar
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
-import 'package:pocket_pose/ui/view/stage/ml_kit_camera_view.dart';
+import 'package:pocket_pose/ui/view/stage/ml_kit_camera_result_view.dart';
 import 'package:provider/provider.dart';
 
 // ml_kit_skeleton_custom_view
@@ -102,7 +102,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
             }).toList(), // .toList() added here
           ),
         ),
-        CameraView(
+        MlKitCameraResultView(
           isResultState: widget.isResultState,
           // 스켈레톤 그려주는 객체 전달
           customPaintMid: _customPaintMid,

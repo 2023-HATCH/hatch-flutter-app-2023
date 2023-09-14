@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
-import 'package:pocket_pose/ui/view/stage/ml_kit_camera_view.dart';
+import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
 import 'package:provider/provider.dart';
 
 enum StagePlayScore { bad, good, great, excellent, perfect, none }
@@ -34,10 +33,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       PoseDetector(options: PoseDetectorOptions());
   bool _canProcess = true;
   bool _isBusy = false;
-  // 스켈레톤 모양을 그려주는 변수
-  CustomPaint? _customPaintLeft;
-  CustomPaint? _customPaintMid;
-  CustomPaint? _customPaintRight;
   bool _isPlayer = false;
   int _playerNum = -1;
   int _frameNum = 0;
@@ -46,6 +41,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
   @override
   void initState() {
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
+
     for (var player in widget.players) {
       if (player.userId == widget.userId) {
         _isPlayer = true;
@@ -69,25 +67,14 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
   @override
   Widget build(BuildContext context) {
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: false);
-
-    if (_socketStageProvider.isPlaySkeletonChange) {
-      _socketStageProvider.setIsPlaySkeletonChange(false);
-      _paintSkeleton();
-    }
     print("mmm play rebuild");
 
     // 카메라뷰 보이기
     return Stack(
       children: [
         _buildPlayerProfile(),
-        CameraView(
-          isResultState: widget.isResultState,
-          // 스켈레톤 그려주는 객체 전달
-          customPaintLeft: _customPaintLeft,
-          customPaintMid: _customPaintMid,
-          customPaintRight: _customPaintRight,
+        MlKitCameraPlayView(
+          isPlayer: _isPlayer,
           // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
           onImage: (inputImage) {
             if (_isPlayer) {
@@ -236,14 +223,14 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     );
   }
 
-  // 카메라에서 실시간으로 받아온 이미지 처리: 이미지에 포즈가 추출되었으면 스켈레톤 그려주기
+  // 카메라에서 실시간으로 받아온 이미지 처리: 스켈레톤 전송
   Future<void> processImage(InputImage inputImage) async {
     if (!_canProcess) return;
     if (_isBusy) return;
     _isBusy = true;
+
     // poseDetector에서 추출된 포즈 가져오기
     List<Pose> poses = await _poseDetector.processImage(inputImage);
-
     // 소켓에 스켈레톤 전송
     for (final pose in poses) {
       Map<String, StageSkeletonPoseLandmark> resultMap = {};
@@ -266,43 +253,5 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     _frameNum++;
 
     _isBusy = false;
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  void _paintSkeleton() {
-    if (_socketStageProvider.player1 != null) {
-      CustomPosePainter painterLeft = CustomPosePainter(
-          [Pose(landmarks: _socketStageProvider.player1 ?? {})],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.yellowNeonColor);
-      _customPaintLeft = CustomPaint(painter: painterLeft);
-    } else {
-      _customPaintLeft = null;
-    }
-
-    if (_socketStageProvider.player0 != null) {
-      CustomPosePainter painterMid = CustomPosePainter(
-          [Pose(landmarks: _socketStageProvider.player0 ?? {})],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.mintNeonColor);
-      _customPaintMid = CustomPaint(painter: painterMid);
-    } else {
-      _customPaintMid = null;
-    }
-
-    if (_socketStageProvider.player2 != null) {
-      CustomPosePainter painterRignt = CustomPosePainter(
-          [Pose(landmarks: _socketStageProvider.player2 ?? {})],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.greenNeonColor);
-      _customPaintRight = CustomPaint(painter: painterRignt);
-    } else {
-      _customPaintRight = null;
-    }
   }
 }
