@@ -27,6 +27,8 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
     super.initState();
     _talkProvider = Provider.of<StageTalkProviderImpl>(context, listen: false);
     _scrollController.addListener(_scrollListener);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
   }
 
   @override
@@ -39,12 +41,14 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
     print("mmm talk list build");
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
 
-    return _buildStageChatList(_stageProvider.talkList);
+    return Selector<StageProviderImpl, List<StageTalkListItem>>(
+        selector: (_, stageProvider) => stageProvider.talkList,
+        builder: (context, talkList, _) {
+          return _buildStageChatList(talkList);
+        });
   }
 
   Widget _buildStageChatList(List<StageTalkListItem> entries) {
