@@ -93,7 +93,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isConnect = false;
   bool _isSubscribe = false;
   bool _isReaction = false;
-  bool _isCatchMidEnter = false;
   bool _isReCatch = false;
 
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
@@ -109,7 +108,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isConnect => _isConnect;
   bool get isSubscribe => _isSubscribe;
   bool get isReaction => _isReaction;
-  bool get isCatchMidEnter => _isCatchMidEnter;
   bool get isReCatch => _isReCatch;
 
   setUserId(String id) {
@@ -138,12 +136,6 @@ class SocketStageProviderImpl extends ChangeNotifier
     if (value) {
       notifyListeners();
     }
-  }
-
-  setIsCatchMidEnter(bool value) {
-    _isCatchMidEnter = value;
-    // _socketType = SocketType.CATCH_START;
-    if (value) notifyListeners();
   }
 
   setIsReCatch(bool value) {

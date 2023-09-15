@@ -50,7 +50,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(
-          // 플레이, 결과 상태에 따라 배경화면 변경
+          // 대기, 캐치, 플레이, 결과 상태에 따라 배경화면 변경
           decoration: _buildBackgroundImage(
               context.select<SocketStageProviderImpl, SocketType>(
                   (provider) => provider.stageType)),
@@ -141,10 +141,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           .then((value) {
             stageType = SocketType.values.byName(value.data.stageStatus);
             _socketStageProvider.setUserCount(value.data.userCount);
-            if (stageType == SocketType.CATCH) {
-              print("mmm screen 중간입장");
-              _socketStageProvider.setIsCatchMidEnter(true);
-            }
           })
           .then((_) => _socketStageProvider.setStageView(stageType))
           .then((_) => _socketStageProvider.onSubscribe());
@@ -157,6 +153,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       case SocketType.WAIT:
         bgImage = 'assets/images/bg_popo_wait.png';
         break;
+      case SocketType.CATCH:
       case SocketType.CATCH_START:
       case SocketType.PLAY_START:
         bgImage = 'assets/images/bg_popo_comm.png';
