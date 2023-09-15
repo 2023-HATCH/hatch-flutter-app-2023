@@ -6,45 +6,43 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
+import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
+import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/main.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
-class CameraView extends StatefulWidget {
-  CameraView(
-      {Key? key,
-      required this.isResultState,
-      this.customPaintLeft,
-      required this.customPaintMid,
-      this.customPaintRight,
-      required this.onImage,
-      this.initialDirection = CameraLensDirection.back})
-      : super(key: key);
-  bool isResultState;
-  // 스켈레톤을 그려주는 객체
-  final CustomPaint? customPaintLeft;
-  final CustomPaint? customPaintMid;
-  final CustomPaint? customPaintRight;
-  // 이미지 받을 때마다 실행하는 함수
-  final Function(InputImage inputImage) onImage;
+class MlKitCameraPlayView extends StatefulWidget {
+  const MlKitCameraPlayView({
+    Key? key,
+    this.initialDirection = CameraLensDirection.back,
+    required this.playerNum,
+  }) : super(key: key);
   // 카메라 렌즈 방향 변수
   final CameraLensDirection initialDirection;
+  // 플레이어인지 확인하는 변수
+  final int playerNum;
 
   @override
-  State<CameraView> createState() => _CameraViewState();
+  State<MlKitCameraPlayView> createState() => _MlKitCameraPlayViewState();
 }
 
-class _CameraViewState extends State<CameraView> {
+class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
   // 카메라를 다루기 위한 변수
   CameraController? _controller;
   // 카메라 인덱스
   int _cameraIndex = -1;
   // 확대 축소 레벨
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
+  // 스켈레톤 모양을 그려주는 변수
+  CustomPaint? _customPaintLeft;
+  CustomPaint? _customPaintMid;
+  CustomPaint? _customPaintRight;
   // 5초 카운트다운 텍스트
   bool _countdownVisibility = false;
   final List<String> _countdownSVG = [
@@ -56,19 +54,26 @@ class _CameraViewState extends State<CameraView> {
   ];
   int _seconds = 5;
   Timer? _timer;
+  // ml kit 변수
+  bool _canProcess = true;
+  bool _isBusy = false;
+  int _frameNum = 0;
+  // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
+  final PoseDetector _poseDetector =
+      PoseDetector(options: PoseDetectorOptions());
   AssetsAudioPlayer? _assetsAudioPlayer;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
   @override
   Widget build(BuildContext context) {
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
+    _paintSkeleton();
+
+    print("mmm camera play build");
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
-      // 결과 화면이면 1명의 스켈레톤, 플레이 화면이면 3명의 스켈레톤 출력
       body: _liveFeedBody(),
     );
   }
@@ -77,6 +82,8 @@ class _CameraViewState extends State<CameraView> {
   void initState() {
     super.initState();
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
 
     // 카메라 설정. 기기에서 실행 가능한 카메라, 카메라 방향 설정...
     if (cameras.any(
@@ -98,8 +105,8 @@ class _CameraViewState extends State<CameraView> {
       }
     }
 
-    // 카메라 실행 가능하면 포즈 추출 시작
-    if (_cameraIndex != -1) {
+    // 플레이어이면서 카메라 실행 가능하면 포즈 추출 시작
+    if (widget.playerNum != -1 && _cameraIndex != -1) {
       _startLiveFeed();
     }
 
@@ -115,44 +122,28 @@ class _CameraViewState extends State<CameraView> {
           ? AudioPlayerUtil()
               .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
           : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
-      // 플레이 상태인 경우
-      if (!widget.isResultState) {
-        // 중간임장인 경우
-        if (_stageProvider.stageCurTime != null) {
-          // 중간 입장한 초부터 시작
-          _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-          _stageProvider.setStageCurSecondNULL();
-        } else {
-          // 중간입장 아닐 시 0초부터 시작
-          _seconds = 0;
-        }
-        // 카운트다운
-        if (_seconds < 5) {
-          // 카운트다운 시작 후 노래 재생
-          setState(() {
-            _seconds = 5 - _seconds;
-            _countdownVisibility = true;
-          });
-          _startTimer();
-        }
-        // 노래 재생
-        else {
-          AudioPlayerUtil().playSeek(_seconds - 5);
-        }
+
+      // 중간임장인 경우
+      if (_stageProvider.stageCurTime != null) {
+        // 중간 입장한 초부터 시작
+        _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+        _stageProvider.setStageCurSecondNULL();
+      } else {
+        // 중간입장 아닐 시 0초부터 시작
+        _seconds = 0;
       }
-      // 결과 상태인 경우
+      // 카운트다운
+      if (_seconds < 5) {
+        // 카운트다운 시작 후 노래 재생
+        setState(() {
+          _seconds = 5 - _seconds;
+          _countdownVisibility = true;
+        });
+        _startTimer();
+      }
+      // 노래 재생
       else {
-        // 중간임장인 경우
-        if (_stageProvider.stageCurTime != null) {
-          // 중간 입장한 초부터 시작
-          _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-          _stageProvider.setStageCurSecondNULL();
-          AudioPlayerUtil().playSeek(_seconds);
-        } else {
-          // 중간입장 아닐 시 0초부터 시작
-          _seconds = 0;
-          AudioPlayerUtil().play();
-        }
+        AudioPlayerUtil().playSeek(_seconds - 5);
       }
     });
   }
@@ -189,10 +180,12 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   void dispose() {
+    _stopTimer();
+    _canProcess = false;
+    _poseDetector.close();
     _assetsAudioPlayer = null;
     _assetsAudioPlayer?.dispose();
     _controller?.dispose;
-    _stopTimer();
 
     super.dispose();
   }
@@ -215,25 +208,52 @@ class _CameraViewState extends State<CameraView> {
       children: <Widget>[
         buildMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
-        (widget.isResultState) ? _liveFeedBodyResult() : _liveFeedBodyPlay(),
+        _liveFeedBodyPlay(),
         buildCountdownWidget()
       ],
     );
   }
 
-  // 결과 화면: MVP 1명의 스켈레톤만 보임
-  Widget _liveFeedBodyResult() {
-    return Row(
-      children: [
-        Expanded(flex: 2, child: Container()),
-        Expanded(
-            flex: 4,
-            child: (widget.customPaintMid != null)
-                ? SizedBox(height: 300, child: widget.customPaintMid!)
-                : Container()),
-        Expanded(flex: 2, child: Container()),
-      ],
-    );
+  void _paintSkeleton() {
+    var player1 = context.select<SocketStageProviderImpl,
+        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player1);
+    var player0 = context.select<SocketStageProviderImpl,
+        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player0);
+    var player2 = context.select<SocketStageProviderImpl,
+        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player2);
+
+    if (player1 != null) {
+      CustomPosePainter painterLeft = CustomPosePainter(
+          [Pose(landmarks: player1)],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.yellowNeonColor);
+      _customPaintLeft = CustomPaint(painter: painterLeft);
+    } else {
+      _customPaintLeft = null;
+    }
+
+    if (player0 != null) {
+      CustomPosePainter painterMid = CustomPosePainter(
+          [Pose(landmarks: player0)],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.mintNeonColor);
+      _customPaintMid = CustomPaint(painter: painterMid);
+    } else {
+      _customPaintMid = null;
+    }
+
+    if (player2 != null) {
+      CustomPosePainter painterRignt = CustomPosePainter(
+          [Pose(landmarks: player2)],
+          const Size(1280.0, 720.0),
+          InputImageRotation.rotation270deg,
+          AppColor.greenNeonColor);
+      _customPaintRight = CustomPaint(painter: painterRignt);
+    } else {
+      _customPaintRight = null;
+    }
   }
 
   // 플레이 화면: 플레이어 3명 스켈레톤 보임
@@ -245,8 +265,8 @@ class _CameraViewState extends State<CameraView> {
             Expanded(flex: 2, child: Container()),
             Expanded(
                 flex: 4,
-                child: (widget.customPaintMid != null)
-                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                child: (_customPaintMid != null)
+                    ? SizedBox(height: 200, child: _customPaintMid!)
                     : Container()),
             Expanded(flex: 2, child: Container()),
           ],
@@ -256,13 +276,13 @@ class _CameraViewState extends State<CameraView> {
           children: [
             Expanded(
                 flex: 1,
-                child: (widget.customPaintLeft != null)
-                    ? SizedBox(height: 200, child: widget.customPaintLeft!)
+                child: (_customPaintLeft != null)
+                    ? SizedBox(height: 200, child: _customPaintLeft!)
                     : Container()),
             Expanded(
                 flex: 1,
-                child: (widget.customPaintMid != null)
-                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                child: (_customPaintMid != null)
+                    ? SizedBox(height: 200, child: _customPaintMid!)
                     : Container()),
           ],
         );
@@ -271,18 +291,18 @@ class _CameraViewState extends State<CameraView> {
           children: [
             Expanded(
                 flex: 4,
-                child: (widget.customPaintLeft != null)
-                    ? SizedBox(height: 200, child: widget.customPaintLeft!)
+                child: (_customPaintLeft != null)
+                    ? SizedBox(height: 200, child: _customPaintLeft!)
                     : Container()),
             Expanded(
                 flex: 4,
-                child: (widget.customPaintMid != null)
-                    ? SizedBox(height: 200, child: widget.customPaintMid!)
+                child: (_customPaintMid != null)
+                    ? SizedBox(height: 200, child: _customPaintMid!)
                     : Container()),
             Expanded(
                 flex: 3,
-                child: (widget.customPaintRight != null)
-                    ? SizedBox(height: 150, child: widget.customPaintRight!)
+                child: (_customPaintRight != null)
+                    ? SizedBox(height: 150, child: _customPaintRight!)
                     : Container()),
           ],
         );
@@ -349,11 +369,10 @@ class _CameraViewState extends State<CameraView> {
       });
       // 이미지 받은 것을 _processCameraImage 함수로 처리
       _controller?.startImageStream(_processCameraImage);
-      setState(() {});
     });
   }
 
-  // 카메라에서 실시간으로 받아온 이미치 처리: PoseDetectorView에서 받아온 함수인 onImage(이미지에 포즈가 추출되었으면 스켈레톤 그려주는 함수) 실행
+  // 카메라에서 실시간으로 받아온 이미치 처리
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();
     for (final Plane plane in image.planes) {
@@ -393,7 +412,41 @@ class _CameraViewState extends State<CameraView> {
     final inputImage =
         InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
 
-    // PoseDetectorView에서 받아온 함수인 onImage(이미지에 포즈가 추출되었으면 스켈레톤 그려주는 함수) 실행
-    widget.onImage(inputImage);
+    // 스켈레톤 전송
+    _sendSkeleton(inputImage);
+  }
+
+  // 카메라에서 실시간으로 받아온 이미지 처리: 스켈레톤 전송
+  Future<void> _sendSkeleton(InputImage inputImage) async {
+    if (!_canProcess) return;
+    if (_isBusy) return;
+    _isBusy = true;
+
+    // poseDetector에서 추출된 포즈 가져오기
+    List<Pose> poses = await _poseDetector.processImage(inputImage);
+    // 소켓에 스켈레톤 전송
+    for (final pose in poses) {
+      Map<String, StageSkeletonPoseLandmark> resultMap = {};
+
+      pose.landmarks.forEach((key, value) {
+        var poseLandmark = StageSkeletonPoseLandmark(
+            type: value.type.index,
+            x: value.x,
+            y: value.y,
+            z: value.z,
+            likelihood: value.likelihood);
+
+        resultMap[key.index.toString()] = poseLandmark;
+      });
+
+      var resuest = SendSkeletonRequest(
+          playerNum: widget.playerNum,
+          frameNum: _frameNum,
+          skeleton: resultMap);
+      _socketStageProvider.sendPlaySkeleton(resuest);
+    }
+    _frameNum++;
+
+    _isBusy = false;
   }
 }

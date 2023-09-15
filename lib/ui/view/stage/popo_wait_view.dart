@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class PoPoWaitView extends StatefulWidget {
+class PoPoWaitView extends StatelessWidget {
   const PoPoWaitView({Key? key}) : super(key: key);
 
-  @override
-  State<StatefulWidget> createState() => _PoPoWaitViewState();
-}
-
-class _PoPoWaitViewState extends State<PoPoWaitView> {
   @override
   Widget build(BuildContext context) {
     return Column(

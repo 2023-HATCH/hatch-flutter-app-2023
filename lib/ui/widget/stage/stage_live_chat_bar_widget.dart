@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
-import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:provider/provider.dart';
 
 class StageLiveChatBarWidget extends StatefulWidget {
@@ -23,12 +22,13 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
   final List<AnimationController> _animationControllers = [];
   final List<Animation<Offset>> _animations = [];
 
-  late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
   @override
   void initState() {
     super.initState();
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
     _inputFieldFocusNode.addListener(() {
       setState(() {
         _isFireIconVisible = (_inputFieldFocusNode.hasFocus) ? false : true;
@@ -48,12 +48,11 @@ class _StageLiveChatBarWidgetState extends State<StageLiveChatBarWidget>
 
   @override
   Widget build(BuildContext context) {
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
-
-    if (_stageProvider.isClicked) {
-      _stageProvider.setIsClicked(false);
+    // 실시간 반응
+    var isReaction = context.select<SocketStageProviderImpl, bool>(
+        (provider) => provider.isReaction);
+    if (isReaction) {
+      _socketStageProvider.setIsReaction(false);
       _handleIconClick();
     }
 

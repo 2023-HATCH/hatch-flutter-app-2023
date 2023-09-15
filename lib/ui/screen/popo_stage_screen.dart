@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
-import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/user_list_item.dart';
@@ -16,8 +15,10 @@ import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
 import 'package:provider/provider.dart';
 
 class PoPoStageScreen extends StatefulWidget {
-  const PoPoStageScreen({super.key, required this.getIndex()});
+  const PoPoStageScreen(
+      {super.key, required this.getIndex(), required this.userData});
   final Function getIndex;
+  final UserData userData;
 
   @override
   State<PoPoStageScreen> createState() => _PoPoStageScreenState();
@@ -28,21 +29,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
-  late KaKaoLoginProvider _loginProvider;
-  UserData? _userData;
 
   @override
   Widget build(BuildContext context) {
-    _multiVideoPlayProvider =
-        Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
+    print("mmm rebuild");
 
-    // 입장
+    // 입장 + 구독
     _popoStageEnter();
-    // 소켓 반응 처리
-    _onSocketResponse();
 
     return GestureDetector(
       onTap: () {
@@ -57,36 +50,39 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(
-            // 플레이, 결과 상태에 따라 배경화면 변경
-            decoration: _buildBackgroundImage(),
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              extendBodyBehindAppBar: true,
-              backgroundColor: Colors.transparent,
-              appBar: _buildAppBar(context),
-              body: Stack(
-                children: [
-                  Navigator(
-                    key: _socketStageProvider.navigatorKey,
-                    initialRoute: socketTypeList[0],
-                    onGenerateRoute: _socketStageProvider.onGenerateRoute,
-                  ),
-                  const Positioned(
-                    bottom: 68,
-                    left: 0,
-                    right: 0,
-                    child: StageLiveTalkListWidget(),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: StageLiveChatBarWidget(
-                        nickName: _userData?.nickname ?? ""),
-                  ),
-                ],
-              ),
-            )),
+          // 플레이, 결과 상태에 따라 배경화면 변경
+          decoration: _buildBackgroundImage(
+              context.select<SocketStageProviderImpl, SocketType>(
+                  (provider) => provider.stageType)),
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            extendBodyBehindAppBar: true,
+            backgroundColor: Colors.transparent,
+            appBar: _buildAppBar(context),
+            body: Stack(
+              children: [
+                Navigator(
+                  key: _socketStageProvider.navigatorKey,
+                  initialRoute: socketTypeList[0],
+                  onGenerateRoute: _socketStageProvider.onGenerateRoute,
+                ),
+                const Positioned(
+                  bottom: 68,
+                  left: 0,
+                  right: 0,
+                  child: StageLiveTalkListWidget(),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: StageLiveChatBarWidget(
+                      nickName: widget.userData.nickname),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -94,8 +90,11 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   @override
   void initState() {
     super.initState();
-    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
-    _initUser();
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
   }
 
   @override
@@ -118,58 +117,50 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       _isEnter = true;
       _socketStageProvider.connectWebSocket();
     }
-  }
 
-  void _onSocketResponse() {
-    if (_socketStageProvider.isConnect) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        SocketType stageType = SocketType.WAIT;
-        _socketStageProvider.setIsConnect(false);
-        _stageProvider
-            .getStageEnter(StageEnterRequest(page: 0, size: 10))
-            .then((value) {
-              stageType = SocketType.values.byName(value.data.stageStatus);
-              _socketStageProvider.setUserCount(value.data.userCount);
-              if (stageType == SocketType.CATCH) {
-                _socketStageProvider.setIsCatchMidEnter(true);
-              }
-            })
-            .then((_) => _socketStageProvider.setStageView(stageType))
-            .then((_) => _socketStageProvider.onSubscribe());
-      });
-    }
+    var isConnect = context.select<SocketStageProviderImpl, bool>(
+        (provider) => provider.isConnect);
 
-    // 실시간 사용자 숫자
-    if (_socketStageProvider.isUserCountChange) {
-      _socketStageProvider.setIsUserCountChange(false);
-      _stageProvider.getUserList();
-    }
-
-    // 실시간 채팅
-    if (_socketStageProvider.isTalk) {
-      _socketStageProvider.setIsTalk(false);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _stageProvider.addTalk(_socketStageProvider.talk!);
-      });
-    }
-
-    // 실시간 반응
-    if (_socketStageProvider.isReaction) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _socketStageProvider.setIsReaction(false);
-        _stageProvider.setIsClicked(true);
-        _stageProvider.toggleIsLeft();
-      });
+    // 입장 완료 후 구독
+    if (isConnect) {
+      SocketType stageType = SocketType.WAIT;
+      _socketStageProvider.setIsConnect(false);
+      _stageProvider
+          .getStageEnter(StageEnterRequest(page: 0, size: 10))
+          .then((value) {
+            stageType = SocketType.values.byName(value.data.stageStatus);
+            _socketStageProvider.setUserCount(value.data.userCount);
+            if (stageType == SocketType.CATCH) {
+              _socketStageProvider.setIsCatchMidEnter(true);
+            }
+          })
+          .then((_) => _socketStageProvider.setStageView(stageType))
+          .then((_) => _socketStageProvider.onSubscribe());
     }
   }
 
-  BoxDecoration _buildBackgroundImage() {
+  BoxDecoration _buildBackgroundImage(SocketType type) {
+    String bgImage;
+    switch (type) {
+      case SocketType.WAIT:
+        bgImage = 'assets/images/bg_popo_wait.png';
+        break;
+      case SocketType.CATCH_START:
+      case SocketType.PLAY_START:
+        bgImage = 'assets/images/bg_popo_comm.png';
+        break;
+      case SocketType.MVP_START:
+        bgImage = 'assets/images/bg_popo_result.png';
+        break;
+      default:
+        bgImage = 'assets/images/bg_popo_wait.png';
+        break;
+    }
+
     return BoxDecoration(
       image: DecorationImage(
         fit: BoxFit.cover,
-        image: AssetImage((_socketStageProvider.isMVPStart)
-            ? 'assets/images/bg_popo_result.png'
-            : 'assets/images/bg_popo_comm.png'),
+        image: AssetImage(bgImage),
       ),
     );
   }
@@ -202,32 +193,39 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  Container _buildUserCountWidget() {
-    return Container(
-      margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
-      child: OutlinedButton.icon(
-        onPressed: () async {
-          await _stageProvider.getUserList();
-          _showUserListDialog(_stageProvider.userList);
+  Widget _buildUserCountWidget() {
+    return Selector<SocketStageProviderImpl, int>(
+        selector: (context, socketProvider) => socketProvider.userCount,
+        shouldRebuild: (prev, next) {
+          return true;
         },
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0),
-          ),
-          side: const BorderSide(
-            color: Colors.white,
-            width: 1.0,
-          ),
-        ),
-        icon: SvgPicture.asset(
-          'assets/icons/ic_users.svg',
-        ),
-        label: Text(
-          '${_socketStageProvider.userCount}',
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-    );
+        builder: (context, data, child) {
+          return Container(
+            margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                await _stageProvider.getUserList();
+                _showUserListDialog(_stageProvider.userList);
+              },
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                side: const BorderSide(
+                  color: Colors.white,
+                  width: 1.0,
+                ),
+              ),
+              icon: SvgPicture.asset(
+                'assets/icons/ic_users.svg',
+              ),
+              label: Text(
+                '$data',
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          );
+        });
   }
 
   Future<dynamic> _showUserListDialog(List<UserListItem> userList) {
@@ -293,14 +291,5 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         );
       },
     );
-  }
-
-  _initUser() async {
-    UserData userData = await _loginProvider.getUser();
-    _socketStageProvider.setUserId(userData.userId);
-
-    setState(() {
-      _userData = userData;
-    });
   }
 }

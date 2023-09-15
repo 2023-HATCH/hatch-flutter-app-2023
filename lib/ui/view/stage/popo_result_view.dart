@@ -3,20 +3,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
-import 'package:pocket_pose/ui/view/stage/ml_kit_camera_view.dart';
+import 'package:pocket_pose/ui/view/stage/ml_kit_camera_result_view.dart';
 import 'package:provider/provider.dart';
 
 // ml_kit_skeleton_custom_view
 class PoPoResultView extends StatefulWidget {
-  const PoPoResultView(
-      {Key? key, required this.isResultState, this.mvp, required this.userId})
+  const PoPoResultView({Key? key, this.mvp, required this.userId})
       : super(key: key);
-  final bool isResultState;
   final StagePlayerListItem? mvp;
   final String userId;
 
@@ -30,12 +27,11 @@ class _PoPoResultViewState extends State<PoPoResultView> {
       PoseDetector(options: PoseDetectorOptions());
   bool _canProcess = true;
   bool _isBusy = false;
-  // 스켈레톤 모양을 그려주는 변수
-  CustomPaint? _customPaintMid;
   bool _isPlayer = false;
   // 스켈레톤 전송
   int _frameNum = 0;
   late SocketStageProviderImpl _socketStageProvider;
+  // 스켈레톤 색 배열
   final skeletonColorList = [
     AppColor.mintNeonColor,
     AppColor.yellowNeonColor,
@@ -67,11 +63,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: true);
 
-    if (_socketStageProvider.isMVPSkeletonChange) {
-      _socketStageProvider.setIsMVPSkeletonChange(false);
-      _paintSkeleton();
-    }
-
     // 카메라뷰 보이기
     return Stack(
       children: [
@@ -102,17 +93,8 @@ class _PoPoResultViewState extends State<PoPoResultView> {
             }).toList(), // .toList() added here
           ),
         ),
-        CameraView(
-          isResultState: widget.isResultState,
-          // 스켈레톤 그려주는 객체 전달
-          customPaintMid: _customPaintMid,
-          // 카메라에서 전해주는 이미지 받을 때마다 아래 함수 실행
-          onImage: (inputImage) {
-            // 플레이어만 스켈레톤 추출
-            if (_isPlayer) {
-              processImage(inputImage);
-            }
-          },
+        MlKitCameraResultView(
+          color: skeletonColorList[widget.mvp?.playerNum ?? 0],
         ),
       ],
     );
@@ -123,15 +105,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     _canProcess = false;
     _poseDetector.close();
     super.dispose();
-  }
-
-  void _paintSkeleton() {
-    CustomPosePainter painterMid = CustomPosePainter(
-        [Pose(landmarks: _socketStageProvider.mvpSkeleton ?? {})],
-        const Size(1280.0, 720.0),
-        InputImageRotation.rotation270deg,
-        skeletonColorList[widget.mvp!.playerNum!]);
-    _customPaintMid = CustomPaint(painter: painterMid);
   }
 
   Container buildMVPWidget(StagePlayerListItem user) {
