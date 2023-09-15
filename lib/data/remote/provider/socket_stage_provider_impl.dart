@@ -351,8 +351,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         _mvp = _players.firstWhere((element) =>
             element.playerNum == socketResponse.data?.mvpPlayerNum);
         _playerInfos = socketResponse.data?.playerInfos ?? [];
-        _socketType = response.type;
-        setStageView(_socketType);
+        setStageView(response.type);
         break;
       case SocketType.MVP_SKELETON:
         var socketResponse = BaseSocketResponse<SendSkeletonResponse>.fromJson(
@@ -373,8 +372,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         break;
 
       default:
-        _socketType = response.type;
-        setStageView(_socketType);
+        setStageView(response.type);
     }
   }
 

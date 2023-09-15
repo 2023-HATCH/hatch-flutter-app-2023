@@ -133,7 +133,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             if (stageType == SocketType.CATCH) {
               _socketStageProvider.setIsCatchMidEnter(true);
             }
-            print("mmm 여기서는 $stageType");
           })
           .then((_) => _socketStageProvider.setStageView(stageType))
           .then((_) => _socketStageProvider.onSubscribe());
