@@ -26,18 +26,12 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
 
   @override
   Widget build(BuildContext context) {
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
     print("mmm catch rebuild");
 
     _onMidEnter();
 
     var isReCatch = context.select<SocketStageProviderImpl, bool>(
         (provider) => provider.isReCatch);
-    var catchMusicData =
-        context.select<SocketStageProviderImpl, StageMusicData?>(
-            (provider) => provider.catchMusicData);
 
     // 캐치 재진행 토스트
     if (isReCatch) {
@@ -69,10 +63,19 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 10.0),
-              StageCatchMusicInfoWidget(
-                  musicInfo:
-                      '${catchMusicData?.singer} - ${catchMusicData?.title}',
-                  milliseconds: _milliseconds),
+              // 노래 정보: 제목 + 가수 이름
+              Selector<SocketStageProviderImpl, StageMusicData?>(
+                  selector: (context, socketProvider) =>
+                      socketProvider.catchMusicData,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, catchMusicData, child) {
+                    return StageCatchMusicInfoWidget(
+                        musicInfo:
+                            '${catchMusicData?.singer} - ${catchMusicData?.title}',
+                        milliseconds: _milliseconds);
+                  }),
               const SizedBox(height: 10.0),
               Flexible(
                 child: SvgPicture.asset(
@@ -148,6 +151,10 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
     super.initState();
 
     AudioPlayerUtil().stop();
+
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
   }
 
   void _playClickSound() {

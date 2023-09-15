@@ -32,9 +32,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-    // _socketStageProvider =
-    //     Provider.of<SocketStageProviderImpl>(context, listen: true);
     print("mmm rebuild");
 
     // 입장 + 구독
@@ -136,6 +133,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             if (stageType == SocketType.CATCH) {
               _socketStageProvider.setIsCatchMidEnter(true);
             }
+            print("mmm 여기서는 $stageType");
           })
           .then((_) => _socketStageProvider.setStageView(stageType))
           .then((_) => _socketStageProvider.onSubscribe());

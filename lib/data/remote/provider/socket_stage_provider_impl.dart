@@ -379,7 +379,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   }
 
   setStageView(SocketType stageType) {
-    print("mmm setStateView: ${stageType.name}");
+    _socketType = stageType;
     _navigatorKey.currentState?.pop();
     _navigatorKey.currentState?.pushNamed(socketTypeList[stageType.index]);
   }
