@@ -13,8 +13,6 @@ import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
-import 'package:pocket_pose/domain/entity/stage_music_data.dart';
-import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/main.dart';
 import 'package:provider/provider.dart';
@@ -260,62 +258,55 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
 
   // 플레이 화면: 플레이어 3명 스켈레톤 보임
   Widget _liveFeedBodyPlay() {
-    return Selector<SocketStageProviderImpl, List<StagePlayerListItem>>(
-        selector: (context, socketProvider) => socketProvider.players,
-        shouldRebuild: (prev, next) {
-          return true;
-        },
-        builder: (context, players, child) {
-          switch (players.length) {
-            case 1:
-              return Row(
-                children: [
-                  Expanded(flex: 2, child: Container()),
-                  Expanded(
-                      flex: 4,
-                      child: (_customPaintMid != null)
-                          ? SizedBox(height: 200, child: _customPaintMid!)
-                          : Container()),
-                  Expanded(flex: 2, child: Container()),
-                ],
-              );
-            case 2:
-              return Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: (_customPaintLeft != null)
-                          ? SizedBox(height: 200, child: _customPaintLeft!)
-                          : Container()),
-                  Expanded(
-                      flex: 1,
-                      child: (_customPaintMid != null)
-                          ? SizedBox(height: 200, child: _customPaintMid!)
-                          : Container()),
-                ],
-              );
-            default:
-              return Row(
-                children: [
-                  Expanded(
-                      flex: 4,
-                      child: (_customPaintLeft != null)
-                          ? SizedBox(height: 200, child: _customPaintLeft!)
-                          : Container()),
-                  Expanded(
-                      flex: 4,
-                      child: (_customPaintMid != null)
-                          ? SizedBox(height: 200, child: _customPaintMid!)
-                          : Container()),
-                  Expanded(
-                      flex: 3,
-                      child: (_customPaintRight != null)
-                          ? SizedBox(height: 150, child: _customPaintRight!)
-                          : Container()),
-                ],
-              );
-          }
-        });
+    switch (_socketStageProvider.players.length) {
+      case 1:
+        return Row(
+          children: [
+            Expanded(flex: 2, child: Container()),
+            Expanded(
+                flex: 4,
+                child: (_customPaintMid != null)
+                    ? SizedBox(height: 200, child: _customPaintMid!)
+                    : Container()),
+            Expanded(flex: 2, child: Container()),
+          ],
+        );
+      case 2:
+        return Row(
+          children: [
+            Expanded(
+                flex: 1,
+                child: (_customPaintLeft != null)
+                    ? SizedBox(height: 200, child: _customPaintLeft!)
+                    : Container()),
+            Expanded(
+                flex: 1,
+                child: (_customPaintMid != null)
+                    ? SizedBox(height: 200, child: _customPaintMid!)
+                    : Container()),
+          ],
+        );
+      default:
+        return Row(
+          children: [
+            Expanded(
+                flex: 4,
+                child: (_customPaintLeft != null)
+                    ? SizedBox(height: 200, child: _customPaintLeft!)
+                    : Container()),
+            Expanded(
+                flex: 4,
+                child: (_customPaintMid != null)
+                    ? SizedBox(height: 200, child: _customPaintMid!)
+                    : Container()),
+            Expanded(
+                flex: 3,
+                child: (_customPaintRight != null)
+                    ? SizedBox(height: 150, child: _customPaintRight!)
+                    : Container()),
+          ],
+        );
+    }
   }
 
   Column buildCountdownWidget() {
@@ -343,25 +334,15 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
             'assets/icons/ic_music_note_small.svg',
           ),
           const SizedBox(width: 8.0),
-          Selector<SocketStageProviderImpl, StageMusicData?>(
-              selector: (context, socketProvider) =>
-                  socketProvider.catchMusicData,
-              shouldRebuild: (prev, next) {
-                return true;
-              },
-              builder: (context, catchMusicData, _) {
-                return (catchMusicData != null)
-                    ? Text(
-                        '${catchMusicData.singer} - ${catchMusicData.title}',
-                        style:
-                            const TextStyle(fontSize: 10, color: Colors.white),
-                      )
-                    : Text(
-                        '${_stageProvider.music?.singer} - ${_stageProvider.music?.title}',
-                        style:
-                            const TextStyle(fontSize: 10, color: Colors.white),
-                      );
-              }),
+          (_socketStageProvider.catchMusicData != null)
+              ? Text(
+                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
+                )
+              : Text(
+                  '${_stageProvider.music?.singer} - ${_stageProvider.music?.title}',
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
+                ),
         ],
       ),
     );

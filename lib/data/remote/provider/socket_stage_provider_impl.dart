@@ -395,16 +395,8 @@ class SocketStageProviderImpl extends ChangeNotifier
 
       case SocketType.MVP:
       case SocketType.MVP_START:
-        return (_mvp != null)
-            ? MaterialPageRoute<dynamic>(
-                builder: (context) => PoPoResultView(
-                    isResultState: _socketType == SocketType.MVP_START,
-                    mvp: _mvp,
-                    userId: _userId!))
-            : MaterialPageRoute<dynamic>(
-                builder: (context) => PoPoResultView(
-                    isResultState: _socketType == SocketType.MVP_START,
-                    userId: _userId!));
+        return MaterialPageRoute<dynamic>(
+            builder: (context) => PoPoResultView(mvp: _mvp, userId: _userId!));
       default:
         return MaterialPageRoute<dynamic>(
             builder: (context) => const PoPoWaitView());

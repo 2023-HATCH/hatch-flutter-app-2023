@@ -6,32 +6,26 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
+import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
+import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/main.dart';
 import 'package:provider/provider.dart';
 
 class MlKitCameraResultView extends StatefulWidget {
-  MlKitCameraResultView(
+  const MlKitCameraResultView(
       {Key? key,
-      required this.isResultState,
-      this.customPaintLeft,
-      required this.customPaintMid,
-      this.customPaintRight,
-      required this.onImage,
+      required this.color,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
-  bool isResultState;
-  // 스켈레톤을 그려주는 객체
-  final CustomPaint? customPaintLeft;
-  final CustomPaint? customPaintMid;
-  final CustomPaint? customPaintRight;
-  // 이미지 받을 때마다 실행하는 함수
-  final Function(InputImage inputImage) onImage;
   // 카메라 렌즈 방향 변수
   final CameraLensDirection initialDirection;
+  // mvp 스켈레톤 색
+  final Color color;
 
   @override
   State<MlKitCameraResultView> createState() => _MlKitCameraResultViewState();
@@ -44,30 +38,27 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   int _cameraIndex = -1;
   // 확대 축소 레벨
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
-  // 5초 카운트다운 텍스트
-  bool _countdownVisibility = false;
-  final List<String> _countdownSVG = [
-    'assets/icons/ic_countdown_1.png',
-    'assets/icons/ic_countdown_2.png',
-    'assets/icons/ic_countdown_3.png',
-    'assets/icons/ic_countdown_4.png',
-    'assets/icons/ic_countdown_5.png',
-  ];
-  int _seconds = 5;
-  Timer? _timer;
+  // 스켈레톤 모양을 그려주는 변수
+  CustomPaint? _customPaintMVP;
+  // ml kit 변수
+  final bool _canProcess = true;
+  bool _isBusy = false;
+  int _frameNum = 0;
+  // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
+  final PoseDetector _poseDetector =
+      PoseDetector(options: PoseDetectorOptions());
   AssetsAudioPlayer? _assetsAudioPlayer;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
   @override
   Widget build(BuildContext context) {
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
+    print("mmm camera result build");
+    _paintSkeleton();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
-      // 결과 화면이면 1명의 스켈레톤, 플레이 화면이면 3명의 스켈레톤 출력
       body: _liveFeedBody(),
     );
   }
@@ -76,6 +67,8 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   void initState() {
     super.initState();
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
 
     // 카메라 설정. 기기에서 실행 가능한 카메라, 카메라 방향 설정...
     if (cameras.any(
@@ -114,76 +107,17 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
           ? AudioPlayerUtil()
               .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
           : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
-      // 플레이 상태인 경우
-      if (!widget.isResultState) {
-        // 중간임장인 경우
-        if (_stageProvider.stageCurTime != null) {
-          // 중간 입장한 초부터 시작
-          _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-          _stageProvider.setStageCurSecondNULL();
-        } else {
-          // 중간입장 아닐 시 0초부터 시작
-          _seconds = 0;
-        }
-        // 카운트다운
-        if (_seconds < 5) {
-          // 카운트다운 시작 후 노래 재생
-          setState(() {
-            _seconds = 5 - _seconds;
-            _countdownVisibility = true;
-          });
-          _startTimer();
-        }
-        // 노래 재생
-        else {
-          AudioPlayerUtil().playSeek(_seconds - 5);
-        }
-      }
-      // 결과 상태인 경우
-      else {
-        // 중간임장인 경우
-        if (_stageProvider.stageCurTime != null) {
-          // 중간 입장한 초부터 시작
-          _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-          _stageProvider.setStageCurSecondNULL();
-          AudioPlayerUtil().playSeek(_seconds);
-        } else {
-          // 중간입장 아닐 시 0초부터 시작
-          _seconds = 0;
-          AudioPlayerUtil().play();
-        }
-      }
-    });
-  }
 
-  void _startTimer() {
-    _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_seconds == 1) {
-        _stopTimer();
-
-        if (mounted) {
-          setState(() {
-            _countdownVisibility = false;
-          });
-        }
-        _seconds = 5;
-        AudioPlayerUtil().play();
+      // 중간임장인 경우
+      if (_stageProvider.stageCurTime != null) {
+        // 중간 입장한 초부터 시작
+        var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+        _stageProvider.setStageCurSecondNULL();
+        AudioPlayerUtil().playSeek(seconds);
       } else {
-        if (mounted) {
-          _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
-          setState(() {
-            _seconds--;
-          });
-        }
+        AudioPlayerUtil().play();
       }
     });
-  }
-
-  void _stopTimer() {
-    _timer?.cancel();
-    _timer = null;
   }
 
   @override
@@ -191,7 +125,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     _assetsAudioPlayer = null;
     _assetsAudioPlayer?.dispose();
     _controller?.dispose;
-    _stopTimer();
 
     super.dispose();
   }
@@ -214,10 +147,22 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
       children: <Widget>[
         buildMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
-        (widget.isResultState) ? _liveFeedBodyResult() : _liveFeedBodyPlay(),
-        buildCountdownWidget()
+        _liveFeedBodyResult(),
       ],
     );
+  }
+
+  void _paintSkeleton() {
+    var playerMVP = context
+        .select<SocketStageProviderImpl, Map<PoseLandmarkType, PoseLandmark>?>(
+            (provider) => provider.mvpSkeleton);
+
+    CustomPosePainter painterMVP = CustomPosePainter(
+        [Pose(landmarks: playerMVP ?? {})],
+        const Size(1280.0, 720.0),
+        InputImageRotation.rotation270deg,
+        widget.color);
+    _customPaintMVP = CustomPaint(painter: painterMVP);
   }
 
   // 결과 화면: MVP 1명의 스켈레톤만 보임
@@ -227,76 +172,10 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
         Expanded(flex: 2, child: Container()),
         Expanded(
             flex: 4,
-            child: (widget.customPaintMid != null)
-                ? SizedBox(height: 300, child: widget.customPaintMid!)
+            child: (_customPaintMVP != null)
+                ? SizedBox(height: 300, child: _customPaintMVP!)
                 : Container()),
         Expanded(flex: 2, child: Container()),
-      ],
-    );
-  }
-
-  // 플레이 화면: 플레이어 3명 스켈레톤 보임
-  Widget _liveFeedBodyPlay() {
-    switch (_socketStageProvider.players.length) {
-      case 1:
-        return Row(
-          children: [
-            Expanded(flex: 2, child: Container()),
-            Expanded(
-                flex: 4,
-                child: (widget.customPaintMid != null)
-                    ? SizedBox(height: 200, child: widget.customPaintMid!)
-                    : Container()),
-            Expanded(flex: 2, child: Container()),
-          ],
-        );
-      case 2:
-        return Row(
-          children: [
-            Expanded(
-                flex: 1,
-                child: (widget.customPaintLeft != null)
-                    ? SizedBox(height: 200, child: widget.customPaintLeft!)
-                    : Container()),
-            Expanded(
-                flex: 1,
-                child: (widget.customPaintMid != null)
-                    ? SizedBox(height: 200, child: widget.customPaintMid!)
-                    : Container()),
-          ],
-        );
-      default:
-        return Row(
-          children: [
-            Expanded(
-                flex: 4,
-                child: (widget.customPaintLeft != null)
-                    ? SizedBox(height: 200, child: widget.customPaintLeft!)
-                    : Container()),
-            Expanded(
-                flex: 4,
-                child: (widget.customPaintMid != null)
-                    ? SizedBox(height: 200, child: widget.customPaintMid!)
-                    : Container()),
-            Expanded(
-                flex: 3,
-                child: (widget.customPaintRight != null)
-                    ? SizedBox(height: 150, child: widget.customPaintRight!)
-                    : Container()),
-          ],
-        );
-    }
-  }
-
-  Column buildCountdownWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Visibility(
-            visible: _countdownVisibility,
-            child: (6 > _seconds) && (_seconds > 0)
-                ? Image.asset(_countdownSVG[_seconds - 1])
-                : Container())
       ],
     );
   }
@@ -348,11 +227,10 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
       });
       // 이미지 받은 것을 _processCameraImage 함수로 처리
       _controller?.startImageStream(_processCameraImage);
-      setState(() {});
     });
   }
 
-  // 카메라에서 실시간으로 받아온 이미치 처리: PoseDetectorView에서 받아온 함수인 onImage(이미지에 포즈가 추출되었으면 스켈레톤 그려주는 함수) 실행
+  // 카메라에서 실시간으로 받아온 이미치 처리
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();
     for (final Plane plane in image.planes) {
@@ -392,7 +270,39 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     final inputImage =
         InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
 
-    // PoseDetectorView에서 받아온 함수인 onImage(이미지에 포즈가 추출되었으면 스켈레톤 그려주는 함수) 실행
-    widget.onImage(inputImage);
+    // 스켈레톤 전송
+    _sendSkeleton(inputImage);
+  }
+
+  // 카메라에서 실시간으로 받아온 이미지 처리: 스켈레톤 전송
+  Future<void> _sendSkeleton(InputImage inputImage) async {
+    if (!_canProcess) return;
+    if (_isBusy) return;
+    _isBusy = true;
+
+    // poseDetector에서 추출된 포즈 가져오기
+    List<Pose> poses = await _poseDetector.processImage(inputImage);
+    // 소켓에 스켈레톤 전송
+    for (final pose in poses) {
+      Map<String, StageSkeletonPoseLandmark> resultMap = {};
+
+      pose.landmarks.forEach((key, value) {
+        var poseLandmark = StageSkeletonPoseLandmark(
+            type: value.type.index,
+            x: value.x,
+            y: value.y,
+            z: value.z,
+            likelihood: value.likelihood);
+
+        resultMap[key.index.toString()] = poseLandmark;
+      });
+
+      var resuest =
+          SendSkeletonRequest(frameNum: _frameNum, skeleton: resultMap);
+      _socketStageProvider.sendMVPSkeleton(resuest);
+    }
+    _frameNum++;
+
+    _isBusy = false;
   }
 }
