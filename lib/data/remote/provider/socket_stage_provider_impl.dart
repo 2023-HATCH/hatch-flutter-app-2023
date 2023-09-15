@@ -94,8 +94,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool _isReaction = false;
   bool _isCatchMidEnter = false;
   bool _isReCatch = false;
-  final bool _isPlaySkeletonChange = false;
-  bool _isMVPSkeletonChange = false;
 
   GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 
@@ -111,8 +109,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   bool get isReaction => _isReaction;
   bool get isCatchMidEnter => _isCatchMidEnter;
   bool get isReCatch => _isReCatch;
-  bool get isPlaySkeletonChange => _isPlaySkeletonChange;
-  bool get isMVPSkeletonChange => _isMVPSkeletonChange;
 
   setUserId(String id) {
     _userId = id;
@@ -142,11 +138,6 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsReCatch(bool value) {
     _isReCatch = value;
-    if (value) notifyListeners();
-  }
-
-  setIsMVPSkeletonChange(bool value) {
-    _isMVPSkeletonChange = value;
     if (value) notifyListeners();
   }
 
@@ -360,7 +351,7 @@ class SocketStageProviderImpl extends ChangeNotifier
               likelihood: value.likelihood);
         });
         mvpSkeleton = temp;
-        setIsMVPSkeletonChange(true);
+        notifyListeners();
         break;
 
       default:
@@ -386,7 +377,6 @@ class SocketStageProviderImpl extends ChangeNotifier
             builder: (context) => const PoPoCatchView());
       case SocketType.PLAY:
       case SocketType.PLAY_START:
-        print("mmm onGenerateRoute: play");
         return MaterialPageRoute<dynamic>(
             builder: (context) => PoPoPlayView(
                   players: _players,
