@@ -91,6 +91,7 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   SocketType _socketType = SocketType.WAIT;
   bool _isConnect = false;
+  bool _isSubscribe = false;
   bool _isReaction = false;
   bool _isCatchMidEnter = false;
   bool _isReCatch = false;
@@ -106,6 +107,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   List<StagePlayerListItem> get players => _players;
   SocketType get stageType => _socketType;
   bool get isConnect => _isConnect;
+  bool get isSubscribe => _isSubscribe;
   bool get isReaction => _isReaction;
   bool get isCatchMidEnter => _isCatchMidEnter;
   bool get isReCatch => _isReCatch;
@@ -126,6 +128,13 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsConnect(bool value) {
     _isConnect = value;
+    if (value) {
+      notifyListeners();
+    }
+  }
+
+  setIsSubscribe(bool value) {
+    _isSubscribe = value;
     if (value) {
       notifyListeners();
     }
@@ -176,6 +185,7 @@ class SocketStageProviderImpl extends ChangeNotifier
             _setStageType(socketResponse, frame);
           }
         });
+    setIsSubscribe(true);
   }
 
   @override

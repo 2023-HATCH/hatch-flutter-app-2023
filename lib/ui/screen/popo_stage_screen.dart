@@ -7,8 +7,8 @@ import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
-import 'package:pocket_pose/domain/entity/user_list_item.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/domain/entity/user_list_item.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
@@ -55,33 +55,44 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
               context.select<SocketStageProviderImpl, SocketType>(
                   (provider) => provider.stageType)),
           child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            extendBodyBehindAppBar: true,
-            backgroundColor: Colors.transparent,
-            appBar: _buildAppBar(context),
-            body: Stack(
-              children: [
-                Navigator(
-                  key: _socketStageProvider.navigatorKey,
-                  initialRoute: socketTypeList[0],
-                  onGenerateRoute: _socketStageProvider.onGenerateRoute,
-                ),
-                const Positioned(
-                  bottom: 68,
-                  left: 0,
-                  right: 0,
-                  child: StageLiveTalkListWidget(),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: StageLiveChatBarWidget(
-                      nickName: widget.userData.nickname),
-                ),
-              ],
-            ),
-          ),
+              resizeToAvoidBottomInset: false,
+              extendBodyBehindAppBar: true,
+              backgroundColor: Colors.transparent,
+              appBar: _buildAppBar(context),
+              body: Selector<SocketStageProviderImpl, bool>(
+                selector: (context, socketProvider) =>
+                    socketProvider.isSubscribe,
+                shouldRebuild: (prev, next) {
+                  return true;
+                },
+                builder: (context, isSubscribe, _) {
+                  return (isSubscribe)
+                      ? Stack(
+                          children: [
+                            Navigator(
+                              key: _socketStageProvider.navigatorKey,
+                              initialRoute: socketTypeList[0],
+                              onGenerateRoute:
+                                  _socketStageProvider.onGenerateRoute,
+                            ),
+                            const Positioned(
+                              bottom: 68,
+                              left: 0,
+                              right: 0,
+                              child: StageLiveTalkListWidget(),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: StageLiveChatBarWidget(
+                                  nickName: widget.userData.nickname),
+                            ),
+                          ],
+                        )
+                      : Container();
+                },
+              )),
         ),
       ),
     );
@@ -199,13 +210,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         shouldRebuild: (prev, next) {
           return true;
         },
-        builder: (context, data, child) {
+        builder: (context, userCount, child) {
+          _stageProvider.getUserList();
           return Container(
             margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
             child: OutlinedButton.icon(
-              onPressed: () async {
-                await _stageProvider.getUserList();
-                _showUserListDialog(_stageProvider.userList);
+              onPressed: () {
+                _showUserListDialog();
               },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -220,7 +231,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 'assets/icons/ic_users.svg',
               ),
               label: Text(
-                '$data',
+                '$userCount',
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -228,7 +239,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         });
   }
 
-  Future<dynamic> _showUserListDialog(List<UserListItem> userList) {
+  Future<dynamic> _showUserListDialog() {
     return showDialog(
       context: context,
       barrierColor: Colors.transparent,
@@ -276,14 +287,22 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             content: SizedBox(
               width: 265,
               height: 365,
-              child: GridView.builder(
-                itemCount: context.watch<StageProviderImpl>().userList.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return UserListItemWidget(
-                      user: context.watch<StageProviderImpl>().userList[index]);
+              child: Selector<StageProviderImpl, List<UserListItem>>(
+                selector: (context, provider) => provider.userList,
+                shouldRebuild: (prev, next) {
+                  return true;
+                },
+                builder: (context, userList, child) {
+                  return GridView.builder(
+                    itemCount: userList.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return UserListItemWidget(user: userList[index]);
+                    },
+                  );
                 },
               ),
             ),
