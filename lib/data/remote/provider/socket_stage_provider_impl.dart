@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/api_url.dart';
 import 'package:pocket_pose/data/entity/base_socket_response.dart';
@@ -127,14 +126,12 @@ class SocketStageProviderImpl extends ChangeNotifier
   setUserCount(int value) {
     _userCount = value;
     notifyListeners();
-    print("mmm socket setUserCount noti");
   }
 
   setIsConnect(bool value) {
     _isConnect = value;
     if (value) {
       notifyListeners();
-      print("mmm socket setIsConnect noti");
     }
   }
 
@@ -192,70 +189,65 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   @override
   void sendMessage(String message) async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    String token = await storage.read(key: storageKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken ?? "";
 
     if (_stompClient != null) {
       _stompClient?.send(
           destination: AppUrl.socketTalkUrl,
-          headers: {'x-access-token': token},
+          headers: {'x-access-token': accessToken},
           body: json.encode({"content": message}));
     }
   }
 
   @override
   void sendReaction() async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    String token = await storage.read(key: storageKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken ?? "";
 
     if (_stompClient != null) {
       _stompClient?.send(
         destination: AppUrl.socketReactionUrl,
-        headers: {'x-access-token': token},
+        headers: {'x-access-token': accessToken},
       );
     }
   }
 
   @override
   void sendPlaySkeleton(SendSkeletonRequest request) async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    String token = await storage.read(key: storageKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken ?? "";
 
     if (_stompClient != null && (_stompClient?.isActive ?? false)) {
       _stompClient?.send(
           destination: AppUrl.socketPlaySkeletonUrl,
-          headers: {'x-access-token': token},
+          headers: {'x-access-token': accessToken},
           body: json.encode(request));
     }
   }
 
   @override
   void sendMVPSkeleton(SendSkeletonRequest request) async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    String token = await storage.read(key: storageKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken ?? "";
 
     if (_stompClient != null && (_stompClient?.isActive ?? false)) {
       _stompClient?.send(
           destination: AppUrl.socketMVPSkeletonUrl,
-          headers: {'x-access-token': token},
+          headers: {'x-access-token': accessToken},
           body: json.encode(request));
     }
   }
 
   @override
   void exitStage() async {
-    const storage = FlutterSecureStorage();
-    const storageKey = 'kakaoAccessToken';
-    String token = await storage.read(key: storageKey) ?? "";
+    await loginProvider.checkAccessToken();
+    final accessToken = loginProvider.accessToken ?? "";
 
     if (_stompClient != null && (_stompClient?.isActive ?? false)) {
       _stompClient?.send(
           destination: AppUrl.socketExitUrl,
-          headers: {'x-access-token': token});
+          headers: {'x-access-token': accessToken});
       _stompClient?.deactivate();
       _stompClient = null;
     }
@@ -397,7 +389,6 @@ class SocketStageProviderImpl extends ChangeNotifier
         print("mmm onGenerateRoute: play");
         return MaterialPageRoute<dynamic>(
             builder: (context) => PoPoPlayView(
-                  isResultState: _socketType == SocketType.MVP_START,
                   players: _players,
                   userId: _userId,
                 ));

@@ -11,13 +11,8 @@ enum StagePlayScore { bad, good, great, excellent, perfect, none }
 // ml_kit_skeleton_custom_view
 class PoPoPlayView extends StatefulWidget {
   final List<StagePlayerListItem> players;
-  const PoPoPlayView(
-      {Key? key,
-      required this.isResultState,
-      required this.players,
-      this.userId})
+  const PoPoPlayView({Key? key, required this.players, this.userId})
       : super(key: key);
-  final bool isResultState;
   final String? userId;
 
   @override
