@@ -142,6 +142,7 @@ class SocketStageProviderImpl extends ChangeNotifier
 
   setIsCatchMidEnter(bool value) {
     _isCatchMidEnter = value;
+    // _socketType = SocketType.CATCH_START;
     if (value) notifyListeners();
   }
 
@@ -252,6 +253,8 @@ class SocketStageProviderImpl extends ChangeNotifier
       _stompClient?.deactivate();
       _stompClient = null;
     }
+
+    setIsSubscribe(false);
   }
 
   void _setStageType(BaseSocketResponse response, StompFrame frame) {

@@ -142,6 +142,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             stageType = SocketType.values.byName(value.data.stageStatus);
             _socketStageProvider.setUserCount(value.data.userCount);
             if (stageType == SocketType.CATCH) {
+              print("mmm screen 중간입장");
               _socketStageProvider.setIsCatchMidEnter(true);
             }
           })

@@ -28,6 +28,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   Widget build(BuildContext context) {
     print("mmm catch rebuild");
 
+    // 중간입장 처리
     _onMidEnter();
 
     var isReCatch = context.select<SocketStageProviderImpl, bool>(
@@ -133,10 +134,12 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   void _onMidEnter() {
     var isCatchMidEnter = context.select<SocketStageProviderImpl, bool>(
         (provider) => provider.isCatchMidEnter);
+
     if (isCatchMidEnter) {
       _socketStageProvider.setIsCatchMidEnter(false);
       // 중간임장인 경우
       if (_stageProvider.stageCurTime != null) {
+        print("mmm mid catch ${_stageProvider.stageCurTime}");
         // 중간 입장한 초부터 시작
         setState(() {
           _milliseconds = (_stageProvider.stageCurTime! / 1000000).round();
