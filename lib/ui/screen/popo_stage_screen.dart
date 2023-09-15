@@ -32,65 +32,62 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
+    // _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
+    // _socketStageProvider =
+    //     Provider.of<SocketStageProviderImpl>(context, listen: true);
     print("mmm rebuild");
 
-    // 입장
+    // 입장 + 구독
     _popoStageEnter();
-    // 소켓 반응 처리
-    _onSocketResponse();
 
-    return Selector<SocketStageProviderImpl, SocketType>(
-        selector: (_, socketProvider) => socketProvider.stageType,
-        builder: (context, stageType, _) {
-          return GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-              },
-              onHorizontalDragUpdate: (details) {
-                if (details.primaryDelta! > 10) {
-                  // 왼쪽에서 오른쪽으로 드래그했을 때 pop
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Scaffold(
-                resizeToAvoidBottomInset: false,
-                body: Container(
-                    // 플레이, 결과 상태에 따라 배경화면 변경
-                    decoration: _buildBackgroundImage(stageType),
-                    child: Scaffold(
-                      resizeToAvoidBottomInset: false,
-                      extendBodyBehindAppBar: true,
-                      backgroundColor: Colors.transparent,
-                      appBar: _buildAppBar(context),
-                      body: Stack(
-                        children: [
-                          Navigator(
-                            key: _socketStageProvider.navigatorKey,
-                            initialRoute: socketTypeList[0],
-                            onGenerateRoute:
-                                _socketStageProvider.onGenerateRoute,
-                          ),
-                          const Positioned(
-                            bottom: 68,
-                            left: 0,
-                            right: 0,
-                            child: StageLiveTalkListWidget(),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: StageLiveChatBarWidget(
-                                nickName: widget.userData.nickname),
-                          ),
-                        ],
-                      ),
-                    )),
-              ));
-        });
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          // 플레이, 결과 상태에 따라 배경화면 변경
+          decoration: _buildBackgroundImage(
+              context.select<SocketStageProviderImpl, SocketType>(
+                  (provider) => provider.stageType)),
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            extendBodyBehindAppBar: true,
+            backgroundColor: Colors.transparent,
+            appBar: _buildAppBar(context),
+            body: Stack(
+              children: [
+                Navigator(
+                  key: _socketStageProvider.navigatorKey,
+                  initialRoute: socketTypeList[0],
+                  onGenerateRoute: _socketStageProvider.onGenerateRoute,
+                ),
+                const Positioned(
+                  bottom: 68,
+                  left: 0,
+                  right: 0,
+                  child: StageLiveTalkListWidget(),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: StageLiveChatBarWidget(
+                      nickName: widget.userData.nickname),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -98,6 +95,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     super.initState();
     _multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
   }
 
   @override
@@ -120,9 +120,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       _isEnter = true;
       _socketStageProvider.connectWebSocket();
     }
-  }
 
-  void _onSocketResponse() {
     var isConnect = context.select<SocketStageProviderImpl, bool>(
         (provider) => provider.isConnect);
 

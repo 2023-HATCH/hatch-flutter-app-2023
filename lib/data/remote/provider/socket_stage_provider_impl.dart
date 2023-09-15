@@ -385,7 +385,6 @@ class SocketStageProviderImpl extends ChangeNotifier
   }
 
   MaterialPageRoute onGenerateRoute(RouteSettings setting) {
-    print("mmm onGenerateRoute");
     switch (stageType) {
       case SocketType.STAGE_ROUTINE_STOP:
       case SocketType.WAIT:
@@ -397,6 +396,7 @@ class SocketStageProviderImpl extends ChangeNotifier
             builder: (context) => const PoPoCatchView());
       case SocketType.PLAY:
       case SocketType.PLAY_START:
+        print("mmm onGenerateRoute: play");
         return MaterialPageRoute<dynamic>(
             builder: (context) => PoPoPlayView(
                   isResultState: _socketType == SocketType.MVP_START,
