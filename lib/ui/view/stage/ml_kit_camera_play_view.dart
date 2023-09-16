@@ -1,20 +1,19 @@
 // 카메라 화면
 import 'dart:async';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/main.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_play_countdown_widget.dart';
 import 'package:provider/provider.dart';
 
 class MlKitCameraPlayView extends StatefulWidget {
@@ -43,17 +42,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
   CustomPaint? _customPaintLeft;
   CustomPaint? _customPaintMid;
   CustomPaint? _customPaintRight;
-  // 5초 카운트다운 텍스트
-  bool _countdownVisibility = false;
-  final List<String> _countdownSVG = [
-    'assets/icons/ic_countdown_1.png',
-    'assets/icons/ic_countdown_2.png',
-    'assets/icons/ic_countdown_3.png',
-    'assets/icons/ic_countdown_4.png',
-    'assets/icons/ic_countdown_5.png',
-  ];
-  int _seconds = 5;
-  Timer? _timer;
   // ml kit 변수
   bool _canProcess = true;
   bool _isBusy = false;
@@ -61,7 +49,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
   // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
   final PoseDetector _poseDetector =
       PoseDetector(options: PoseDetectorOptions());
-  AssetsAudioPlayer? _assetsAudioPlayer;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
@@ -107,82 +94,12 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
     if (widget.playerNum != -1 && _cameraIndex != -1) {
       _startLiveFeed();
     }
-
-    _assetsAudioPlayer = AssetsAudioPlayer();
-
-    // 입장 처리
-    _onEnter();
-  }
-
-  void _onEnter() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      (_socketStageProvider.catchMusicData != null)
-          ? AudioPlayerUtil()
-              .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-          : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
-
-      // 중간임장인 경우
-      if (_stageProvider.stageCurTime != null) {
-        // 중간 입장한 초부터 시작
-        _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-        _stageProvider.setStageCurSecondNULL();
-      } else {
-        // 중간입장 아닐 시 0초부터 시작
-        _seconds = 0;
-      }
-      // 카운트다운
-      if (_seconds < 5) {
-        // 카운트다운 시작 후 노래 재생
-        setState(() {
-          _seconds = 5 - _seconds;
-          _countdownVisibility = true;
-        });
-        _startTimer();
-      }
-      // 노래 재생
-      else {
-        AudioPlayerUtil().playSeek(_seconds - 5);
-      }
-    });
-  }
-
-  void _startTimer() {
-    _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_seconds == 1) {
-        _stopTimer();
-
-        if (mounted) {
-          setState(() {
-            _countdownVisibility = false;
-          });
-        }
-        _seconds = 5;
-        AudioPlayerUtil().play();
-      } else {
-        if (mounted) {
-          _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
-          setState(() {
-            _seconds--;
-          });
-        }
-      }
-    });
-  }
-
-  void _stopTimer() {
-    _timer?.cancel();
-    _timer = null;
   }
 
   @override
   void dispose() {
-    _stopTimer();
     _canProcess = false;
     _poseDetector.close();
-    _assetsAudioPlayer = null;
-    _assetsAudioPlayer?.dispose();
     _controller?.dispose;
 
     super.dispose();
@@ -207,7 +124,7 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
         buildMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
         _liveFeedBodyPlay(),
-        buildCountdownWidget()
+        const StagePlayCountdownWidget(),
       ],
     );
   }
@@ -377,19 +294,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
           ],
         );
     }
-  }
-
-  Column buildCountdownWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Visibility(
-            visible: _countdownVisibility,
-            child: (6 > _seconds) && (_seconds > 0)
-                ? Image.asset(_countdownSVG[_seconds - 1])
-                : Container())
-      ],
-    );
   }
 
   Positioned buildMusicInfoWidget() {
