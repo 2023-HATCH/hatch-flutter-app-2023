@@ -176,7 +176,7 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
         buildMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
         _liveFeedBodyPlay(),
-        // buildCountdownWidget(),
+        buildCountdownWidget(),
       ],
     );
   }

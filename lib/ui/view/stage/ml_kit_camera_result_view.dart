@@ -97,26 +97,24 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     _assetsAudioPlayer = AssetsAudioPlayer();
 
     // 입장 처리
-    _onEnter();
+    _onMidEnter();
   }
 
-  void _onEnter() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      (_socketStageProvider.catchMusicData != null)
-          ? AudioPlayerUtil()
-              .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-          : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
+  void _onMidEnter() {
+    (_socketStageProvider.catchMusicData != null)
+        ? AudioPlayerUtil()
+            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
+        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
 
-      // 중간임장인 경우
-      if (_stageProvider.stageCurTime != null) {
-        // 중간 입장한 초부터 시작
-        var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-        _stageProvider.setStageCurSecondNULL();
-        AudioPlayerUtil().playSeek(seconds);
-      } else {
-        AudioPlayerUtil().play();
-      }
-    });
+    // 중간임장인 경우
+    if (_stageProvider.stageCurTime != null) {
+      // 중간 입장한 초부터 시작
+      var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+      _stageProvider.setStageCurSecondNULL();
+      AudioPlayerUtil().playSeek(seconds);
+    } else {
+      AudioPlayerUtil().play();
+    }
   }
 
   @override
@@ -232,6 +230,7 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
       });
       // 이미지 받은 것을 _processCameraImage 함수로 처리
       _controller?.startImageStream(_processCameraImage);
+      setState(() {});
     });
   }
 
