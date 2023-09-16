@@ -99,7 +99,8 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
   }
 
   void _startTimer() {
-    _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
+    _assetsAudioPlayer
+        ?.open(Audio("assets/audios/sound_stage_play_countdown.mp3"));
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_seconds == 1) {
@@ -114,7 +115,8 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
         AudioPlayerUtil().play();
       } else {
         if (mounted) {
-          _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
+          _assetsAudioPlayer
+              ?.open(Audio("assets/audios/sound_stage_play_countdown.mp3"));
           setState(() {
             _seconds--;
           });

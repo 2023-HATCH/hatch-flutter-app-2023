@@ -155,7 +155,7 @@ class _MainScreenState extends State<MainScreen>
 
   void _playClickSound() {
     AssetsAudioPlayer.newPlayer()
-        .open(Audio("assets/audios/sound_popo_click.mp3"));
+        .open(Audio("assets/audios/sound_stage_enter.mp3"));
   }
 
   void _readyPoPoStageScreen() async {

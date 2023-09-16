@@ -153,7 +153,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
 
   void _playClickSound() {
     AssetsAudioPlayer.newPlayer()
-        .open(Audio("assets/audios/sound_catch_click.mp3"));
+        .open(Audio("assets/audios/sound_stage_catch_click.mp3"));
   }
 }
 
