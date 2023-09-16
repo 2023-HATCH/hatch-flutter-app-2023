@@ -1,7 +1,6 @@
 // 카메라 화면
 import 'dart:async';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +46,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
   final PoseDetector _poseDetector =
       PoseDetector(options: PoseDetectorOptions());
-  AssetsAudioPlayer? _assetsAudioPlayer;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
@@ -92,8 +90,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
       _startLiveFeed();
     }
 
-    _assetsAudioPlayer = AssetsAudioPlayer();
-
     // 입장 처리
     _onMidEnter();
   }
@@ -117,8 +113,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
 
   @override
   void dispose() {
-    _assetsAudioPlayer = null;
-    _assetsAudioPlayer?.dispose();
     _controller?.dispose;
 
     super.dispose();

@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:get/route_manager.dart';
-import 'package:pocket_pose/ui/screen/share_screen.dart';
+import 'package:pocket_pose/ui/screen/share/share_screen.dart';
 import 'package:uni_links/uni_links.dart';
 
 class DynamicLink {

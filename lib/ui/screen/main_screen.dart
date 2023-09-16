@@ -10,7 +10,7 @@ import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/ui/screen/home/home_screen.dart';
-import 'package:pocket_pose/ui/screen/popo_stage_screen.dart';
+import 'package:pocket_pose/ui/screen/stage/popo_stage_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
 import 'package:pocket_pose/ui/widget/not_login_widget.dart';
 import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';

@@ -24,8 +24,8 @@ import 'package:pocket_pose/data/remote/provider/video_provider.dart';
 import 'package:pocket_pose/firebase_options.dart';
 import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
-import 'package:pocket_pose/ui/screen/on_boarding_screen.dart';
-import 'package:pocket_pose/ui/screen/share_screen.dart';
+import 'package:pocket_pose/ui/screen/onboarding/on_boarding_screen.dart';
+import 'package:pocket_pose/ui/screen/share/share_screen.dart';
 import 'package:provider/provider.dart';
 
 // 카메라 목록 변수
