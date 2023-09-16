@@ -5,7 +5,6 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
@@ -15,6 +14,7 @@ import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/main.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_appbar_music_info_widget.dart';
 import 'package:provider/provider.dart';
 
 class MlKitCameraPlayView extends StatefulWidget {
@@ -173,7 +173,7 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        buildMusicInfoWidget(),
+        const StageAppbarMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
         _liveFeedBodyPlay(),
         buildCountdownWidget(),
@@ -346,32 +346,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
           ],
         );
     }
-  }
-
-  Positioned buildMusicInfoWidget() {
-    return Positioned(
-      top: 80,
-      left: 0,
-      right: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            'assets/icons/ic_music_note_small.svg',
-          ),
-          const SizedBox(width: 8.0),
-          (_socketStageProvider.catchMusicData != null)
-              ? Text(
-                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
-                )
-              : Text(
-                  '${_stageProvider.music?.singer} - ${_stageProvider.music?.title}',
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
-                ),
-        ],
-      ),
-    );
   }
 
   Widget buildCountdownWidget() {
