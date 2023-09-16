@@ -12,8 +12,12 @@ class AudioPlayerUtil {
     // _audioSessionConfigure();
   }
 
-  setMusicUrl(String musicUrl) async {
-    await player?.setUrl(musicUrl);
+  setMusicUrl(String musicUrl) {
+    player?.setUrl(musicUrl);
+  }
+
+  setVolume(double value) {
+    player?.setVolume(value);
   }
 
   play() async {

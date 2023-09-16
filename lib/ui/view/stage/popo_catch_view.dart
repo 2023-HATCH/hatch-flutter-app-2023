@@ -26,9 +26,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
 
   @override
   Widget build(BuildContext context) {
-    // 중간입장 처리
-    _onMidEnter();
-
     var isReCatch = context.select<SocketStageProviderImpl, bool>(
         (provider) => provider.isReCatch);
 
@@ -130,13 +127,24 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   }
 
   void _onMidEnter() {
+    (_socketStageProvider.catchMusicData != null)
+        ? AudioPlayerUtil()
+            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
+        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
+    AudioPlayerUtil().setVolume(0.5);
+
     // 중간임장인 경우
     if (_stageProvider.stageCurTime != null) {
       // 중간 입장한 초부터 시작
       setState(() {
         _milliseconds = (_stageProvider.stageCurTime! / 1000000).round();
       });
+      var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
       _stageProvider.setStageCurSecondNULL();
+
+      AudioPlayerUtil().playSeek(seconds);
+    } else {
+      AudioPlayerUtil().play();
     }
   }
 
@@ -149,6 +157,9 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
+
+    // 중간입장 처리
+    _onMidEnter();
   }
 
   void _playClickSound() {

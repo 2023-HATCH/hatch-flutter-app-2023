@@ -94,6 +94,7 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
     }
     // 노래 재생
     else {
+      AudioPlayerUtil().setVolume(0.8);
       AudioPlayerUtil().playSeek(_seconds - 5);
     }
   }
