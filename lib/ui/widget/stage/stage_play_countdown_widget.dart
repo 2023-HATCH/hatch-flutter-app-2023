@@ -68,35 +68,36 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
   }
 
   void _onEnter() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      (_socketStageProvider.catchMusicData != null)
-          ? AudioPlayerUtil()
-              .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-          : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
+    (_socketStageProvider.catchMusicData != null)
+        ? AudioPlayerUtil()
+            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
+        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
 
-      // 중간임장인 경우
-      if (_stageProvider.stageCurTime != null) {
-        // 중간 입장한 초부터 시작
-        _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-        _stageProvider.setStageCurSecondNULL();
-      } else {
-        // 중간입장 아닐 시 0초부터 시작
-        _seconds = 0;
-      }
-      // 카운트다운
-      if (_seconds < 5) {
-        // 카운트다운 시작 후 노래 재생
-        setState(() {
-          _seconds = 5 - _seconds;
-          _countdownVisibility = true;
-        });
-        _startTimer();
-      }
-      // 노래 재생
-      else {
-        AudioPlayerUtil().playSeek(_seconds - 5);
-      }
-    });
+    // 중간임장인 경우
+    if (_stageProvider.stageCurTime != null) {
+      // 중간 입장한 초부터 시작
+      _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+      _stageProvider.setStageCurSecondNULL();
+    } else {
+      // 중간입장 아닐 시 0초부터 시작
+      _seconds = 0;
+    }
+    print("mmm play countdown1 $_seconds");
+    // 카운트다운
+    if (_seconds < 5) {
+      // 카운트다운 시작 후 노래 재생
+      setState(() {
+        _seconds = 5 - _seconds;
+        _countdownVisibility = true;
+      });
+      _startTimer();
+    }
+    // 노래 재생
+    else {
+      AudioPlayerUtil().playSeek(_seconds - 5);
+    }
+
+    print("mmm play countdown2 $_seconds");
   }
 
   void _startTimer() {

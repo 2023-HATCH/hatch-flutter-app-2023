@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
-import 'package:provider/provider.dart';
 
 enum StagePlayScore { bad, good, great, excellent, perfect, none }
 
@@ -59,11 +57,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     );
   }
 
-  Positioned _buildPlayerProfile() {
-    var players =
-        context.select<SocketStageProviderImpl, List<StagePlayerListItem>>(
-            (provider) => provider.players);
-    switch (players.length) {
+  Widget _buildPlayerProfile() {
+    switch (widget.players.length) {
       case 1:
         return Positioned(
           top: 115,
@@ -93,7 +88,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
             ],
           ),
         );
-      default:
+      case 3:
         return Positioned(
           top: 115,
           left: 35,
@@ -110,6 +105,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
             ],
           ),
         );
+      default:
+        return Container();
     }
   }
 

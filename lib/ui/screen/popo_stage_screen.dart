@@ -141,6 +141,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           .then((value) {
             stageType = SocketType.values.byName(value.data.stageStatus);
             _socketStageProvider.setUserCount(value.data.userCount);
+            print("mmm screen type 입장 후 구독 전 중간입장 확인: $stageType");
           })
           .then((_) => _socketStageProvider.setStageView(stageType))
           .then((_) => _socketStageProvider.onSubscribe());
@@ -155,9 +156,11 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         break;
       case SocketType.CATCH:
       case SocketType.CATCH_START:
+      case SocketType.PLAY:
       case SocketType.PLAY_START:
         bgImage = 'assets/images/bg_popo_comm.png';
         break;
+      case SocketType.MVP:
       case SocketType.MVP_START:
         bgImage = 'assets/images/bg_popo_result.png';
         break;
