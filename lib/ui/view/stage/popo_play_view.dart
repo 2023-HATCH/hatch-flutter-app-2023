@@ -46,14 +46,14 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       );
     }
 
+    _onMidEnter();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     print("mmm play rebuild");
-
-    _onMidEnter();
 
     // 카메라뷰 보이기
     return Stack(
@@ -71,11 +71,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     // 중간 입장인 경우
     if (_stageProvider.stageCurTime != null) {
       // 중간 입장한 초부터 시작
-      setState(() {
-        _midEnterSeconds =
-            (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-        _stageProvider.setStageCurSecondNULL();
-      });
+      _midEnterSeconds =
+          (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+      _stageProvider.setStageCurSecondNULL();
     }
   }
 

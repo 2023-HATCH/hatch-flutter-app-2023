@@ -143,20 +143,18 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
       _seconds = 0;
     }
 
-    print("mmm play countdown1 $_seconds");
     // 카운트다운
     if (_seconds < 5) {
       // 카운트다운 시작 후 노래 재생
       _seconds = 5 - _seconds;
       _countdownVisibility = true;
+
       _startTimer();
     }
     // 노래 재생
     else {
       AudioPlayerUtil().playSeek(_seconds - 5);
     }
-
-    print("mmm play countdown2 $_seconds");
   }
 
   // 카메라 화면 보여주기 + 화면에서 실시간으로 포즈 추출
@@ -178,7 +176,7 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
         buildMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
         _liveFeedBodyPlay(),
-        buildCountdownWidget(),
+        // buildCountdownWidget(),
       ],
     );
   }
@@ -441,6 +439,7 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
       });
       // 이미지 받은 것을 _processCameraImage 함수로 처리
       _controller?.startImageStream(_processCameraImage);
+      setState(() {});
     });
   }
 
