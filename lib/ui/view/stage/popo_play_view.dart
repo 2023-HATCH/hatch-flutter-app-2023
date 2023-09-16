@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
+import 'package:provider/provider.dart';
 
 enum StagePlayScore { bad, good, great, excellent, perfect, none }
 
@@ -18,10 +20,15 @@ class PoPoPlayView extends StatefulWidget {
 }
 
 class _PoPoPlayViewState extends State<PoPoPlayView> {
+  late StageProviderImpl _stageProvider;
+
   int _playerNum = -1;
+  int _midEnterSeconds = -1;
 
   @override
   void initState() {
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+
     for (var player in widget.players) {
       if (player.userId == widget.userId) {
         _playerNum = player.playerNum!;
@@ -46,15 +53,30 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   Widget build(BuildContext context) {
     print("mmm play rebuild");
 
+    _onMidEnter();
+
     // 카메라뷰 보이기
     return Stack(
       children: [
         _buildPlayerProfile(),
         MlKitCameraPlayView(
           playerNum: _playerNum,
+          midEnterSeconds: _midEnterSeconds,
         ),
       ],
     );
+  }
+
+  void _onMidEnter() {
+    // 중간 입장인 경우
+    if (_stageProvider.stageCurTime != null) {
+      // 중간 입장한 초부터 시작
+      setState(() {
+        _midEnterSeconds =
+            (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+        _stageProvider.setStageCurSecondNULL();
+      });
+    }
   }
 
   Widget _buildPlayerProfile() {
