@@ -54,7 +54,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   @override
   Widget build(BuildContext context) {
     print("mmm camera result build");
-    _paintSkeleton();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -152,29 +151,35 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     );
   }
 
-  void _paintSkeleton() {
-    var playerMVP = context
-        .select<SocketStageProviderImpl, Map<PoseLandmarkType, PoseLandmark>?>(
-            (provider) => provider.mvpSkeleton);
-
-    CustomPosePainter painterMVP = CustomPosePainter(
-        [Pose(landmarks: playerMVP ?? {})],
-        const Size(1280.0, 720.0),
-        InputImageRotation.rotation270deg,
-        widget.color);
-    _customPaintMVP = CustomPaint(painter: painterMVP);
-  }
-
   // 결과 화면: MVP 1명의 스켈레톤만 보임
   Widget _liveFeedBodyResult() {
     return Row(
       children: [
         Expanded(flex: 2, child: Container()),
         Expanded(
-            flex: 4,
-            child: (_customPaintMVP != null)
-                ? SizedBox(height: 300, child: _customPaintMVP!)
-                : Container()),
+          flex: 4,
+          child: Selector<SocketStageProviderImpl,
+                  Map<PoseLandmarkType, PoseLandmark>?>(
+              selector: (context, socketProvider) => socketProvider.mvpSkeleton,
+              shouldRebuild: (prev, next) {
+                return true;
+              },
+              builder: (context, mvp, child) {
+                if (mvp != null) {
+                  CustomPosePainter painterMVP = CustomPosePainter(
+                      [Pose(landmarks: mvp)],
+                      const Size(1280.0, 720.0),
+                      InputImageRotation.rotation270deg,
+                      widget.color);
+                  _customPaintMVP = CustomPaint(painter: painterMVP);
+                } else {
+                  _customPaintMVP = null;
+                }
+                return (_customPaintMVP != null)
+                    ? SizedBox(height: 200, child: _customPaintMVP!)
+                    : Container();
+              }),
+        ),
         Expanded(flex: 2, child: Container()),
       ],
     );

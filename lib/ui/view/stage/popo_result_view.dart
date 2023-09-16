@@ -40,6 +40,9 @@ class _PoPoResultViewState extends State<PoPoResultView> {
 
   @override
   void initState() {
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
+
     if (widget.userId == widget.mvp?.userId) {
       _isPlayer = true;
     }
@@ -60,9 +63,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
 
   @override
   Widget build(BuildContext context) {
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
-
     // 카메라뷰 보이기
     return Stack(
       children: [
@@ -90,7 +90,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
                   color: Colors.white,
                 ),
               );
-            }).toList(), // .toList() added here
+            }).toList(),
           ),
         ),
         MlKitCameraResultView(
