@@ -63,7 +63,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 selector: (context, socketProvider) =>
                     socketProvider.isSubscribe,
                 shouldRebuild: (prev, next) {
-                  return true;
+                  return prev != next;
                 },
                 builder: (context, isSubscribe, _) {
                   return (isSubscribe)
