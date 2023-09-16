@@ -55,8 +55,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
 
   @override
   Widget build(BuildContext context) {
-    print("mmm camera play build");
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,

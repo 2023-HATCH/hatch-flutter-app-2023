@@ -42,8 +42,6 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print("mmm talk list build");
-
     return Selector<StageProviderImpl, List<StageTalkListItem>>(
         selector: (_, stageProvider) => stageProvider.talkList,
         builder: (context, talkList, _) {

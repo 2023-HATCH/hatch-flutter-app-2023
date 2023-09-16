@@ -53,8 +53,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
   @override
   Widget build(BuildContext context) {
-    print("mmm play rebuild");
-
     // 카메라뷰 보이기
     return Stack(
       children: [

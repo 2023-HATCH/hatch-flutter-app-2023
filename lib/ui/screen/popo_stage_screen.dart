@@ -32,8 +32,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("mmm rebuild");
-
     // 입장 + 구독
     _popoStageEnter();
 
@@ -141,7 +139,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           .then((value) {
             stageType = SocketType.values.byName(value.data.stageStatus);
             _socketStageProvider.setUserCount(value.data.userCount);
-            print("mmm screen type 입장 후 구독 전 중간입장 확인: $stageType");
           })
           .then((_) => _socketStageProvider.setStageView(stageType))
           .then((_) => _socketStageProvider.onSubscribe());

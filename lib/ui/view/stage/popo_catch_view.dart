@@ -26,8 +26,6 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
 
   @override
   Widget build(BuildContext context) {
-    print("mmm catch rebuild");
-
     // 중간입장 처리
     _onMidEnter();
 

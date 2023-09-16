@@ -53,8 +53,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
 
   @override
   Widget build(BuildContext context) {
-    print("mmm camera result build");
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
