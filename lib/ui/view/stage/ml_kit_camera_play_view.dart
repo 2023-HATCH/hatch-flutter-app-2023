@@ -1,20 +1,18 @@
 // 카메라 화면
 import 'dart:async';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
-import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/main.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_appbar_music_info_widget.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_play_countdown_widget.dart';
 import 'package:provider/provider.dart';
 
 class MlKitCameraPlayView extends StatefulWidget {
@@ -22,11 +20,14 @@ class MlKitCameraPlayView extends StatefulWidget {
     Key? key,
     this.initialDirection = CameraLensDirection.back,
     required this.playerNum,
+    required this.midEnterSeconds,
   }) : super(key: key);
   // 카메라 렌즈 방향 변수
   final CameraLensDirection initialDirection;
   // 플레이어인지 확인하는 변수
   final int playerNum;
+  // 중간 입장한 초
+  final int midEnterSeconds;
 
   @override
   State<MlKitCameraPlayView> createState() => _MlKitCameraPlayViewState();
@@ -43,17 +44,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
   CustomPaint? _customPaintLeft;
   CustomPaint? _customPaintMid;
   CustomPaint? _customPaintRight;
-  // 5초 카운트다운 텍스트
-  bool _countdownVisibility = false;
-  final List<String> _countdownSVG = [
-    'assets/icons/ic_countdown_1.png',
-    'assets/icons/ic_countdown_2.png',
-    'assets/icons/ic_countdown_3.png',
-    'assets/icons/ic_countdown_4.png',
-    'assets/icons/ic_countdown_5.png',
-  ];
-  int _seconds = 5;
-  Timer? _timer;
   // ml kit 변수
   bool _canProcess = true;
   bool _isBusy = false;
@@ -61,16 +51,10 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
   // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
   final PoseDetector _poseDetector =
       PoseDetector(options: PoseDetectorOptions());
-  AssetsAudioPlayer? _assetsAudioPlayer;
-  late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
   @override
   Widget build(BuildContext context) {
-    _paintSkeleton();
-
-    print("mmm camera play build");
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -81,7 +65,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
   @override
   void initState() {
     super.initState();
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
 
@@ -109,82 +92,12 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
     if (widget.playerNum != -1 && _cameraIndex != -1) {
       _startLiveFeed();
     }
-
-    _assetsAudioPlayer = AssetsAudioPlayer();
-
-    // 입장 처리
-    _onEnter();
-  }
-
-  void _onEnter() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      (_socketStageProvider.catchMusicData != null)
-          ? AudioPlayerUtil()
-              .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-          : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
-
-      // 중간임장인 경우
-      if (_stageProvider.stageCurTime != null) {
-        // 중간 입장한 초부터 시작
-        _seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-        _stageProvider.setStageCurSecondNULL();
-      } else {
-        // 중간입장 아닐 시 0초부터 시작
-        _seconds = 0;
-      }
-      // 카운트다운
-      if (_seconds < 5) {
-        // 카운트다운 시작 후 노래 재생
-        setState(() {
-          _seconds = 5 - _seconds;
-          _countdownVisibility = true;
-        });
-        _startTimer();
-      }
-      // 노래 재생
-      else {
-        AudioPlayerUtil().playSeek(_seconds - 5);
-      }
-    });
-  }
-
-  void _startTimer() {
-    _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_seconds == 1) {
-        _stopTimer();
-
-        if (mounted) {
-          setState(() {
-            _countdownVisibility = false;
-          });
-        }
-        _seconds = 5;
-        AudioPlayerUtil().play();
-      } else {
-        if (mounted) {
-          _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
-          setState(() {
-            _seconds--;
-          });
-        }
-      }
-    });
-  }
-
-  void _stopTimer() {
-    _timer?.cancel();
-    _timer = null;
   }
 
   @override
   void dispose() {
-    _stopTimer();
     _canProcess = false;
     _poseDetector.close();
-    _assetsAudioPlayer = null;
-    _assetsAudioPlayer?.dispose();
     _controller?.dispose;
 
     super.dispose();
@@ -206,54 +119,12 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        buildMusicInfoWidget(),
+        const StageAppbarMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
         _liveFeedBodyPlay(),
-        buildCountdownWidget()
+        StagePlayCountdownWidget(midEnterSeconds: widget.midEnterSeconds),
       ],
     );
-  }
-
-  void _paintSkeleton() {
-    var player1 = context.select<SocketStageProviderImpl,
-        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player1);
-    var player0 = context.select<SocketStageProviderImpl,
-        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player0);
-    var player2 = context.select<SocketStageProviderImpl,
-        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player2);
-
-    if (player1 != null) {
-      CustomPosePainter painterLeft = CustomPosePainter(
-          [Pose(landmarks: player1)],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.yellowNeonColor);
-      _customPaintLeft = CustomPaint(painter: painterLeft);
-    } else {
-      _customPaintLeft = null;
-    }
-
-    if (player0 != null) {
-      CustomPosePainter painterMid = CustomPosePainter(
-          [Pose(landmarks: player0)],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.mintNeonColor);
-      _customPaintMid = CustomPaint(painter: painterMid);
-    } else {
-      _customPaintMid = null;
-    }
-
-    if (player2 != null) {
-      CustomPosePainter painterRignt = CustomPosePainter(
-          [Pose(landmarks: player2)],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.greenNeonColor);
-      _customPaintRight = CustomPaint(painter: painterRignt);
-    } else {
-      _customPaintRight = null;
-    }
   }
 
   // 플레이 화면: 플레이어 3명 스켈레톤 보임
@@ -264,10 +135,29 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
           children: [
             Expanded(flex: 2, child: Container()),
             Expanded(
-                flex: 4,
-                child: (_customPaintMid != null)
-                    ? SizedBox(height: 200, child: _customPaintMid!)
-                    : Container()),
+              flex: 4,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player0,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player0, child) {
+                    if (player0 != null) {
+                      CustomPosePainter painterMid = CustomPosePainter(
+                          [Pose(landmarks: player0)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.mintNeonColor);
+                      _customPaintMid = CustomPaint(painter: painterMid);
+                    } else {
+                      _customPaintMid = null;
+                    }
+                    return (_customPaintMid != null)
+                        ? SizedBox(height: 200, child: _customPaintMid!)
+                        : Container();
+                  }),
+            ),
             Expanded(flex: 2, child: Container()),
           ],
         );
@@ -275,77 +165,133 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
         return Row(
           children: [
             Expanded(
-                flex: 1,
-                child: (_customPaintLeft != null)
-                    ? SizedBox(height: 200, child: _customPaintLeft!)
-                    : Container()),
+              flex: 1,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player1,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player1, child) {
+                    if (player1 != null) {
+                      CustomPosePainter painterLeft = CustomPosePainter(
+                          [Pose(landmarks: player1)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.yellowNeonColor);
+                      _customPaintLeft = CustomPaint(painter: painterLeft);
+                    } else {
+                      _customPaintLeft = null;
+                    }
+                    return (_customPaintLeft != null)
+                        ? SizedBox(height: 200, child: _customPaintLeft!)
+                        : Container();
+                  }),
+            ),
             Expanded(
-                flex: 1,
-                child: (_customPaintMid != null)
-                    ? SizedBox(height: 200, child: _customPaintMid!)
-                    : Container()),
+              flex: 1,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player0,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player0, child) {
+                    if (player0 != null) {
+                      CustomPosePainter painterMid = CustomPosePainter(
+                          [Pose(landmarks: player0)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.mintNeonColor);
+                      _customPaintMid = CustomPaint(painter: painterMid);
+                    } else {
+                      _customPaintMid = null;
+                    }
+                    return (_customPaintMid != null)
+                        ? SizedBox(height: 200, child: _customPaintMid!)
+                        : Container();
+                  }),
+            ),
           ],
         );
       default:
         return Row(
           children: [
             Expanded(
-                flex: 4,
-                child: (_customPaintLeft != null)
-                    ? SizedBox(height: 200, child: _customPaintLeft!)
-                    : Container()),
+              flex: 4,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player1,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player1, child) {
+                    if (player1 != null) {
+                      CustomPosePainter painterLeft = CustomPosePainter(
+                          [Pose(landmarks: player1)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.yellowNeonColor);
+                      _customPaintLeft = CustomPaint(painter: painterLeft);
+                    } else {
+                      _customPaintLeft = null;
+                    }
+                    return (_customPaintLeft != null)
+                        ? SizedBox(height: 200, child: _customPaintLeft!)
+                        : Container();
+                  }),
+            ),
             Expanded(
-                flex: 4,
-                child: (_customPaintMid != null)
-                    ? SizedBox(height: 200, child: _customPaintMid!)
-                    : Container()),
+              flex: 4,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player0,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player0, child) {
+                    if (player0 != null) {
+                      CustomPosePainter painterMid = CustomPosePainter(
+                          [Pose(landmarks: player0)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.mintNeonColor);
+                      _customPaintMid = CustomPaint(painter: painterMid);
+                    } else {
+                      _customPaintMid = null;
+                    }
+                    return (_customPaintMid != null)
+                        ? SizedBox(height: 200, child: _customPaintMid!)
+                        : Container();
+                  }),
+            ),
             Expanded(
-                flex: 3,
-                child: (_customPaintRight != null)
-                    ? SizedBox(height: 150, child: _customPaintRight!)
-                    : Container()),
+              flex: 3,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player2,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player2, child) {
+                    if (player2 != null) {
+                      CustomPosePainter painterRignt = CustomPosePainter(
+                          [Pose(landmarks: player2)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.greenNeonColor);
+                      _customPaintRight = CustomPaint(painter: painterRignt);
+                    } else {
+                      _customPaintRight = null;
+                    }
+                    return (_customPaintRight != null)
+                        ? SizedBox(height: 200, child: _customPaintRight!)
+                        : Container();
+                  }),
+            ),
           ],
         );
     }
-  }
-
-  Column buildCountdownWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Visibility(
-            visible: _countdownVisibility,
-            child: (6 > _seconds) && (_seconds > 0)
-                ? Image.asset(_countdownSVG[_seconds - 1])
-                : Container())
-      ],
-    );
-  }
-
-  Positioned buildMusicInfoWidget() {
-    return Positioned(
-      top: 80,
-      left: 0,
-      right: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            'assets/icons/ic_music_note_small.svg',
-          ),
-          const SizedBox(width: 8.0),
-          (_socketStageProvider.catchMusicData != null)
-              ? Text(
-                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
-                )
-              : Text(
-                  '${_stageProvider.music?.singer} - ${_stageProvider.music?.title}',
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
-                ),
-        ],
-      ),
-    );
   }
 
   // 실시간으로 카메라에서 이미지 받기(비동기적)
@@ -369,6 +315,7 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
       });
       // 이미지 받은 것을 _processCameraImage 함수로 처리
       _controller?.startImageStream(_processCameraImage);
+      setState(() {});
     });
   }
 

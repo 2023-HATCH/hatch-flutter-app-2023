@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
-import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
+import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
 import 'package:provider/provider.dart';
@@ -20,10 +20,15 @@ class PoPoPlayView extends StatefulWidget {
 }
 
 class _PoPoPlayViewState extends State<PoPoPlayView> {
+  late StageProviderImpl _stageProvider;
+
   int _playerNum = -1;
+  int _midEnterSeconds = -1;
 
   @override
   void initState() {
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+
     for (var player in widget.players) {
       if (player.userId == widget.userId) {
         _playerNum = player.playerNum!;
@@ -41,29 +46,37 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       );
     }
 
+    _onMidEnter();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    print("mmm play rebuild");
-
     // 카메라뷰 보이기
     return Stack(
       children: [
         _buildPlayerProfile(),
         MlKitCameraPlayView(
           playerNum: _playerNum,
+          midEnterSeconds: _midEnterSeconds,
         ),
       ],
     );
   }
 
-  Positioned _buildPlayerProfile() {
-    var players =
-        context.select<SocketStageProviderImpl, List<StagePlayerListItem>>(
-            (provider) => provider.players);
-    switch (players.length) {
+  void _onMidEnter() {
+    // 중간 입장인 경우
+    if (_stageProvider.stageCurTime != null) {
+      // 중간 입장한 초부터 시작
+      _midEnterSeconds =
+          (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+      _stageProvider.setStageCurSecondNULL();
+    }
+  }
+
+  Widget _buildPlayerProfile() {
+    switch (widget.players.length) {
       case 1:
         return Positioned(
           top: 115,
@@ -93,7 +106,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
             ],
           ),
         );
-      default:
+      case 3:
         return Positioned(
           top: 115,
           left: 35,
@@ -110,6 +123,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
             ],
           ),
         );
+      default:
+        return Container();
     }
   }
 

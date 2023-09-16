@@ -5,7 +5,6 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
@@ -14,6 +13,7 @@ import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/main.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_appbar_music_info_widget.dart';
 import 'package:provider/provider.dart';
 
 class MlKitCameraResultView extends StatefulWidget {
@@ -53,9 +53,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
 
   @override
   Widget build(BuildContext context) {
-    print("mmm camera result build");
-    _paintSkeleton();
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -98,26 +95,24 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     _assetsAudioPlayer = AssetsAudioPlayer();
 
     // 입장 처리
-    _onEnter();
+    _onMidEnter();
   }
 
-  void _onEnter() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      (_socketStageProvider.catchMusicData != null)
-          ? AudioPlayerUtil()
-              .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-          : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
+  void _onMidEnter() {
+    (_socketStageProvider.catchMusicData != null)
+        ? AudioPlayerUtil()
+            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
+        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
 
-      // 중간임장인 경우
-      if (_stageProvider.stageCurTime != null) {
-        // 중간 입장한 초부터 시작
-        var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-        _stageProvider.setStageCurSecondNULL();
-        AudioPlayerUtil().playSeek(seconds);
-      } else {
-        AudioPlayerUtil().play();
-      }
-    });
+    // 중간임장인 경우
+    if (_stageProvider.stageCurTime != null) {
+      // 중간 입장한 초부터 시작
+      var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+      _stageProvider.setStageCurSecondNULL();
+      AudioPlayerUtil().playSeek(seconds);
+    } else {
+      AudioPlayerUtil().play();
+    }
   }
 
   @override
@@ -145,24 +140,11 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        buildMusicInfoWidget(),
+        const StageAppbarMusicInfoWidget(),
         // 추출된 스켈레톤 그리기
         _liveFeedBodyResult(),
       ],
     );
-  }
-
-  void _paintSkeleton() {
-    var playerMVP = context
-        .select<SocketStageProviderImpl, Map<PoseLandmarkType, PoseLandmark>?>(
-            (provider) => provider.mvpSkeleton);
-
-    CustomPosePainter painterMVP = CustomPosePainter(
-        [Pose(landmarks: playerMVP ?? {})],
-        const Size(1280.0, 720.0),
-        InputImageRotation.rotation270deg,
-        widget.color);
-    _customPaintMVP = CustomPaint(painter: painterMVP);
   }
 
   // 결과 화면: MVP 1명의 스켈레톤만 보임
@@ -171,38 +153,31 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
       children: [
         Expanded(flex: 2, child: Container()),
         Expanded(
-            flex: 4,
-            child: (_customPaintMVP != null)
-                ? SizedBox(height: 300, child: _customPaintMVP!)
-                : Container()),
+          flex: 4,
+          child: Selector<SocketStageProviderImpl,
+                  Map<PoseLandmarkType, PoseLandmark>?>(
+              selector: (context, socketProvider) => socketProvider.mvpSkeleton,
+              shouldRebuild: (prev, next) {
+                return true;
+              },
+              builder: (context, mvp, child) {
+                if (mvp != null) {
+                  CustomPosePainter painterMVP = CustomPosePainter(
+                      [Pose(landmarks: mvp)],
+                      const Size(1280.0, 720.0),
+                      InputImageRotation.rotation270deg,
+                      widget.color);
+                  _customPaintMVP = CustomPaint(painter: painterMVP);
+                } else {
+                  _customPaintMVP = null;
+                }
+                return (_customPaintMVP != null)
+                    ? SizedBox(height: 200, child: _customPaintMVP!)
+                    : Container();
+              }),
+        ),
         Expanded(flex: 2, child: Container()),
       ],
-    );
-  }
-
-  Positioned buildMusicInfoWidget() {
-    return Positioned(
-      top: 80,
-      left: 0,
-      right: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            'assets/icons/ic_music_note_small.svg',
-          ),
-          const SizedBox(width: 8.0),
-          (_socketStageProvider.catchMusicData != null)
-              ? Text(
-                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}',
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
-                )
-              : Text(
-                  '${_stageProvider.music?.singer} - ${_stageProvider.music?.title}',
-                  style: const TextStyle(fontSize: 10, color: Colors.white),
-                ),
-        ],
-      ),
     );
   }
 
@@ -227,6 +202,7 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
       });
       // 이미지 받은 것을 _processCameraImage 함수로 처리
       _controller?.startImageStream(_processCameraImage);
+      setState(() {});
     });
   }
 

@@ -7,8 +7,8 @@ import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
-import 'package:pocket_pose/domain/entity/user_list_item.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/domain/entity/user_list_item.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
@@ -32,8 +32,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("mmm rebuild");
-
     // 입장 + 구독
     _popoStageEnter();
 
@@ -50,38 +48,49 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(
-          // 플레이, 결과 상태에 따라 배경화면 변경
+          // 대기, 캐치, 플레이, 결과 상태에 따라 배경화면 변경
           decoration: _buildBackgroundImage(
               context.select<SocketStageProviderImpl, SocketType>(
                   (provider) => provider.stageType)),
           child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            extendBodyBehindAppBar: true,
-            backgroundColor: Colors.transparent,
-            appBar: _buildAppBar(context),
-            body: Stack(
-              children: [
-                Navigator(
-                  key: _socketStageProvider.navigatorKey,
-                  initialRoute: socketTypeList[0],
-                  onGenerateRoute: _socketStageProvider.onGenerateRoute,
-                ),
-                const Positioned(
-                  bottom: 68,
-                  left: 0,
-                  right: 0,
-                  child: StageLiveTalkListWidget(),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: StageLiveChatBarWidget(
-                      nickName: widget.userData.nickname),
-                ),
-              ],
-            ),
-          ),
+              resizeToAvoidBottomInset: false,
+              extendBodyBehindAppBar: true,
+              backgroundColor: Colors.transparent,
+              appBar: _buildAppBar(context),
+              body: Selector<SocketStageProviderImpl, bool>(
+                selector: (context, socketProvider) =>
+                    socketProvider.isSubscribe,
+                shouldRebuild: (prev, next) {
+                  return prev != next;
+                },
+                builder: (context, isSubscribe, _) {
+                  return (isSubscribe)
+                      ? Stack(
+                          children: [
+                            Navigator(
+                              key: _socketStageProvider.navigatorKey,
+                              initialRoute: socketTypeList[0],
+                              onGenerateRoute:
+                                  _socketStageProvider.onGenerateRoute,
+                            ),
+                            const Positioned(
+                              bottom: 68,
+                              left: 0,
+                              right: 0,
+                              child: StageLiveTalkListWidget(),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: StageLiveChatBarWidget(
+                                  nickName: widget.userData.nickname),
+                            ),
+                          ],
+                        )
+                      : Container();
+                },
+              )),
         ),
       ),
     );
@@ -130,9 +139,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           .then((value) {
             stageType = SocketType.values.byName(value.data.stageStatus);
             _socketStageProvider.setUserCount(value.data.userCount);
-            if (stageType == SocketType.CATCH) {
-              _socketStageProvider.setIsCatchMidEnter(true);
-            }
           })
           .then((_) => _socketStageProvider.setStageView(stageType))
           .then((_) => _socketStageProvider.onSubscribe());
@@ -145,10 +151,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       case SocketType.WAIT:
         bgImage = 'assets/images/bg_popo_wait.png';
         break;
+      case SocketType.CATCH:
       case SocketType.CATCH_START:
+      case SocketType.PLAY:
       case SocketType.PLAY_START:
         bgImage = 'assets/images/bg_popo_comm.png';
         break;
+      case SocketType.MVP:
       case SocketType.MVP_START:
         bgImage = 'assets/images/bg_popo_result.png';
         break;
@@ -199,13 +208,13 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         shouldRebuild: (prev, next) {
           return true;
         },
-        builder: (context, data, child) {
+        builder: (context, userCount, child) {
+          _stageProvider.getUserList();
           return Container(
             margin: const EdgeInsets.only(right: 16.0, top: 10.0, bottom: 10.0),
             child: OutlinedButton.icon(
-              onPressed: () async {
-                await _stageProvider.getUserList();
-                _showUserListDialog(_stageProvider.userList);
+              onPressed: () {
+                _showUserListDialog();
               },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -220,7 +229,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                 'assets/icons/ic_users.svg',
               ),
               label: Text(
-                '$data',
+                '$userCount',
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -228,7 +237,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         });
   }
 
-  Future<dynamic> _showUserListDialog(List<UserListItem> userList) {
+  Future<dynamic> _showUserListDialog() {
     return showDialog(
       context: context,
       barrierColor: Colors.transparent,
@@ -276,14 +285,22 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             content: SizedBox(
               width: 265,
               height: 365,
-              child: GridView.builder(
-                itemCount: context.watch<StageProviderImpl>().userList.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return UserListItemWidget(
-                      user: context.watch<StageProviderImpl>().userList[index]);
+              child: Selector<StageProviderImpl, List<UserListItem>>(
+                selector: (context, provider) => provider.userList,
+                shouldRebuild: (prev, next) {
+                  return true;
+                },
+                builder: (context, userList, child) {
+                  return GridView.builder(
+                    itemCount: userList.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return UserListItemWidget(user: userList[index]);
+                    },
+                  );
                 },
               ),
             ),
