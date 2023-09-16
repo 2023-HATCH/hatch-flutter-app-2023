@@ -67,8 +67,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
 
   @override
   Widget build(BuildContext context) {
-    _paintSkeleton();
-
     print("mmm camera play build");
 
     return Scaffold(
@@ -214,48 +212,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
     );
   }
 
-  void _paintSkeleton() {
-    var player1 = context.select<SocketStageProviderImpl,
-        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player1);
-    var player0 = context.select<SocketStageProviderImpl,
-        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player0);
-    var player2 = context.select<SocketStageProviderImpl,
-        Map<PoseLandmarkType, PoseLandmark>?>((provider) => provider.player2);
-
-    if (player1 != null) {
-      CustomPosePainter painterLeft = CustomPosePainter(
-          [Pose(landmarks: player1)],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.yellowNeonColor);
-      _customPaintLeft = CustomPaint(painter: painterLeft);
-    } else {
-      _customPaintLeft = null;
-    }
-
-    if (player0 != null) {
-      CustomPosePainter painterMid = CustomPosePainter(
-          [Pose(landmarks: player0)],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.mintNeonColor);
-      _customPaintMid = CustomPaint(painter: painterMid);
-    } else {
-      _customPaintMid = null;
-    }
-
-    if (player2 != null) {
-      CustomPosePainter painterRignt = CustomPosePainter(
-          [Pose(landmarks: player2)],
-          const Size(1280.0, 720.0),
-          InputImageRotation.rotation270deg,
-          AppColor.greenNeonColor);
-      _customPaintRight = CustomPaint(painter: painterRignt);
-    } else {
-      _customPaintRight = null;
-    }
-  }
-
   // 플레이 화면: 플레이어 3명 스켈레톤 보임
   Widget _liveFeedBodyPlay() {
     switch (_socketStageProvider.players.length) {
@@ -264,10 +220,29 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
           children: [
             Expanded(flex: 2, child: Container()),
             Expanded(
-                flex: 4,
-                child: (_customPaintMid != null)
-                    ? SizedBox(height: 200, child: _customPaintMid!)
-                    : Container()),
+              flex: 4,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player0,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player0, child) {
+                    if (player0 != null) {
+                      CustomPosePainter painterMid = CustomPosePainter(
+                          [Pose(landmarks: player0)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.mintNeonColor);
+                      _customPaintMid = CustomPaint(painter: painterMid);
+                    } else {
+                      _customPaintMid = null;
+                    }
+                    return (_customPaintMid != null)
+                        ? SizedBox(height: 200, child: _customPaintMid!)
+                        : Container();
+                  }),
+            ),
             Expanded(flex: 2, child: Container()),
           ],
         );
@@ -275,35 +250,130 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
         return Row(
           children: [
             Expanded(
-                flex: 1,
-                child: (_customPaintLeft != null)
-                    ? SizedBox(height: 200, child: _customPaintLeft!)
-                    : Container()),
+              flex: 1,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player1,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player1, child) {
+                    if (player1 != null) {
+                      CustomPosePainter painterLeft = CustomPosePainter(
+                          [Pose(landmarks: player1)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.yellowNeonColor);
+                      _customPaintLeft = CustomPaint(painter: painterLeft);
+                    } else {
+                      _customPaintLeft = null;
+                    }
+                    return (_customPaintLeft != null)
+                        ? SizedBox(height: 200, child: _customPaintLeft!)
+                        : Container();
+                  }),
+            ),
             Expanded(
-                flex: 1,
-                child: (_customPaintMid != null)
-                    ? SizedBox(height: 200, child: _customPaintMid!)
-                    : Container()),
+              flex: 1,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player0,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player0, child) {
+                    if (player0 != null) {
+                      CustomPosePainter painterMid = CustomPosePainter(
+                          [Pose(landmarks: player0)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.mintNeonColor);
+                      _customPaintMid = CustomPaint(painter: painterMid);
+                    } else {
+                      _customPaintMid = null;
+                    }
+                    return (_customPaintMid != null)
+                        ? SizedBox(height: 200, child: _customPaintMid!)
+                        : Container();
+                  }),
+            ),
           ],
         );
       default:
         return Row(
           children: [
             Expanded(
-                flex: 4,
-                child: (_customPaintLeft != null)
-                    ? SizedBox(height: 200, child: _customPaintLeft!)
-                    : Container()),
+              flex: 4,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player1,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player1, child) {
+                    if (player1 != null) {
+                      CustomPosePainter painterLeft = CustomPosePainter(
+                          [Pose(landmarks: player1)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.yellowNeonColor);
+                      _customPaintLeft = CustomPaint(painter: painterLeft);
+                    } else {
+                      _customPaintLeft = null;
+                    }
+                    return (_customPaintLeft != null)
+                        ? SizedBox(height: 200, child: _customPaintLeft!)
+                        : Container();
+                  }),
+            ),
             Expanded(
-                flex: 4,
-                child: (_customPaintMid != null)
-                    ? SizedBox(height: 200, child: _customPaintMid!)
-                    : Container()),
+              flex: 4,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player0,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player0, child) {
+                    if (player0 != null) {
+                      CustomPosePainter painterMid = CustomPosePainter(
+                          [Pose(landmarks: player0)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.mintNeonColor);
+                      _customPaintMid = CustomPaint(painter: painterMid);
+                    } else {
+                      _customPaintMid = null;
+                    }
+                    return (_customPaintMid != null)
+                        ? SizedBox(height: 200, child: _customPaintMid!)
+                        : Container();
+                  }),
+            ),
             Expanded(
-                flex: 3,
-                child: (_customPaintRight != null)
-                    ? SizedBox(height: 150, child: _customPaintRight!)
-                    : Container()),
+              flex: 3,
+              child: Selector<SocketStageProviderImpl,
+                      Map<PoseLandmarkType, PoseLandmark>?>(
+                  selector: (context, socketProvider) => socketProvider.player2,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, player2, child) {
+                    if (player2 != null) {
+                      CustomPosePainter painterRignt = CustomPosePainter(
+                          [Pose(landmarks: player2)],
+                          const Size(1280.0, 720.0),
+                          InputImageRotation.rotation270deg,
+                          AppColor.greenNeonColor);
+                      _customPaintRight = CustomPaint(painter: painterRignt);
+                    } else {
+                      _customPaintRight = null;
+                    }
+                    return (_customPaintRight != null)
+                        ? SizedBox(height: 200, child: _customPaintRight!)
+                        : Container();
+                  }),
+            ),
           ],
         );
     }
