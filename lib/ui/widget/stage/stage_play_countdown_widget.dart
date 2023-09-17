@@ -52,7 +52,7 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
   @override
   void initState() {
     super.initState();
-    _assetsAudioPlayer = AssetsAudioPlayer();
+    _assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
@@ -63,17 +63,15 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
 
   @override
   void dispose() {
-    super.dispose();
     _stopTimer();
     _assetsAudioPlayer = null;
     _assetsAudioPlayer?.dispose();
+    AudioPlayerUtil().stop();
+
+    super.dispose();
   }
 
   void _onMidEnter() {
-    (_socketStageProvider.catchMusicData != null)
-        ? AudioPlayerUtil()
-            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
     AudioPlayerUtil().setVolume(0.8);
 
     // 중간임장인 경우
@@ -95,7 +93,11 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
     }
     // 노래 재생
     else {
-      AudioPlayerUtil().playSeek(_seconds - 5);
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil().playSeek(
+              _seconds - 5, _socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil()
+              .playSeek(_seconds - 5, _stageProvider.music!.musicUrl);
     }
   }
 
@@ -113,7 +115,10 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
           });
         }
         _seconds = 5;
-        AudioPlayerUtil().play();
+        (_socketStageProvider.catchMusicData != null)
+            ? AudioPlayerUtil()
+                .play(_socketStageProvider.catchMusicData!.musicUrl)
+            : AudioPlayerUtil().play(_stageProvider.music!.musicUrl);
       } else {
         if (mounted) {
           _assetsAudioPlayer

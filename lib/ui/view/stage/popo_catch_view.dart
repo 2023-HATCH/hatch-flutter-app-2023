@@ -127,11 +127,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   }
 
   void _onMidEnter() {
-    (_socketStageProvider.catchMusicData != null)
-        ? AudioPlayerUtil()
-            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
-    AudioPlayerUtil().setVolume(0.5);
+    AudioPlayerUtil().setVolume(0.3);
 
     // 중간임장인 경우
     if (_stageProvider.stageCurTime != null) {
@@ -142,9 +138,15 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
       var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
       _stageProvider.setStageCurSecondNULL();
 
-      AudioPlayerUtil().playSeek(seconds);
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .playSeek(seconds, _socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().playSeek(seconds, _stageProvider.music!.musicUrl);
     } else {
-      AudioPlayerUtil().play();
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .play(_socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().play(_stageProvider.music!.musicUrl);
     }
   }
 
@@ -162,8 +164,9 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
     _onMidEnter();
   }
 
-  void _playClickSound() {
-    AssetsAudioPlayer.newPlayer()
+  void _playClickSound() async {
+    var assetsAudioPlayer = AssetsAudioPlayer();
+    await assetsAudioPlayer
         .open(Audio("assets/audios/sound_stage_catch_click.mp3"));
   }
 }

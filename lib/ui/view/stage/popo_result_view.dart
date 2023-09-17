@@ -94,10 +94,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
   }
 
   void _onMidEnter() {
-    (_socketStageProvider.catchMusicData != null)
-        ? AudioPlayerUtil()
-            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
     AudioPlayerUtil().setVolume(0.8);
 
     // 중간임장인 경우
@@ -105,9 +101,15 @@ class _PoPoResultViewState extends State<PoPoResultView> {
       // 중간 입장한 초부터 시작
       var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
       _stageProvider.setStageCurSecondNULL();
-      AudioPlayerUtil().playSeek(seconds);
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .playSeek(seconds, _socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().playSeek(seconds, _stageProvider.music!.musicUrl);
     } else {
-      AudioPlayerUtil().play();
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .play(_socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().play(_stageProvider.music!.musicUrl);
     }
   }
 

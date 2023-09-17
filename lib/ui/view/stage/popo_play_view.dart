@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
+import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
@@ -28,6 +29,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
   @override
   void initState() {
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+    AudioPlayerUtil().stop();
 
     for (var player in widget.players) {
       if (player.userId == widget.userId) {
