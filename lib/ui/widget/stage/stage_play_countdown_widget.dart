@@ -74,6 +74,7 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
         ? AudioPlayerUtil()
             .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
         : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
+    AudioPlayerUtil().setVolume(0.8);
 
     // 중간임장인 경우
     if (widget.midEnterSeconds != -1) {
@@ -94,7 +95,6 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
     }
     // 노래 재생
     else {
-      AudioPlayerUtil().setVolume(0.8);
       AudioPlayerUtil().playSeek(_seconds - 5);
     }
   }

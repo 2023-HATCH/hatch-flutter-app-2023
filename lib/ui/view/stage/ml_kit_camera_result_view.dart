@@ -5,11 +5,9 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
-import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/config/ml_kit/custom_pose_painter.dart';
 import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
-import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_skeleton_pose_landmark.dart';
 import 'package:pocket_pose/main.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_appbar_music_info_widget.dart';
@@ -19,12 +17,15 @@ class MlKitCameraResultView extends StatefulWidget {
   const MlKitCameraResultView(
       {Key? key,
       required this.color,
+      required this.isMVP,
       this.initialDirection = CameraLensDirection.back})
       : super(key: key);
   // 카메라 렌즈 방향 변수
   final CameraLensDirection initialDirection;
   // mvp 스켈레톤 색
   final Color color;
+  // 자신이 mvp인지 아닌지
+  final bool isMVP;
 
   @override
   State<MlKitCameraResultView> createState() => _MlKitCameraResultViewState();
@@ -40,13 +41,12 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   // 스켈레톤 모양을 그려주는 변수
   CustomPaint? _customPaintMVP;
   // ml kit 변수
-  final bool _canProcess = true;
+  bool _canProcess = true;
   bool _isBusy = false;
   int _frameNum = 0;
   // 스켈레톤 추출 변수 선언(google_mlkit_pose_detection 라이브러리)
   final PoseDetector _poseDetector =
       PoseDetector(options: PoseDetectorOptions());
-  late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
 
   @override
@@ -61,7 +61,7 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   @override
   void initState() {
     super.initState();
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+    print("mmm init result camera");
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
 
@@ -85,35 +85,21 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
       }
     }
 
-    // 카메라 실행 가능하면 포즈 추출 시작
-    if (_cameraIndex != -1) {
+    // mvp고 카메라 실행 가능하면 포즈 추출 시작
+    if (_cameraIndex != -1 && widget.isMVP) {
       _startLiveFeed();
-    }
-
-    // 입장 처리
-    _onMidEnter();
-  }
-
-  void _onMidEnter() {
-    (_socketStageProvider.catchMusicData != null)
-        ? AudioPlayerUtil()
-            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
-
-    // 중간임장인 경우
-    if (_stageProvider.stageCurTime != null) {
-      // 중간 입장한 초부터 시작
-      var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
-      _stageProvider.setStageCurSecondNULL();
-      AudioPlayerUtil().playSeek(seconds);
-    } else {
-      AudioPlayerUtil().play();
+      print("mmm ?? ${widget.isMVP}");
     }
   }
 
   @override
   void dispose() {
+    _canProcess = false;
+    _isBusy = true;
+    _customPaintMVP = null;
+    _poseDetector.close();
     _controller?.dispose;
+    print("mmm dispose result camera");
 
     super.dispose();
   }
@@ -123,13 +109,14 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     if (_controller?.value.isInitialized == false) {
       return Container();
     }
+    if (widget.isMVP) {
+      final size = MediaQuery.of(context).size;
+      // 화면 및 카메라 비율에 따른 스케일 계산
+      var scale = size.aspectRatio * _controller!.value.aspectRatio;
 
-    final size = MediaQuery.of(context).size;
-    // 화면 및 카메라 비율에 따른 스케일 계산
-    var scale = size.aspectRatio * _controller!.value.aspectRatio;
-
-    // to prevent scaling down, invert the value
-    if (scale < 1) scale = 1 / scale;
+      // to prevent scaling down, invert the value
+      if (scale < 1) scale = 1 / scale;
+    }
 
     return Stack(
       fit: StackFit.expand,
@@ -242,6 +229,7 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
 
     // 스켈레톤 전송
     _sendSkeleton(inputImage);
+    // print("mmm 겨롸 저옹");
   }
 
   // 카메라에서 실시간으로 받아온 이미지 처리: 스켈레톤 전송
