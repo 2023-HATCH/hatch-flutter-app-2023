@@ -1,8 +1,7 @@
-import 'package:just_audio/just_audio.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 class AudioPlayerUtil {
-  // late AudioSession? audioSession;
-  AudioPlayer? player = AudioPlayer();
+  AssetsAudioPlayer? player = AssetsAudioPlayer.newPlayer();
 
   static final AudioPlayerUtil _instance = AudioPlayerUtil._internal();
 
@@ -12,21 +11,22 @@ class AudioPlayerUtil {
     // _audioSessionConfigure();
   }
 
-  setMusicUrl(String musicUrl) async {
-    await player?.setUrl(musicUrl);
+  setVolume(double value) {
+    player?.setVolume(value);
   }
 
-  play() async {
+  play(String url) async {
     // 내부 음악 실행
-    await player?.play();
+    await player?.open(Audio.network(url));
     // 외부 음악 종료
     // await audioSession?.setActive(false);
   }
 
-  playSeek(int sec) async {
+  playSeek(int sec, String url) async {
     // 내부 음악 실행
+    await player?.open(Audio.network(url));
     await player?.seek(Duration(seconds: sec));
-    await player?.play();
+
     // 외부 음악 종료
     // await audioSession?.setActive(false);
   }
@@ -34,6 +34,13 @@ class AudioPlayerUtil {
   stop() async {
     // 내부 음악 종료
     await player?.stop();
+    // 외부 음악 실행
+    // await audioSession?.setActive(true);
+  }
+
+  dispose() async {
+    // 내부 음악 종료
+    await player?.dispose();
     // 외부 음악 실행
     // await audioSession?.setActive(true);
   }

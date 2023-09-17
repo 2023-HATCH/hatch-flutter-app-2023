@@ -23,12 +23,10 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   int _milliseconds = 0;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
+  var assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
 
   @override
   Widget build(BuildContext context) {
-    // 중간입장 처리
-    _onMidEnter();
-
     var isReCatch = context.select<SocketStageProviderImpl, bool>(
         (provider) => provider.isReCatch);
 
@@ -130,13 +128,26 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   }
 
   void _onMidEnter() {
+    AudioPlayerUtil().setVolume(0.3);
+
     // 중간임장인 경우
     if (_stageProvider.stageCurTime != null) {
       // 중간 입장한 초부터 시작
       setState(() {
         _milliseconds = (_stageProvider.stageCurTime! / 1000000).round();
       });
+      var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
       _stageProvider.setStageCurSecondNULL();
+
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .playSeek(seconds, _socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().playSeek(seconds, _stageProvider.music!.musicUrl);
+    } else {
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .play(_socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().play(_stageProvider.music!.musicUrl);
     }
   }
 
@@ -149,11 +160,20 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
+
+    // 중간입장 처리
+    _onMidEnter();
   }
 
-  void _playClickSound() {
-    AssetsAudioPlayer.newPlayer()
-        .open(Audio("assets/audios/sound_catch_click.mp3"));
+  @override
+  void dispose() {
+    assetsAudioPlayer.dispose();
+    super.dispose();
+  }
+
+  void _playClickSound() async {
+    await assetsAudioPlayer
+        .open(Audio("assets/audios/sound_stage_catch_click.mp3"));
   }
 }
 

@@ -108,13 +108,14 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
     if (_controller?.value.isInitialized == false) {
       return Container();
     }
+    if (widget.playerNum != -1) {
+      final size = MediaQuery.of(context).size;
+      // 화면 및 카메라 비율에 따른 스케일 계산
+      var scale = size.aspectRatio * _controller!.value.aspectRatio;
 
-    final size = MediaQuery.of(context).size;
-    // 화면 및 카메라 비율에 따른 스케일 계산
-    var scale = size.aspectRatio * _controller!.value.aspectRatio;
-
-    // to prevent scaling down, invert the value
-    if (scale < 1) scale = 1 / scale;
+      // to prevent scaling down, invert the value
+      if (scale < 1) scale = 1 / scale;
+    }
 
     return Stack(
       fit: StackFit.expand,

@@ -355,8 +355,12 @@ class SocketStageProviderImpl extends ChangeNotifier
               z: value.z,
               likelihood: value.likelihood);
         });
+
         mvpSkeleton = temp;
         notifyListeners();
+        break;
+      case SocketType.MVP_END:
+        mvpSkeleton = null;
         break;
 
       default:
@@ -391,7 +395,8 @@ class SocketStageProviderImpl extends ChangeNotifier
       case SocketType.MVP:
       case SocketType.MVP_START:
         return MaterialPageRoute<dynamic>(
-            builder: (context) => PoPoResultView(mvp: _mvp, userId: _userId!));
+            builder: (context) =>
+                PoPoResultView(mvp: _mvp, isMVP: userId == _mvp?.userId));
       default:
         return MaterialPageRoute<dynamic>(
             builder: (context) => const PoPoWaitView());

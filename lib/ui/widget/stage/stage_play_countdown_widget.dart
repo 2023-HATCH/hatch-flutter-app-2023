@@ -52,7 +52,7 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
   @override
   void initState() {
     super.initState();
-    _assetsAudioPlayer = AssetsAudioPlayer();
+    _assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
@@ -63,17 +63,16 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
 
   @override
   void dispose() {
-    super.dispose();
     _stopTimer();
     _assetsAudioPlayer = null;
     _assetsAudioPlayer?.dispose();
+    AudioPlayerUtil().stop();
+
+    super.dispose();
   }
 
   void _onMidEnter() {
-    (_socketStageProvider.catchMusicData != null)
-        ? AudioPlayerUtil()
-            .setMusicUrl(_socketStageProvider.catchMusicData!.musicUrl)
-        : AudioPlayerUtil().setMusicUrl(_stageProvider.music!.musicUrl);
+    AudioPlayerUtil().setVolume(0.8);
 
     // 중간임장인 경우
     if (widget.midEnterSeconds != -1) {
@@ -94,12 +93,17 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
     }
     // 노래 재생
     else {
-      AudioPlayerUtil().playSeek(_seconds - 5);
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil().playSeek(
+              _seconds - 5, _socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil()
+              .playSeek(_seconds - 5, _stageProvider.music!.musicUrl);
     }
   }
 
   void _startTimer() {
-    _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
+    _assetsAudioPlayer
+        ?.open(Audio("assets/audios/sound_stage_play_countdown.mp3"));
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_seconds == 1) {
@@ -111,10 +115,14 @@ class _StagePlayCountdownWidgetState extends State<StagePlayCountdownWidget> {
           });
         }
         _seconds = 5;
-        AudioPlayerUtil().play();
+        (_socketStageProvider.catchMusicData != null)
+            ? AudioPlayerUtil()
+                .play(_socketStageProvider.catchMusicData!.musicUrl)
+            : AudioPlayerUtil().play(_stageProvider.music!.musicUrl);
       } else {
         if (mounted) {
-          _assetsAudioPlayer?.open(Audio("assets/audios/sound_play_wait.mp3"));
+          _assetsAudioPlayer
+              ?.open(Audio("assets/audios/sound_stage_play_countdown.mp3"));
           setState(() {
             _seconds--;
           });
