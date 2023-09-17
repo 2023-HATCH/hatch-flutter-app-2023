@@ -149,20 +149,20 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     String bgImage;
     switch (type) {
       case SocketType.WAIT:
-        bgImage = 'assets/images/bg_popo_wait.png';
+        bgImage = 'assets/images/bg_stage_wait.jpeg';
         break;
       case SocketType.CATCH:
       case SocketType.CATCH_START:
       case SocketType.PLAY:
       case SocketType.PLAY_START:
-        bgImage = 'assets/images/bg_popo_comm.png';
+        bgImage = 'assets/images/bg_stage_comm.png';
         break;
       case SocketType.MVP:
       case SocketType.MVP_START:
-        bgImage = 'assets/images/bg_popo_result.png';
+        bgImage = 'assets/images/bg_stage_result.png';
         break;
       default:
-        bgImage = 'assets/images/bg_popo_wait.png';
+        bgImage = 'assets/images/bg_stage_wait.png';
         break;
     }
 
