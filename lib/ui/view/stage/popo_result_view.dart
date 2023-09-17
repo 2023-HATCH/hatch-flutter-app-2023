@@ -1,3 +1,4 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,6 +24,7 @@ class PoPoResultView extends StatefulWidget {
 class _PoPoResultViewState extends State<PoPoResultView> {
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
+  final _assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
   // 스켈레톤 색 배열
   final skeletonColorList = [
     AppColor.mintNeonColor,
@@ -51,6 +53,12 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     _onMidEnter();
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _assetsAudioPlayer.dispose();
+    super.dispose();
   }
 
   @override
@@ -105,12 +113,20 @@ class _PoPoResultViewState extends State<PoPoResultView> {
           ? AudioPlayerUtil()
               .playSeek(seconds, _socketStageProvider.catchMusicData!.musicUrl)
           : AudioPlayerUtil().playSeek(seconds, _stageProvider.music!.musicUrl);
+      _playResultSound(seconds);
     } else {
       (_socketStageProvider.catchMusicData != null)
           ? AudioPlayerUtil()
               .play(_socketStageProvider.catchMusicData!.musicUrl)
           : AudioPlayerUtil().play(_stageProvider.music!.musicUrl);
+      _playResultSound(0);
     }
+  }
+
+  void _playResultSound(int startSecond) {
+    _assetsAudioPlayer.setVolume(0.4);
+    _assetsAudioPlayer.open(Audio("assets/audios/sound_stage_result.mp3"),
+        seek: Duration(microseconds: startSecond));
   }
 
   Container buildMVPWidget(StagePlayerListItem user) {

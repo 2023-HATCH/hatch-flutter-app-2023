@@ -23,6 +23,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
   int _milliseconds = 0;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
+  var assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -164,8 +165,13 @@ class _PoPoCatchViewState extends State<PoPoCatchView> {
     _onMidEnter();
   }
 
+  @override
+  void dispose() {
+    assetsAudioPlayer.dispose();
+    super.dispose();
+  }
+
   void _playClickSound() async {
-    var assetsAudioPlayer = AssetsAudioPlayer();
     await assetsAudioPlayer
         .open(Audio("assets/audios/sound_stage_catch_click.mp3"));
   }
