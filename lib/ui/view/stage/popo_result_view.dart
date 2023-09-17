@@ -32,7 +32,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
 
   @override
   void initState() {
-    print("mmm init result");
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
@@ -52,13 +51,6 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     _onMidEnter();
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    print("mmm dispose result");
   }
 
   @override

@@ -61,7 +61,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   @override
   void initState() {
     super.initState();
-    print("mmm init result camera");
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
 
@@ -88,7 +87,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     // mvp고 카메라 실행 가능하면 포즈 추출 시작
     if (_cameraIndex != -1 && widget.isMVP) {
       _startLiveFeed();
-      print("mmm ?? ${widget.isMVP}");
     }
   }
 
@@ -99,7 +97,6 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
     _customPaintMVP = null;
     _poseDetector.close();
     _controller?.dispose;
-    print("mmm dispose result camera");
 
     super.dispose();
   }

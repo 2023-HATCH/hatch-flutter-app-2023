@@ -65,7 +65,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
   @override
   void initState() {
     super.initState();
-    print("mmm init play camera");
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
 
@@ -100,7 +99,6 @@ class _MlKitCameraPlayViewState extends State<MlKitCameraPlayView> {
     _canProcess = false;
     _poseDetector.close();
     _controller?.dispose;
-    print("mmm dispose play camera");
 
     super.dispose();
   }

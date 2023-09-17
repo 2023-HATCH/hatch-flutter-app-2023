@@ -27,7 +27,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
   @override
   void initState() {
-    print("mmm init play");
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
 
     for (var player in widget.players) {
@@ -50,13 +49,6 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     _onMidEnter();
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    print("mmm dispose play");
   }
 
   @override
