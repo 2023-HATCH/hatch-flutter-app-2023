@@ -58,22 +58,22 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         getImagePageViewModel(
             title: "대기",
             context: "참여자가 3명 이상이어야\n‘PoPo 스테이지’를시작할 수 있어요.🔥",
-            imgPath: "assets/images/bg_popo_result.png",
+            imgPath: "assets/images/img_onboarding_wait.jpeg",
             isVisibleLeft: false),
         getImagePageViewModel(
             title: "캐치",
             context:
                 "랜덤으로 챌린지 노래가 선정됩니다.\n선착순 3명만 참여 가능하니 캐치 버튼을 빨리 눌러 참여해봐요! 💪",
-            imgPath: "assets/images/bg_popo_result.png"),
+            imgPath: "assets/images/img_onboarding_catch.jpeg"),
         getImagePageViewModel(
             title: "플레이",
             context: "노래에 맞춰 춤을 춰봐요.✨\n춤 동작 마다 점수가 표시됩니다.",
-            imgPath: "assets/images/bg_popo_result.png"),
+            imgPath: "assets/images/img_onboarding_play.jpeg"),
         getImagePageViewModel(
             title: "결과",
             context:
                 "최고의 평가를 받은 MVP가 선정 됩니다. 🥳🎉\nMVP는 5초간 모두의 앞에서 세레머니를 할 기회가 주어집니다.",
-            imgPath: "assets/images/bg_popo_result.png"),
+            imgPath: "assets/images/img_onboarding_result.jpeg"),
         getSvgPageViewModel(
             title: "시작하기",
             context: "자 그럼 지금부터\n포포와 함께 춤 짱이 되러 가볼까요?😝",
@@ -96,9 +96,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         style: TextStyle(color: Colors.white),
       ),
       dotsDecorator: DotsDecorator(
-        size: const Size(10.0, 10.0),
+        size: const Size(8.0, 8.0),
         color: Colors.white,
-        activeSize: const Size(10.0, 10.0),
+        activeSize: const Size(8.0, 8.0),
         activeColor: AppColor.purpleColor,
         activeShape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(25.0)),
@@ -134,7 +134,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           ),
           const SizedBox(height: 10.0),
           SizedBox(
-            height: 60,
+            height: 90,
             child: Text(
               context,
               textAlign: TextAlign.center,
@@ -208,9 +208,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 20.0),
             SizedBox(
-              height: 60,
+              height: 90,
               child: Text(
                 context,
                 textAlign: TextAlign.center,
