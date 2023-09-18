@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
@@ -87,8 +88,12 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              getProfile(widget.players[0].profileImg,
-                  widget.players[0].nickname, StagePlayScore.perfect),
+              getProfile(
+                  widget.players[0].profileImg,
+                  widget.players[0].nickname,
+                  getStagePlayScore(
+                      context.select<SocketStageProviderImpl, double?>(
+                          (provider) => provider.midScores?[0].similarity))),
             ],
           ),
         );
@@ -101,10 +106,18 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              getProfile(widget.players[1].profileImg,
-                  widget.players[1].nickname, StagePlayScore.good),
-              getProfile(widget.players[0].profileImg,
-                  widget.players[0].nickname, StagePlayScore.perfect),
+              getProfile(
+                  widget.players[1].profileImg,
+                  widget.players[1].nickname,
+                  getStagePlayScore(
+                      context.select<SocketStageProviderImpl, double?>(
+                          (provider) => provider.midScores?[1].similarity))),
+              getProfile(
+                  widget.players[0].profileImg,
+                  widget.players[0].nickname,
+                  getStagePlayScore(
+                      context.select<SocketStageProviderImpl, double?>(
+                          (provider) => provider.midScores?[0].similarity))),
             ],
           ),
         );
@@ -116,12 +129,24 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              getProfile(widget.players[1].profileImg,
-                  widget.players[1].nickname, StagePlayScore.good),
-              getProfile(widget.players[0].profileImg,
-                  widget.players[0].nickname, StagePlayScore.perfect),
-              getProfile(widget.players[2].profileImg,
-                  widget.players[2].nickname, StagePlayScore.excellent),
+              getProfile(
+                  widget.players[1].profileImg,
+                  widget.players[1].nickname,
+                  getStagePlayScore(
+                      context.select<SocketStageProviderImpl, double?>(
+                          (provider) => provider.midScores?[1].similarity))),
+              getProfile(
+                  widget.players[0].profileImg,
+                  widget.players[0].nickname,
+                  getStagePlayScore(
+                      context.select<SocketStageProviderImpl, double?>(
+                          (provider) => provider.midScores?[0].similarity))),
+              getProfile(
+                  widget.players[2].profileImg,
+                  widget.players[2].nickname,
+                  getStagePlayScore(
+                      context.select<SocketStageProviderImpl, double?>(
+                          (provider) => provider.midScores?[2].similarity))),
             ],
           ),
         );
@@ -161,6 +186,23 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         getScoreNeonText(score),
       ],
     );
+  }
+
+  StagePlayScore getStagePlayScore(double? similarity) {
+    if (similarity == null) return StagePlayScore.none;
+    if (similarity < -1) {
+      return StagePlayScore.bad;
+    } else if (similarity < 0.2) {
+      return StagePlayScore.good;
+    } else if (similarity < 0.4) {
+      return StagePlayScore.great;
+    } else if (similarity < 0.6) {
+      return StagePlayScore.perfect;
+    } else if (similarity < 0.8) {
+      return StagePlayScore.excellent;
+    } else {
+      return StagePlayScore.none;
+    }
   }
 
   Widget getScoreNeonText(StagePlayScore score) {

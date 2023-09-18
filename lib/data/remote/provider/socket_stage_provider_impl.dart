@@ -10,6 +10,7 @@ import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dar
 import 'package:pocket_pose/data/entity/socket_response/catch_end_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/catch_start_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/send_skeleton_response.dart';
+import 'package:pocket_pose/data/entity/socket_response/stage_mid_score_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/stage_mvp_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/talk_message_response.dart';
 import 'package:pocket_pose/data/entity/socket_response/user_count_response.dart';
@@ -87,6 +88,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   Map<PoseLandmarkType, PoseLandmark>? player0;
   Map<PoseLandmarkType, PoseLandmark>? player1;
   Map<PoseLandmarkType, PoseLandmark>? player2;
+  List<StagePlayerInfoListItem>? midScores;
   Map<PoseLandmarkType, PoseLandmark>? mvpSkeleton;
 
   SocketType _socketType = SocketType.WAIT;
@@ -325,6 +327,12 @@ class SocketStageProviderImpl extends ChangeNotifier
         }
         break;
       case SocketType.MID_SCORE:
+        var socketResponse = BaseSocketResponse<StageMidScoreResponse>.fromJson(
+            jsonDecode(frame.body.toString()),
+            StageMidScoreResponse.fromJson(
+                jsonDecode(frame.body.toString())['data']));
+        midScores = socketResponse.data?.playerInfos ?? [];
+        notifyListeners();
         break;
       case SocketType.PLAY_END:
         player0 = null;
