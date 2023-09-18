@@ -253,7 +253,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => HomeUploadScreen(
-                                    uploadFile: recordedFile)));
+                                    isHome: false, uploadFile: recordedFile)));
                       });
                 },
               );
