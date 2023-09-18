@@ -1,17 +1,24 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_recording/flutter_screen_recording.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
+import 'package:pocket_pose/data/local/service/popo_foreground_service.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
 import 'package:pocket_pose/domain/entity/user_list_item.dart';
+import 'package:pocket_pose/ui/screen/home/home_upload_screen.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_chat_bar_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/stage_live_talk_list_widget.dart';
 import 'package:pocket_pose/ui/widget/stage/user_list_item_widget.dart';
+import 'package:pocket_pose/ui/widget/video/video_upload_dialog.dart';
 import 'package:provider/provider.dart';
 
 class PoPoStageScreen extends StatefulWidget {
@@ -175,6 +182,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
+    bool isRecording = false;
+
     return AppBar(
       centerTitle: true,
       title: const Text(
@@ -197,6 +206,120 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         ),
       ),
       actions: [
+        Visibility(
+          visible: isRecording,
+          replacement: IconButton(
+            onPressed: () async {
+              // 녹화 중이 아닐 때
+              // 포그라운드 서비스 시작
+              await PoPoForegroundService.startService();
+
+              isRecording = await FlutterScreenRecording.startRecordScreen(
+                "녹화: my_screen_recording",
+                titleNotification: "Recording Screen",
+                messageNotification: "Tap to stop recording",
+              );
+
+              if (isRecording) {
+                debugPrint("녹화: 녹화가 시작되었습니다.");
+              } else {
+                debugPrint("녹화: 녹화 시작에 실패했습니다.");
+              }
+
+              setState(() {});
+            },
+            icon: const Icon(Icons.adjust_rounded, color: Colors.white),
+          ),
+          child: IconButton(
+            onPressed: () async {
+              isRecording = false;
+
+              setState(() {});
+
+              // 포그라운드 서비스 종료
+              await PoPoForegroundService.stopService();
+              String recordedPath =
+                  await FlutterScreenRecording.stopRecordScreen;
+
+              if (recordedPath.isNotEmpty) {
+                File recordedFile = File(recordedPath);
+                // 업로드 다이얼로그 생성
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return VideoUploadDialog(
+                      title: '📸 업로드',
+                      message: '방금 진행한 ⭐ 포포 플레이 영상 ⭐을 커뮤니티에 업로드 하시겠습니까?',
+                      file: recordedFile,
+                      onCancel: () {
+                        Navigator.pop(context);
+                      },
+                      onConfirm: () async {
+                        // 업로드 스크린 생성
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeUploadScreen(
+                              isHome: false,
+                              uploadFile: recordedFile,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              } else {
+                debugPrint('녹화: 녹화된 영상이 없습니다.');
+              }
+            },
+            icon: const Icon(Icons.adjust_rounded, color: Colors.red),
+          ),
+        ),
+        IconButton(
+          onPressed: () async {
+            isRecording = false;
+
+            setState(() {});
+
+            // 포그라운드 서비스 종료
+            await PoPoForegroundService.stopService();
+            String recordedPath = await FlutterScreenRecording.stopRecordScreen;
+
+            if (recordedPath.isNotEmpty) {
+              File recordedFile = File(recordedPath);
+              // 업로드 다이얼로그 생성
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return VideoUploadDialog(
+                    title: '📸 업로드',
+                    message: '방금 진행한 ⭐ 포포 플레이 영상 ⭐을 커뮤니티에 업로드 하시겠습니까?',
+                    file: recordedFile,
+                    onCancel: () {
+                      Navigator.pop(context);
+                    },
+                    onConfirm: () async {
+                      // 업로드 스크린 생성
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeUploadScreen(
+                            isHome: false,
+                            uploadFile: recordedFile,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            } else {
+              debugPrint('녹화: 녹화된 영상이 없습니다.');
+            }
+          },
+          icon: const Icon(Icons.adjust_rounded, color: Colors.red),
+        ),
         _buildUserCountWidget(),
       ],
     );

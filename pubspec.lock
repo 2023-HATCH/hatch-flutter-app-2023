@@ -502,6 +502,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_foreground_task:
+    dependency: "direct main"
+    description:
+      name: flutter_foreground_task
+      sha256: "501d34957ade7c159b3d44832428a4ed9b2b6ffcff17817f0522a7b7229fcb6c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.1"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
@@ -590,6 +598,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.15"
+  flutter_screen_recording:
+    dependency: "direct main"
+    description:
+      name: flutter_screen_recording
+      sha256: "1909f6041fb94c91dd154d1d4abf76de741fdf2cbbdb0249c9ecbdf9b4bca3aa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.9"
+  flutter_screen_recording_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_screen_recording_platform_interface
+      sha256: e177557cbca61d8cf0f6ecc3f65ab5638dfa912f00ac8c31ac7f0f40c241ec81
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
+  flutter_screen_recording_web:
+    dependency: transitive
+    description:
+      name: flutter_screen_recording_web
+      sha256: "1dedf6e067b4c23b8c357200e6fa811ab9a894371721b31bac027bd7c06a4b6e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -1160,6 +1192,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  platform_detect:
+    dependency: transitive
+    description:
+      name: platform_detect
+      sha256: "14afcb6ffcd93745e39a288db53d1d6522ea25d71f7993c13a367a86c437b54d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -1605,6 +1645,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.15"
+  video_thumbnail:
+    dependency: "direct main"
+    description:
+      name: video_thumbnail
+      sha256: "3455c189d3f0bb4e3fc2236475aa84fe598b9b2d0e08f43b9761f5bc44210016"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.3"
   watcher:
     dependency: transitive
     description:

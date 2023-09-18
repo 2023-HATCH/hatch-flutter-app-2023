@@ -14,7 +14,8 @@ import 'package:pocket_pose/ui/widget/upload/upload_tag_text_field_widget.dart';
 import 'package:provider/provider.dart';
 
 class HomeUploadScreen extends StatefulWidget {
-  const HomeUploadScreen({super.key, required this.uploadFile});
+  const HomeUploadScreen({super.key, this.isHome, required this.uploadFile});
+  final bool? isHome;
   final File uploadFile;
 
   @override
@@ -45,7 +46,10 @@ class _HomeUploadScreenState extends State<HomeUploadScreen> {
 
   @override
   void dispose() {
-    _multiVideoPlayProvider.playVideo(0);
+    if (widget.isHome == null) {
+      _multiVideoPlayProvider.playVideo(0);
+    }
+
     _videoPlayerController?.dispose();
     _tagController.dispose();
     super.dispose();
