@@ -1,3 +1,4 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -5,10 +6,11 @@ class PoPoWaitView extends StatefulWidget {
   const PoPoWaitView({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _PoPoWaitViewState();
+  State<PoPoWaitView> createState() => _PoPoWaitViewState();
 }
 
 class _PoPoWaitViewState extends State<PoPoWaitView> {
+  AssetsAudioPlayer? _assetsAudioPlayer;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -52,5 +54,20 @@ class _PoPoWaitViewState extends State<PoPoWaitView> {
         ),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    _assetsAudioPlayer = AssetsAudioPlayer();
+    _assetsAudioPlayer?.open(Audio("assets/audios/sound_stage_wait.mp3"));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _assetsAudioPlayer?.stop();
+    _assetsAudioPlayer?.dispose();
+    _assetsAudioPlayer = null;
+    super.dispose();
   }
 }

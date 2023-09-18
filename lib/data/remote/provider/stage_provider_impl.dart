@@ -17,7 +17,6 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
   final List<StageTalkListItem> _talkList = [];
   final List<UserListItem> _userList = [];
   late double? _stageCurSecond;
-  bool _isClicked = false;
   StageMusicData? _music;
 
   List<StageTalkListItem> get talkList => _talkList;
@@ -25,22 +24,10 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
   double? get stageCurTime => _stageCurSecond;
   StageMusicData? get music => _music;
 
-  bool get isClicked => _isClicked;
-  setIsClicked(bool value) => _isClicked = value;
   setStageCurSecondNULL() => _stageCurSecond = null;
-
-  void toggleIsLeft() {
-    if (isClicked) notifyListeners();
-  }
-
-  void addTalkList(List<StageTalkListItem> list) {
-    _talkList.addAll(list);
-    notifyListeners();
-  }
 
   void addTalk(StageTalkListItem talk) {
     _talkList.insert(0, talk);
-    notifyListeners();
   }
 
   @override
@@ -60,8 +47,7 @@ class StageProviderImpl extends ChangeNotifier implements StageProvider {
     var response = await _stageRepository.getStageEnter(request);
     _stageCurSecond = response.data.statusElapsedTime;
     _music = response.data.currentMusic;
-
-    addTalkList(response.data.talkMessageData.messages ?? []);
+    _talkList.addAll(response.data.talkMessageData.messages ?? []);
 
     notifyListeners();
 

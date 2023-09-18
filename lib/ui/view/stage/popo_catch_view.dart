@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,8 +6,10 @@ import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
+import 'package:pocket_pose/domain/entity/stage_music_data.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_catch_music_info_widget.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_catch_progressbar_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:semicircle_indicator/semicircle_indicator.dart';
 import 'dart:math' as math;
 
 class PoPoCatchView extends StatefulWidget {
@@ -19,37 +19,28 @@ class PoPoCatchView extends StatefulWidget {
   State<StatefulWidget> createState() => _PoPoCatchViewState();
 }
 
-class _PoPoCatchViewState extends State<PoPoCatchView>
-    with SingleTickerProviderStateMixin {
+class _PoPoCatchViewState extends State<PoPoCatchView> {
   int _milliseconds = 0;
-  double _catchCountDown = 0.0;
-  Timer? _timer;
-  late AnimationController _animationController;
-  late Animation<double> _opacityAnimation;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
+  var assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
 
   @override
   Widget build(BuildContext context) {
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: true);
-
-    _onMidEnter();
+    var isReCatch = context.select<SocketStageProviderImpl, bool>(
+        (provider) => provider.isReCatch);
 
     // 캐치 재진행 토스트
-    if (_socketStageProvider.isReCatch) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _socketStageProvider.setIsReCatch(false);
-        Fluttertoast.showToast(
-          msg: "캐치를 아무도 안 했어요...😢",
-          toastLength: Toast.LENGTH_SHORT,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      });
+    if (isReCatch) {
+      _socketStageProvider.setIsReCatch(false);
+      Fluttertoast.showToast(
+        msg: "캐치를 아무도 안 했어요...😢",
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
 
     return Column(
@@ -69,8 +60,19 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 10.0),
-              musicTitleContainer(
-                  '${_socketStageProvider.catchMusicData?.singer} - ${_socketStageProvider.catchMusicData?.title}'),
+              // 노래 정보: 제목 + 가수 이름
+              Selector<SocketStageProviderImpl, StageMusicData?>(
+                  selector: (context, socketProvider) =>
+                      socketProvider.catchMusicData,
+                  shouldRebuild: (prev, next) {
+                    return true;
+                  },
+                  builder: (context, catchMusicData, child) {
+                    return StageCatchMusicInfoWidget(
+                        musicInfo:
+                            '${catchMusicData?.singer} - ${catchMusicData?.title}',
+                        milliseconds: _milliseconds);
+                  }),
               const SizedBox(height: 10.0),
               Flexible(
                 child: SvgPicture.asset(
@@ -85,7 +87,7 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
               ),
               Stack(
                 children: [
-                  _buildCatchProgressBar(),
+                  StageCatchProgressbarWidget(milliseconds: _milliseconds),
                   _buildCatchButton(),
                 ],
               ),
@@ -126,35 +128,27 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
   }
 
   void _onMidEnter() {
-    if (_socketStageProvider.isCatchMidEnter) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _socketStageProvider.setIsCatchMidEnter(false);
-        // 중간임장인 경우
-        if (_stageProvider.stageCurTime != null) {
-          // 중간 입장한 초부터 시작
-          setState(() {
-            _milliseconds = (_stageProvider.stageCurTime! / 1000000).round();
-          });
-          _stageProvider.setStageCurSecondNULL();
-        }
-      });
-    }
-  }
+    AudioPlayerUtil().setVolume(0.3);
 
-  Widget _buildCatchProgressBar() {
-    return Center(
-      child: SizedBox(
-        width: 100,
-        height: 45,
-        child: SemicircularIndicator(
-          progress: (_catchCountDown > 1) ? 1 : _catchCountDown,
-          color: Colors.yellow,
-          bottomPadding: 0,
-          strokeWidth: 2,
-          backgroundColor: Colors.transparent,
-        ),
-      ),
-    );
+    // 중간임장인 경우
+    if (_stageProvider.stageCurTime != null) {
+      // 중간 입장한 초부터 시작
+      setState(() {
+        _milliseconds = (_stageProvider.stageCurTime! / 1000000).round();
+      });
+      var seconds = (_stageProvider.stageCurTime! / (1000000 * 1000)).round();
+      _stageProvider.setStageCurSecondNULL();
+
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .playSeek(seconds, _socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().playSeek(seconds, _stageProvider.music!.musicUrl);
+    } else {
+      (_socketStageProvider.catchMusicData != null)
+          ? AudioPlayerUtil()
+              .play(_socketStageProvider.catchMusicData!.musicUrl)
+          : AudioPlayerUtil().play(_stageProvider.music!.musicUrl);
+    }
   }
 
   @override
@@ -162,87 +156,24 @@ class _PoPoCatchViewState extends State<PoPoCatchView>
     super.initState();
 
     AudioPlayerUtil().stop();
-    _startTimer();
 
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
 
-    _opacityAnimation =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-
-    _animationController.forward();
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
-      if (_milliseconds >= 3000) {
-        _stopTimer();
-      } else {
-        if (mounted) {
-          setState(() {
-            _milliseconds = _milliseconds + 10;
-            _catchCountDown = _milliseconds / 3000;
-          });
-        }
-      }
-    });
-  }
-
-  void _stopTimer() {
-    _timer?.cancel();
+    // 중간입장 처리
+    _onMidEnter();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _stopTimer();
+    assetsAudioPlayer.dispose();
     super.dispose();
   }
 
-  Widget musicTitleContainer(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(60, 11, 60, 11),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(
-                color: Colors.white, width: 3.0, style: BorderStyle.solid),
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              for (double i = 1; i < 5; i++)
-                BoxShadow(
-                    color: AppColor.yellowColor,
-                    blurStyle: BlurStyle.outer,
-                    blurRadius: 3 * i)
-            ]),
-        child: AnimatedOpacity(
-          opacity: _opacityAnimation.value,
-          duration: const Duration(milliseconds: 300),
-          child: Padding(
-            padding: const EdgeInsets.all(11.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset(
-                  'assets/icons/ic_music_note_big.svg',
-                ),
-                const SizedBox(width: 8.0),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _playClickSound() {
-    AssetsAudioPlayer.newPlayer()
-        .open(Audio("assets/audios/sound_catch_click.mp3"));
+  void _playClickSound() async {
+    await assetsAudioPlayer
+        .open(Audio("assets/audios/sound_stage_catch_click.mp3"));
   }
 }
 

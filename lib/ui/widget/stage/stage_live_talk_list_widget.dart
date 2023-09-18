@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/data/entity/request/stage_talk_message_request.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_talk_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_talk_list_item.dart';
@@ -18,6 +19,7 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
   final ScrollController _scrollController = ScrollController();
   late StageTalkProviderImpl _talkProvider;
   late StageProviderImpl _stageProvider;
+  late SocketStageProviderImpl _socketStageProvider;
   var _page = 1;
 
   @override
@@ -25,6 +27,9 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
     super.initState();
     _talkProvider = Provider.of<StageTalkProviderImpl>(context, listen: false);
     _scrollController.addListener(_scrollListener);
+    _socketStageProvider =
+        Provider.of<SocketStageProviderImpl>(context, listen: false);
+    _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
   }
 
   @override
@@ -37,50 +42,61 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _stageProvider = Provider.of<StageProviderImpl>(context, listen: true);
-
-    return _buildStageChatList(_stageProvider.talkList);
+    return Selector<StageProviderImpl, List<StageTalkListItem>>(
+        selector: (_, stageProvider) => stageProvider.talkList,
+        builder: (context, talkList, _) {
+          return _buildStageChatList(talkList);
+        });
   }
 
   Widget _buildStageChatList(List<StageTalkListItem> entries) {
-    return SingleChildScrollView(
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.transparent,
-              Colors.black.withOpacity(0.3),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.0001, 0.25],
-          ),
-        ),
-        height: 150,
-        child: ShaderMask(
-          shaderCallback: (Rect bounds) {
-            return LinearGradient(
-              begin: Alignment.center,
-              end: Alignment.topCenter,
-              colors: [Colors.white, Colors.white.withOpacity(0.02)],
-              stops: const [0.2, 1],
-            ).createShader(bounds);
-          },
-          child: ListView.separated(
-              reverse: true,
-              shrinkWrap: true,
-              controller: _scrollController,
-              padding: const EdgeInsets.all(14),
-              itemCount: entries.length,
-              separatorBuilder: (context, index) {
-                return const SizedBox(height: 12);
+    return Selector<SocketStageProviderImpl, StageTalkListItem?>(
+        selector: (context, socketProvider) => socketProvider.talk,
+        shouldRebuild: (prev, next) {
+          return prev != next;
+        },
+        builder: (context, talk, child) {
+          if (talk != null) {
+            _stageProvider.addTalk(talk);
+            _socketStageProvider.setTalk(null);
+          }
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.3),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0.0001, 0.25],
+              ),
+            ),
+            height: 150,
+            child: ShaderMask(
+              shaderCallback: (Rect bounds) {
+                return LinearGradient(
+                  begin: Alignment.center,
+                  end: Alignment.topCenter,
+                  colors: [Colors.white, Colors.white.withOpacity(0.02)],
+                  stops: const [0.2, 1],
+                ).createShader(bounds);
               },
-              itemBuilder: (BuildContext context, int index) {
-                return TalkListItemWidget(talk: entries[index]);
-              }),
-        ),
-      ),
-    );
+              child: ListView.separated(
+                  reverse: true,
+                  shrinkWrap: true,
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(14),
+                  itemCount: entries.length,
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(height: 12);
+                  },
+                  itemBuilder: (BuildContext context, int index) {
+                    return TalkListItemWidget(talk: entries[index]);
+                  }),
+            ),
+          );
+        });
   }
 
   _scrollListener() async {

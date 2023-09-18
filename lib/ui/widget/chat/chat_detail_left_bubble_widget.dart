@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/domain/entity/chat_detail_list_item.dart';
+import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
+import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 
 class ChatDetailLeftBubbleWidget extends StatelessWidget {
   final ChatDetailListItem chatDetail;
@@ -25,7 +27,7 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _buildUserProfileAndBubble(profileVisiblity),
+              _buildUserProfileAndBubble(context, profileVisiblity),
               const SizedBox(width: 8),
               _buildTimeStamp(),
             ],
@@ -35,7 +37,8 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildUserProfileAndBubble(bool profileVisiblity) {
+  Widget _buildUserProfileAndBubble(
+      BuildContext context, bool profileVisiblity) {
     return Flexible(
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -43,20 +46,29 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           profileVisiblity
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: (chatDetail.sender.profileImg == null)
-                      ? Image.asset(
-                          'assets/images/charactor_popo_default.png',
-                          width: 45,
-                          height: 45,
-                        )
-                      : Image.network(
-                          chatDetail.sender.profileImg!,
-                          fit: BoxFit.cover,
-                          width: 45,
-                          height: 45,
-                        ),
+              ? InkWell(
+                  onTap: () {
+                    PageRouteWithSlideAnimation pageRouteWithAnimation =
+                        PageRouteWithSlideAnimation(
+                            ProfileScreen(userId: chatDetail.sender.userId));
+                    Navigator.push(
+                        context, pageRouteWithAnimation.slideRitghtToLeft());
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: (chatDetail.sender.profileImg == null)
+                        ? Image.asset(
+                            'assets/images/charactor_popo_default.png',
+                            width: 45,
+                            height: 45,
+                          )
+                        : Image.network(
+                            chatDetail.sender.profileImg!,
+                            fit: BoxFit.cover,
+                            width: 45,
+                            height: 45,
+                          ),
+                  ),
                 )
               : const SizedBox(
                   width: 45,
