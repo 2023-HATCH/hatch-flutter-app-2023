@@ -26,6 +26,10 @@
             android:name=".MainService"
             android:enabled="true" />
         <service
+            android:name="com.foregroundservice.ForegroundService"
+            android:foregroundServiceType="mediaProjection">
+        </service>
+        <service
             android:name=".PoPoForegroundService"
             android:enabled="true"
             android:exported="false"
