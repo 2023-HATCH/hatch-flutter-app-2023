@@ -134,14 +134,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           ),
           const SizedBox(height: 10.0),
           SizedBox(
-            height: 90,
+            height: 80,
             child: Text(
               context,
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
-          const SizedBox(height: 10.0),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -210,14 +209,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             ),
             const SizedBox(height: 20.0),
             SizedBox(
-              height: 90,
+              height: 75,
               child: Text(
                 context,
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
-            const SizedBox(height: 10.0),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
