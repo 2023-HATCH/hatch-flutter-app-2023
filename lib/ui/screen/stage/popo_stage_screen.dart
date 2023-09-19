@@ -169,7 +169,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         bgImage = 'assets/images/bg_stage_result.png';
         break;
       default:
-        bgImage = 'assets/images/bg_stage_wait.png';
+        bgImage = 'assets/images/bg_stage_wait.jpeg';
         break;
     }
 
@@ -186,9 +186,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
     return AppBar(
       centerTitle: true,
-      title: const Text(
-        "PoPo 스테이지",
-        style: TextStyle(fontSize: 18),
+      title: GestureDetector(
+        onTap: () {
+          _stageProvider.getStageEnter(StageEnterRequest(page: 0, size: 10));
+        },
+        child: const Text(
+          "PoPo 스테이지",
+          style: TextStyle(fontSize: 18),
+        ),
       ),
       backgroundColor: Colors.transparent,
       elevation: 0.0,
