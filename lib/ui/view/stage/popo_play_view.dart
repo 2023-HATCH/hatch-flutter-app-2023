@@ -192,13 +192,13 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     if (similarity == null) return StagePlayScore.none;
     if (similarity < -1) {
       return StagePlayScore.bad;
-    } else if (similarity < 0.2) {
-      return StagePlayScore.good;
     } else if (similarity < 0.4) {
-      return StagePlayScore.great;
+      return StagePlayScore.good;
     } else if (similarity < 0.6) {
-      return StagePlayScore.perfect;
+      return StagePlayScore.great;
     } else if (similarity < 0.8) {
+      return StagePlayScore.perfect;
+    } else if (similarity <= 1.0) {
       return StagePlayScore.excellent;
     } else {
       return StagePlayScore.none;
