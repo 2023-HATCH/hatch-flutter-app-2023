@@ -184,9 +184,9 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  AppBar _buildAppBar(BuildContext context) {
-    bool isRecording = false;
+  bool isRecording = false;
 
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       centerTitle: true,
       title: GestureDetector(
@@ -283,50 +283,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
             },
             icon: const Icon(Icons.adjust_rounded, color: Colors.red),
           ),
-        ),
-        IconButton(
-          onPressed: () async {
-            isRecording = false;
-
-            setState(() {});
-
-            // 포그라운드 서비스 종료
-            await PoPoForegroundService.stopService();
-            String recordedPath = await FlutterScreenRecording.stopRecordScreen;
-
-            if (recordedPath.isNotEmpty) {
-              File recordedFile = File(recordedPath);
-              // 업로드 다이얼로그 생성
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return VideoUploadDialog(
-                    title: '📸 업로드',
-                    message: '방금 진행한 ⭐ 포포 플레이 영상 ⭐을 커뮤니티에 업로드 하시겠습니까?',
-                    file: recordedFile,
-                    onCancel: () {
-                      Navigator.pop(context);
-                    },
-                    onConfirm: () async {
-                      // 업로드 스크린 생성
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeUploadScreen(
-                            isHome: false,
-                            uploadFile: recordedFile,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            } else {
-              debugPrint('녹화: 녹화된 영상이 없습니다.');
-            }
-          },
-          icon: const Icon(Icons.adjust_rounded, color: Colors.red),
         ),
         _buildUserCountWidget(),
       ],
