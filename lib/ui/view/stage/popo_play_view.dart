@@ -8,8 +8,6 @@ import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
 import 'package:provider/provider.dart';
 
-enum StagePlayScore { bad, good, great, excellent, perfect, none }
-
 // ml_kit_skeleton_custom_view
 class PoPoPlayView extends StatefulWidget {
   final List<StagePlayerListItem> players;
@@ -91,9 +89,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
               getProfile(
                   widget.players[0].profileImg,
                   widget.players[0].nickname,
-                  getStagePlayScore(
-                      context.select<SocketStageProviderImpl, double?>(
-                          (provider) => provider.midScores?[0].similarity))),
+                  context.select<SocketStageProviderImpl, double?>(
+                      (provider) => provider.midScores?[0].similarity)),
             ],
           ),
         );
@@ -109,15 +106,13 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
               getProfile(
                   widget.players[1].profileImg,
                   widget.players[1].nickname,
-                  getStagePlayScore(
-                      context.select<SocketStageProviderImpl, double?>(
-                          (provider) => provider.midScores?[1].similarity))),
+                  context.select<SocketStageProviderImpl, double?>(
+                      (provider) => provider.midScores?[1].similarity)),
               getProfile(
                   widget.players[0].profileImg,
                   widget.players[0].nickname,
-                  getStagePlayScore(
-                      context.select<SocketStageProviderImpl, double?>(
-                          (provider) => provider.midScores?[0].similarity))),
+                  context.select<SocketStageProviderImpl, double?>(
+                      (provider) => provider.midScores?[0].similarity)),
             ],
           ),
         );
@@ -132,21 +127,18 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
               getProfile(
                   widget.players[1].profileImg,
                   widget.players[1].nickname,
-                  getStagePlayScore(
-                      context.select<SocketStageProviderImpl, double?>(
-                          (provider) => provider.midScores?[1].similarity))),
+                  context.select<SocketStageProviderImpl, double?>(
+                      (provider) => provider.midScores?[1].similarity)),
               getProfile(
                   widget.players[0].profileImg,
                   widget.players[0].nickname,
-                  getStagePlayScore(
-                      context.select<SocketStageProviderImpl, double?>(
-                          (provider) => provider.midScores?[0].similarity))),
+                  context.select<SocketStageProviderImpl, double?>(
+                      (provider) => provider.midScores?[0].similarity)),
               getProfile(
                   widget.players[2].profileImg,
                   widget.players[2].nickname,
-                  getStagePlayScore(
-                      context.select<SocketStageProviderImpl, double?>(
-                          (provider) => provider.midScores?[2].similarity))),
+                  context.select<SocketStageProviderImpl, double?>(
+                      (provider) => provider.midScores?[2].similarity)),
             ],
           ),
         );
@@ -155,7 +147,7 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     }
   }
 
-  Column getProfile(String? profileImg, String nickName, StagePlayScore score) {
+  Column getProfile(String? profileImg, String nickName, double? score) {
     return Column(
       children: [
         ClipRRect(
@@ -188,52 +180,28 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     );
   }
 
-  StagePlayScore getStagePlayScore(double? similarity) {
-    if (similarity == null) return StagePlayScore.none;
-    if (similarity < -1) {
-      return StagePlayScore.bad;
-    } else if (similarity < 0.4) {
-      return StagePlayScore.good;
-    } else if (similarity < 0.6) {
-      return StagePlayScore.great;
-    } else if (similarity < 0.8) {
-      return StagePlayScore.perfect;
-    } else if (similarity <= 1.0) {
-      return StagePlayScore.excellent;
-    } else {
-      return StagePlayScore.none;
-    }
-  }
-
-  Widget getScoreNeonText(StagePlayScore score) {
+  Widget getScoreNeonText(double? similarity) {
     String scoreText = "";
     Color scoreNeonColor = Colors.transparent;
-    switch (score) {
-      case StagePlayScore.bad:
-        scoreText = "Bad";
-        scoreNeonColor = Colors.red;
-        break;
-      case StagePlayScore.good:
-        scoreText = "Good";
-        scoreNeonColor = AppColor.purpleColor2;
-        break;
-      case StagePlayScore.great:
-        scoreText = "Great";
-        scoreNeonColor = AppColor.greenColor;
-        break;
-      case StagePlayScore.excellent:
-        scoreText = "Excellent";
-        scoreNeonColor = AppColor.blueColor2;
-        break;
-      case StagePlayScore.perfect:
-        scoreText = "Perfect";
-        scoreNeonColor = AppColor.yellowColor2;
-        break;
-      case StagePlayScore.none:
-        scoreText = "";
-        break;
-    }
 
+    if (similarity == null) {
+      scoreText = "";
+    } else if (similarity < -1) {
+      scoreText = "Bad";
+      scoreNeonColor = Colors.red;
+    } else if (similarity < 0.4) {
+      scoreText = "Good";
+      scoreNeonColor = AppColor.purpleColor2;
+    } else if (similarity < 0.6) {
+      scoreText = "Great";
+      scoreNeonColor = AppColor.greenColor;
+    } else if (similarity < 0.8) {
+      scoreText = "Excellent";
+      scoreNeonColor = AppColor.blueColor2;
+    } else if (similarity <= 1.0) {
+      scoreText = "Perfect";
+      scoreNeonColor = AppColor.yellowColor2;
+    }
     return SizedBox(
       width: 90,
       child: Text(

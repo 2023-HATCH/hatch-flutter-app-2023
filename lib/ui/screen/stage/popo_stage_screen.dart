@@ -155,15 +155,18 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   BoxDecoration _buildBackgroundImage(SocketType type) {
     String bgImage;
     switch (type) {
+      case SocketType.MVP_END:
       case SocketType.WAIT:
         bgImage = 'assets/images/bg_stage_wait.jpeg';
         break;
       case SocketType.CATCH:
       case SocketType.CATCH_START:
+      case SocketType.CATCH_END:
       case SocketType.PLAY:
       case SocketType.PLAY_START:
         bgImage = 'assets/images/bg_stage_comm.png';
         break;
+      case SocketType.PLAY_END:
       case SocketType.MVP:
       case SocketType.MVP_START:
         bgImage = 'assets/images/bg_stage_result.png';
