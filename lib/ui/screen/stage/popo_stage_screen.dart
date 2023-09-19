@@ -155,21 +155,24 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   BoxDecoration _buildBackgroundImage(SocketType type) {
     String bgImage;
     switch (type) {
+      case SocketType.MVP_END:
       case SocketType.WAIT:
         bgImage = 'assets/images/bg_stage_wait.jpeg';
         break;
       case SocketType.CATCH:
       case SocketType.CATCH_START:
+      case SocketType.CATCH_END:
       case SocketType.PLAY:
       case SocketType.PLAY_START:
         bgImage = 'assets/images/bg_stage_comm.png';
         break;
+      case SocketType.PLAY_END:
       case SocketType.MVP:
       case SocketType.MVP_START:
         bgImage = 'assets/images/bg_stage_result.png';
         break;
       default:
-        bgImage = 'assets/images/bg_stage_wait.png';
+        bgImage = 'assets/images/bg_stage_wait.jpeg';
         break;
     }
 
@@ -186,9 +189,14 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
     return AppBar(
       centerTitle: true,
-      title: const Text(
-        "PoPo 스테이지",
-        style: TextStyle(fontSize: 18),
+      title: GestureDetector(
+        onTap: () {
+          _stageProvider.getStageEnter(StageEnterRequest(page: 0, size: 10));
+        },
+        child: const Text(
+          "PoPo 스테이지",
+          style: TextStyle(fontSize: 18),
+        ),
       ),
       backgroundColor: Colors.transparent,
       elevation: 0.0,
