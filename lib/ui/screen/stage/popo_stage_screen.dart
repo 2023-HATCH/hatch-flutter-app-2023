@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screen_recording/flutter_screen_recording.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
@@ -36,6 +37,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
+  bool _isRecording = false;
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +125,12 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (_isEnter) {
       _socketStageProvider.exitStage();
       _isEnter = false;
+
+      // 녹화 해제
+      if (_isRecording) {
+        FlutterScreenRecording.stopRecordScreen;
+        Fluttertoast.showToast(msg: "녹화 중단");
+      }
     }
 
     super.dispose();
@@ -184,8 +192,6 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     );
   }
 
-  bool isRecording = false;
-
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       centerTitle: true,
@@ -215,20 +221,20 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       ),
       actions: [
         Visibility(
-          visible: isRecording,
+          visible: _isRecording,
           replacement: IconButton(
             onPressed: () async {
               // 녹화 중이 아닐 때
               // 포그라운드 서비스 시작
               await PoPoForegroundService.startService();
 
-              isRecording = await FlutterScreenRecording.startRecordScreen(
+              _isRecording = await FlutterScreenRecording.startRecordScreen(
                 "녹화: my_screen_recording",
                 titleNotification: "Recording Screen",
                 messageNotification: "Tap to stop recording",
               );
 
-              if (isRecording) {
+              if (_isRecording) {
                 debugPrint("녹화: 녹화가 시작되었습니다.");
               } else {
                 debugPrint("녹화: 녹화 시작에 실패했습니다.");
@@ -240,7 +246,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
           ),
           child: IconButton(
             onPressed: () async {
-              isRecording = false;
+              _isRecording = false;
 
               setState(() {});
 
