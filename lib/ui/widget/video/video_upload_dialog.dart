@@ -70,8 +70,10 @@ class _VideoUploadDialogState extends State<VideoUploadDialog> {
                         aspectRatio: _videoController.value.aspectRatio,
                         child: CachedVideoPlayer(_videoController),
                       )
-                    : CircularProgressIndicator(
-                        color: AppColor.purpleColor,
+                    : Center(
+                        child: CircularProgressIndicator(
+                          color: AppColor.purpleColor,
+                        ),
                       ),
               ),
             ),

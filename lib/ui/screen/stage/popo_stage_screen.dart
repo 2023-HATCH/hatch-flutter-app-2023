@@ -129,7 +129,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
       // 녹화 해제
       if (_isRecording) {
         FlutterScreenRecording.stopRecordScreen;
-        Fluttertoast.showToast(msg: "녹화 중단");
+        Fluttertoast.showToast(msg: "녹화를 중단합니다.");
       }
     }
 
@@ -257,32 +257,36 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
               if (recordedPath.isNotEmpty) {
                 File recordedFile = File(recordedPath);
-                // 업로드 다이얼로그 생성
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return VideoUploadDialog(
-                      title: '📸 업로드',
-                      message: '방금 진행한 ⭐ 포포 플레이 영상 ⭐을 커뮤니티에 업로드 하시겠습니까?',
-                      file: recordedFile,
-                      onCancel: () {
-                        Navigator.pop(context);
-                      },
-                      onConfirm: () async {
-                        // 업로드 스크린 생성
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomeUploadScreen(
-                              isHome: false,
-                              uploadFile: recordedFile,
+                if (await recordedFile.exists() == false) {
+                  Fluttertoast.showToast(msg: "녹화 오류.. 다시 시도해주세요 🥲");
+                } else {
+                  // 업로드 다이얼로그 생성
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return VideoUploadDialog(
+                        title: '📸 업로드',
+                        message: '방금 진행한 ⭐ 포포 플레이 영상 ⭐을 커뮤니티에 업로드 하시겠습니까?',
+                        file: recordedFile,
+                        onCancel: () {
+                          Navigator.pop(context);
+                        },
+                        onConfirm: () async {
+                          // 업로드 스크린 생성
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeUploadScreen(
+                                isHome: false,
+                                uploadFile: recordedFile,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
               } else {
                 debugPrint('녹화: 녹화된 영상이 없습니다.');
               }
