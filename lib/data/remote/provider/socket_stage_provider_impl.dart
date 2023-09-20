@@ -338,6 +338,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         player0 = null;
         player1 = null;
         player2 = null;
+        midScores = null;
         break;
       case SocketType.MVP_START:
         var socketResponse = BaseSocketResponse<StageMVPResponse>.fromJson(
