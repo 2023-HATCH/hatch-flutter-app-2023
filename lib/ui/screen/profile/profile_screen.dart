@@ -4,6 +4,7 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/view/profile/profile_tab_videos_view.dart';
 import 'package:pocket_pose/ui/widget/profile/profile_tapbar_widget.dart';
 
@@ -14,11 +15,13 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
     this.isNavigation,
     this.userId,
+    this.isNotification,
     Key? key,
   }) : super(key: key);
 
   final bool? isNavigation;
   final String? userId;
+  final bool? isNotification;
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -99,7 +102,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                     (widget.isNavigation == null || !widget.isNavigation!)) &&
             details.primaryDelta! > 10) {
           // 왼쪽에서 오른쪽으로 드래그했을 때 pop
-          Navigator.of(context).pop();
+          if (widget.isNotification != null && widget.isNotification!) {
+            _multiVideoPlayProvider.resetVideoPlayer(0);
+
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const MainScreen()),
+              (route) => false,
+            );
+          } else {
+            Navigator.of(context).pop();
+          }
         }
       },
       child: FutureBuilder(
@@ -118,6 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   profileResponse:
                                       _profileProvider.profileResponse!,
                                   isBottomNavi: widget.isNavigation ?? false,
+                                  isNotification: widget.isNotification,
                                 ),
                                 ProfileUserInfoWidget(
                                     profileResponse:
