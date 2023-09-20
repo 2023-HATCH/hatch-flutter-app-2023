@@ -110,6 +110,13 @@ void setNotificationHandler(Map<String, dynamic>? map) async {
               transition: Transition.rightToLeft,
               () => ProfileScreen(userId: map['followerId']));
           break;
+        case "ADD_LIKE":
+          Get.to(
+              transition: Transition.rightToLeft,
+              () => ShareScreen(
+                    videoUuid: map['videoId'],
+                  ));
+          break;
       }
     } catch (error) {
       debugPrint('mmm Notification payload error $error');
