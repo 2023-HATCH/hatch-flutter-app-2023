@@ -29,7 +29,8 @@ class ProfileUserInfoWidget extends StatelessWidget {
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: Image.network(
-                  profileResponse.user.profileImg!,
+                  profileResponse.user.profileImg ??
+                      'assets/images/charactor_popo_default.png',
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Center(
@@ -41,8 +42,12 @@ class ProfileUserInfoWidget extends StatelessWidget {
                   errorBuilder: (context, error, stackTrace) => Image.asset(
                     'assets/images/charactor_popo_default.png',
                     fit: BoxFit.cover,
+                    width: 35,
+                    height: 35,
                   ),
                   fit: BoxFit.cover,
+                  width: 35,
+                  height: 35,
                 )),
           ),
           Container(
