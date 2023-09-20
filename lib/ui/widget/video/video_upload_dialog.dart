@@ -20,6 +20,7 @@ class VideoUploadDialog extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _VideoUploadDialogState createState() => _VideoUploadDialogState();
 }
 
@@ -70,8 +71,10 @@ class _VideoUploadDialogState extends State<VideoUploadDialog> {
                         aspectRatio: _videoController.value.aspectRatio,
                         child: CachedVideoPlayer(_videoController),
                       )
-                    : CircularProgressIndicator(
-                        color: AppColor.purpleColor,
+                    : Center(
+                        child: CircularProgressIndicator(
+                          color: AppColor.purpleColor,
+                        ),
                       ),
               ),
             ),
