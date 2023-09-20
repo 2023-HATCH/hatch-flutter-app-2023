@@ -169,18 +169,24 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
                                 ),
                               ),
                             ),
-                            const Positioned(
-                              bottom: 68,
-                              left: 0,
-                              right: 0,
-                              child: StageLiveTalkListWidget(),
+                            Visibility(
+                              visible: !_isRecording,
+                              child: const Positioned(
+                                bottom: 68,
+                                left: 0,
+                                right: 0,
+                                child: StageLiveTalkListWidget(),
+                              ),
                             ),
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: StageLiveChatBarWidget(
-                                  nickName: widget.userData.nickname),
+                            Visibility(
+                              visible: !_isRecording,
+                              child: Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: StageLiveChatBarWidget(
+                                    nickName: widget.userData.nickname),
+                              ),
                             ),
                           ],
                         )
@@ -286,28 +292,34 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
         onTap: () {
           _stageProvider.getStageEnter(StageEnterRequest(page: 0, size: 10));
         },
-        child: const Text(
-          "PoPo 스테이지",
-          style: TextStyle(fontSize: 18),
+        child: Visibility(
+          visible: !_isRecording,
+          child: const Text(
+            "PoPo 스테이지",
+            style: TextStyle(fontSize: 18),
+          ),
         ),
       ),
       backgroundColor: Colors.transparent,
       elevation: 0.0,
-      leading: IconButton(
-        onPressed: () {
-          AudioPlayerUtil().stop();
-          if (widget.getIndex() == 0) {
-            Navigator.pop(context);
-          } else {
-            Navigator.pop(context);
-          }
-        },
-        icon: SvgPicture.asset(
-          'assets/icons/ic_stage_back_white.svg',
+      leading: Visibility(
+        visible: !_isRecording,
+        child: IconButton(
+          onPressed: () {
+            AudioPlayerUtil().stop();
+            if (widget.getIndex() == 0) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pop(context);
+            }
+          },
+          icon: SvgPicture.asset(
+            'assets/icons/ic_stage_back_white.svg',
+          ),
         ),
       ),
       actions: [
-        _buildUserCountWidget(),
+        Visibility(visible: !_isRecording, child: _buildUserCountWidget()),
       ],
     );
   }
