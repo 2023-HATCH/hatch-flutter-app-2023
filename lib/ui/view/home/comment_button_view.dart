@@ -8,8 +8,6 @@ import 'package:pocket_pose/data/remote/provider/comment_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/domain/entity/comment_data.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
-import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
-import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
 class CommentButtonView extends StatefulWidget {

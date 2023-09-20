@@ -25,6 +25,7 @@ import 'package:pocket_pose/firebase_options.dart';
 import 'package:pocket_pose/ui/screen/chat/chat_detail_screen.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/screen/onboarding/on_boarding_screen.dart';
+import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
 import 'package:pocket_pose/ui/screen/share/share_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -103,6 +104,11 @@ void setNotificationHandler(Map<String, dynamic>? map) async {
                     videoUuid: map['videoId'],
                     commentId: map['commentId'],
                   ));
+          break;
+        case "ADD_FOLLOW":
+          Get.to(
+              transition: Transition.rightToLeft,
+              () => ProfileScreen(userId: map['followerId']));
           break;
       }
     } catch (error) {
