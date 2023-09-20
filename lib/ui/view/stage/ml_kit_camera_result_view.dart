@@ -129,9 +129,9 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   Widget _liveFeedBodyResult() {
     return Row(
       children: [
-        Expanded(flex: 2, child: Container()),
+        Expanded(flex: 1, child: Container()),
         Expanded(
-          flex: 4,
+          flex: 2,
           child: Selector<SocketStageProviderImpl,
                   Map<PoseLandmarkType, PoseLandmark>?>(
               selector: (context, socketProvider) => socketProvider.mvpSkeleton,
@@ -154,7 +154,7 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
                     : Container();
               }),
         ),
-        Expanded(flex: 2, child: Container()),
+        Expanded(flex: 3, child: Container()),
       ],
     );
   }
