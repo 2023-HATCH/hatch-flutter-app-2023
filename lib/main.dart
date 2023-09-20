@@ -108,7 +108,8 @@ void setNotificationHandler(Map<String, dynamic>? map) async {
         case "ADD_FOLLOW":
           Get.to(
               transition: Transition.rightToLeft,
-              () => ProfileScreen(userId: map['followerId']));
+              () => ProfileScreen(
+                  userId: map['followerId'], isNotification: true));
           break;
         case "ADD_LIKE":
           Get.to(
