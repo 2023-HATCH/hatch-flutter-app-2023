@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';

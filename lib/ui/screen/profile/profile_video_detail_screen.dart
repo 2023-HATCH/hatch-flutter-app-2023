@@ -100,9 +100,19 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
             if (snapshot.connectionState == ConnectionState.done) {
               return Scaffold(
                 appBar: AppBar(
-                  title: const Text(
-                    "PoPo",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  title: GestureDetector(
+                    child: const Text(
+                      "PoPo",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      _multiVideoPlayProvider.pageControllers[widget.screenNum]
+                          .animateToPage(
+                        0,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.ease,
+                      );
+                    },
                   ),
                   backgroundColor: Colors.transparent, //appBar 투명색
                   elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
