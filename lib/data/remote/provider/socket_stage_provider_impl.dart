@@ -338,6 +338,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         player0 = null;
         player1 = null;
         player2 = null;
+        midScores = null;
         break;
       case SocketType.MVP_START:
         var socketResponse = BaseSocketResponse<StageMVPResponse>.fromJson(
@@ -347,6 +348,7 @@ class SocketStageProviderImpl extends ChangeNotifier
         _mvp = _players.firstWhere((element) =>
             element.playerNum == socketResponse.data?.mvpPlayerNum);
         _playerInfos = socketResponse.data?.playerInfos ?? [];
+        _playerInfos.sort((a, b) => b.similarity.compareTo(a.similarity));
         setStageView(response.type);
         break;
       case SocketType.MVP_SKELETON:

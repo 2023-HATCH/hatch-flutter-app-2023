@@ -33,14 +33,6 @@ class _StageLiveTalkListWidgetState extends State<StageLiveTalkListWidget> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-
-    _scrollController.dispose();
-    _stageProvider.talkList.clear();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Selector<StageProviderImpl, List<StageTalkListItem>>(
         selector: (_, stageProvider) => stageProvider.talkList,
