@@ -79,7 +79,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Score',
+                'MVP',
                 style: TextStyle(
                   fontSize: 22,
                   color: Colors.white,
@@ -95,13 +95,12 @@ class _PoPoResultViewState extends State<PoPoResultView> {
                   for (var index = 0;
                       index < _socketStageProvider.playerInfos.length;
                       index++)
-                    _buildPlayResultWidget(
-                        _socketStageProvider.playerInfos[index], index)
+                    (index == 0)
+                        ? _buildMVPResultWidet(
+                            _socketStageProvider.playerInfos[index], index)
+                        : _buildPlayResultWidget(
+                            _socketStageProvider.playerInfos[index], index)
                 ],
-
-                // _socketStageProvider.playerInfos.map((element) {
-                //   return _buildPlayResultWidget(element);
-                // }).toList(),
               ),
             ],
           ),
@@ -138,6 +137,131 @@ class _PoPoResultViewState extends State<PoPoResultView> {
         seek: Duration(microseconds: startSecond));
   }
 
+  Widget _buildMVPResultWidet(StagePlayerInfoListItem player, int index) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(
+                color: Colors.white, width: 3.0, style: BorderStyle.solid),
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              for (double i = 1; i < 5; i++)
+                BoxShadow(
+                    color: AppColor.yellowColor,
+                    blurStyle: BlurStyle.outer,
+                    blurRadius: 3 * i)
+            ]),
+        child: Container(
+          width: 180,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+            child: Center(
+              child: Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/img_stage_result_1.svg',
+                        width: 44.8,
+                        height: 50.4,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(2, 0, 0, 6.72),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: (player.player.profileImg == null)
+                              ? Image.asset(
+                                  'assets/images/charactor_popo_default.png',
+                                  width: 34.72,
+                                  height: 34.72,
+                                )
+                              : Image.network(
+                                  player.player.profileImg!,
+                                  fit: BoxFit.cover,
+                                  width: 34.72,
+                                  height: 34.72,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColor.purpleColor,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Image.asset(
+                                    'assets/images/charactor_popo_default.png',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          player.player.nickname,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              (player.similarity > -1)
+                                  ? "🔥 ${(player.similarity * 10000).floor()}"
+                                  : "점수 없음",
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            (player.similarity > -1)
+                                ? const Text(
+                                    " / 10000",
+                                    style: TextStyle(
+                                      fontSize: 6,
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.end,
+                                  )
+                                : const Text(
+                                    "",
+                                    textAlign: TextAlign.end,
+                                  )
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPlayResultWidget(StagePlayerInfoListItem player, int index) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
@@ -156,7 +280,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
                   alignment: Alignment.bottomCenter,
                   children: [
                     SvgPicture.asset(
-                      'assets/images/img_stage_result_mvp.svg',
+                      'assets/images/img_stage_result_${index + 1}.svg',
                       width: 44.8,
                       height: 50.4,
                     ),
