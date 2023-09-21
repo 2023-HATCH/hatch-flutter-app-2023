@@ -4,6 +4,7 @@ import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/ui/loader/profile_screen_loader.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/view/profile/profile_tab_videos_view.dart';
 import 'package:pocket_pose/ui/widget/profile/profile_tapbar_widget.dart';
@@ -148,23 +149,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ],
                       ),
                     )
-                  : Container(
-                      color: Colors.white,
-                      child: Center(
-                          child: SpinKitPumpingHeart(
-                        color: Colors.pink[100],
-                        size: 50.0,
-                      )),
-                    );
+                  : const ProfileScreenLoader();
             } else {
-              return Container(
-                color: Colors.white,
-                child: Center(
-                    child: SpinKitPumpingHeart(
-                  color: Colors.pink[100],
-                  size: 50.0,
-                )),
-              );
+              return const ProfileScreenLoader();
             }
           }),
     );
