@@ -235,7 +235,7 @@ class _PoPoResultViewState extends State<PoPoResultView> {
                                 )
                               : const Text(
                                   "",
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign.end,
                                 )
                         ],
                       ),
