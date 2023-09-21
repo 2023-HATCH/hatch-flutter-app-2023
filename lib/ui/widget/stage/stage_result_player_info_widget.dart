@@ -36,7 +36,7 @@ class StageResultPlayerInfoWidget extends StatelessWidget {
 
   Widget _buildPlayerInfoWidget(StagePlayerInfoListItem player, int index) {
     return Container(
-      width: 180,
+      width: 160,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
@@ -55,7 +55,7 @@ class StageResultPlayerInfoWidget extends StatelessWidget {
                     height: 50.4,
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(2, 0, 3, 6.72),
+                    padding: const EdgeInsets.fromLTRB(2, 0, 1.2, 6.72),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50),
                       child: (player.player.profileImg == null)

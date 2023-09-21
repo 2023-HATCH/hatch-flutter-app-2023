@@ -152,6 +152,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (_isEnter) {
       _socketStageProvider.exitStage();
       _isEnter = false;
+      _stageProvider.talkList.clear();
 
       // 녹화 해제
       if (_isRecording) {
