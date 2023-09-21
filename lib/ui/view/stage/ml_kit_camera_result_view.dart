@@ -129,7 +129,7 @@ class _MlKitCameraResultViewState extends State<MlKitCameraResultView> {
   Widget _liveFeedBodyResult() {
     return Row(
       children: [
-        Expanded(flex: 2, child: Container()),
+        Expanded(flex: 1, child: Container()),
         Expanded(
           flex: 4,
           child: Selector<SocketStageProviderImpl,

@@ -48,13 +48,13 @@ class _StageCatchProgressbarWidgetState
 
   void _startTimer(int ms) {
     _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
-      if (ms >= 3000) {
+      if (ms >= 5000) {
         _stopTimer();
       } else {
         if (mounted) {
           setState(() {
             ms = ms + 10;
-            _catchCountDown = ms / 3000;
+            _catchCountDown = ms / 5000;
           });
         }
       }

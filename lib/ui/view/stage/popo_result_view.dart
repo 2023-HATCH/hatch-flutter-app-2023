@@ -1,6 +1,5 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
@@ -8,6 +7,7 @@ import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_result_view.dart';
+import 'package:pocket_pose/ui/widget/stage/stage_result_player_info_widget.dart';
 import 'package:provider/provider.dart';
 
 // ml_kit_skeleton_custom_view
@@ -66,36 +66,41 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     // 카메라뷰 보이기
     return Stack(
       children: [
-        Positioned(
-          top: 115,
-          left: 35,
-          right: 35,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              (widget.mvp != null) ? buildMVPWidget(widget.mvp!) : Container()
-            ],
-          ),
-        ),
-        Positioned(
-          top: 115,
-          right: 10,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: _socketStageProvider.playerInfos.map((element) {
-              return Text(
-                "${element.player.nickname}: ${element.similarity}",
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Colors.white,
-                ),
-              );
-            }).toList(),
-          ),
-        ),
         MlKitCameraResultView(
           color: skeletonColorList[widget.mvp?.playerNum ?? 0],
           isMVP: widget.isMVP,
+        ),
+        Positioned(
+          top: 0,
+          right: 15,
+          bottom: 0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'MVP',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: Colors.white,
+                  shadows: [
+                    for (double i = 1; i < 6; i++)
+                      Shadow(color: AppColor.yellowColor, blurRadius: 3 * i)
+                  ],
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var index = 0;
+                      index < _socketStageProvider.playerInfos.length;
+                      index++)
+                    StageResultPlayerInfoWidget(
+                        player: _socketStageProvider.playerInfos[index],
+                        index: index)
+                ],
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -127,79 +132,5 @@ class _PoPoResultViewState extends State<PoPoResultView> {
     _assetsAudioPlayer.setVolume(0.4);
     _assetsAudioPlayer.open(Audio("assets/audios/sound_stage_result.mp3"),
         seek: Duration(microseconds: startSecond));
-  }
-
-  Container buildMVPWidget(StagePlayerListItem user) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(
-              color: Colors.white, width: 3.0, style: BorderStyle.solid),
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            for (double i = 1; i < 5; i++)
-              BoxShadow(
-                  color: AppColor.yellowColor,
-                  blurStyle: BlurStyle.outer,
-                  blurRadius: 3 * i)
-          ]),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'MVP',
-              style: TextStyle(
-                fontSize: 22,
-                color: Colors.white,
-                shadows: [
-                  for (double i = 1; i < 6; i++)
-                    Shadow(color: AppColor.yellowColor, blurRadius: 3 * i)
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 2,
-            ),
-            Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                SvgPicture.asset(
-                  'assets/images/img_stage_result_mvp.svg',
-                  width: 80,
-                  height: 90,
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(2, 0, 0, 12),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: (user.profileImg == null)
-                        ? Image.asset(
-                            'assets/images/charactor_popo_default.png',
-                            width: 62,
-                            height: 62,
-                          )
-                        : Image.network(
-                            user.profileImg!,
-                            fit: BoxFit.cover,
-                            width: 62,
-                            height: 62,
-                          ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 2,
-            ),
-            Text(
-              user.nickname,
-              style: const TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
