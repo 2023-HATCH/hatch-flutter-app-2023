@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
+import 'package:pocket_pose/ui/loader/profile_screen_loader.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/view/profile/profile_tab_videos_view.dart';
 import 'package:pocket_pose/ui/widget/profile/profile_tapbar_widget.dart';
@@ -32,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   late ProfileProvider _profileProvider;
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late String? _userId;
+  late TabController _tabController;
 
   int loading = 0;
 
@@ -46,6 +49,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     _multiVideoPlayProvider.pauseVideo(0);
 
     _multiVideoPlayProvider.isOpenProfile = true;
+
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   Future<bool> _initUser() async {
@@ -87,6 +92,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     _profileProvider.isGetProfilDone = false;
 
     _multiVideoPlayProvider.isOpenProfile = false;
+
+    _tabController.dispose();
   }
 
   @override
@@ -136,35 +143,57 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ProfileUserInfoWidget(
                                     profileResponse:
                                         _profileProvider.profileResponse!),
-                                const SizedBox(
-                                  height: 14,
-                                )
                               ],
                             ),
                           ),
+                          SliverAppBar(
+                            pinned: true,
+                            backgroundColor: AppColor.whiteColor,
+                            toolbarHeight: 0.0,
+                            bottom: TabBar(
+                              controller: _tabController,
+                              tabs: [
+                                Tab(
+                                  icon: _tabController.index == 0
+                                      ? SvgPicture.asset(
+                                          'assets/icons/ic_profile_list_select.svg')
+                                      : SvgPicture.asset(
+                                          'assets/icons/ic_profile_list_unselect.svg'),
+                                ),
+                                Tab(
+                                  icon: _tabController.index == 1
+                                      ? SvgPicture.asset(
+                                          'assets/icons/ic_heart_select.svg')
+                                      : SvgPicture.asset(
+                                          'assets/icons/ic_heart_unselect.svg'),
+                                ),
+                              ],
+                              indicator: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: AppColor.purpleColor,
+                                    width: 3.0,
+                                  ),
+                                ),
+                              ),
+                              onTap: (index) {
+                                debugPrint("Selected Tab: $index");
+                                setState(
+                                    () {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
+                              },
+                            ),
+                          ),
                           ProfileTabVideosWidget(
+                            index: _tabController.index,
+                            tabController: _tabController,
                             profileResponse: _profileProvider.profileResponse!,
                           ),
                         ],
                       ),
                     )
-                  : Container(
-                      color: Colors.white,
-                      child: Center(
-                          child: SpinKitPumpingHeart(
-                        color: Colors.pink[100],
-                        size: 50.0,
-                      )),
-                    );
+                  : const ProfileScreenLoader();
             } else {
-              return Container(
-                color: Colors.white,
-                child: Center(
-                    child: SpinKitPumpingHeart(
-                  color: Colors.pink[100],
-                  size: 50.0,
-                )),
-              );
+              return const ProfileScreenLoader();
             }
           }),
     );

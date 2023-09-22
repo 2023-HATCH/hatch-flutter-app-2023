@@ -43,26 +43,30 @@ class _VideoUserInfoViewState extends State<VideoUserInfoView> {
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
-                    if (_multiVideoPlayProvider.isOpenProfile == false) {
-                      _multiVideoPlayProvider.isOpenProfile = true;
+                    if (widget.screenNum != 2 &&
+                        widget.screenNum != 3 &&
+                        widget.screenNum != 4) {
+                      if (_multiVideoPlayProvider.isOpenProfile == false) {
+                        _multiVideoPlayProvider.isOpenProfile = true;
 
-                      debugPrint('비디오 스크린 넘:::: ${widget.screenNum}');
+                        debugPrint('비디오 스크린 넘:::: ${widget.screenNum}');
 
+                        _multiVideoPlayProvider.pauseVideo(widget.screenNum);
+
+                        PageRouteWithSlideAnimation pageRouteWithAnimation =
+                            PageRouteWithSlideAnimation(
+                                ProfileScreen(userId: user.userId));
+                        Navigator.push(context,
+                                pageRouteWithAnimation.slideRitghtToLeft())
+                            .then((value) {
+                          _multiVideoPlayProvider.isOpenProfile = false;
+                          _multiVideoPlayProvider.playVideo(widget.screenNum);
+                        });
+                      } else {
+                        Navigator.pop(context);
+                      }
                       _multiVideoPlayProvider.pauseVideo(widget.screenNum);
-
-                      PageRouteWithSlideAnimation pageRouteWithAnimation =
-                          PageRouteWithSlideAnimation(
-                              ProfileScreen(userId: user.userId));
-                      Navigator.push(context,
-                              pageRouteWithAnimation.slideRitghtToLeft())
-                          .then((value) {
-                        _multiVideoPlayProvider.isOpenProfile = false;
-                        _multiVideoPlayProvider.playVideo(widget.screenNum);
-                      });
-                    } else {
-                      Navigator.pop(context);
                     }
-                    _multiVideoPlayProvider.pauseVideo(widget.screenNum);
                   },
                   child: Row(children: <Widget>[
                     ClipRRect(

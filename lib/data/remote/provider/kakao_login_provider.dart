@@ -72,6 +72,11 @@ class KaKaoLoginProvider extends ChangeNotifier {
   void signOut() async {
     debugPrint('카카오톡 로그아웃 시도');
 
+    final multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
+
+    multiVideoPlayProvider.resetVideoPlayer(0);
+
     if (await KaKaoLoginRepository().logout()) {
       removeAccessToken();
       removeFCMToken();
@@ -82,11 +87,6 @@ class KaKaoLoginProvider extends ChangeNotifier {
     } else {
       Fluttertoast.showToast(msg: '로그아웃 실패했습니다. 다시 시도 하세요.');
     }
-
-    final multiVideoPlayProvider =
-        Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
-
-    multiVideoPlayProvider.resetVideoPlayer(0);
 
     notifyListeners();
   }
