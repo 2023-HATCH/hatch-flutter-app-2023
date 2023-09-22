@@ -43,7 +43,9 @@ class _VideoUserInfoViewState extends State<VideoUserInfoView> {
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
-                    if (widget.screenNum != 2) {
+                    if (widget.screenNum != 2 &&
+                        widget.screenNum != 3 &&
+                        widget.screenNum != 4) {
                       if (_multiVideoPlayProvider.isOpenProfile == false) {
                         _multiVideoPlayProvider.isOpenProfile = true;
 
