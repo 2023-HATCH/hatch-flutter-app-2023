@@ -198,7 +198,6 @@ class KaKaoLoginProvider extends ChangeNotifier {
 
   // 토큰 갱신
   void updateToken(Map<String, String> headers) async {
-    debugPrint('토큰 갱신 시도!');
     final cookies = headers['set-cookie'];
 
     if (cookies != null) {
