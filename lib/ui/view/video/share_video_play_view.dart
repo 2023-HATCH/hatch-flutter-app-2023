@@ -37,23 +37,6 @@ class _VideoPlayerWidgetState extends State<ShareVideoPlayeView>
     );
   }
 
-  void _toggleIconVisibility(bool newValue) {
-    if (mounted) {
-      setState(() {
-        isIconVisible = newValue;
-        if (isIconVisible) {
-          _animationController.forward();
-        } else {
-          _animationController.reverse().then((_) {
-            setState(() {
-              isIconVisible = false;
-            });
-          });
-        }
-      });
-    }
-  }
-
   @override
   void dispose() {
     _animationController.dispose();
@@ -116,5 +99,22 @@ class _VideoPlayerWidgetState extends State<ShareVideoPlayeView>
         ),
       ],
     );
+  }
+
+  void _toggleIconVisibility(bool newValue) {
+    if (mounted) {
+      setState(() {
+        isIconVisible = newValue;
+        if (isIconVisible) {
+          _animationController.forward();
+        } else {
+          _animationController.reverse().then((_) {
+            setState(() {
+              isIconVisible = false;
+            });
+          });
+        }
+      });
+    }
   }
 }
