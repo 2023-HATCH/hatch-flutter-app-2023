@@ -29,10 +29,10 @@ class VideoRepository {
     };
 
     final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("홈 비디오 목록 조회 성공! json: $json");
+      debugPrint("홈 비디오 목록 조회 성공!");
 
       final List<dynamic> videoListJson = json['data']['videoList'];
       final List<VideoData> videoList = videoListJson
@@ -48,7 +48,9 @@ class VideoRepository {
         isLast: isLast,
       );
     } else {
-      throw Exception('홈 비디오 목록 조회 실패');
+      debugPrint("홈 비디오 목록 조회 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/video_repository.dart');
     }
   }
 
@@ -63,11 +65,12 @@ class VideoRepository {
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("영상 삭제 성공! json: $json");
+      debugPrint("비디오 삭제 성공!");
       return true;
     } else {
-      debugPrint('영상 삭제 실패 json $json');
-      return false;
+      debugPrint("비디오 삭제 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/video_repository.dart');
     }
   }
 
@@ -93,7 +96,9 @@ class VideoRepository {
     if (response.statusCode == 200) {
       debugPrint("조회수 증가 성공! json: $json");
     } else {
-      debugPrint('조회수 증가 실패 json $json');
+      debugPrint("조회수 증가 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/video_repository.dart');
     }
   }
 }
