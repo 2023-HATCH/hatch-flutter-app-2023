@@ -28,6 +28,7 @@ import 'package:pocket_pose/ui/screen/onboarding/on_boarding_screen.dart';
 import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
 import 'package:pocket_pose/ui/screen/share/share_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // 카메라 목록 변수
 List<CameraDescription> cameras = [];
@@ -47,6 +48,9 @@ Future<void> main() async {
   await notificationService.init();
   DynamicLink().setup();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // .env 파일 읽어오기
+  await dotenv.load(fileName: 'assets/.env');
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => MultiVideoPlayProvider()),
