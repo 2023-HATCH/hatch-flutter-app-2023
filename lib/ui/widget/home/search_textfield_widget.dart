@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
 import 'package:pocket_pose/ui/loader/search_textfield_loader.dart';
 import 'package:provider/provider.dart';
-
 import '../../../config/app_color.dart';
 
 class SearchTextFieldWidget extends StatefulWidget {
@@ -108,7 +107,6 @@ class _SearchTextFieldWidgetState extends State<SearchTextFieldWidget> {
                                         ),
                                       ),
                                       disabledBorder: InputBorder.none,
-                                      //border: InputBorder.none,
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: const BorderRadius.all(
                                           Radius.circular(15),
