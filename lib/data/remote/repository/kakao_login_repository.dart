@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
@@ -26,7 +25,7 @@ class KaKaoLoginRepository {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("로그인 성공! json: $json");
+      debugPrint("카카오 로그인 성공!");
 
       final user = UserData(
         userId: json['data']['userId'],
@@ -46,7 +45,9 @@ class KaKaoLoginRepository {
         user: user,
       );
     } else {
-      throw Exception('Login failed');
+      debugPrint("카카오 로그인 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repositorykakao_login_repository.dart');
     }
   }
 
@@ -68,14 +69,15 @@ class KaKaoLoginRepository {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("로그아웃 성공! json: $json");
+      debugPrint("카카오 로그아웃 성공! json: $json");
 
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('카카오톡 로그인 실패');
-      return false;
+      debugPrint("카카오 로그아웃 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repositorykakao_login_repository.dart');
     }
   }
 }
