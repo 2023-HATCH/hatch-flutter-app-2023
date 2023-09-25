@@ -34,7 +34,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 List<CameraDescription> cameras = [];
 
 Future<void> main() async {
-  KakaoSdk.init(nativeAppKey: 'f03a21b3fa588715cb55730113dea1ab');
+  // .env 파일 읽어오기
+  await dotenv.load(fileName: 'assets/.env');
+
+  KakaoSdk.init(nativeAppKey: dotenv.env['nativeAppKey']);
   // 비동기 메서드를 사용함
   WidgetsFlutterBinding.ensureInitialized();
   // 사용 가능한 카메라 목록 받아옴
@@ -48,9 +51,6 @@ Future<void> main() async {
   await notificationService.init();
   DynamicLink().setup();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // .env 파일 읽어오기
-  await dotenv.load(fileName: 'assets/.env');
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => MultiVideoPlayProvider()),
