@@ -67,33 +67,60 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
           }
 
           _multiVideoPlayProvider.currentPages[1]++;
-        });
 
-        // 좋아요한 영상 목록 조회
-        _profileProvider
-            .getLikeVideos(ProfileVideosRequest(
-                userId: widget._profileResponse.user.userId,
-                page: _multiVideoPlayProvider.currentPages[2],
-                size: 100)) //_multiVideoPlayProvider.pageSize))
-            .then((value) {
-          final response = _profileProvider.likeVideosResponse;
+          // 좋아요한 영상 목록 조회
+          _profileProvider
+              .getLikeVideos(ProfileVideosRequest(
+                  userId: widget._profileResponse.user.userId,
+                  page: _multiVideoPlayProvider.currentPages[2],
+                  size: 100)) //_multiVideoPlayProvider.pageSize))
+              .then((value) {
+            final response = _profileProvider.likeVideosResponse;
 
-          if (mounted) {
-            if (response != null) {
-              setState(() {
-                if (response.videoList.isNotEmpty) {
-                  _multiVideoPlayProvider.addVideos(2, response.videoList);
-                }
-                if (response.isLast) {
-                  _multiVideoPlayProvider.isLasts[2] = true;
-                  return;
-                }
-              });
+            if (mounted) {
+              if (response != null) {
+                setState(() {
+                  if (response.videoList.isNotEmpty) {
+                    _multiVideoPlayProvider.addVideos(2, response.videoList);
+                  }
+                  if (response.isLast) {
+                    _multiVideoPlayProvider.isLasts[2] = true;
+                    return;
+                  }
+                });
+              }
             }
-          }
 
-          _multiVideoPlayProvider.currentPages[2]++;
+            _multiVideoPlayProvider.currentPages[2]++;
+
+            // 좋아요한 영상 목록 조회
+            _profileProvider
+                .getLikeVideos(ProfileVideosRequest(
+                    userId: widget._profileResponse.user.userId,
+                    page: _multiVideoPlayProvider.currentPages[2],
+                    size: 100)) //_multiVideoPlayProvider.pageSize))
+                .then((value) {
+              final response = _profileProvider.likeVideosResponse;
+
+              if (mounted) {
+                if (response != null) {
+                  setState(() {
+                    if (response.videoList.isNotEmpty) {
+                      _multiVideoPlayProvider.addVideos(2, response.videoList);
+                    }
+                    if (response.isLast) {
+                      _multiVideoPlayProvider.isLasts[2] = true;
+                      return;
+                    }
+                  });
+                }
+              }
+
+              _multiVideoPlayProvider.currentPages[2]++;
+            });
+          });
         });
+
         _profileProvider.isVideoLoadingDone = true;
       }
       return true;
