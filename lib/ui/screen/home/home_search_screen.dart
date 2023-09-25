@@ -23,8 +23,96 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
 
   bool _isSearched = false;
   String _value = "";
+  final int _screenNum = 3;
 
-  void setScreen(bool isSearched, String value) {
+  @override
+  void initState() {
+    super.initState();
+    _multiVideoPlayProvider =
+        Provider.of<MultiVideoPlayProvider>(context, listen: false);
+    _searchProvider = Provider.of<SearchProvider>(context, listen: false);
+    _multiVideoPlayProvider.pauseVideo(0);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _multiVideoPlayProvider.playVideo(0);
+    _searchProvider.isGetRandomVideoSuccess = false;
+    _searchProvider.isGetTagVideosSuccess = false;
+    _searchProvider.randomVideosResponse = null;
+    _searchProvider.tagVideosResponse = null;
+    _multiVideoPlayProvider.resetVideoPlayer(3);
+    _multiVideoPlayProvider.resetVideoPlayer(4);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        if (details.primaryDelta! > 10) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(appBar: _appbar(context), body: _body()),
+    );
+  }
+
+  AppBar _appbar(BuildContext context) {
+    return AppBar(
+      title: const Text(
+        '검색',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      ),
+      centerTitle: true,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back_ios_new_rounded,
+          color: AppColor.purpleColor,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      elevation: 0,
+    );
+  }
+
+  FutureBuilder<bool> _body() {
+    return FutureBuilder<bool>(
+        future: _initVideo(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (_searchProvider.randomVideosResponse != null) {
+              return Container(
+                color: Colors.white,
+                child: Column(children: <Widget>[
+                  SearchTextFieldWidget(setScreen: _setScreen),
+                  _isSearched
+                      ? Flexible(
+                          child: SearchDetailView(
+                          value: _value,
+                        ))
+                      : Flexible(
+                          child: SearchView(
+                              screenNum: _screenNum,
+                              videoList: _searchProvider
+                                  .randomVideosResponse!.videoList))
+                ]),
+              );
+            } else {
+              return Container(color: Colors.white);
+            }
+          } else {
+            return Container(color: Colors.white);
+          }
+        });
+  }
+
+  void _setScreen(bool isSearched, String value) {
     setState(() {
       _isSearched = isSearched;
       _value = value;
@@ -56,87 +144,5 @@ class _HomeSearchScreenState extends State<HomeSearchScreen>
       return true;
     }
     return true;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _multiVideoPlayProvider =
-        Provider.of<MultiVideoPlayProvider>(context, listen: false);
-    _searchProvider = Provider.of<SearchProvider>(context, listen: false);
-    _multiVideoPlayProvider.pauseVideo(0);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    _multiVideoPlayProvider.playVideo(0);
-    _searchProvider.isGetRandomVideoSuccess = false;
-    _searchProvider.isGetTagVideosSuccess = false;
-    _searchProvider.randomVideosResponse = null;
-    _searchProvider.tagVideosResponse = null;
-    _multiVideoPlayProvider.resetVideoPlayer(3);
-    _multiVideoPlayProvider.resetVideoPlayer(4);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onHorizontalDragUpdate: (details) {
-        if (details.primaryDelta! > 10) {
-          // 왼쪽에서 오른쪽으로 드래그했을 때 pop
-          Navigator.of(context).pop();
-        }
-      },
-      child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              '검색',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            centerTitle: true,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppColor.purpleColor,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            elevation: 0,
-          ),
-          body: FutureBuilder<bool>(
-              future: _initVideo(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (_searchProvider.randomVideosResponse != null) {
-                    return Container(
-                      color: Colors.white,
-                      child: Column(children: <Widget>[
-                        SearchTextFieldWidget(setScreen: setScreen),
-                        _isSearched
-                            ? Flexible(
-                                child: SearchDetailView(
-                                value: _value,
-                              ))
-                            : Flexible(
-                                child: SearchView(
-                                    screenNum: 3,
-                                    videoList: _searchProvider
-                                        .randomVideosResponse!.videoList))
-                      ]),
-                    );
-                  } else {
-                    return Container(color: Colors.white);
-                  }
-                } else {
-                  return Container(color: Colors.white);
-                }
-              })),
-    );
   }
 }
