@@ -12,6 +12,7 @@ import 'package:pocket_pose/main.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/widget/login_modal_content_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const _storage = FlutterSecureStorage();
 const _accessTokenKey = 'kakaoAccessToken';
@@ -91,9 +92,8 @@ class KaKaoLoginProvider extends ChangeNotifier {
   // 카카오 서버 로그인
   Future<void> _login(String kakaoAccessToken) async {
     try {
-      var fcmToken = await FirebaseMessaging.instance.getToken(
-          vapidKey:
-              "BGIFfDEvFQXrQ9dyfyFDZZ0T1d-A-88SU-aTaS744Xigeu9NoNogwWjqHuY8hBFW5LGcMPmoQRrlnxzD");
+      var fcmToken = await FirebaseMessaging.instance
+          .getToken(vapidKey: dotenv.env['vapidKey']);
 
       if (fcmToken == null) {
         debugPrint('FCM: 토큰 얻기 실패!');
