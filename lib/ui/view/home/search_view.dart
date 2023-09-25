@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/domain/entity/video_data.dart';
-import 'package:pocket_pose/ui/screen/profile/profile_video_detail_screen.dart';
+import 'package:pocket_pose/ui/screen/video/video_detail_screen.dart';
 import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:shimmer/shimmer.dart';
 
