@@ -26,14 +26,15 @@ class LikeRepository {
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("좋아요 등록 성공! json: $json");
+      debugPrint("좋아요 등록 성공!");
 
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('좋아요 등록 실패 json $json');
-      return false;
+      debugPrint("좋아요 등록 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/like_repository.dart');
     }
   }
 
@@ -55,14 +56,15 @@ class LikeRepository {
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("좋아요 삭제 성공! json: $json");
+      debugPrint("좋아요 삭제 성공!");
 
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('좋아요 삭제 실패 json $json');
-      return false;
+      debugPrint("좋아요 삭제 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/like_repository.dart');
     }
   }
 }
