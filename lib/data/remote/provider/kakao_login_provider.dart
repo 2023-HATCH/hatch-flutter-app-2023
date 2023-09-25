@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -37,7 +36,7 @@ class KaKaoLoginProvider extends ChangeNotifier {
   late BuildContext mainContext;
   bool isInstalled = false;
 
-  // 카카오 로그인, 로그아웃
+  // 카카오 로그인
   Future<bool> signIn() async {
     try {
       bool isInstalled = await isKakaoTalkInstalled();
@@ -62,16 +61,14 @@ class KaKaoLoginProvider extends ChangeNotifier {
           (route) => false,
         );
       });
-      return isInstalled;
-    } catch (error) {
-      debugPrint('카카오톡으로 로그인 실패: $error');
-      return isInstalled;
+    } catch (e) {
+      debugPrint('moon error! KaKaoLoginProvider signIn: $e');
     }
+    return isInstalled;
   }
 
+  // 카카오 로그아웃
   void signOut() async {
-    debugPrint('카카오톡 로그아웃 시도');
-
     final multiVideoPlayProvider =
         Provider.of<MultiVideoPlayProvider>(mainContext, listen: false);
 
@@ -91,6 +88,7 @@ class KaKaoLoginProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 카카오 서버 로그인
   Future<void> _login(String kakaoAccessToken) async {
     try {
       var fcmToken = await FirebaseMessaging.instance.getToken(
@@ -98,12 +96,12 @@ class KaKaoLoginProvider extends ChangeNotifier {
               "BGIFfDEvFQXrQ9dyfyFDZZ0T1d-A-88SU-aTaS744Xigeu9NoNogwWjqHuY8hBFW5LGcMPmoQRrlnxzD");
 
       if (fcmToken == null) {
-        debugPrint('FCM: 토큰 얻기 실패');
+        debugPrint('FCM: 토큰 얻기 실패!');
         Fluttertoast.showToast(
           msg: '로그인 실패했습니다. 다시 시도 하세요.',
         );
       } else {
-        debugPrint('FCM: 토큰 얻기 성공');
+        debugPrint('FCM: 토큰 얻기 성공!');
         final repositoryResponse =
             await KaKaoLoginRepository().login(kakaoAccessToken, fcmToken);
         _response = repositoryResponse;
@@ -116,30 +114,8 @@ class KaKaoLoginProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('Error logging in: $e');
+      debugPrint('moon error! KaKaoLoginProvider login: $e');
     }
-  }
-
-  // token 관리
-  Future<bool> checkAccessToken() async {
-    if (_accessToken == null || _refreshToken == null) {
-      _accessToken = await _storage.read(key: _accessTokenKey);
-      _refreshToken = await _storage.read(key: _refreshTokenKey);
-    }
-
-    if (_accessToken != null && _refreshToken != null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future<void> storeAccessToken(String accessToken, String refreshToken) async {
-    await _storage.write(key: _accessTokenKey, value: accessToken);
-    await _storage.write(key: _refreshTokenKey, value: refreshToken);
-    _accessToken = accessToken;
-    _refreshToken = refreshToken;
-    notifyListeners();
   }
 
   Future<void> storeUser(UserData user) async {
@@ -164,6 +140,7 @@ class KaKaoLoginProvider extends ChangeNotifier {
         email: email ?? '');
   }
 
+  // FCM 토큰 관리
   Future<void> storeFCMToken(String fcmToken) async {
     await _storage.write(key: _fcmTokenKey, value: fcmToken);
 
@@ -184,28 +161,29 @@ class KaKaoLoginProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeAccessToken() async {
-    await _storage.delete(key: _accessTokenKey);
-    await _storage.delete(key: _refreshTokenKey);
-    _accessToken = null;
-    _refreshToken = null;
+  // 로그인 Token 관리
+  Future<bool> checkAccessToken() async {
+    if (_accessToken == null || _refreshToken == null) {
+      _accessToken = await _storage.read(key: _accessTokenKey);
+      _refreshToken = await _storage.read(key: _refreshTokenKey);
+    }
+
+    if (_accessToken != null && _refreshToken != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> storeAccessToken(String accessToken, String refreshToken) async {
+    await _storage.write(key: _accessTokenKey, value: accessToken);
+    await _storage.write(key: _refreshTokenKey, value: refreshToken);
+    _accessToken = accessToken;
+    _refreshToken = refreshToken;
     notifyListeners();
   }
 
-  void showLoginBottomSheet() {
-    showModalBottomSheet(
-      context: mainContext,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30.0),
-        ),
-      ),
-      builder: (BuildContext context) {
-        return const LoginModalContent();
-      },
-    );
-  }
-
+  // 토큰 분리
   String? extractToken(String? cookies, String tokenName) {
     if (cookies == null) return null;
     final pattern = '$tokenName=';
@@ -218,6 +196,7 @@ class KaKaoLoginProvider extends ChangeNotifier {
     return cookies.substring(tokenStartIndex + pattern.length, tokenEndIndex);
   }
 
+  // 토큰 갱신
   void updateToken(Map<String, String> headers) async {
     debugPrint('토큰 갱신 시도!');
     final cookies = headers['set-cookie'];
@@ -231,5 +210,29 @@ class KaKaoLoginProvider extends ChangeNotifier {
         debugPrint('토큰 갱신 성공!');
       }
     }
+  }
+
+  // 토큰 삭제
+  Future<void> removeAccessToken() async {
+    await _storage.delete(key: _accessTokenKey);
+    await _storage.delete(key: _refreshTokenKey);
+    _accessToken = null;
+    _refreshToken = null;
+    notifyListeners();
+  }
+
+  // 로그인 바텀 시트
+  void showLoginBottomSheet() {
+    showModalBottomSheet(
+      context: mainContext,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return const LoginModalContent();
+      },
+    );
   }
 }

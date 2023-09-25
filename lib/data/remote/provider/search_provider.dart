@@ -57,7 +57,7 @@ class SearchProvider extends ChangeNotifier {
 
       _isGetTagsSuccess = true;
     } catch (e) {
-      debugPrint('SearchRepository getTags 에러: $e');
+      debugPrint('moon error! SearchRepository getTags: $e');
     }
     return _isGetTagsSuccess ?? false;
   }
@@ -71,7 +71,7 @@ class SearchProvider extends ChangeNotifier {
 
       _isGetTagVideosSuccess = true;
     } catch (e) {
-      debugPrint('SearchRepository getTagVideo 에러: $e');
+      debugPrint('moon error! SearchRepository getTagSearch: $e');
     }
     return _isGetTagVideosSuccess ?? false;
   }
@@ -83,7 +83,7 @@ class SearchProvider extends ChangeNotifier {
 
       _isGetUsersSuccess = true;
     } catch (e) {
-      debugPrint('SearchRepository getUserSearch 에러: $e');
+      debugPrint('moon error! SearchRepository getUserSearch: $e');
     }
     return _isGetUsersSuccess ?? false;
   }
@@ -96,7 +96,7 @@ class SearchProvider extends ChangeNotifier {
 
       _isGetRandomVideoSuccess = true;
     } catch (e) {
-      debugPrint('VideoProvider getVideos 에러: $e');
+      debugPrint('moon error! SearchRepository getRandomVideos: $e');
     }
     return _isGetRandomVideoSuccess ?? false;
   }

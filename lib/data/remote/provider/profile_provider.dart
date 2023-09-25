@@ -55,7 +55,7 @@ class ProfileProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      debugPrint('ProfileProvider getUserProfile 에러: $e');
+      debugPrint('moon error! ProfileProvider getUserProfile: $e');
       return false;
     }
   }
@@ -68,7 +68,7 @@ class ProfileProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      debugPrint('ProfileProvider getUserProfile 에러: $e');
+      debugPrint('moon error! ProfileProvider patchProfile: $e');
       return false;
     }
   }
@@ -80,11 +80,9 @@ class ProfileProvider extends ChangeNotifier {
           await ProfileRepository().getUploadVideos(profileVideosRequest);
       _uploadVideosResponse = repositoryResponse;
 
-      // controller랑 future 만들기
-
       notifyListeners();
     } catch (e) {
-      debugPrint('ProfileProvider getUploadVideos 에러: $e');
+      debugPrint('moon error! ProfileProvider getUploadVideos: $e');
     }
   }
 
@@ -96,7 +94,7 @@ class ProfileProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('ProfileProvider getLikeVideos 에러: $e');
+      debugPrint('moon error! ProfileProvider getLikeVideos: $e');
     }
   }
 }

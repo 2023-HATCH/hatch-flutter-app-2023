@@ -21,7 +21,7 @@ class FollowProvider extends ChangeNotifier {
 
       _isGetSuccess = true;
     } catch (e) {
-      debugPrint('FollowRepository getFollows 에러: $e');
+      debugPrint('moon error! FollowRepository getFollows: $e');
     }
     return _isGetSuccess ?? false;
   }
@@ -32,7 +32,7 @@ class FollowProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('FollowRepository postFollow 에러: $e');
+      debugPrint('moon error! FollowRepository postFollow: $e');
     }
     return _isPostSuccess ?? false;
   }
@@ -41,7 +41,7 @@ class FollowProvider extends ChangeNotifier {
     try {
       _isDeleteSuccess = await FollowRepository().deleteFollow(userId);
     } catch (e) {
-      debugPrint('FollowRepository deleteFollow 에러: $e');
+      debugPrint('moon error! FollowRepository deleteFollow: $e');
     }
 
     return _isDeleteSuccess ?? false;

@@ -18,7 +18,7 @@ class VideoProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('VideoProvider getVideos 에러: $e');
+      debugPrint('moon error! VideoProvider getVideos: $e');
     }
   }
 
@@ -26,7 +26,7 @@ class VideoProvider extends ChangeNotifier {
     try {
       _isDeleteSuccess = await VideoRepository().deleteVideo(videoId);
     } catch (e) {
-      debugPrint('VideoProvider deleteVideo 에러: $e');
+      debugPrint('moon error! VideoProvider deleteVideo: $e');
     }
     return _isDeleteSuccess ?? false;
   }
@@ -37,7 +37,7 @@ class VideoProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('VideoProvider getView 에러: $e');
+      debugPrint('moon error! VideoProvider getView: $e');
     }
   }
 }
