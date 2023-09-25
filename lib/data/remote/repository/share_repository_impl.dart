@@ -27,10 +27,10 @@ class ShareRepositoryImpl implements ShareRepository {
     };
 
     final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("공유 비디오 조회 성공! json: $json");
+      debugPrint("공유 비디오 조회 성공!");
 
       final dynamic videoJson = json['data'];
       final VideoData videoData = VideoData.fromJson(videoJson);
@@ -39,7 +39,9 @@ class ShareRepositoryImpl implements ShareRepository {
 
       return videoData;
     } else {
-      throw Exception('공유 비디오 조회 실패');
+      debugPrint("공유 비디오 조회 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/share_repository.dart');
     }
   }
 }

@@ -23,51 +23,7 @@ class _SearchDetailViewState extends State<SearchDetailView>
   late SearchProvider _searchProvider;
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   int loading = 0;
-
-  Future<bool> _initContent() async {
-    if (mounted) {
-      if (!_searchProvider.isVideoLoadingDone) {
-        // 태그 검색 api 호출
-        debugPrint(
-            '1: 프로필 현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[4]}');
-
-        _searchProvider
-            .getTagSearch(
-                widget.value,
-                VideosRequest(
-                    page: _multiVideoPlayProvider.currentPages[4], size: 100))
-            .then((value) {
-          final response = _searchProvider.tagVideosResponse;
-
-          if (mounted) {
-            if (response != null) {
-              setState(() {
-                if (response.videoList.isNotEmpty) {
-                  _multiVideoPlayProvider.addVideos(4, response.videoList);
-                }
-                if (response.isLast) {
-                  _multiVideoPlayProvider.isLasts[4] = true;
-                  return;
-                }
-              });
-            }
-          }
-
-          _multiVideoPlayProvider.currentPages[4]++;
-          debugPrint(
-              '1: 프로필 다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[4]}');
-        });
-
-        // 유저 검색 api 호출
-        await _searchProvider.getUserSearch(widget.value);
-
-        _searchProvider.isVideoLoadingDone = true;
-      }
-    }
-
-    return _searchProvider.tagVideosResponse != null &&
-        _searchProvider.usersResponse != null;
-  }
+  final int _screenNum = 4;
 
   @override
   void initState() {
@@ -142,5 +98,47 @@ class _SearchDetailViewState extends State<SearchDetailView>
             }),
       ]))
     ]);
+  }
+
+  Future<bool> _initContent() async {
+    if (mounted) {
+      if (!_searchProvider.isVideoLoadingDone) {
+        // 태그 검색 api 호출
+        _searchProvider
+            .getTagSearch(
+                widget.value,
+                VideosRequest(
+                    page: _multiVideoPlayProvider.currentPages[_screenNum],
+                    size: 100))
+            .then((value) {
+          final response = _searchProvider.tagVideosResponse;
+
+          if (mounted) {
+            if (response != null) {
+              setState(() {
+                if (response.videoList.isNotEmpty) {
+                  _multiVideoPlayProvider.addVideos(
+                      _screenNum, response.videoList);
+                }
+                if (response.isLast) {
+                  _multiVideoPlayProvider.isLasts[_screenNum] = true;
+                  return;
+                }
+              });
+            }
+          }
+
+          _multiVideoPlayProvider.currentPages[_screenNum]++;
+        });
+
+        // 유저 검색 api 호출
+        await _searchProvider.getUserSearch(widget.value);
+
+        _searchProvider.isVideoLoadingDone = true;
+      }
+    }
+
+    return _searchProvider.tagVideosResponse != null &&
+        _searchProvider.usersResponse != null;
   }
 }

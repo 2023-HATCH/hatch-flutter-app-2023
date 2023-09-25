@@ -14,7 +14,7 @@ class LikeProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('LikeRepository postLike 에러: $e');
+      debugPrint('moon error! LikeRepository postLike: $e');
     }
   }
 
@@ -24,7 +24,7 @@ class LikeProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('LikeRepository deleteLike 에러: $e');
+      debugPrint('moon error! LikeRepository deleteLike: $e');
     }
   }
 }

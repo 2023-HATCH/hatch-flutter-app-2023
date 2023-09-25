@@ -3,7 +3,7 @@ import 'package:pocket_pose/data/entity/request/profile_videos_request.dart';
 import 'package:pocket_pose/data/entity/response/profile_response.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
-import 'package:pocket_pose/ui/screen/profile/profile_video_detail_screen.dart';
+import 'package:pocket_pose/ui/screen/video/video_detail_screen.dart';
 import 'package:pocket_pose/ui/loader/profile_video_skeleton_loader.dart';
 import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
@@ -44,9 +44,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     if (mounted) {
       if (!_profileProvider.isVideoLoadingDone) {
         // 업로드한 영상 목록 조회
-        debugPrint(
-            '1: 프로필 현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
-
         _profileProvider
             .getUploadVideos(ProfileVideosRequest(
                 userId: widget._profileResponse.user.userId,
@@ -70,11 +67,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
           }
 
           _multiVideoPlayProvider.currentPages[1]++;
-          debugPrint(
-              '1: 프로필 다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
-
-          debugPrint(
-              '2: 프로필 현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
 
           // 좋아요한 영상 목록 조회
           _profileProvider
@@ -100,10 +92,9 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
             }
 
             _multiVideoPlayProvider.currentPages[2]++;
-            debugPrint(
-                '2: 프로필 다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[2]}');
           });
         });
+
         _profileProvider.isVideoLoadingDone = true;
       }
       return true;
@@ -118,7 +109,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     _profileProvider.uploadVideosResponse = null;
     _profileProvider.likeVideosResponse = null;
 
-    debugPrint("프로필 dispose");
     _multiVideoPlayProvider.resetVideoPlayer(1);
     _multiVideoPlayProvider.resetVideoPlayer(2);
   }
@@ -130,7 +120,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     return FutureBuilder<bool>(
         future: _initVideo(),
         builder: (context, snapshot) {
-          debugPrint('프로필: _initVideo 끝');
           if (snapshot.connectionState == ConnectionState.done ||
               snapshot.connectionState == ConnectionState.waiting) {
             return _profileProvider.uploadVideosResponse != null &&

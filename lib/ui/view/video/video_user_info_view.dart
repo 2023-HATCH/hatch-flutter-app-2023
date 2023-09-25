@@ -1,4 +1,3 @@
-// ignore: must_be_immutable
 import 'package:flutter/material.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
@@ -8,7 +7,6 @@ import 'package:pocket_pose/ui/screen/profile/profile_screen.dart';
 import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class VideoUserInfoView extends StatefulWidget {
   const VideoUserInfoView(
       {super.key, required this.screenNum, required this.index});
@@ -36,7 +34,6 @@ class _VideoUserInfoViewState extends State<VideoUserInfoView> {
         bottom: 110,
         left: 20,
         child: SizedBox(
-          //color: Colors.green,
           width: 270,
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,8 +45,6 @@ class _VideoUserInfoViewState extends State<VideoUserInfoView> {
                         widget.screenNum != 4) {
                       if (_multiVideoPlayProvider.isOpenProfile == false) {
                         _multiVideoPlayProvider.isOpenProfile = true;
-
-                        debugPrint('비디오 스크린 넘:::: ${widget.screenNum}');
 
                         _multiVideoPlayProvider.pauseVideo(widget.screenNum);
 

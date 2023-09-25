@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_pose/config/api_url.dart';
@@ -18,10 +17,10 @@ class CommentRepository {
     };
 
     final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("댓글 목록 조회 성공! json: $json");
+      debugPrint("댓글 목록 조회 성공!");
 
       final List<dynamic> commentListJson = json['data']['commentList'];
       final List<CommentData> commentList = commentListJson
@@ -32,7 +31,9 @@ class CommentRepository {
         commentList: commentList,
       );
     } else {
-      throw Exception('댓글 목록 조회 실패');
+      debugPrint("댓글 목록 조회 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/comment_repository.dart');
     }
   }
 
@@ -59,14 +60,15 @@ class CommentRepository {
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("댓글 등록 성공! json: $json");
+      debugPrint("댓글 등록 성공!");
 
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('댓글 등록 실패 json $json');
-      return false;
+      debugPrint("댓글 등록 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/comment_repository.dart');
     }
   }
 
@@ -88,14 +90,14 @@ class CommentRepository {
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("댓글 삭제 성공! json: $json");
-
+      debugPrint("댓글 삭제 성공!");
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('댓글 삭제 실패 json $json');
-      return false;
+      debugPrint("댓글 삭제 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/comment_repository.dart');
     }
   }
 }

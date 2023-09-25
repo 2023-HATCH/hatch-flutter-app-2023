@@ -5,7 +5,6 @@ import 'package:pocket_pose/ui/screen/profile/follow_tab_screen.dart';
 import 'package:pocket_pose/ui/view/profile/profile_buttons_view.dart';
 import 'package:pocket_pose/ui/widget/page_route_with_animation.dart';
 
-// ignore: must_be_immutable
 class ProfileUserInfoWidget extends StatelessWidget {
   const ProfileUserInfoWidget({
     super.key,
@@ -62,47 +61,10 @@ class ProfileUserInfoWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                GestureDetector(
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(0, 0, 50, 0),
-                      child: Column(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center, // 위 아래 정렬을 중앙으로 설정
-                        children: [
-                          Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                              child: Text(profileResponse.profile.followerCount
-                                  .toString())),
-                          const Text("팔로워"),
-                        ],
-                      ),
-                    ),
-                    onTap: () {
-                      PageRouteWithSlideAnimation pageRouteWithAnimation =
-                          PageRouteWithSlideAnimation(FollowTabScreen(
-                              tapNum: 0, profileResponse: profileResponse));
-                      Navigator.push(
-                          context, pageRouteWithAnimation.fadeInFadeOutRoute());
-                    }),
-                GestureDetector(
-                    child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center, // 위 아래 정렬을 중앙으로 설정
-                      children: [
-                        Container(
-                            margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                            child: Text(profileResponse.profile.followingCount
-                                .toString())),
-                        const Text("팔로잉"),
-                      ],
-                    ),
-                    onTap: () {
-                      PageRouteWithSlideAnimation pageRouteWithAnimation =
-                          PageRouteWithSlideAnimation(FollowTabScreen(
-                              tapNum: 1, profileResponse: profileResponse));
-                      Navigator.push(
-                          context, pageRouteWithAnimation.fadeInFadeOutRoute());
-                    }),
+                _follow(
+                    context, "팔로워", profileResponse.profile.followerCount, 0),
+                _follow(
+                    context, "팔로잉", profileResponse.profile.followingCount, 1),
               ],
             ),
           ),
@@ -111,5 +73,28 @@ class ProfileUserInfoWidget extends StatelessWidget {
         ],
       )),
     );
+  }
+
+  GestureDetector _follow(
+      BuildContext context, String title, int count, int tapNum) {
+    return GestureDetector(
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // 위 아래 정렬을 중앙으로 설정
+            children: [
+              Container(
+                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                  child: Text(count.toString())),
+              Text(title),
+            ],
+          ),
+        ),
+        onTap: () {
+          PageRouteWithSlideAnimation pageRouteWithAnimation =
+              PageRouteWithSlideAnimation(FollowTabScreen(
+                  tapNum: tapNum, profileResponse: profileResponse));
+          Navigator.push(context, pageRouteWithAnimation.fadeInFadeOutRoute());
+        });
   }
 }

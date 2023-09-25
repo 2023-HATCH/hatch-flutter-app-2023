@@ -46,87 +46,6 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
     });
   }
 
-  Future<void> _loadMoreVideos() async {
-    try {
-      if (widget.screenNum == 0) {
-        final videoProvider =
-            Provider.of<VideoProvider>(context, listen: false);
-        debugPrint(
-            '현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
-        videoProvider
-            .getVideos(VideosRequest(
-                page: _multiVideoPlayProvider.currentPages[widget.screenNum],
-                size: _multiVideoPlayProvider.pageSize))
-            .then((value) {
-          final response = videoProvider.response;
-
-          if (mounted) {
-            if (response != null) {
-              setState(() {
-                if (response.videoList.isNotEmpty) {
-                  _multiVideoPlayProvider.addVideos(
-                      widget.screenNum, response.videoList);
-                }
-                if (response.isLast) {
-                  _multiVideoPlayProvider.isLasts[widget.screenNum] = true;
-                  return;
-                }
-              });
-            }
-          }
-        });
-
-        _multiVideoPlayProvider.currentPages[widget.screenNum]++;
-        debugPrint(
-            '다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
-      }
-    } catch (e) {
-      // Handle error if needed
-      debugPrint('moon video_view.dart error: $e');
-    } finally {}
-  }
-
-  void onPageChanged(int index) {
-    if (mounted) {
-      debugPrint(
-          '비디오: _multiVideoPlayProvider.currentIndexs[widget.screenNum] // ${_multiVideoPlayProvider.currentIndexs[widget.screenNum]}');
-      debugPrint('비디오: index // $index');
-      debugPrint(
-          '비디오: _multiVideoPlayProvider.videos[widget.screenNum].length // ${_multiVideoPlayProvider.videos[widget.screenNum].length}');
-      setState(() {
-        _multiVideoPlayProvider.pauseVideo(widget.screenNum);
-
-        if (index != _multiVideoPlayProvider.videos[widget.screenNum].length) {
-          //if (!_multiVideoPlayProvider.isLasts[widget.screenNum]) {
-          _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
-          if (widget.setCurrentIndex != null) widget.setCurrentIndex!(index);
-
-          if (widget.screenNum == 0) {
-            if (_multiVideoPlayProvider.videos[widget.screenNum].length -
-                    _multiVideoPlayProvider.currentIndexs[widget.screenNum] <=
-                _multiVideoPlayProvider.pageSize - 1) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _loadMoreVideos();
-              });
-            }
-          }
-        } else {
-          if (_multiVideoPlayProvider.videos[widget.screenNum].length ==
-              index) {
-            // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
-            _multiVideoPlayProvider.pageControllers[widget.screenNum]
-                .jumpToPage(0);
-            _multiVideoPlayProvider.currentIndexs[widget.screenNum] = 0;
-          } else {
-            _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
-          }
-        }
-
-        _multiVideoPlayProvider.playVideo(widget.screenNum);
-      });
-    }
-  }
-
   @override
   void dispose() {
     super.dispose();
@@ -338,6 +257,82 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
           ),
         ],
       );
+    }
+  }
+
+  Future<void> _loadMoreVideos() async {
+    try {
+      if (widget.screenNum == 0) {
+        final videoProvider =
+            Provider.of<VideoProvider>(context, listen: false);
+        debugPrint(
+            '현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
+        videoProvider
+            .getVideos(VideosRequest(
+                page: _multiVideoPlayProvider.currentPages[widget.screenNum],
+                size: _multiVideoPlayProvider.pageSize))
+            .then((value) {
+          final response = videoProvider.response;
+
+          if (mounted) {
+            if (response != null) {
+              setState(() {
+                if (response.videoList.isNotEmpty) {
+                  _multiVideoPlayProvider.addVideos(
+                      widget.screenNum, response.videoList);
+                }
+                if (response.isLast) {
+                  _multiVideoPlayProvider.isLasts[widget.screenNum] = true;
+                  return;
+                }
+              });
+            }
+          }
+        });
+
+        _multiVideoPlayProvider.currentPages[widget.screenNum]++;
+        debugPrint(
+            '다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[widget.screenNum]}');
+      }
+    } catch (e) {
+      // Handle error if needed
+      debugPrint('moon video_view.dart error: $e');
+    } finally {}
+  }
+
+  void onPageChanged(int index) {
+    if (mounted) {
+      setState(() {
+        _multiVideoPlayProvider.pauseVideo(widget.screenNum);
+
+        if (index != _multiVideoPlayProvider.videos[widget.screenNum].length) {
+          //if (!_multiVideoPlayProvider.isLasts[widget.screenNum]) {
+          _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
+          if (widget.setCurrentIndex != null) widget.setCurrentIndex!(index);
+
+          if (widget.screenNum == 0) {
+            if (_multiVideoPlayProvider.videos[widget.screenNum].length -
+                    _multiVideoPlayProvider.currentIndexs[widget.screenNum] <=
+                _multiVideoPlayProvider.pageSize - 1) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _loadMoreVideos();
+              });
+            }
+          }
+        } else {
+          if (_multiVideoPlayProvider.videos[widget.screenNum].length ==
+              index) {
+            // 마지막 페이지에 도달했을 때 페이지를 0으로 바로 이동
+            _multiVideoPlayProvider.pageControllers[widget.screenNum]
+                .jumpToPage(0);
+            _multiVideoPlayProvider.currentIndexs[widget.screenNum] = 0;
+          } else {
+            _multiVideoPlayProvider.currentIndexs[widget.screenNum] = index;
+          }
+        }
+
+        _multiVideoPlayProvider.playVideo(widget.screenNum);
+      });
     }
   }
 }

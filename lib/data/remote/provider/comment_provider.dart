@@ -19,7 +19,7 @@ class CommentProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('CommentRepository getComments 에러: $e');
+      debugPrint('moon error! CommentRepository getComments: $e');
     }
   }
 
@@ -29,7 +29,7 @@ class CommentProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('CommentRepository postComment 에러: $e');
+      debugPrint('moon error! CommentRepository postComment: $e');
     }
   }
 
@@ -39,7 +39,7 @@ class CommentProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('CommentRepository deleteComment 에러: $e');
+      debugPrint('moon error! CommentRepository deleteComment: $e');
     }
   }
 }

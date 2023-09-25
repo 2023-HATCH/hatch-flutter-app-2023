@@ -33,14 +33,10 @@ class _VideoUploadDialogState extends State<VideoUploadDialog> {
     _initializeVideoController();
   }
 
-  void _initializeVideoController() {
-    _videoController = CachedVideoPlayerController.file(widget.file)
-      ..initialize().then((_) {
-        _videoController.play();
-        _videoController.setLooping(true);
-        _videoController.setVolume(1.0);
-        setState(() {});
-      });
+  @override
+  void dispose() {
+    _videoController.dispose();
+    super.dispose();
   }
 
   @override
@@ -117,9 +113,13 @@ class _VideoUploadDialogState extends State<VideoUploadDialog> {
     );
   }
 
-  @override
-  void dispose() {
-    _videoController.dispose();
-    super.dispose();
+  void _initializeVideoController() {
+    _videoController = CachedVideoPlayerController.file(widget.file)
+      ..initialize().then((_) {
+        _videoController.play();
+        _videoController.setLooping(true);
+        _videoController.setVolume(1.0);
+        setState(() {});
+      });
   }
 }
