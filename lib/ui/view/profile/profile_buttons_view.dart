@@ -41,18 +41,6 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
   late bool isMe;
   late bool isFollowing;
 
-  Future<bool> _initUser() async {
-    if (await _loginProvider.checkAccessToken()) {
-      UserData user = await _loginProvider.getUser();
-
-      _user = user;
-    } else {
-      _user = null;
-    }
-
-    return true;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -264,6 +252,18 @@ class _ProfileButtonsWidgetState extends State<ProfileButtonsWidget> {
             return Container();
           }
         });
+  }
+
+  Future<bool> _initUser() async {
+    if (await _loginProvider.checkAccessToken()) {
+      UserData user = await _loginProvider.getUser();
+
+      _user = user;
+    } else {
+      _user = null;
+    }
+
+    return true;
   }
 
   _startChat() async {

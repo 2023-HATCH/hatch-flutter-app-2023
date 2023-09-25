@@ -44,9 +44,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     if (mounted) {
       if (!_profileProvider.isVideoLoadingDone) {
         // 업로드한 영상 목록 조회
-        debugPrint(
-            '1: 프로필 현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
-
         _profileProvider
             .getUploadVideos(ProfileVideosRequest(
                 userId: widget._profileResponse.user.userId,
@@ -70,12 +67,7 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
           }
 
           _multiVideoPlayProvider.currentPages[1]++;
-          debugPrint(
-              '1: 프로필 다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
         });
-
-        debugPrint(
-            '2: 프로필 현재 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[1]}');
 
         // 좋아요한 영상 목록 조회
         _profileProvider
@@ -101,8 +93,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
           }
 
           _multiVideoPlayProvider.currentPages[2]++;
-          debugPrint(
-              '2: 프로필 다음에 호출될 페이지: _multiVideoPlayProvider.currentPage ${_multiVideoPlayProvider.currentPages[2]}');
         });
         _profileProvider.isVideoLoadingDone = true;
       }
@@ -118,7 +108,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     _profileProvider.uploadVideosResponse = null;
     _profileProvider.likeVideosResponse = null;
 
-    debugPrint("프로필 dispose");
     _multiVideoPlayProvider.resetVideoPlayer(1);
     _multiVideoPlayProvider.resetVideoPlayer(2);
   }
@@ -130,7 +119,6 @@ class _ProfileTabVideosWidgetState extends State<ProfileTabVideosWidget> {
     return FutureBuilder<bool>(
         future: _initVideo(),
         builder: (context, snapshot) {
-          debugPrint('프로필: _initVideo 끝');
           if (snapshot.connectionState == ConnectionState.done ||
               snapshot.connectionState == ConnectionState.waiting) {
             return _profileProvider.uploadVideosResponse != null &&
