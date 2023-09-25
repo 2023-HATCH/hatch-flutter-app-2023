@@ -30,9 +30,9 @@ class ProfileRepository {
     };
 
     final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("프로필 정보 조회 성공!");
 
       loginProvider.updateToken(response.headers);
@@ -86,6 +86,7 @@ class ProfileRepository {
     });
 
     final response = await http.patch(url, headers: headers, body: body);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       debugPrint("프로필 수정 성공!");
@@ -121,9 +122,9 @@ class ProfileRepository {
     };
 
     final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("프로필 업로드한 비디오 목록 조회 성공!");
 
       final List<dynamic> videoListJson = json['data']['videoList'];
@@ -167,9 +168,9 @@ class ProfileRepository {
     };
 
     final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("프로필 좋아요한 비디오 목록 조회 성공!");
 
       final List<dynamic> videoListJson = json['data']['videoList'];

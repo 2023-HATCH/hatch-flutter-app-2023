@@ -18,9 +18,9 @@ class FollowRepository {
     };
 
     final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("팔로우 목록 조회 성공!");
 
       final List<dynamic> followerListJson = json['data']['followerList'];

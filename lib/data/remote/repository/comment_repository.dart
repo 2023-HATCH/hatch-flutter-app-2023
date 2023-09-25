@@ -17,9 +17,9 @@ class CommentRepository {
     };
 
     final response = await http.get(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("댓글 목록 조회 성공!");
 
       final List<dynamic> commentListJson = json['data']['commentList'];

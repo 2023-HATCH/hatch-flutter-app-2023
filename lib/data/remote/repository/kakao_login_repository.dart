@@ -21,10 +21,9 @@ class KaKaoLoginRepository {
     });
 
     final response = await http.post(url, headers: headers, body: body);
-    debugPrint("response: ${response.body}");
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("카카오 로그인 성공!");
 
       final user = UserData(
@@ -66,9 +65,9 @@ class KaKaoLoginRepository {
     };
 
     final response = await http.delete(url, headers: headers);
+    final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(utf8.decode(response.bodyBytes));
       debugPrint("카카오 로그아웃 성공! json: $json");
 
       loginProvider.updateToken(response.headers);
