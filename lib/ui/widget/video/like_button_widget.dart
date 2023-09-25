@@ -6,12 +6,12 @@ import 'package:pocket_pose/data/remote/provider/kakao_login_provider.dart';
 import 'package:pocket_pose/data/remote/provider/like_provider.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class LikeButtonWidget extends StatefulWidget {
-  LikeButtonWidget({super.key, required this.screenNum, required this.index});
+  const LikeButtonWidget(
+      {super.key, required this.screenNum, required this.index});
 
-  int screenNum;
-  int index;
+  final int screenNum;
+  final int index;
 
   @override
   State<LikeButtonWidget> createState() => _LikeButtonWidgetState();
