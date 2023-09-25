@@ -9,7 +9,6 @@ import 'package:pocket_pose/ui/loader/profile_screen_loader.dart';
 import 'package:pocket_pose/ui/screen/main_screen.dart';
 import 'package:pocket_pose/ui/view/profile/profile_tab_videos_view.dart';
 import 'package:pocket_pose/ui/widget/profile/profile_tapbar_widget.dart';
-
 import 'package:pocket_pose/ui/view/profile/profile_user_info_view.dart';
 import 'package:provider/provider.dart';
 
@@ -51,36 +50,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     _multiVideoPlayProvider.isOpenProfile = true;
 
     _tabController = TabController(length: 2, vsync: this);
-  }
-
-  Future<bool> _initUser() async {
-    if (!_profileProvider.isGetProfilDone) {
-      // 로그인 했는지 확인
-      if (await _loginProvider.checkAccessToken()) {
-        // 로그인 한 경우
-        UserData user = await _loginProvider.getUser(); // 로그인 된 사용자 정보
-
-        if (mounted) {
-          setState(() {
-            if (_userId != null) {
-              // navigation이 아닌 곳에서 자신의 프로필을 조회한 경우
-              // if (_userId == user.userId) {
-              //   isNotBottomNavi = true;
-              // }
-            }
-            _userId ??= user.userId;
-          });
-        }
-      }
-      _profileProvider.isGetProfilDone = true;
-      if (_userId == null) {
-        return true;
-      } else {
-        _profileProvider.getUserProfile(_userId!);
-      }
-    }
-
-    return true;
   }
 
   @override
@@ -177,9 +146,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ),
                               ),
                               onTap: (index) {
-                                debugPrint("Selected Tab: $index");
-                                setState(
-                                    () {}); // index에 따라 업로드, 좋아요 영상 조회 api 호출
+                                // index에 따라 업로드, 좋아요 영상 조회 api 호출
+                                setState(() {});
                               },
                             ),
                           ),
@@ -197,5 +165,29 @@ class _ProfileScreenState extends State<ProfileScreen>
             }
           }),
     );
+  }
+
+  Future<bool> _initUser() async {
+    if (!_profileProvider.isGetProfilDone) {
+      // 로그인 했는지 확인
+      if (await _loginProvider.checkAccessToken()) {
+        // 로그인 한 경우
+        UserData user = await _loginProvider.getUser(); // 로그인 된 사용자 정보
+
+        if (mounted) {
+          setState(() {
+            _userId ??= user.userId;
+          });
+        }
+      }
+      _profileProvider.isGetProfilDone = true;
+      if (_userId == null) {
+        return true;
+      } else {
+        _profileProvider.getUserProfile(_userId!);
+      }
+    }
+
+    return true;
   }
 }
