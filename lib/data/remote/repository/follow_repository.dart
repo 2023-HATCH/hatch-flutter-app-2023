@@ -21,7 +21,7 @@ class FollowRepository {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      debugPrint("팔로우 목록 조회 성공! json: $json");
+      debugPrint("팔로우 목록 조회 성공!");
 
       final List<dynamic> followerListJson = json['data']['followerList'];
       final List<FollowData> followerList = followerListJson
@@ -38,7 +38,9 @@ class FollowRepository {
         followingList: followingList,
       );
     } else {
-      throw Exception('팔로우 목록 조회 실패');
+      debugPrint("팔로우 목록 조회 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/follow_repository.dart');
     }
   }
 
@@ -60,14 +62,15 @@ class FollowRepository {
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("팔로우 등록 성공! json: $json");
+      debugPrint("팔로우 등록 성공!");
 
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('팔로우 등록 실패 json $json');
-      return false;
+      debugPrint("팔로우 등록 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/follow_repository.dart');
     }
   }
 
@@ -89,14 +92,15 @@ class FollowRepository {
     final json = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      debugPrint("팔로우 삭제 성공! json: $json");
+      debugPrint("팔로우 삭제 성공!");
 
       loginProvider.updateToken(response.headers);
 
       return true;
     } else {
-      debugPrint('팔로우 삭제 실패 json $json');
-      return false;
+      debugPrint("팔로우 삭제 실패! json: $json");
+      throw Exception(
+          'moon error! lib/data/remote/repository/follow_repository.dart');
     }
   }
 }
