@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pocket_pose/config/app_color.dart';
@@ -60,6 +59,42 @@ class _CommentButtonViewState extends State<CommentButtonView> {
     '💕',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
+    _getComments();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(onTap: () async => _ontap(), child: widget.childWidget);
+  }
+
+  void _getComments() {
+    _commentProvider.getComments(widget.videoId).then((value) {
+      final newCommentList = _commentProvider.response?.commentList;
+      if (mounted) {
+        setState(() {
+          _commentList = newCommentList?.reversed.toList();
+
+          _isNotEmptyComment = _multiVideoPlayProvider
+                  .videos[widget.screenNum][widget.index].commentCount >
+              0;
+        });
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openComment();
+    });
+  }
+
   Future<void> _loadCommentList(StateSetter bottomState) async {
     try {
       _commentProvider.getComments(widget.videoId).then((value) {
@@ -78,7 +113,7 @@ class _CommentButtonViewState extends State<CommentButtonView> {
         }
       });
     } catch (e) {
-      debugPrint('댓글 목록 조회 api 호출 실패');
+      debugPrint('댓글 목록 조회 api 호출 실패 $e');
     } finally {}
   }
 
@@ -94,28 +129,6 @@ class _CommentButtonViewState extends State<CommentButtonView> {
         });
       }
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loginProvider = Provider.of<KaKaoLoginProvider>(context, listen: false);
-
-    _commentProvider.getComments(widget.videoId).then((value) {
-      final newCommentList = _commentProvider.response?.commentList;
-      if (mounted) {
-        setState(() {
-          _commentList = newCommentList?.reversed.toList();
-
-          _isNotEmptyComment = _multiVideoPlayProvider
-                  .videos[widget.screenNum][widget.index].commentCount >
-              0;
-        });
-      }
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _openComment();
-    });
   }
 
   void _openComment() async {
@@ -136,7 +149,14 @@ class _CommentButtonViewState extends State<CommentButtonView> {
         }
       }
     }
-    showModalBottomSheet(
+    _commentBottomSheet().then((value) {
+      widget.onRefresh();
+      isClicked = false;
+    });
+  }
+
+  Future<dynamic> _commentBottomSheet() {
+    return showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -206,6 +226,7 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                           controller: _scrollController,
                           itemCount: _commentList?.length,
                           itemBuilder: (context, index) {
+                            // 댓글 작성 시간 형식 지정
                             final year = _commentList?[index].createdAt.year;
                             final month = _commentList?[index]
                                 .createdAt
@@ -245,102 +266,54 @@ class _CommentButtonViewState extends State<CommentButtonView> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            // _multiVideoPlayProvider
-                                            //     .pauseVideo(widget.screenNum);
-                                            // PageRouteWithSlideAnimation
-                                            //     pageRouteWithAnimation =
-                                            //     PageRouteWithSlideAnimation(
-                                            //         ProfileScreen(
-                                            //             userId:
-                                            //                 _commentList?[index]
-                                            //                     .user
-                                            //                     .userId));
-
-                                            // Navigator.push(
-                                            //         context,
-                                            //         pageRouteWithAnimation
-                                            //             .slideRitghtToLeft())
-                                            //     .then((value) {
-                                            //   _multiVideoPlayProvider
-                                            //       .playVideo(widget.screenNum);
-                                            // });
-                                          },
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                              child: _commentList?[index]
-                                                          .user
-                                                          .profileImg ==
-                                                      null
-                                                  ? Image.asset(
-                                                      _profileImg,
-                                                      width: 34,
-                                                      height: 34,
-                                                    )
-                                                  : Image.network(
-                                                      _commentList![index]
-                                                          .user
-                                                          .profileImg!,
-                                                      loadingBuilder: (context,
-                                                          child,
-                                                          loadingProgress) {
-                                                        if (loadingProgress ==
-                                                            null) {
-                                                          return child;
-                                                        }
-                                                        return Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                            color: AppColor
-                                                                .purpleColor,
-                                                          ),
-                                                        );
-                                                      },
-                                                      width: 34,
-                                                      height: 34,
-                                                      fit: BoxFit.cover,
-                                                    )),
-                                        ),
+                                        ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            child: _commentList?[index]
+                                                        .user
+                                                        .profileImg ==
+                                                    null
+                                                ? Image.asset(
+                                                    _profileImg,
+                                                    width: 34,
+                                                    height: 34,
+                                                  )
+                                                : Image.network(
+                                                    _commentList![index]
+                                                        .user
+                                                        .profileImg!,
+                                                    loadingBuilder: (context,
+                                                        child,
+                                                        loadingProgress) {
+                                                      if (loadingProgress ==
+                                                          null) {
+                                                        return child;
+                                                      }
+                                                      return Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          color: AppColor
+                                                              .purpleColor,
+                                                        ),
+                                                      );
+                                                    },
+                                                    width: 34,
+                                                    height: 34,
+                                                    fit: BoxFit.cover,
+                                                  )),
                                         const Padding(
                                             padding: EdgeInsets.only(left: 8)),
                                         Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                // _multiVideoPlayProvider
-                                                //     .pauseVideo(
-                                                //         widget.screenNum);
-                                                // PageRouteWithSlideAnimation
-                                                //     pageRouteWithAnimation =
-                                                //     PageRouteWithSlideAnimation(
-                                                //         ProfileScreen(
-                                                //             userId:
-                                                //                 _commentList?[
-                                                //                         index]
-                                                //                     .user
-                                                //                     .userId));
-                                                // Navigator.push(
-                                                //         context,
-                                                //         pageRouteWithAnimation
-                                                //             .slideRitghtToLeft())
-                                                //     .then((value) {
-                                                //   _multiVideoPlayProvider
-                                                //       .playVideo(
-                                                //           widget.screenNum);
-                                                // });
-                                              },
-                                              child: Text(
-                                                _commentList?[index]
-                                                        .user
-                                                        .nickname ??
-                                                    '',
-                                                style: const TextStyle(
-                                                    fontSize: 12),
-                                              ),
+                                            Text(
+                                              _commentList?[index]
+                                                      .user
+                                                      .nickname ??
+                                                  '',
+                                              style:
+                                                  const TextStyle(fontSize: 12),
                                             ),
                                             const Padding(
                                                 padding:
@@ -654,20 +627,6 @@ class _CommentButtonViewState extends State<CommentButtonView> {
           );
         });
       },
-    ).then((value) {
-      widget.onRefresh();
-      isClicked = false;
-    });
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(onTap: () async => _ontap(), child: widget.childWidget);
+    );
   }
 }
