@@ -94,7 +94,7 @@ class VideoRepository {
     loginProvider.updateToken(response.headers);
 
     if (response.statusCode == 200) {
-      debugPrint("조회수 증가 성공! json: $json");
+      debugPrint("조회수 증가 성공!");
     } else {
       debugPrint("조회수 증가 실패! json: $json");
       throw Exception(
