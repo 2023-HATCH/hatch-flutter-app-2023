@@ -150,10 +150,12 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
                             .currentIndexs[widget.screenNum] <=
                         0) {
                       //모든 비디오 로드 전 처음 화면에 진입했을 경우
-                      return Container(color: Colors.yellow); // 비디오 로딩 중
+                      //return Container(color: Colors.yellow);
+                      return const MusicSpinner();
                     } else {
                       //마지막 페이지에 진입했을 경우
-                      return Container(color: Colors.pink);
+                      //return Container(color: Colors.pink);
+                      return const MusicSpinner();
                     }
                   }
                 }
@@ -245,10 +247,12 @@ class _MultiVideoPlayerViewState extends State<MultiVideoPlayerView>
                   if (_multiVideoPlayProvider.currentIndexs[widget.screenNum] <=
                       0) {
                     //모든 비디오 로드 전 처음 화면에 진입했을 경우
-                    return Container(color: Colors.yellow); // 비디오 로딩 중
+                    //return Container(color: Colors.yellow);
+                    return const MusicSpinner();
                   } else {
                     //마지막 페이지에 진입했을 경우
-                    return Container(color: Colors.pink);
+                    //return Container(color: Colors.pink);
+                    return const MusicSpinner();
                   }
                 }
               }
