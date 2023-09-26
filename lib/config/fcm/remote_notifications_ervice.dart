@@ -9,6 +9,7 @@ class RemoteNotificationService {
   }
 
   Future<void> initNotificationSettings(FirebaseMessaging messaging) async {
+    await FirebaseMessaging.instance.getInitialMessage();
     await FirebaseMessaging.instance.setAutoInitEnabled(true);
     await messaging.requestPermission(
       alert: true,
