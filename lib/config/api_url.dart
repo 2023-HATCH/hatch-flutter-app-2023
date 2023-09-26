@@ -63,4 +63,7 @@ class AppUrl {
   static const chatRoomUrl = "$_chatUrl/rooms";
   static const socketSubscribeChatUrl = "/topic/chats/rooms";
   static const socketChatkUrl = "/app/chats/messages";
+
+  // 에러
+  static const socketErrorUrl = "/user/topic/errors";
 }
