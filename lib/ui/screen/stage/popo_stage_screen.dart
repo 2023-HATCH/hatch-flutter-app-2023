@@ -11,6 +11,7 @@ import 'package:pocket_pose/config/audio_player/audio_player_util.dart';
 import 'package:pocket_pose/data/entity/request/stage_enter_request.dart';
 import 'package:pocket_pose/data/local/provider/multi_video_play_provider.dart';
 import 'package:pocket_pose/data/local/service/popo_foreground_service.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_error_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/user_data.dart';
@@ -37,6 +38,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
   late MultiVideoPlayProvider _multiVideoPlayProvider;
   late StageProviderImpl _stageProvider;
   late SocketStageProviderImpl _socketStageProvider;
+  late SocketStageErrorProviderImpl _socketStageErrorProvider;
   bool _isRecording = false;
 
   @override
@@ -140,6 +142,8 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     _stageProvider = Provider.of<StageProviderImpl>(context, listen: false);
     _socketStageProvider =
         Provider.of<SocketStageProviderImpl>(context, listen: false);
+    _socketStageErrorProvider =
+        Provider.of<SocketStageErrorProviderImpl>(context, listen: false);
   }
 
   @override
@@ -151,6 +155,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
 
     if (_isEnter) {
       _socketStageProvider.exitStage();
+      _socketStageErrorProvider.exitStage();
       _isEnter = false;
       _stageProvider.talkList.clear();
 
@@ -234,6 +239,7 @@ class _PoPoStageScreenState extends State<PoPoStageScreen> {
     if (!_isEnter) {
       _isEnter = true;
       _socketStageProvider.connectWebSocket();
+      _socketStageErrorProvider.connectWebSocket();
     }
 
     var isConnect = context.select<SocketStageProviderImpl, bool>(

@@ -17,6 +17,7 @@ import 'package:pocket_pose/data/remote/provider/profile_provider.dart';
 import 'package:pocket_pose/data/remote/provider/search_provider.dart';
 import 'package:pocket_pose/data/remote/provider/share_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/socket_chat_provider_impl.dart';
+import 'package:pocket_pose/data/remote/provider/socket_stage_error_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/data/remote/provider/stage_talk_provider_impl.dart';
@@ -65,6 +66,7 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (_) => SocketChatProviderImpl()),
     ChangeNotifierProvider(create: (_) => StageProviderImpl()),
     ChangeNotifierProvider(create: (_) => SocketStageProviderImpl()),
+    ChangeNotifierProvider(create: (_) => SocketStageErrorProviderImpl()),
     ChangeNotifierProvider(create: (_) => StageTalkProviderImpl()),
     ChangeNotifierProvider(create: (_) => ShareProviderImpl()),
   ], child: MyApp(showOnBoarding: showOnBoarding)));
