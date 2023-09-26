@@ -6,9 +6,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 class StageResultPlayerInfoWidget extends StatelessWidget {
   const StageResultPlayerInfoWidget(
-      {super.key, required this.player, required this.index});
+      {super.key,
+      required this.player,
+      required this.index,
+      required this.playerLength});
   final StagePlayerInfoListItem player;
   final int index;
+  final int playerLength;
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +146,9 @@ class StageResultPlayerInfoWidget extends StatelessWidget {
         ),
       ),
     )
-        .animate()
+        .animate(delay: (1000 * playerLength - 1000 * (index + 1)).ms)
         .shimmer(duration: 1200.ms, color: AppColor.grayColor2)
-        .animate()
+        .animate(delay: (1000 * playerLength - 1000 * (index + 1)).ms)
         .fadeIn(duration: 1200.ms, curve: Curves.fastOutSlowIn)
         .slide();
   }
