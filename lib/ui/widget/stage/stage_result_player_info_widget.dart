@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/domain/entity/stage_player_info_list_item.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class StageResultPlayerInfoWidget extends StatelessWidget {
   const StageResultPlayerInfoWidget(
@@ -140,6 +141,11 @@ class StageResultPlayerInfoWidget extends StatelessWidget {
           ),
         ),
       ),
-    );
+    )
+        .animate()
+        .shimmer(duration: 1200.ms, color: AppColor.grayColor2)
+        .animate()
+        .fadeIn(duration: 1200.ms, curve: Curves.fastOutSlowIn)
+        .slide();
   }
 }
