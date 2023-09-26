@@ -7,6 +7,7 @@ import 'package:pocket_pose/data/remote/provider/stage_provider_impl.dart';
 import 'package:pocket_pose/domain/entity/stage_player_list_item.dart';
 import 'package:pocket_pose/ui/view/stage/ml_kit_camera_play_view.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 // ml_kit_skeleton_custom_view
 class PoPoPlayView extends StatefulWidget {
@@ -90,7 +91,9 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
                   widget.players[0].profileImg,
                   widget.players[0].nickname,
                   context.select<SocketStageProviderImpl, double?>(
-                      (provider) => provider.midScores?[0].similarity)),
+                      (provider) => provider.midScores?[0].similarity),
+                  context.select<SocketStageProviderImpl, int>(
+                      (provider) => provider.midScoreKey)),
             ],
           ),
         );
@@ -107,12 +110,16 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
                   widget.players[1].profileImg,
                   widget.players[1].nickname,
                   context.select<SocketStageProviderImpl, double?>(
-                      (provider) => provider.midScores?[1].similarity)),
+                      (provider) => provider.midScores?[1].similarity),
+                  context.select<SocketStageProviderImpl, int>(
+                      (provider) => provider.midScoreKey)),
               getProfile(
                   widget.players[0].profileImg,
                   widget.players[0].nickname,
                   context.select<SocketStageProviderImpl, double?>(
-                      (provider) => provider.midScores?[0].similarity)),
+                      (provider) => provider.midScores?[0].similarity),
+                  context.select<SocketStageProviderImpl, int>(
+                      (provider) => provider.midScoreKey)),
             ],
           ),
         );
@@ -128,17 +135,23 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
                   widget.players[1].profileImg,
                   widget.players[1].nickname,
                   context.select<SocketStageProviderImpl, double?>(
-                      (provider) => provider.midScores?[1].similarity)),
+                      (provider) => provider.midScores?[1].similarity),
+                  context.select<SocketStageProviderImpl, int>(
+                      (provider) => provider.midScoreKey)),
               getProfile(
                   widget.players[0].profileImg,
                   widget.players[0].nickname,
                   context.select<SocketStageProviderImpl, double?>(
-                      (provider) => provider.midScores?[0].similarity)),
+                      (provider) => provider.midScores?[0].similarity),
+                  context.select<SocketStageProviderImpl, int>(
+                      (provider) => provider.midScoreKey)),
               getProfile(
                   widget.players[2].profileImg,
                   widget.players[2].nickname,
                   context.select<SocketStageProviderImpl, double?>(
-                      (provider) => provider.midScores?[2].similarity)),
+                      (provider) => provider.midScores?[2].similarity),
+                  context.select<SocketStageProviderImpl, int>(
+                      (provider) => provider.midScoreKey)),
             ],
           ),
         );
@@ -147,7 +160,8 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     }
   }
 
-  Column getProfile(String? profileImg, String nickName, double? score) {
+  Widget getProfile(
+      String? profileImg, String nickName, double? score, int key) {
     return Column(
       children: [
         ClipRRect(
@@ -187,12 +201,12 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
         const SizedBox(
           height: 8,
         ),
-        getScoreNeonText(score),
+        getScoreNeonText(score, key),
       ],
     );
   }
 
-  Widget getScoreNeonText(double? similarity) {
+  Widget getScoreNeonText(double? similarity, int key) {
     String scoreText = "";
     Color scoreNeonColor = Colors.transparent;
 
@@ -228,6 +242,13 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
           ],
         ),
       ),
-    );
+    )
+        .animate(key: Key(key.toString()))
+        .scale(
+            duration: 200.ms,
+            begin: const Offset(0.9, 0.9),
+            end: const Offset(1, 1))
+        .animate(delay: 200.ms)
+        .shake(curve: Curves.bounceIn);
   }
 }

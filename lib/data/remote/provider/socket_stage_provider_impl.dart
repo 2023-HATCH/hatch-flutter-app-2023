@@ -89,6 +89,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   Map<PoseLandmarkType, PoseLandmark>? player1;
   Map<PoseLandmarkType, PoseLandmark>? player2;
   List<StagePlayerInfoListItem>? midScores;
+  int _midScoreKey = 0;
   Map<PoseLandmarkType, PoseLandmark>? mvpSkeleton;
 
   SocketType _socketType = SocketType.WAIT;
@@ -103,6 +104,7 @@ class SocketStageProviderImpl extends ChangeNotifier
   StageMusicData? get catchMusicData => _catchMusicData;
   int get userCount => _userCount;
   List<StagePlayerInfoListItem> get playerInfos => _playerInfos;
+  int get midScoreKey => _midScoreKey;
   StageTalkListItem? get talk => _talk;
 
   List<StagePlayerListItem> get players => _players;
@@ -331,6 +333,7 @@ class SocketStageProviderImpl extends ChangeNotifier
             jsonDecode(frame.body.toString()),
             StageMidScoreResponse.fromJson(
                 jsonDecode(frame.body.toString())['data']));
+        _midScoreKey++;
         midScores = socketResponse.data?.playerInfos ?? [];
         notifyListeners();
         break;
