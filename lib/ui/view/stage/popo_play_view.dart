@@ -212,16 +212,16 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
 
     if (similarity == null) {
       scoreText = "";
-    } else if (similarity < -1) {
+    } else if (similarity < 0.3) {
       scoreText = "Bad";
       scoreNeonColor = Colors.red;
-    } else if (similarity < 0.4) {
+    } else if (similarity < 0.5) {
       scoreText = "Good";
       scoreNeonColor = AppColor.purpleColor2;
-    } else if (similarity < 0.6) {
+    } else if (similarity < 0.7) {
       scoreText = "Great";
       scoreNeonColor = AppColor.greenColor;
-    } else if (similarity < 0.8) {
+    } else if (similarity < 0.9) {
       scoreText = "Excellent";
       scoreNeonColor = AppColor.blueColor2;
     } else if (similarity <= 1.0) {
@@ -245,14 +245,14 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
     )
         .animate(key: Key(key.toString()))
         .fadeIn()
+        .animate(key: Key(key.toString()), delay: 100.ms)
         .scale(
             duration: 200.ms,
             begin: const Offset(0.9, 0.9),
             end: const Offset(1, 1))
-        .animate(delay: 200.ms)
+        .animate(key: Key(key.toString()), delay: 300.ms)
         .shake(curve: Curves.bounceIn)
-        .fadeOut(
-          duration: 300.ms,
-        );
+        .animate(key: Key(key.toString()), delay: 900.ms)
+        .fadeOut();
   }
 }
