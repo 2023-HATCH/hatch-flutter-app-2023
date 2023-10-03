@@ -91,6 +91,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+@pragma('vm:entry-point')
 void setNotificationHandler(Map<String, dynamic>? map) async {
   if (map != null) {
     try {
@@ -131,8 +132,10 @@ void setNotificationHandler(Map<String, dynamic>? map) async {
   }
 }
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint("mmm ${message.data}");
-  await Firebase.initializeApp()
-      .then((_) => setNotificationHandler(message.data));
+  await Firebase.initializeApp();
+  setNotificationHandler(message.data);
+
+  return Future.value();
 }

@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocket_pose/config/app_color.dart';
 import 'package:pocket_pose/domain/entity/stage_player_info_list_item.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class StageResultPlayerInfoWidget extends StatelessWidget {
   const StageResultPlayerInfoWidget(
-      {super.key, required this.player, required this.index});
+      {super.key,
+      required this.player,
+      required this.index,
+      required this.playerLength});
   final StagePlayerInfoListItem player;
   final int index;
+  final int playerLength;
 
   @override
   Widget build(BuildContext context) {
@@ -16,21 +21,42 @@ class StageResultPlayerInfoWidget extends StatelessWidget {
       child: (index == 0)
           //  mvp면 테두리 네온 추가
           ? Container(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      color: Colors.white,
-                      width: 1.0,
-                      style: BorderStyle.solid),
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    for (double i = 1; i < 5; i++)
-                      BoxShadow(
-                          color: AppColor.yellowColor,
-                          blurStyle: BlurStyle.outer,
-                          blurRadius: 3 * i)
-                  ]),
-              child: _buildPlayerInfoWidget(player, index))
-          : _buildPlayerInfoWidget(player, index),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.white,
+                          width: 1.0,
+                          style: BorderStyle.solid),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        for (double i = 1; i < 5; i++)
+                          BoxShadow(
+                              color: AppColor.yellowColor,
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 3 * i)
+                      ]),
+                  child: _buildPlayerInfoWidget(player, index))
+              .animate(
+                  delay:
+                      (1000 * playerLength - 1000 * (playerLength - index + 1))
+                          .ms)
+              .shimmer(duration: 1200.ms, color: AppColor.grayColor2)
+              .animate(
+                  delay:
+                      (1000 * playerLength - 1000 * (playerLength - index + 1))
+                          .ms)
+              .scale(begin: const Offset(0.8, 0.8))
+          : _buildPlayerInfoWidget(player, index)
+              .animate(
+                  delay:
+                      (1000 * playerLength - 1000 * (playerLength - index + 1))
+                          .ms)
+              .shimmer(duration: 1200.ms, color: AppColor.grayColor2)
+              .animate(
+                  delay:
+                      (1000 * playerLength - 1000 * (playerLength - index + 1))
+                          .ms)
+              .fadeIn(duration: 1200.ms, curve: Curves.fastOutSlowIn)
+              .slide(),
     );
   }
 

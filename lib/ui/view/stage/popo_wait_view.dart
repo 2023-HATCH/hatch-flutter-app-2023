@@ -1,9 +1,6 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pocket_pose/data/entity/socket_request/send_skeleton_request.dart';
-import 'package:pocket_pose/data/remote/provider/socket_stage_provider_impl.dart';
-import 'package:provider/provider.dart';
 
 class PoPoWaitView extends StatefulWidget {
   const PoPoWaitView({Key? key}) : super(key: key);
@@ -14,7 +11,6 @@ class PoPoWaitView extends StatefulWidget {
 
 class _PoPoWaitViewState extends State<PoPoWaitView> {
   AssetsAudioPlayer? _assetsAudioPlayer;
-  late SocketStageProviderImpl _socketStageProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +26,10 @@ class _PoPoWaitViewState extends State<PoPoWaitView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 80.0),
-              InkWell(
-                onTap: () {
-                  var resuest = SendSkeletonRequest(
-                      playerNum: 0, frameNum: 1, skeleton: {});
-                  _socketStageProvider.sendPlaySkeleton(resuest);
-                },
-                child: const Text(
-                  "대기중...",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 40, color: Colors.white),
-                ),
+              const Text(
+                "대기중...",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 40, color: Colors.white),
               ),
               const SizedBox(height: 20.0),
               const Text(
@@ -70,8 +59,6 @@ class _PoPoWaitViewState extends State<PoPoWaitView> {
 
   @override
   void initState() {
-    _socketStageProvider =
-        Provider.of<SocketStageProviderImpl>(context, listen: false);
     _assetsAudioPlayer = AssetsAudioPlayer();
     _assetsAudioPlayer?.open(Audio("assets/audios/sound_stage_wait.mp3"));
     super.initState();

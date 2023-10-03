@@ -95,8 +95,10 @@ class _PoPoResultViewState extends State<PoPoResultView> {
                       index < _socketStageProvider.playerInfos.length;
                       index++)
                     StageResultPlayerInfoWidget(
-                        player: _socketStageProvider.playerInfos[index],
-                        index: index)
+                      player: _socketStageProvider.playerInfos[index],
+                      index: index,
+                      playerLength: _socketStageProvider.playerInfos.length,
+                    )
                 ],
               ),
             ],
