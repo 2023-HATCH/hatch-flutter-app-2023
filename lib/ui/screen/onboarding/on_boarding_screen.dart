@@ -34,22 +34,23 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         setState(() {});
       },
       globalBackgroundColor: Colors.black,
-      globalHeader:
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-        Padding(
-          padding: const EdgeInsets.all(18.0),
-          child: TextButton(
-            onPressed: () {
-              _introKey.currentState?.skipToEnd();
-            },
-            child: Text(
-              _skipState ? "건너뛰기" : "",
-              style: const TextStyle(color: Colors.white, fontSize: 16),
-              textAlign: TextAlign.right,
+      globalHeader: SingleChildScrollView(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+          Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: TextButton(
+              onPressed: () {
+                _introKey.currentState?.skipToEnd();
+              },
+              child: Text(
+                _skipState ? "건너뛰기" : "",
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+                textAlign: TextAlign.right,
+              ),
             ),
-          ),
-        )
-      ]),
+          )
+        ]),
+      ),
       globalFooter: const SizedBox(
         height: 30.0,
       ),
