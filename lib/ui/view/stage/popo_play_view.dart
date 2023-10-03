@@ -244,11 +244,15 @@ class _PoPoPlayViewState extends State<PoPoPlayView> {
       ),
     )
         .animate(key: Key(key.toString()))
+        .fadeIn()
         .scale(
             duration: 200.ms,
             begin: const Offset(0.9, 0.9),
             end: const Offset(1, 1))
         .animate(delay: 200.ms)
-        .shake(curve: Curves.bounceIn);
+        .shake(curve: Curves.bounceIn)
+        .fadeOut(
+          duration: 300.ms,
+        );
   }
 }
