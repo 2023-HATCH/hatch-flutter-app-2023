@@ -65,8 +65,21 @@ class ChatDetailLeftBubbleWidget extends StatelessWidget {
                         : Image.network(
                             chatDetail.sender.profileImg!,
                             fit: BoxFit.cover,
-                            width: 45,
-                            height: 45,
+                            width: 40,
+                            height: 40,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColor.purpleColor,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image.asset(
+                              'assets/images/charactor_popo_default.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                   ),
                 )
