@@ -100,17 +100,6 @@ class NotificationService {
   }
 }
 
-void onDidReceiveBackgroundNotificationResponse(details) {
-  if (details.payload != null) {
-    try {
-      Map<String, dynamic> notificationPayload = jsonDecode(details.payload!);
-      setNotificationHandler(notificationPayload);
-    } catch (error) {
-      debugPrint('mmm Notification payload error $error');
-    }
-  }
-}
-
 void onDidReceiveNotificationResponse(details) async {
   if (details.payload != null) {
     try {

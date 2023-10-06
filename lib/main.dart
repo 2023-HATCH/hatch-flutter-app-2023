@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/route_manager.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:pocket_pose/config/fcm/notification_service.dart';
@@ -34,6 +39,23 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // 카메라 목록 변수
 List<CameraDescription> cameras = [];
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
+
+@pragma('vm:entry-point')
+void onDidReceiveBackgroundNotificationResponse(NotificationResponse details) {
+  if (details.payload != null) {
+    try {
+      Map<String, dynamic> notificationPayload = jsonDecode(details.payload!);
+      setNotificationHandler(notificationPayload);
+    } catch (error) {
+      debugPrint('mmm Notification payload error $error');
+    }
+  }
+}
+
 Future<void> main() async {
   // .env 파일 읽어오기
   await dotenv.load(fileName: 'assets/.env');
@@ -52,6 +74,15 @@ Future<void> main() async {
   await notificationService.init();
   DynamicLink().setup();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  ReceivePort receivePort = ReceivePort();
+  IsolateNameServer.registerPortWithName(receivePort.sendPort, 'main_port');
+
+  receivePort.listen((message) {
+    if (message is RemoteMessage) {
+      setNotificationHandler(message.data);
+    }
+  });
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => MultiVideoPlayProvider()),
@@ -130,12 +161,4 @@ void setNotificationHandler(Map<String, dynamic>? map) async {
       debugPrint('mmm Notification payload error $error');
     }
   }
-}
-
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  setNotificationHandler(message.data);
-
-  return Future.value();
 }
