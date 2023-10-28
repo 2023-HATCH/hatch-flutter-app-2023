@@ -1,10 +1,8 @@
 class AppUrl {
   // api 서버
-  static const _apiBaseUrl = "http://3.37.178.56:8080/api/v1";
-  // 인공지능 서버
-  static const _aiBaseUrl = "http://43.200.133.86:5000";
+  static const _apiBaseUrl = "http://43.202.211.36:8080/api/v1";
   // web socket 서버
-  static const webSocketUrl = "ws://3.37.178.56:8080/ws-popo";
+  static const webSocketUrl = "ws://43.202.211.36:8080/ws-popo";
 
   // 로그인 & 회원가입
   static const signInSignUpUrl = "$_apiBaseUrl/auth/login?type=kakao";
@@ -44,9 +42,6 @@ class AppUrl {
   static const stageEnterUrl = "$_stageUrl/enter";
   static const stageCatchUrl = "$_stageUrl/catch";
   static const stageTalkUrl = "$_talkUrl/messages";
-
-  // 스켈레톤 정확도 확인
-  static const skeletonAccuracyUrl = "$_aiBaseUrl/api/similarity/test";
 
   // web socket
   // 스테이지
