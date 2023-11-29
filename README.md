@@ -93,7 +93,7 @@
 
 
 ## Preview
-[![PoPo Introduction Video](https://img.youtube.com/vi/6maF_XW2snk/popo.jpg)](https://youtu.be/6maF_XW2snk)
+[![PoPo Introduction Video](https://img.youtube.com/vi/6maF_XW2snk/0.jpg)](https://youtu.be/6maF_XW2snk)
 
 
 ## Service Introduction
